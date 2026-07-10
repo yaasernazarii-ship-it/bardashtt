@@ -134,6 +134,18 @@
 
 <div class="reg-wrap">
 
+  <!-- توضیح تفاوت دو سیستم -->
+  <div style="background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:14px;padding:18px 22px;margin-bottom:28px;display:flex;gap:16px;align-items:flex-start;">
+    <span style="font-size:1.5rem;flex-shrink:0;">💡</span>
+    <div>
+      <strong style="font-size:0.92rem;color:#1E40AF;display:block;margin-bottom:6px;">تفاوت حساب کاربری و ثبت‌نام در کلاس</strong>
+      <p style="font-size:0.83rem;color:#1D4ED8;line-height:1.9;margin:0;">
+        این صفحه برای <strong>ساخت حساب کاربری</strong> در سایت است (دسترسی به گالری، پروفایل بازیگران، داشبورد و...).<br/>
+        اگر می‌خواهید در <strong>کلاس‌های بازیگری</strong> ثبت‌نام کنید، باید <a href="audition.html" style="color:#1E40AF;font-weight:700;text-decoration:underline;">تست آنلاین پذیرش</a> را تکمیل کنید.
+      </p>
+    </div>
+  </div>
+
   <!-- نوار مراحل -->
   <div class="step-bar" id="step-bar">
     <div class="step-ind active" id="si1"><div class="dot">1</div><div class="lbl">انتخاب نقش</div></div>
@@ -400,24 +412,18 @@
     sendOTP(phone);
   }
 
-  // ── ارسال OTP (حالت دمو — بدون سرور) ──────
+  // ── ارسال OTP (حالت آزمایشی) ──────
   let mockOTP = '';
 
   function sendOTP(phone) {
-    // کد تصادفی ۶ رقمی — وقتی سرور وصل شد اینجا با SMS واقعی جایگزین می‌شه
     mockOTP = String(Math.floor(100000 + Math.random() * 900000));
-
     document.getElementById('otp-phone-display').textContent = phone;
     document.getElementById('otp-error').style.display = 'none';
-
-    // نمایش کد به صورت موقت روی صفحه تا سرور وصل بشه
     const demoBox = document.getElementById('otp-demo-code');
     if (demoBox) { demoBox.textContent = mockOTP; demoBox.closest('.demo-notice').style.display = 'block'; }
-
     ['s2-student','s2-filmmaker','s2-fan'].forEach(hide);
     show('s3');
     setBar(3);
-
     setTimeout(() => document.querySelector('#s3 .otp-input').focus(), 100);
     startTimer();
   }
@@ -447,23 +453,18 @@
     show('s4');
     setBar(4);
 
-        const msgs = {
-          'هنرجو':     'به خانواده برداشت خوش آمدید! از پنل خود تاریخ کلاس‌ها و بیمه‌نامه‌تان را مشاهده کنید.',
-          'فیلمساز':   'خوش آمدید! حالا می‌توانید پروفایل، اتود و نمونه‌کارهای بازیگران را مشاهده کنید.',
-          'علاقه‌مند': 'خوش آمدید! از اخبار، گالری و محتوای آموزشی خانواده برداشت لذت ببرید.'
-        };
-        const links = {
-          'هنرجو':     'dashboard.html',
-          'فیلمساز':   'actors.html',
-          'علاقه‌مند': 'index.html'
-        };
-        document.getElementById('s4-msg').textContent = msgs[pendingUser.role] || '';
-        document.getElementById('s4-link').href       = links[pendingUser.role] || 'index.html';
-      })
-      .catch(() => {
-        if (verifyBtn) { verifyBtn.disabled = false; verifyBtn.textContent = 'تأیید و ادامه ←'; }
-        alert('خطا در اتصال به سرور. لطفاً دوباره تلاش کنید.');
-      });
+    const msgs = {
+      'هنرجو':     'به خانواده برداشت خوش آمدید! از پنل خود تاریخ کلاس‌ها و بیمه‌نامه‌تان را مشاهده کنید.',
+      'فیلمساز':   'خوش آمدید! حالا می‌توانید پروفایل، اتود و نمونه‌کارهای بازیگران را مشاهده کنید.',
+      'علاقه‌مند': 'خوش آمدید! از اخبار، گالری و محتوای آموزشی خانواده برداشت لذت ببرید.'
+    };
+    const links = {
+      'هنرجو':     'dashboard.html',
+      'فیلمساز':   'actors.html',
+      'علاقه‌مند': 'index.html'
+    };
+    document.getElementById('s4-msg').textContent = msgs[pendingUser.role] || '';
+    document.getElementById('s4-link').href       = links[pendingUser.role] || 'index.html';
   }
 
   function backToForm() {

@@ -99,20 +99,7 @@
   let authOTP = '';
   let authTimerInterval = null;
 
-  function showOTP(){
-    authPhone = document.querySelector('#step-phone input[type="tel"]').value.trim();
-    if(!authPhone || !/^09[0-9]{9}$/.test(authPhone)){
-      alert('لطفاً یک شماره موبایل معتبر وارد کنید.');
-      return;
-    }
-
-    authOTP = String(Math.floor(100000 + Math.random() * 900000));
-    document.getElementById('auth-demo-code').textContent = authOTP;
-    document.getElementById('auth-demo-box').style.display = 'block';
-
-    document.getElementById('step-phone').style.display = 'none';
-    document.getElementById('step-otp').style.display = 'block';
-
+  function startTimer(){
     if(authTimerInterval) clearInterval(authTimerInterval);
     let s = 120;
     authTimerInterval = setInterval(() => {
@@ -122,7 +109,20 @@
       document.getElementById('timer').textContent = m + ':' + sec;
       if(s <= 0){ clearInterval(authTimerInterval); document.getElementById('timer').textContent = 'منقضی شد'; }
     }, 1000);
+  }
 
+  function showOTP(){
+    authPhone = document.querySelector('#step-phone input[type="tel"]').value.trim();
+    if(!authPhone || !/^09[0-9]{9}$/.test(authPhone)){
+      alert('لطفاً یک شماره موبایل معتبر وارد کنید.');
+      return;
+    }
+    authOTP = String(Math.floor(100000 + Math.random() * 900000));
+    document.getElementById('auth-demo-code').textContent = authOTP;
+    document.getElementById('auth-demo-box').style.display = 'block';
+    document.getElementById('step-phone').style.display = 'none';
+    document.getElementById('step-otp').style.display = 'block';
+    startTimer();
     setTimeout(() => document.querySelector('#step-otp .otp-input').focus(), 100);
   }
 
@@ -136,7 +136,6 @@
   function doLogin(){
     const entered = [...document.querySelectorAll('#step-otp .otp-input')].map(i => i.value).join('');
     if(entered.length < 6){ alert('لطفاً کد ۶ رقمی را کامل وارد کنید.'); return; }
-
     if(entered !== authOTP){
       document.querySelectorAll('#step-otp .otp-input').forEach(i => {
         i.value = '';
@@ -144,12 +143,10 @@
         setTimeout(() => i.style.borderColor = '', 1500);
       });
       document.querySelector('#step-otp .otp-input').focus();
-      alert('کد وارد شده اشتباه است. لطفاً دوباره تلاش کنید.');
+      alert('کد وارد شده اشتباه است.');
       return;
     }
-
     if(authTimerInterval) clearInterval(authTimerInterval);
-
     const existing = JSON.parse(localStorage.getItem('bardasht_user') || 'null');
     localStorage.setItem('bardasht_user', JSON.stringify({
       name: existing?.name || authPhone,

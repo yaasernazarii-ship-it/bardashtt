@@ -1,7 +1,7 @@
 <?php
 /**
  * ارسال کد یکبار مصرف (OTP) به شماره موبایل
- * سرویس: کاوه‌نگار (kavenegar.com)
+ * سرویس: sms.ir
  *
  * POST /api/send-otp.php
  * body: phone=09...
@@ -18,24 +18,23 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST')    { echo json_encode(['ok'=>false,'m
 session_start();
 
 // ─── تنظیمات ─────────────────────────────────────────────
-const KAVENEGAR_API_KEY = 'YOUR_KAVENEGAR_API_KEY';   // کلید API از پنل کاوه‌نگار
-const KAVENEGAR_TEMPLATE = 'verify';                  // نام قالب OTP در پنل کاوه‌نگار
-const OTP_TTL_SECONDS    = 120;                       // مدت اعتبار کد (ثانیه)
+define('SMSIR_API_KEY',    'uh7w6cNc203IHHBuIbUqNZzEfxhfxRrfbhfv2HLdxZTCMx7n');
+define('SMSIR_TEMPLATE_ID', 267687);
+define('OTP_TTL_SECONDS',   120);
 // ─────────────────────────────────────────────────────────
 
 $phone = trim($_POST['phone'] ?? '');
 
-// اعتبارسنجی شماره ایرانی
 if (!preg_match('/^09[0-9]{9}$/', $phone)) {
     echo json_encode(['ok' => false, 'msg' => 'شماره موبایل معتبر نیست']);
     exit;
 }
 
-// جلوگیری از spam: بررسی ارسال زودهنگام
+// جلوگیری از spam
 $lockKey = 'otp_lock_' . $phone;
 if (isset($_SESSION[$lockKey]) && time() < $_SESSION[$lockKey]) {
     $wait = $_SESSION[$lockKey] - time();
-    echo json_encode(['ok' => false, 'msg' => "لطفاً {$wait} ثانیه صبر کنید و دوباره تلاش کنید."]);
+    echo json_encode(['ok' => false, 'msg' => "لطفاً {$wait} ثانیه صبر کنید."]);
     exit;
 }
 
@@ -47,26 +46,33 @@ $_SESSION['otp_' . $phone] = [
     'code'    => $otp,
     'expires' => time() + OTP_TTL_SECONDS,
 ];
-$_SESSION[$lockKey] = time() + 60; // قفل ۶۰ ثانیه‌ای بین ارسال‌ها
+$_SESSION[$lockKey] = time() + 60;
 
-// ارسال از طریق کاوه‌نگار
-$url  = 'https://api.kavenegar.com/v1/' . urlencode(KAVENEGAR_API_KEY) . '/verify/lookup.json';
-$data = http_build_query([
-    'receptor' => $phone,
-    'token'    => $otp,
-    'template' => KAVENEGAR_TEMPLATE,
+// ارسال از طریق sms.ir
+$payload = json_encode([
+    'mobile'     => $phone,
+    'templateId' => SMSIR_TEMPLATE_ID,
+    'parameters' => [
+        ['name' => 'Code', 'value' => $otp]
+    ]
 ]);
 
-$ch = curl_init($url);
+$ch = curl_init('https://api.sms.ir/v1/send/verify');
 curl_setopt_array($ch, [
     CURLOPT_POST           => true,
-    CURLOPT_POSTFIELDS     => $data,
+    CURLOPT_POSTFIELDS     => $payload,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_TIMEOUT        => 10,
     CURLOPT_SSL_VERIFYPEER => true,
+    CURLOPT_HTTPHEADER     => [
+        'Content-Type: application/json',
+        'Accept: application/json',
+        'X-API-KEY: ' . SMSIR_API_KEY,
+    ],
 ]);
 $response = curl_exec($ch);
 $curlErr  = curl_error($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
 if ($curlErr) {
@@ -76,10 +82,10 @@ if ($curlErr) {
 }
 
 $res = json_decode($response, true);
-if (isset($res['return']['status']) && $res['return']['status'] === 200) {
+if ($httpCode === 200 && isset($res['status']) && $res['status'] === 1) {
     echo json_encode(['ok' => true]);
 } else {
-    $errMsg = $res['return']['message'] ?? 'خطای ناشناخته';
-    error_log('[OTP] kavenegar error: ' . $errMsg . ' | response: ' . $response);
+    $errMsg = $res['message'] ?? 'خطای ناشناخته';
+    error_log('[OTP] smsir error: ' . $errMsg . ' | response: ' . $response);
     echo json_encode(['ok' => false, 'msg' => 'ارسال پیامک ناموفق بود. لطفاً دوباره تلاش کنید.']);
 }
