@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="تصاویر و ویدیوهای کلاس‌ها، اردوها و اجراهای خانواده برداشت. لحظات آموزشی آموزشگاه بازیگری." />
+  <meta name="keywords" content="گالری بازیگری، عکس کلاس بازیگری، ویدیو آموزش بازیگری" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://khanevadehbardasht.ir/gallery.html" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="fa_IR" />
+  <meta property="og:site_name" content="خانواده برداشت" />
+  <meta property="og:title" content="گالری تصاویر | خانواده برداشت" />
+  <meta property="og:description" content="تصاویر و ویدیوهای کلاس‌ها، اردوها و اجراهای خانواده برداشت. لحظات آموزشی آموزشگاه بازیگری." />
+  <meta property="og:url" content="https://khanevadehbardasht.ir/gallery.html" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="گالری تصاویر | خانواده برداشت" />
+  <meta name="twitter:description" content="تصاویر و ویدیوهای کلاس‌ها، اردوها و اجراهای خانواده برداشت. لحظات آموزشی آموزشگاه بازیگری." />
+  <title>گالری تصاویر | خانواده برداشت</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .filter-bar { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:40px; }
+    .filter-btn { padding:8px 20px;border-radius:100px;border:1.5px solid var(--border);background:var(--white);font-family:inherit;font-size:0.85rem;font-weight:600;color:var(--muted);cursor:pointer;transition:var(--transition); }
+    .filter-btn.active, .filter-btn:hover { border-color:var(--dark);background:var(--dark);color:#fff; }
+    .masonry { columns:3;gap:16px; }
+    .m-item { break-inside:avoid;margin-bottom:16px;border-radius:var(--radius-sm);overflow:hidden;background:var(--surface);border:1px solid var(--border);position:relative;cursor:pointer; }
+    .m-item .ph { display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--light); }
+    .m-item:nth-child(3n+1) .ph { height:220px; }
+    .m-item:nth-child(3n+2) .ph { height:320px; }
+    .m-item:nth-child(3n+3) .ph { height:260px; }
+    .m-item .overlay { position:absolute;inset:0;background:rgba(12,12,12,0);display:flex;align-items:center;justify-content:center;font-size:2rem;transition:var(--transition); }
+    .m-item:hover .overlay { background:rgba(12,12,12,0.45); }
+    .m-item .label { position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,0.6);color:#fff;font-size:0.72rem;padding:4px 10px;border-radius:100px; }
+    .video-item { background:var(--dark);border-radius:var(--radius);overflow:hidden;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;transition:var(--transition); }
+    .video-item:hover { transform:scale(1.02); }
+    .video-item .play { width:60px;height:60px;background:rgba(255,255,255,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;transition:var(--transition); }
+    .video-item:hover .play { background:#fff;transform:scale(1.1); }
+    .video-item .vtitle { position:absolute;bottom:16px;right:16px;color:#fff;font-size:0.85rem;font-weight:600; }
+    @media(max-width:768px){ .masonry{columns:2;} }
+    @media(max-width:480px){ .masonry{columns:1;} }
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">خانواده <span>برداشت</span></a>
+    <ul class="nav__links">
+      <li><a href="index.html">خانه</a></li>
+      <li><a href="about.html">درباره ما</a></li>
+      <li><a href="courses.html">دوره‌ها</a></li>
+      <li class="has-dropdown">
+        <a href="#">آموزش ▾</a>
+        <ul class="dropdown">
+          <li><a href="online-learning.html">یادگیری آنلاین</a></li>
+          <li><a href="certificate.html">آزمون فارغ‌التحصیلی</a></li>
+          <li><a href="verify.html">استعلام گواهینامه</a></li>
+          <li><a href="dashboard.html">داشبورد هنرجو</a></li>
+        </ul>
+      </li>
+      <li><a href="actors.html">بازیگران</a></li>
+      <li><a href="gallery.html" class="active">گالری</a></li>
+      <li><a href="news.html">اخبار</a></li>
+      <li><a href="podcast.html">پادکست</a></li>
+      <li><a href="faq.html">سوالات متداول</a></li>
+    </ul>
+    <div class="nav__actions"><a href="auth.html" class="btn btn--outline btn--sm">ورود</a><a href="register.html" class="btn btn--dark btn--sm">ثبت‌نام</a></div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>گالری</h1>
+  <p>لحظه‌هایی از کلاس‌ها، اردوها و آفیش‌های خانواده برداشت</p>
+  <div class="breadcrumb"><a href="index.html">خانه</a> › گالری</div>
+</div>
+
+<section style="background:var(--bg);">
+  <div class="container">
+    <div class="filter-bar">
+      <button class="filter-btn active">همه</button>
+      <button class="filter-btn">کلاس‌ها</button>
+      <button class="filter-btn">اردوها</button>
+      <button class="filter-btn">آفیش</button>
+      <button class="filter-btn">مستند</button>
+    </div>
+
+    <!-- عکس‌ها -->
+    <span class="tag tag--dark" style="margin-bottom:24px;display:inline-block;">📸 عکس‌ها</span>
+    <div class="masonry" style="margin-bottom:56px;">
+      <div class="m-item"><div class="ph">🎭</div><div class="overlay">🔍</div><span class="label">کلاس مقدماتی</span></div>
+      <div class="m-item"><div class="ph">🎬</div><div class="overlay">🔍</div><span class="label">اردو</span></div>
+      <div class="m-item"><div class="ph">🎥</div><div class="overlay">🔍</div><span class="label">آفیش</span></div>
+      <div class="m-item"><div class="ph">🎞️</div><div class="overlay">🔍</div><span class="label">کلاس تکمیلی</span></div>
+      <div class="m-item"><div class="ph">🌿</div><div class="overlay">🔍</div><span class="label">مازندران</span></div>
+      <div class="m-item"><div class="ph">🏙️</div><div class="overlay">🔍</div><span class="label">تهران</span></div>
+      <div class="m-item"><div class="ph">🎭</div><div class="overlay">🔍</div><span class="label">کمپ آموزشی</span></div>
+      <div class="m-item"><div class="ph">⭐</div><div class="overlay">🔍</div><span class="label">مستند</span></div>
+      <div class="m-item"><div class="ph">🎬</div><div class="overlay">🔍</div><span class="label">پیشرفته</span></div>
+    </div>
+
+    <!-- ویدیوها -->
+    <span class="tag tag--dark" style="margin-bottom:24px;display:inline-block;">🎥 ویدیوها</span>
+    <div class="grid-3">
+      <div class="video-item">
+        <div class="play">▶</div>
+        <span class="vtitle">معرفی خانواده برداشت</span>
+      </div>
+      <div class="video-item">
+        <div class="play">▶</div>
+        <span class="vtitle">اردوی تابستانی ۱۴۰۲</span>
+      </div>
+      <div class="video-item">
+        <div class="play">▶</div>
+        <span class="vtitle">کمپ ۱۰ روزه مازندران</span>
+      </div>
+      <div class="video-item">
+        <div class="play">▶</div>
+        <span class="vtitle">نمایش پایان‌ترم</span>
+      </div>
+      <div class="video-item">
+        <div class="play">▶</div>
+        <span class="vtitle">مستند آموزشگاه</span>
+      </div>
+      <div class="video-item">
+        <div class="play">▶</div>
+        <span class="vtitle">آفیش تبلیغاتی</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer__grid">
+    <div class="footer__brand"><h2>خانواده برداشت</h2><p>اولین و تنها آموزشگاه رایگان بازیگری سینما در ایران.</p></div>
+    <div class="footer__col"><h4>شعبه‌ها</h4><ul><li><a href="#">🏙️ تهران</a></li><li><a href="#">🌿 مازندران</a></li></ul></div>
+    <div class="footer__col"><h4>صفحات</h4><ul><li><a href="about.html">درباره ما</a></li><li><a href="courses.html">دوره‌ها</a></li><li><a href="actors.html">بازیگران</a></li>
+      <li><a href="gallery.html">گالری</a></li></ul></div>
+    <div class="footer__col"><h4>ارتباط</h4><ul><li><a href="tel:02191090934">📞 02191090934</a></li><li><a href="https://instagram.com/bardashtt" target="_blank">📸 اینستاگرام</a></li></ul></div>
+  </div>
+  <div class="footer__bottom"><p>© ۱۴۰۳ خانواده برداشت</p><div class="footer__social"><a href="https://instagram.com/bardashtt" target="_blank">📸</a><a href="https://ble.ir/bardasht_family" target="_blank">💬</a><a href="tel:02191090934">📞</a></div></div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+  document.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

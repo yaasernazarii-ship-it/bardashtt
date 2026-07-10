@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ثبت‌نام رایگان در خانواده برداشت — آموزشگاه بازیگری سینما. هنرجو، فیلمساز یا علاقه‌مند، همه می‌توانند ثبت‌نام کنند." />
+  <meta name="keywords" content="ثبت‌نام بازیگری رایگان، آموزشگاه بازیگری، پذیرش دانشجو" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://khanevadehbardasht.ir/register.html" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="fa_IR" />
+  <meta property="og:site_name" content="خانواده برداشت" />
+  <meta property="og:title" content="ثبت‌نام رایگان | خانواده برداشت" />
+  <meta property="og:description" content="ثبت‌نام رایگان در خانواده برداشت — آموزشگاه بازیگری سینما. هنرجو، فیلمساز یا علاقه‌مند، همه می‌توانند ثبت‌نام کنند." />
+  <meta property="og:url" content="https://khanevadehbardasht.ir/register.html" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ثبت‌نام رایگان | خانواده برداشت" />
+  <meta name="twitter:description" content="ثبت‌نام رایگان در خانواده برداشت — آموزشگاه بازیگری سینما. هنرجو، فیلمساز یا علاقه‌مند، همه می‌توانند ثبت‌نام کنند." />
+  <title>ثبت‌نام رایگان | خانواده برداشت</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    body { background: var(--surface); }
+
+    /* ── step indicator ── */
+    .reg-wrap { max-width: 560px; margin: 0 auto; padding: 40px 24px 80px; }
+    .step-bar { display: flex; gap: 0; margin-bottom: 40px; }
+    .step-ind { flex: 1; text-align: center; position: relative; }
+    .step-ind::after {
+      content: ''; position: absolute; top: 17px;
+      right: 50%; left: -50%; height: 2px;
+      background: var(--border); z-index: 0;
+    }
+    .step-ind:first-child::after { display: none; }
+    .step-ind .dot {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 2px solid var(--border); background: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700;
+      margin: 0 auto 6px; position: relative; z-index: 1;
+      color: var(--muted); transition: var(--transition);
+    }
+    .step-ind.done .dot { background: var(--gold); border-color: var(--gold); color: #fff; }
+    .step-ind.active .dot { background: var(--dark); border-color: var(--dark); color: #fff; }
+    .step-ind .lbl { font-size: 0.68rem; color: var(--muted); font-weight: 600; }
+    .step-ind.active .lbl, .step-ind.done .lbl { color: var(--dark); }
+
+    /* ── role cards ── */
+    .role-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .role-card {
+      border: 2px solid var(--border); border-radius: var(--radius);
+      padding: 22px 16px; cursor: pointer; transition: var(--transition); text-align: center;
+    }
+    .role-card:hover { border-color: var(--gold); box-shadow: 0 4px 20px rgba(196,146,42,0.1); }
+    .role-card.selected { border-color: var(--gold); background: rgba(196,146,42,0.05); }
+    .role-card .icon { font-size: 2.2rem; margin-bottom: 10px; }
+    .role-card h4 { font-size: 0.9rem; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+    .role-card p { font-size: 0.72rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── form card ── */
+    .form-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 32px;
+    }
+    .form-card h2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
+    .form-card .sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 24px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* ── آپلود مدرک ── */
+    .upload-area {
+      border: 2px dashed var(--border); border-radius: var(--radius);
+      padding: 32px; text-align: center; cursor: pointer;
+      transition: var(--transition); position: relative;
+    }
+    .upload-area:hover { border-color: var(--gold); background: rgba(196,146,42,0.03); }
+    .upload-area input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .upload-area .up-icon { font-size: 2rem; margin-bottom: 8px; }
+    .upload-area p { font-size: 0.82rem; color: var(--muted); margin: 0; }
+    .upload-area .up-name { font-size: 0.82rem; color: var(--gold); font-weight: 600; margin-top: 6px; display: none; }
+
+    /* ── OTP ── */
+    .otp-wrap { display: flex; gap: 10px; justify-content: center; margin: 20px 0; direction: ltr; }
+    .otp-input {
+      width: 48px; height: 56px; text-align: center;
+      font-size: 1.3rem; font-weight: 700;
+      border: 2px solid var(--border); border-radius: 10px;
+      background: var(--white); transition: var(--transition);
+    }
+    .otp-input:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 3px rgba(196,146,42,0.15); }
+
+    /* ── success ── */
+    .success-screen { text-align: center; padding: 48px 24px; }
+    .success-screen .s-icon { font-size: 4rem; margin-bottom: 20px; }
+    .success-screen h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 8px; }
+    .success-screen p { color: var(--muted); margin-bottom: 28px; line-height: 1.8; }
+
+    @media (max-width: 480px) {
+      .role-grid { grid-template-columns: 1fr; }
+      .two-col { grid-template-columns: 1fr; }
+      .otp-input { width: 40px; height: 48px; font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">خانواده <span>برداشت</span></a>
+    <ul class="nav__links">
+      <li><a href="index.html">خانه</a></li>
+      <li><a href="about.html">درباره ما</a></li>
+      <li><a href="courses.html">دوره‌ها</a></li>
+      <li class="has-dropdown">
+        <a href="#">آموزش ▾</a>
+        <ul class="dropdown">
+          <li><a href="online-learning.html">یادگیری آنلاین</a></li>
+          <li><a href="certificate.html">آزمون فارغ‌التحصیلی</a></li>
+          <li><a href="verify.html">استعلام گواهینامه</a></li>
+          <li><a href="dashboard.html">داشبورد هنرجو</a></li>
+        </ul>
+      </li>
+      <li><a href="actors.html">بازیگران</a></li>
+      <li><a href="gallery.html">گالری</a></li>
+      <li><a href="news.html">اخبار</a></li>
+      <li><a href="faq.html">سوالات متداول</a></li>
+    </ul>
+    <div class="nav__actions">
+      <a href="auth.html" class="btn btn--outline btn--sm">ورود</a>
+    </div>
+    <button class="nav__menu-btn">☰</button>
+  </div>
+</nav>
+
+<div class="reg-wrap">
+
+  <!-- نوار مراحل -->
+  <div class="step-bar" id="step-bar">
+    <div class="step-ind active" id="si1"><div class="dot">1</div><div class="lbl">انتخاب نقش</div></div>
+    <div class="step-ind"        id="si2"><div class="dot">2</div><div class="lbl">اطلاعات</div></div>
+    <div class="step-ind"        id="si3"><div class="dot">3</div><div class="lbl">تأیید کد</div></div>
+    <div class="step-ind"        id="si4"><div class="dot">4</div><div class="lbl">تکمیل</div></div>
+  </div>
+
+  <!-- ░ مرحله ۱ — انتخاب نقش ░ -->
+  <div id="s1">
+    <div class="form-card">
+      <h2>چه کسی هستید؟</h2>
+      <p class="sub">نقش خود را انتخاب کنید تا فرم مناسب نمایش داده شود.</p>
+      <div class="role-grid">
+
+        <div class="role-card" id="rc-student" onclick="pickRole('هنرجو')">
+          <div class="icon">🎭</div>
+          <h4>هنرجو</h4>
+          <p>می‌خواهم در دوره‌های بازیگری ثبت‌نام کنم</p>
+        </div>
+
+        <div class="role-card" id="rc-filmmaker" onclick="pickRole('فیلمساز')">
+          <div class="icon">🎬</div>
+          <h4>فیلمساز</h4>
+          <p>دنبال بازیگر برای پروژه‌ام هستم</p>
+        </div>
+
+        <div class="role-card" id="rc-fan" onclick="pickRole('علاقه‌مند')">
+          <div class="icon">⭐</div>
+          <h4>علاقه‌مند</h4>
+          <p>به دنیای بازیگری و سینما علاقه دارم</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ░ مرحله ۲-الف — فرم هنرجو ░ -->
+  <div id="s2-student" style="display:none;">
+    <div class="form-card">
+      <h2>اطلاعات هنرجو</h2>
+      <p class="sub">اطلاعات زیر برای تأیید هویت و ثبت بیمه استفاده می‌شود.</p>
+
+      <div class="two-col">
+        <div class="form-group"><label class="form-label">نام <span style="color:#DC2626;">*</span></label><input id="st-fname" type="text" class="form-input" placeholder="نام" /></div>
+        <div class="form-group"><label class="form-label">نام خانوادگی <span style="color:#DC2626;">*</span></label><input id="st-lname" type="text" class="form-input" placeholder="نام خانوادگی" /></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">شماره موبایل <span style="color:#DC2626;">*</span></label>
+        <input id="st-phone" type="tel" class="form-input" placeholder="09..." dir="ltr" />
+        <div class="form-hint">کد تأیید به این شماره ارسال می‌شود</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">آدرس <span style="color:#DC2626;">*</span></label>
+        <textarea id="st-address" class="form-textarea" placeholder="استان، شهر، آدرس" style="min-height:72px;"></textarea>
+      </div>
+
+      <!-- آپلود مدرک -->
+      <div class="form-group">
+        <label class="form-label">تصویر کارت ملی یا شناسنامه <span style="color:#DC2626;">*</span></label>
+        <div class="upload-area" id="upload-box">
+          <input type="file" id="st-doc" accept="image/*,.pdf" onchange="showFileName(this)" />
+          <div class="up-icon">📎</div>
+          <p>یکی را انتخاب کنید: <strong>کارت ملی</strong> یا <strong>شناسنامه</strong></p>
+          <p style="font-size:0.72rem;margin-top:4px;">فرمت: JPG, PNG یا PDF — حداکثر ۵ مگابایت</p>
+          <div class="up-name" id="up-name-st"></div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="form-group"><label class="form-label">نام کاربری <span style="color:#DC2626;">*</span></label><input id="st-user" type="text" class="form-input" placeholder="username" dir="ltr" /></div>
+        <div class="form-group"><label class="form-label">رمز عبور <span style="color:#DC2626;">*</span></label><input id="st-pass" type="password" class="form-input" placeholder="حداقل ۸ کاراکتر" dir="ltr" /></div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button onclick="goStep(1)" class="btn btn--outline" style="flex:1;">← بازگشت</button>
+        <button onclick="submitStudentForm()" class="btn btn--dark" style="flex:2;">ارسال کد تأیید ←</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░ مرحله ۲-ب — فرم فیلمساز ░ -->
+  <div id="s2-filmmaker" style="display:none;">
+    <div class="form-card">
+      <h2>اطلاعات فیلمساز</h2>
+      <p class="sub">پس از ثبت‌نام، به رزومه و نمونه‌کارهای بازیگران دسترسی خواهید داشت.</p>
+
+      <div class="two-col">
+        <div class="form-group"><label class="form-label">نام <span style="color:#DC2626;">*</span></label><input id="fm-fname" type="text" class="form-input" placeholder="نام" /></div>
+        <div class="form-group"><label class="form-label">نام خانوادگی <span style="color:#DC2626;">*</span></label><input id="fm-lname" type="text" class="form-input" placeholder="نام خانوادگی" /></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">شماره موبایل <span style="color:#DC2626;">*</span></label>
+        <input id="fm-phone" type="tel" class="form-input" placeholder="09..." dir="ltr" />
+        <div class="form-hint">کد تأیید به این شماره ارسال می‌شود</div>
+      </div>
+      <div class="two-col">
+        <div class="form-group"><label class="form-label">نام کاربری <span style="color:#DC2626;">*</span></label><input id="fm-user" type="text" class="form-input" placeholder="username" dir="ltr" /></div>
+        <div class="form-group"><label class="form-label">رمز عبور <span style="color:#DC2626;">*</span></label><input id="fm-pass" type="password" class="form-input" placeholder="حداقل ۸ کاراکتر" dir="ltr" /></div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button onclick="goStep(1)" class="btn btn--outline" style="flex:1;">← بازگشت</button>
+        <button onclick="submitFilmmakerForm()" class="btn btn--dark" style="flex:2;">ارسال کد تأیید ←</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░ مرحله ۲-پ — فرم علاقه‌مند ░ -->
+  <div id="s2-fan" style="display:none;">
+    <div class="form-card">
+      <h2>اطلاعات کاربر</h2>
+      <p class="sub">به جامعه خانواده برداشت خوش آمدید.</p>
+
+      <div class="two-col">
+        <div class="form-group"><label class="form-label">نام <span style="color:#DC2626;">*</span></label><input id="fn-fname" type="text" class="form-input" placeholder="نام" /></div>
+        <div class="form-group"><label class="form-label">نام خانوادگی <span style="color:#DC2626;">*</span></label><input id="fn-lname" type="text" class="form-input" placeholder="نام خانوادگی" /></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">شماره موبایل <span style="color:#DC2626;">*</span></label>
+        <input id="fn-phone" type="tel" class="form-input" placeholder="09..." dir="ltr" />
+        <div class="form-hint">کد تأیید به این شماره ارسال می‌شود</div>
+      </div>
+      <div class="two-col">
+        <div class="form-group"><label class="form-label">نام کاربری <span style="color:#DC2626;">*</span></label><input id="fn-user" type="text" class="form-input" placeholder="username" dir="ltr" /></div>
+        <div class="form-group"><label class="form-label">رمز عبور <span style="color:#DC2626;">*</span></label><input id="fn-pass" type="password" class="form-input" placeholder="حداقل ۸ کاراکتر" dir="ltr" /></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:1.1rem;">💬</span>
+          چرا خانواده برداشت؟ <span style="color:#DC2626;">*</span>
+        </label>
+        <textarea id="fn-why" class="form-textarea" placeholder="بنویسید چه چیزی شما را به سمت خانواده برداشت کشاند..." style="min-height:100px;"></textarea>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button onclick="goStep(1)" class="btn btn--outline" style="flex:1;">← بازگشت</button>
+        <button onclick="submitFanForm()" class="btn btn--dark" style="flex:2;">ارسال کد تأیید ←</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░ مرحله ۳ — تأیید OTP ░ -->
+  <div id="s3" style="display:none;">
+    <div class="form-card" style="text-align:center;">
+      <h2>کد تأیید را وارد کنید</h2>
+      <p class="sub">کد ۶ رقمی به شماره موبایل شما ارسال شد. کد را دقیقاً در کادرهای زیر وارد کنید.</p>
+
+      <div class="alert alert--info" style="text-align:right;margin-bottom:16px;">
+        📱 کد به شماره <strong id="otp-phone-display" dir="ltr">—</strong> ارسال شد
+      </div>
+
+      <!-- نمایش موقت کد — تا وصل شدن سرور SMS -->
+      <div class="demo-notice" style="display:none;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:10px;padding:14px 18px;margin-bottom:20px;text-align:right;">
+        <div style="font-size:0.75rem;color:#92400E;margin-bottom:6px;">⚠️ حالت آزمایشی — کد SMS واقعی ارسال نمی‌شود</div>
+        <div style="font-size:0.85rem;color:#78350F;">کد تأیید شما: <strong id="otp-demo-code" style="font-family:monospace;font-size:1.2rem;letter-spacing:0.15em;color:#C4922A;"></strong></div>
+      </div>
+
+      <div class="otp-wrap">
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+      </div>
+
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:24px;">
+        ارسال مجدد کد تا <strong id="otp-timer" style="color:var(--dark);">02:00</strong>
+      </p>
+
+      <div id="otp-error" style="display:none;" class="alert" style="background:#FEF2F2;border-color:#FECACA;color:#DC2626;margin-bottom:16px;">
+        ❌ کد وارد شده اشتباه است. دوباره تلاش کنید.
+      </div>
+
+      <button onclick="verifyOTP()" class="btn btn--dark btn--full btn--lg">تأیید و ادامه ←</button>
+      <button onclick="backToForm()" class="btn btn--ghost btn--full" style="margin-top:10px;font-size:0.85rem;">← ویرایش اطلاعات</button>
+    </div>
+  </div>
+
+  <!-- ░ مرحله ۴ — تکمیل ░ -->
+  <div id="s4" style="display:none;">
+    <div class="form-card">
+      <div class="success-screen">
+        <div class="s-icon">🎉</div>
+        <h2>ثبت‌نام با موفقیت انجام شد!</h2>
+        <p id="s4-msg">خوش آمدید به خانواده برداشت.</p>
+        <a id="s4-link" href="dashboard.html" class="btn btn--dark btn--lg">ورود به حساب ←</a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /reg-wrap -->
+
+<script src="js/main.js"></script>
+<script>
+  let selectedRole = '';
+  let pendingUser  = {};
+
+  // ── مرحله ۱: انتخاب نقش ──────────────────
+  function pickRole(role) {
+    selectedRole = role;
+    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+    const map = { 'هنرجو': 'rc-student', 'فیلمساز': 'rc-filmmaker', 'علاقه‌مند': 'rc-fan' };
+    document.getElementById(map[role]).classList.add('selected');
+
+    setTimeout(() => {
+      hide('s1');
+      if (role === 'هنرجو')     show('s2-student');
+      if (role === 'فیلمساز')   show('s2-filmmaker');
+      if (role === 'علاقه‌مند') show('s2-fan');
+      setBar(2);
+    }, 200);
+  }
+
+  // ── مرحله ۲: فرم هنرجو ──────────────────
+  function submitStudentForm() {
+    const fname   = v('st-fname'), lname = v('st-lname');
+    const phone   = v('st-phone'), addr  = v('st-address');
+    const user    = v('st-user'), pass   = v('st-pass');
+    const docFile = document.getElementById('st-doc').files[0];
+
+    if (!fname || !lname || !phone || !addr || !user || !pass) {
+      alert('لطفاً همه فیلدهای اجباری را پر کنید.'); return;
+    }
+    if (!docFile) {
+      alert('آپلود تصویر کارت ملی یا شناسنامه اجباری است.'); return;
+    }
+    if (pass.length < 8) { alert('رمز عبور باید حداقل ۸ کاراکتر باشد.'); return; }
+
+    pendingUser = { name: fname + ' ' + lname, phone, role: 'هنرجو', username: user, password: pass };
+    sendOTP(phone);
+  }
+
+  // ── مرحله ۲: فرم فیلمساز ────────────────
+  function submitFilmmakerForm() {
+    const fname = v('fm-fname'), lname = v('fm-lname');
+    const phone = v('fm-phone');
+    const user  = v('fm-user'), pass  = v('fm-pass');
+
+    if (!fname || !lname || !phone || !user || !pass) {
+      alert('لطفاً همه فیلدها را پر کنید.'); return;
+    }
+    if (pass.length < 8) { alert('رمز عبور باید حداقل ۸ کاراکتر باشد.'); return; }
+
+    pendingUser = { name: fname + ' ' + lname, phone, role: 'فیلمساز', username: user, password: pass };
+    sendOTP(phone);
+  }
+
+  // ── مرحله ۲: فرم علاقه‌مند ──────────────
+  function submitFanForm() {
+    const fname = v('fn-fname'), lname = v('fn-lname');
+    const phone = v('fn-phone');
+    const user  = v('fn-user'), pass  = v('fn-pass');
+    const why   = v('fn-why');
+
+    if (!fname || !lname || !phone || !user || !pass || !why) {
+      alert('لطفاً همه فیلدها را پر کنید.'); return;
+    }
+    if (pass.length < 8) { alert('رمز عبور باید حداقل ۸ کاراکتر باشد.'); return; }
+
+    pendingUser = { name: fname + ' ' + lname, phone, role: 'علاقه‌مند', username: user, password: pass, why };
+    sendOTP(phone);
+  }
+
+  // ── ارسال OTP (حالت دمو — بدون سرور) ──────
+  let mockOTP = '';
+
+  function sendOTP(phone) {
+    // کد تصادفی ۶ رقمی — وقتی سرور وصل شد اینجا با SMS واقعی جایگزین می‌شه
+    mockOTP = String(Math.floor(100000 + Math.random() * 900000));
+
+    document.getElementById('otp-phone-display').textContent = phone;
+    document.getElementById('otp-error').style.display = 'none';
+
+    // نمایش کد به صورت موقت روی صفحه تا سرور وصل بشه
+    const demoBox = document.getElementById('otp-demo-code');
+    if (demoBox) { demoBox.textContent = mockOTP; demoBox.closest('.demo-notice').style.display = 'block'; }
+
+    ['s2-student','s2-filmmaker','s2-fan'].forEach(hide);
+    show('s3');
+    setBar(3);
+
+    setTimeout(() => document.querySelector('#s3 .otp-input').focus(), 100);
+    startTimer();
+  }
+
+  // ── تأیید OTP ────────────────────────────
+  function verifyOTP() {
+    const entered = [...document.querySelectorAll('#s3 .otp-input')].map(i => i.value).join('');
+    if (entered.length < 6) { alert('لطفاً کد ۶ رقمی را کامل وارد کنید.'); return; }
+
+    if (entered !== mockOTP) {
+      document.getElementById('otp-error').style.display = 'block';
+      document.querySelectorAll('#s3 .otp-input').forEach(i => {
+        i.value = '';
+        i.style.borderColor = '#DC2626';
+        setTimeout(() => i.style.borderColor = '', 1500);
+      });
+      document.querySelector('#s3 .otp-input').focus();
+      return;
+    }
+
+    // OTP صحیح — ذخیره حساب
+    localStorage.setItem('bardasht_user', JSON.stringify({
+      ...pendingUser, loggedIn: true
+    }));
+
+    hide('s3');
+    show('s4');
+    setBar(4);
+
+        const msgs = {
+          'هنرجو':     'به خانواده برداشت خوش آمدید! از پنل خود تاریخ کلاس‌ها و بیمه‌نامه‌تان را مشاهده کنید.',
+          'فیلمساز':   'خوش آمدید! حالا می‌توانید پروفایل، اتود و نمونه‌کارهای بازیگران را مشاهده کنید.',
+          'علاقه‌مند': 'خوش آمدید! از اخبار، گالری و محتوای آموزشی خانواده برداشت لذت ببرید.'
+        };
+        const links = {
+          'هنرجو':     'dashboard.html',
+          'فیلمساز':   'actors.html',
+          'علاقه‌مند': 'index.html'
+        };
+        document.getElementById('s4-msg').textContent = msgs[pendingUser.role] || '';
+        document.getElementById('s4-link').href       = links[pendingUser.role] || 'index.html';
+      })
+      .catch(() => {
+        if (verifyBtn) { verifyBtn.disabled = false; verifyBtn.textContent = 'تأیید و ادامه ←'; }
+        alert('خطا در اتصال به سرور. لطفاً دوباره تلاش کنید.');
+      });
+  }
+
+  function backToForm() {
+    hide('s3');
+    if (selectedRole === 'هنرجو')     show('s2-student');
+    if (selectedRole === 'فیلمساز')   show('s2-filmmaker');
+    if (selectedRole === 'علاقه‌مند') show('s2-fan');
+    setBar(2);
+  }
+
+  // ── نمایش نام فایل آپلودشده ──────────────
+  function showFileName(input) {
+    const el = document.getElementById('up-name-st');
+    if (input.files[0]) {
+      el.textContent = '✅ ' + input.files[0].name;
+      el.style.display = 'block';
+      document.getElementById('upload-box').style.borderColor = '#22C55E';
+    }
+  }
+
+  // ── تایمر OTP ────────────────────────────
+  function startTimer() {
+    let secs = 120;
+    const el = document.getElementById('otp-timer');
+    const t = setInterval(() => {
+      secs--;
+      const m = Math.floor(secs / 60).toString().padStart(2, '0');
+      const s = (secs % 60).toString().padStart(2, '0');
+      el.textContent = m + ':' + s;
+      if (secs <= 0) { clearInterval(t); el.textContent = 'منقضی شد'; }
+    }, 1000);
+  }
+
+  // ── نوار مراحل ───────────────────────────
+  function setBar(active) {
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById('si' + i);
+      el.className = 'step-ind' + (i < active ? ' done' : i === active ? ' active' : '');
+      el.querySelector('.dot').textContent = i < active ? '✓' : i;
+    }
+  }
+
+  function goStep(n) { setBar(n); hide('s1'); hide('s2-student'); hide('s2-filmmaker'); hide('s2-fan'); hide('s3'); hide('s4'); show('s' + n); }
+
+  // ── کمک‌ها ───────────────────────────────
+  function v(id) { return document.getElementById(id)?.value.trim() || ''; }
+  function show(id) { const el = document.getElementById(id); if (el) el.style.display = 'block'; }
+  function hide(id) { const el = document.getElementById(id); if (el) el.style.display = 'none'; }
+
+  // ── OTP navigation (main.js handles it but just in case) ──
+  document.addEventListener('input', e => {
+    if (!e.target.classList.contains('otp-input')) return;
+    if (e.target.value && e.target.nextElementSibling?.classList.contains('otp-input')) {
+      e.target.nextElementSibling.focus();
+    }
+  });
+</script>
+</body>
+</html>

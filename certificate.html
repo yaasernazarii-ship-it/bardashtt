@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="آزمون گواهینامه فارغ‌التحصیلی خانواده برداشت. ۱۰۰ سوال — گواهی رسمی فوری صادر می‌شود." />
+  <meta name="keywords" content="آزمون بازیگری، گواهینامه بازیگری، فارغ‌التحصیلی آموزشگاه بازیگری" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://khanevadehbardasht.ir/certificate.html" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="fa_IR" />
+  <meta property="og:site_name" content="خانواده برداشت" />
+  <meta property="og:title" content="آزمون فارغ‌التحصیلی | خانواده برداشت" />
+  <meta property="og:description" content="آزمون گواهینامه فارغ‌التحصیلی خانواده برداشت. ۱۰۰ سوال — گواهی رسمی فوری صادر می‌شود." />
+  <meta property="og:url" content="https://khanevadehbardasht.ir/certificate.html" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="آزمون فارغ‌التحصیلی | خانواده برداشت" />
+  <meta name="twitter:description" content="آزمون گواهینامه فارغ‌التحصیلی خانواده برداشت. ۱۰۰ سوال — گواهی رسمی فوری صادر می‌شود." />
+  <title>آزمون فارغ‌التحصیلی | خانواده برداشت</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <!-- jsPDF برای ساخت PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    /* ── آزمون ── */
+    .exam-wrap { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    .exam-header {
+      background: var(--dark);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin-bottom: 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+      text-align: center;
+    }
+    .score-rule { }
+    .score-rule .pct { font-size: 2.2rem; font-weight: 900; line-height: 1; }
+    .score-rule .lbl { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-top: 6px; }
+    .score-rule .val { font-size: 0.82rem; color: rgba(255,255,255,0.6); margin-top: 4px; }
+    .divider-v { width: 1px; background: rgba(255,255,255,0.08); margin: 8px 0; }
+
+    .progress-top {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 24px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .progress-top span { font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
+    .prog-bar { flex: 1; height: 6px; background: var(--surface); border-radius: 3px; overflow: hidden; }
+    .prog-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-lt)); border-radius: 3px; transition: width 0.4s; }
+
+    .question-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .question-card.active { display: block; }
+
+    .q-num { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+    .q-text { font-size: 1.05rem; font-weight: 600; color: var(--dark); line-height: 1.7; margin-bottom: 28px; }
+
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.95rem;
+      color: var(--body);
+      user-select: none;
+    }
+    .option-label:hover { border-color: var(--gold); background: rgba(196,146,42,0.03); }
+    .option-label input { display: none; }
+    .option-label.selected { border-color: var(--gold); background: rgba(196,146,42,0.06); font-weight: 600; color: var(--dark); }
+    .option-label.correct  { border-color: #16A34A; background: rgba(22,163,74,0.06); color: #15803D; font-weight: 600; }
+    .option-label.wrong    { border-color: #DC2626; background: rgba(220,38,38,0.06); color: #B91C1C; }
+
+    .option-letter {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+    .option-label.selected .option-letter { background: var(--gold); border-color: var(--gold); color: #fff; }
+    .option-label.correct .option-letter  { background: #16A34A; border-color: #16A34A; color: #fff; }
+    .option-label.wrong   .option-letter  { background: #DC2626; border-color: #DC2626; color: #fff; }
+
+    .nav-btns { display: flex; gap: 12px; margin-top: 24px; }
+
+    /* ── صفحه نتیجه ── */
+    #result-screen { display: none; }
+    .result-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 48px;
+      text-align: center;
+      border-top: 4px solid var(--gold);
+    }
+    .score-circle {
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      border: 6px solid var(--gold);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      margin: 0 auto 28px;
+      background: rgba(196,146,42,0.05);
+    }
+    .score-circle .big { font-size: 2.8rem; font-weight: 900; color: var(--dark); line-height: 1; }
+    .score-circle .sub { font-size: 0.75rem; color: var(--muted); }
+
+    /* ── صفحه اطلاعات (قبل از شروع) ── */
+    #info-screen { }
+    .info-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      margin-bottom: 20px;
+    }
+
+    @media print {
+      .nav, footer, .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+<nav class="nav no-print">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">خانواده <span>برداشت</span></a>
+    <ul class="nav__links">
+      <li><a href="index.html">خانه</a></li>
+      <li><a href="about.html">درباره ما</a></li>
+      <li><a href="courses.html">دوره‌ها</a></li>
+      <li class="has-dropdown">
+        <a href="#">آموزش ▾</a>
+        <ul class="dropdown">
+          <li><a href="online-learning.html">یادگیری آنلاین</a></li>
+          <li><a href="certificate.html" class="active">آزمون فارغ‌التحصیلی</a></li>
+          <li><a href="dashboard.html">داشبورد هنرجو</a></li>
+        </ul>
+      </li>
+      <li><a href="actors.html">بازیگران</a></li>
+      <li><a href="gallery.html">گالری</a></li>
+      <li><a href="news.html">اخبار</a></li>
+      <li><a href="podcast.html">پادکست</a></li>
+      <li><a href="faq.html">سوالات متداول</a></li>
+    </ul>
+    <div class="nav__actions">
+      <a href="dashboard.html" class="btn btn--outline btn--sm">← پنل من</a>
+    </div>
+    <button class="nav__menu-btn">☰</button>
+  </div>
+</nav>
+
+<div class="page-header no-print">
+  <h1>آزمون فارغ‌التحصیلی</h1>
+  <p>آزمون جامع پایان تحصیل — خانواده برداشت</p>
+  <div class="breadcrumb"><a href="index.html">خانه</a> › آزمون فارغ‌التحصیلی</div>
+</div>
+
+<section style="background:var(--bg);">
+  <div class="exam-wrap">
+
+    <!-- ░ صفحه اطلاعات هنرجو ░ -->
+    <div id="info-screen">
+
+      <!-- قانون نمره -->
+      <div class="exam-header">
+        <div class="score-rule">
+          <div class="pct" style="color:var(--gold-lt);">۲۰٪</div>
+          <div class="lbl">عملکرد کلاسی</div>
+          <div class="val">توسط استاد ثبت می‌شود</div>
+        </div>
+        <div class="divider-v"></div>
+        <div class="score-rule">
+          <div class="pct" style="color:#fff;">+</div>
+          <div class="lbl" style="color:rgba(255,255,255,0.2);">ترکیب</div>
+        </div>
+        <div class="divider-v"></div>
+        <div class="score-rule">
+          <div class="pct" style="color:var(--gold-lt);">۸۰٪</div>
+          <div class="lbl">نمره آزمون</div>
+          <div class="val">آزمون آنلاین</div>
+        </div>
+      </div>
+
+      <!-- فرم اطلاعات -->
+      <div class="info-card">
+        <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:8px;">آزمون فارغ‌التحصیلی خانواده برداشت</h2>
+        <p style="color:var(--muted);margin-bottom:28px;font-size:0.9rem;">این آزمون پس از اتمام کلیه دوره‌ها برگزار می‌شود و گواهی فارغ‌التحصیلی صادر می‌کند.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-group"><label class="form-label">نام</label><input id="f-name" type="text" class="form-input" placeholder="نام" /></div>
+          <div class="form-group"><label class="form-label">نام خانوادگی</label><input id="f-lname" type="text" class="form-input" placeholder="نام خانوادگی" /></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-group"><label class="form-label">شماره موبایل</label><input id="f-phone" type="tel" class="form-input" placeholder="09..." dir="ltr" /></div>
+          <div class="form-group"><label class="form-label">رشته / تخصص</label>
+            <select id="f-course" class="form-select">
+              <option value="">انتخاب کنید</option>
+              <option>بازیگری سینما</option>
+              <option>بازیگری تئاتر</option>
+              <option>بازیگری و فیلمسازی</option>
+              <option>کارگردانی</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">کد ملی</label><input id="f-code" type="text" class="form-input" placeholder="۱۰ رقم" maxlength="10" dir="ltr" /></div>
+
+        <div class="alert alert--info" style="margin-top:8px;">
+          ⏱ آزمون شامل <strong id="q-count">۱۰۰</strong> سوال چهارگزینه‌ای است. بلافاصله پس از اتمام، نتیجه محاسبه و در صورت قبولی گواهی فارغ‌التحصیلی صادر می‌شود.
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
+          <div style="font-size:1.5rem;margin-bottom:8px;">📋</div>
+          <h4 style="font-size:0.9rem;font-weight:700;margin-bottom:4px;">نحوه نمره‌دهی</h4>
+          <p style="font-size:0.8rem;color:var(--muted);">۱۰۰ سوال — نمره قبولی: ۶۰ از ۱۰۰<br>(آزمون ۸۰٪ + عملکرد کلاسی ۲۰٪)</p>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
+          <div style="font-size:1.5rem;margin-bottom:8px;">📤</div>
+          <h4 style="font-size:0.9rem;font-weight:700;margin-bottom:4px;">ارسال نتیجه</h4>
+          <p style="font-size:0.8rem;color:var(--muted);">در لحظه اتمام آزمون، گواهی فارغ‌التحصیلی به نام شما صادر و برای دانلود آماده می‌شود.</p>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;">
+        <button onclick="startExam()" class="btn btn--dark btn--lg btn--full">شروع آزمون ←</button>
+      </div>
+    </div>
+
+    <!-- ░ صفحه آزمون ░ -->
+    <div id="exam-screen" style="display:none;">
+
+      <!-- نوار پیشرفت -->
+      <div class="progress-top no-print">
+        <span id="q-indicator">سوال ۱ از ۱۰۰</span>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:1%;"></div></div>
+        <span id="q-pct">۱٪</span>
+      </div>
+
+      <!-- کانتینر سوال‌ها -->
+      <div id="questions-container"></div>
+
+      <!-- دکمه‌های ناوبری -->
+      <div class="nav-btns no-print">
+        <button id="btn-prev" onclick="prevQ()" class="btn btn--outline" style="display:none;">← قبلی</button>
+        <div style="flex:1;"></div>
+        <button id="btn-next" onclick="nextQ()" class="btn btn--dark">بعدی ←</button>
+        <button id="btn-submit" onclick="submitExam()" class="btn btn--gold" style="display:none;">ثبت آزمون ✓</button>
+      </div>
+    </div>
+
+    <!-- ░ صفحه نتیجه ░ -->
+    <div id="result-screen">
+      <div class="result-card">
+        <div id="result-icon" style="font-size:3rem;margin-bottom:20px;">🎯</div>
+        <div class="score-circle">
+          <div class="big" id="final-score">—</div>
+          <div class="sub">از ۱۰۰</div>
+        </div>
+        <h2 id="result-title" style="font-size:1.5rem;font-weight:900;margin-bottom:8px;">نتیجه آزمون</h2>
+        <p id="result-msg" style="color:var(--muted);margin-bottom:8px;"></p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;">
+          <div style="padding:12px 20px;background:var(--surface);border-radius:var(--radius-sm);text-align:center;">
+            <div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px;">نمره آزمون (۸۰٪)</div>
+            <strong id="exam-score-lbl" style="font-size:1.1rem;">—</strong>
+          </div>
+          <div style="padding:12px 20px;background:rgba(196,146,42,0.06);border:1px solid rgba(196,146,42,0.2);border-radius:var(--radius-sm);text-align:center;">
+            <div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px;">نمره کلاسی (۲۰٪)</div>
+            <strong id="class-score-lbl" style="font-size:1.1rem;color:var(--gold);">—</strong>
+          </div>
+        </div>
+
+        <!-- جزئیات -->
+        <div style="background:var(--surface);border-radius:var(--radius);padding:20px;margin-bottom:28px;text-align:right;">
+          <div style="font-size:0.78rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">خلاصه عملکرد</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <span style="font-size:0.875rem;color:var(--muted);">پاسخ صحیح</span>
+            <strong id="correct-count" style="color:#16A34A;">—</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <span style="font-size:0.875rem;color:var(--muted);">پاسخ اشتباه</span>
+            <strong id="wrong-count" style="color:#DC2626;">—</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:0.875rem;color:var(--muted);">بی‌پاسخ</span>
+            <strong id="skip-count" style="color:var(--muted);">—</strong>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <button onclick="window.location.reload()" class="btn btn--outline">تلاش مجدد</button>
+        </div>
+      </div>
+
+      <!-- ░ گواهینامه ░ -->
+      <div id="cert-section" style="display:none;margin-top:28px;">
+        <div style="text-align:center;margin-bottom:20px;">
+          <span class="tag tag--gold">🏆 گواهینامه رسمی صادر شد</span>
+        </div>
+
+        <!-- کارت گواهینامه -->
+        <div id="certificate-card" style="
+          background:#fff;
+          border:3px solid #C4922A;
+          border-radius:16px;
+          padding:48px 40px;
+          position:relative;
+          overflow:hidden;
+          max-width:680px;
+          margin:0 auto;
+          font-family:'Vazirmatn',sans-serif;
+          direction:rtl;
+        ">
+          <!-- تزئین گوشه‌ها -->
+          <div style="position:absolute;top:12px;right:12px;width:40px;height:40px;border-top:3px solid #C4922A;border-right:3px solid #C4922A;border-radius:4px 0 0 0;"></div>
+          <div style="position:absolute;top:12px;left:12px;width:40px;height:40px;border-top:3px solid #C4922A;border-left:3px solid #C4922A;border-radius:0 4px 0 0;"></div>
+          <div style="position:absolute;bottom:12px;right:12px;width:40px;height:40px;border-bottom:3px solid #C4922A;border-right:3px solid #C4922A;border-radius:0 0 0 4px;"></div>
+          <div style="position:absolute;bottom:12px;left:12px;width:40px;height:40px;border-bottom:3px solid #C4922A;border-left:3px solid #C4922A;border-radius:0 0 4px 0;"></div>
+          <!-- واترمارک -->
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:7rem;font-weight:900;opacity:0.03;color:#000;white-space:nowrap;pointer-events:none;">برداشت</div>
+
+          <!-- هدر -->
+          <div style="text-align:center;border-bottom:1px solid #E2E0DA;padding-bottom:24px;margin-bottom:28px;">
+            <div style="font-size:2rem;margin-bottom:8px;">🎬</div>
+            <div style="font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#888;margin-bottom:6px;">KHANEVADEH BARDASHT</div>
+            <h2 style="font-size:1.4rem;font-weight:900;color:#0C0C0C;margin-bottom:4px;">خانواده برداشت</h2>
+            <p style="font-size:0.8rem;color:#888;">اولین و تنها آموزشگاه رایگان بازیگری سینما در ایران</p>
+          </div>
+
+          <!-- عنوان گواهینامه -->
+          <div style="text-align:center;margin-bottom:28px;">
+            <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.14em;color:#C4922A;text-transform:uppercase;margin-bottom:10px;">CERTIFICATE OF GRADUATION</div>
+            <h3 style="font-size:1.7rem;font-weight:900;color:#0C0C0C;margin-bottom:6px;">گواهی فارغ‌التحصیلی</h3>
+            <p style="font-size:0.85rem;color:#888;">این گواهی رسمی به افتخار فارغ‌التحصیلی از آموزشگاه خانواده برداشت اعطا می‌گردد</p>
+          </div>
+
+          <!-- اطلاعات -->
+          <div style="background:#FAFAF8;border-radius:12px;padding:24px;margin-bottom:28px;text-align:center;">
+            <p style="font-size:0.78rem;color:#888;margin-bottom:8px;">گواهی فارغ‌التحصیلی اعطا می‌شود به</p>
+            <h2 id="cert-name" style="font-size:2rem;font-weight:900;color:#0C0C0C;margin-bottom:4px;">—</h2>
+            <p id="cert-course" style="font-size:0.9rem;font-weight:600;color:#C4922A;margin-bottom:0;">فارغ‌التحصیل رشته <span id="cert-field">—</span></p>
+          </div>
+
+          <!-- نمره و اطلاعات -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:28px;text-align:center;">
+            <div style="border:1px solid #E2E0DA;border-radius:10px;padding:14px;">
+              <div style="font-size:1.6rem;font-weight:900;color:#C4922A;" id="cert-score">—</div>
+              <div style="font-size:0.7rem;color:#888;margin-top:4px;">نمره نهایی</div>
+            </div>
+            <div style="border:1px solid #E2E0DA;border-radius:10px;padding:14px;">
+              <div style="font-size:1rem;font-weight:700;color:#0C0C0C;" id="cert-date">—</div>
+              <div style="font-size:0.7rem;color:#888;margin-top:4px;">تاریخ صدور</div>
+            </div>
+            <div style="border:1px solid #E2E0DA;border-radius:10px;padding:14px;">
+              <div style="font-size:0.9rem;font-weight:700;color:#0C0C0C;font-family:monospace;" id="cert-id">—</div>
+              <div style="font-size:0.7rem;color:#888;margin-top:4px;">شماره گواهینامه</div>
+            </div>
+          </div>
+
+          <!-- امضا -->
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid #E2E0DA;padding-top:24px;flex-wrap:wrap;gap:16px;">
+            <div style="text-align:center;">
+              <div style="font-size:1.2rem;font-weight:800;color:#0C0C0C;font-style:italic;margin-bottom:6px;">یاسر نظری</div>
+              <div style="font-size:0.72rem;color:#888;">موسس و مدرس اصلی</div>
+              <div style="width:80px;height:1px;background:#C4922A;margin:8px auto 0;"></div>
+            </div>
+            <div style="text-align:center;">
+              <div style="width:64px;height:64px;background:linear-gradient(135deg,#C4922A,#E8B84B);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 6px;">🎬</div>
+              <div style="font-size:0.7rem;color:#888;">مهر رسمی</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:1.2rem;font-weight:800;color:#0C0C0C;font-style:italic;margin-bottom:6px;">خانواده برداشت</div>
+              <div style="font-size:0.72rem;color:#888;">آموزشگاه رسمی</div>
+              <div style="width:80px;height:1px;background:#C4922A;margin:8px auto 0;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- لینک استعلام -->
+        <div style="max-width:680px;margin:24px auto 0;background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:14px;padding:20px 24px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:1.2rem;">🔗</span>
+            <div>
+              <div style="font-size:0.85rem;font-weight:700;color:#15803D;">لینک استعلام گواهینامه</div>
+              <div style="font-size:0.75rem;color:#166534;margin-top:2px;">این لینک را ذخیره کنید — هر کسی با این لینک می‌تواند صحت گواهینامه شما را تأیید کند</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <input id="verify-link" type="text" readonly style="flex:1;font-size:0.75rem;padding:10px 14px;border:1px solid #86EFAC;border-radius:8px;background:#fff;direction:ltr;color:#166534;font-family:monospace;" />
+            <button onclick="copyVerifyLink()" style="background:#16A34A;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:0.82rem;font-family:inherit;cursor:pointer;white-space:nowrap;">📋 کپی</button>
+          </div>
+          <div style="margin-top:10px;font-size:0.75rem;color:#166534;">
+            شماره گواهینامه: <strong id="verify-link-display" style="font-family:monospace;"></strong>
+          </div>
+        </div>
+
+        <!-- دکمه‌های گواهینامه -->
+        <div style="display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;">
+          <button onclick="downloadCertPDF()" class="btn btn--dark btn--lg">📥 دانلود PDF</button>
+          <button onclick="openVerifyPage()" class="btn btn--outline btn--lg">🔍 صفحه استعلام</button>
+          <button onclick="window.print()" class="btn btn--outline">🖨️ چاپ</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer no-print">
+  <div class="footer__grid">
+    <div class="footer__brand"><h2>خانواده برداشت</h2><p>اولین و تنها آموزشگاه رایگان بازیگری سینما در ایران.</p></div>
+    <div class="footer__col"><h4>شعبه‌ها</h4><ul><li><a href="#">🏙️ تهران</a></li><li><a href="#">🌿 مازندران</a></li></ul></div>
+    <div class="footer__col"><h4>صفحات</h4><ul><li><a href="courses.html">دوره‌ها</a></li><li><a href="faq.html">سوالات متداول</a></li></ul></div>
+    <div class="footer__col"><h4>ارتباط</h4><ul><li><a href="tel:02191090934">📞 02191090934</a></li><li><a href="https://instagram.com/bardashtt" target="_blank">📸 اینستاگرام</a></li></ul></div>
+  </div>
+  <div class="footer__bottom"><p>© ۱۴۰۳ خانواده برداشت</p></div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/questions.js"></script>
+<script>
+  // ── وضعیت آزمون ──────────────────────────
+  let examQuestions = [];
+  let currentQ = 0;
+  let answers = {};
+  let studentInfo = {};
+
+  // ── خواندن اطلاعات از لینک ───────────────
+  function loadStudentFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const s = params.get('s');
+    if (!s) return false;
+    try {
+      const data = JSON.parse(decodeURIComponent(atob(s)));
+      studentInfo = data;
+      studentInfo.classScore = data.classScore ?? 0;
+      // پر کردن فرم
+      document.getElementById('f-name').value   = data.name   || '';
+      document.getElementById('f-lname').value  = data.lname  || '';
+      document.getElementById('f-phone').value  = data.phone  || '';
+      document.getElementById('f-code').value   = data.code   || '';
+      // انتخاب دوره
+      const sel = document.getElementById('f-course');
+      for (let i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].text === data.course) { sel.selectedIndex = i; break; }
+      }
+      // قفل کردن فیلدها (هنرجو نتونه تغییر بده)
+      ['f-name','f-lname','f-phone','f-code'].forEach(id => {
+        document.getElementById(id).readOnly = true;
+        document.getElementById(id).style.background = 'var(--surface)';
+      });
+      sel.disabled = true;
+      return true;
+    } catch(e) { return false; }
+  }
+
+  // ── شروع آزمون ───────────────────────────
+  function startExam() {
+    const name  = document.getElementById('f-name').value.trim();
+    const lname = document.getElementById('f-lname').value.trim();
+    const phone = document.getElementById('f-phone').value.trim();
+    const course= document.getElementById('f-course').value;
+    const code  = document.getElementById('f-code').value.trim();
+
+    if (!name || !lname || !phone || !course || !code) {
+      alert('لطفاً همه فیلدها را پر کنید.');
+      return;
+    }
+
+    studentInfo = { name, lname, phone, course, code,
+                    classScore: studentInfo.classScore ?? 0 };
+
+    // همه ۱۰۰ سوال را به ترتیب تصادفی نمایش بده
+    examQuestions = [...QUESTIONS].sort(() => Math.random() - 0.5)
+                     .slice(0, Math.min(EXAM_CONFIG.totalQuestions, QUESTIONS.length));
+
+    document.getElementById('info-screen').style.display = 'none';
+    document.getElementById('exam-screen').style.display  = 'block';
+
+    renderQuestions();
+    updateNav();
+  }
+
+  // ── رندر سوال‌ها ─────────────────────────
+  function renderQuestions() {
+    const container = document.getElementById('questions-container');
+    container.innerHTML = '';
+    const letters = ['الف', 'ب', 'پ', 'ت'];
+
+    examQuestions.forEach((q, idx) => {
+      const card = document.createElement('div');
+      card.className = 'question-card' + (idx === 0 ? ' active' : '');
+      card.id = 'q-' + idx;
+
+      let optionsHTML = q.options.map((opt, i) => `
+        <label class="option-label" id="opt-${idx}-${i}" onclick="selectOption(${idx},${i})">
+          <input type="radio" name="q${idx}" value="${i}" />
+          <span class="option-letter">${letters[i]}</span>
+          <span>${opt}</span>
+        </label>
+      `).join('');
+
+      card.innerHTML = `
+        <div class="q-num">سوال ${toPersian(idx + 1)} از ${toPersian(examQuestions.length)}</div>
+        <div class="q-text">${q.text}</div>
+        <div class="options">${optionsHTML}</div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  // ── انتخاب گزینه ─────────────────────────
+  function selectOption(qIdx, optIdx) {
+    answers[qIdx] = optIdx;
+    document.querySelectorAll(`#q-${qIdx} .option-label`).forEach((el, i) => {
+      el.classList.toggle('selected', i === optIdx);
+    });
+  }
+
+  // ── ناوبری ───────────────────────────────
+  function nextQ() {
+    if (currentQ < examQuestions.length - 1) {
+      showQ(currentQ + 1);
+    }
+  }
+  function prevQ() {
+    if (currentQ > 0) showQ(currentQ - 1);
+  }
+  function showQ(idx) {
+    document.getElementById('q-' + currentQ).classList.remove('active');
+    currentQ = idx;
+    document.getElementById('q-' + currentQ).classList.add('active');
+    updateNav();
+  }
+  function updateNav() {
+    const total = examQuestions.length;
+    const pct   = Math.round(((currentQ + 1) / total) * 100);
+    document.getElementById('q-indicator').textContent = `سوال ${toPersian(currentQ+1)} از ${toPersian(total)}`;
+    document.getElementById('q-pct').textContent = toPersian(pct) + '٪';
+    document.getElementById('prog-fill').style.width = pct + '%';
+    document.getElementById('btn-prev').style.display   = currentQ > 0 ? 'flex' : 'none';
+    document.getElementById('btn-next').style.display   = currentQ < total - 1 ? 'flex' : 'none';
+    document.getElementById('btn-submit').style.display = currentQ === total - 1 ? 'flex' : 'none';
+  }
+
+  // ── ثبت آزمون ────────────────────────────
+  function submitExam() {
+    const answered = Object.keys(answers).length;
+    if (answered < examQuestions.length) {
+      const unanswered = examQuestions.length - answered;
+      if (!confirm(`${toPersian(unanswered)} سوال بی‌پاسخ دارید. آیا مطمئنید؟`)) return;
+    }
+
+    // محاسبه نمره
+    let correct = 0, wrong = 0, skip = 0;
+    examQuestions.forEach((q, idx) => {
+      if (answers[idx] === undefined) { skip++; }
+      else if (answers[idx] === q.correct) { correct++; }
+      else { wrong++; }
+    });
+
+    const examScore  = Math.round((correct / examQuestions.length) * 100);
+    const classScore = studentInfo.classScore ?? 0;
+    const finalScore = Math.round(
+      (examScore  * EXAM_CONFIG.examWeight  / 100) +
+      (classScore * EXAM_CONFIG.classWeight / 100)
+    );
+    const passed = finalScore >= EXAM_CONFIG.passingScore;
+
+    // نمایش نتیجه
+    document.getElementById('exam-screen').style.display   = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+    document.getElementById('final-score').textContent     = toPersian(finalScore);
+    document.getElementById('exam-score-lbl').textContent  = toPersian(examScore) + ' از ۱۰۰';
+    document.getElementById('class-score-lbl').textContent = toPersian(classScore) + ' از ۱۰۰';
+    document.getElementById('correct-count').textContent   = toPersian(correct) + ' سوال';
+    document.getElementById('wrong-count').textContent     = toPersian(wrong) + ' سوال';
+    document.getElementById('skip-count').textContent      = toPersian(skip) + ' سوال';
+
+    document.getElementById('result-icon').textContent  = passed ? '🏆' : '📚';
+    document.getElementById('result-title').textContent = passed ? 'تبریک! فارغ‌التحصیل شدید' : 'متأسفانه قبول نشدید';
+    document.getElementById('result-msg').textContent   = passed
+      ? 'گواهی فارغ‌التحصیلی شما همین الان صادر شد — می‌توانید دانلود کنید.'
+      : 'نمره کافی برای فارغ‌التحصیلی به دست نیاوردید. با آموزشگاه تماس بگیرید.';
+
+    // اگر قبول شد: فوری گواهی صادر بشه
+    document.getElementById('cert-section').style.display = passed ? 'block' : 'none';
+    if (passed) renderCertificate(finalScore, examScore, classScore);
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── رندر گواهینامه ───────────────────────
+  function renderCertificate(finalScore, examScore, classScore) {
+    const s      = studentInfo;
+    const date   = new Date().toLocaleDateString('fa-IR');
+    const certId = 'BRD-' + Date.now().toString(36).toUpperCase().slice(-6);
+
+    // اطلاعات روی گواهینامه
+    document.getElementById('cert-name').textContent   = s.name + ' ' + s.lname;
+    document.getElementById('cert-field').textContent  = s.course || 'بازیگری سینما';
+    document.getElementById('cert-score').textContent  = toPersian(finalScore) + ' از ۱۰۰';
+    document.getElementById('cert-date').textContent   = date;
+    document.getElementById('cert-id').textContent     = certId;
+
+    // ساخت لینک استعلام (اطلاعات در URL رمزگذاری می‌شوند)
+    const certData = {
+      id: certId,
+      name: s.name + ' ' + s.lname,
+      field: s.course || 'بازیگری سینما',
+      score: finalScore,
+      date: date,
+      school: 'خانواده برداشت'
+    };
+    const token = btoa(encodeURIComponent(JSON.stringify(certData)));
+    const base  = window.location.href.split('/').slice(0, -1).join('/') + '/';
+    const verifyLink = base + 'verify.html?c=' + token;
+
+    document.getElementById('verify-link').value = verifyLink;
+    document.getElementById('verify-link-display').textContent = certId;
+
+    // اسکرول به گواهینامه
+    setTimeout(() => {
+      document.getElementById('cert-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+  }
+
+  // ── کپی لینک استعلام ─────────────────────
+  function copyVerifyLink() {
+    const inp = document.getElementById('verify-link');
+    inp.select();
+    navigator.clipboard.writeText(inp.value).catch(() => document.execCommand('copy'));
+    const btn = inp.nextElementSibling;
+    btn.textContent = '✅ کپی شد';
+    setTimeout(() => btn.textContent = '📋 کپی', 2000);
+  }
+
+  function openVerifyPage() {
+    const link = document.getElementById('verify-link').value;
+    if (link) window.open(link, '_blank');
+  }
+
+  // ── دانلود گواهینامه PDF ─────────────────
+  function downloadCertPDF() {
+    const card = document.getElementById('certificate-card');
+    const s    = studentInfo;
+    // استفاده از print برای گواهینامه — بهترین کیفیت برای فارسی
+    const printWin = window.open('', '_blank');
+    printWin.document.write(`
+      <!DOCTYPE html><html lang="fa" dir="rtl"><head>
+      <meta charset="UTF-8">
+      <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+      <style>
+        body { margin: 0; padding: 32px; font-family: 'Vazirmatn',sans-serif; background:#fff; }
+        @media print { body { padding: 0; } @page { margin: 12mm; } }
+      </style></head><body>
+      ${card.outerHTML}
+      <script>window.onload=()=>{window.print();window.close();}<\/script>
+      </body></html>
+    `);
+    printWin.document.close();
+  }
+
+  // ── دانلود PDF ────────────────────────────
+  function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    const s = studentInfo;
+    const scoreEl  = document.getElementById('final-score').textContent;
+    const examScEl = document.getElementById('exam-score-lbl').textContent;
+    const correctEl= document.getElementById('correct-count').textContent;
+    const wrongEl  = document.getElementById('wrong-count').textContent;
+    const skipEl   = document.getElementById('skip-count').textContent;
+    const date     = new Date().toLocaleDateString('fa-IR');
+
+    // طراحی PDF
+    doc.setFillColor(12, 12, 12);
+    doc.rect(0, 0, 210, 40, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.text('Khanevadeh Bardasht', 105, 18, { align: 'center' });
+    doc.setFontSize(11);
+    doc.setTextColor(196, 146, 42);
+    doc.text('Certificate Exam Result', 105, 27, { align: 'center' });
+
+    doc.setTextColor(50, 50, 50);
+    doc.setFontSize(12);
+    let y = 55;
+    const addLine = (label, value) => {
+      doc.setFont(undefined, 'bold'); doc.text(label + ':', 160, y, { align: 'right' });
+      doc.setFont(undefined, 'normal'); doc.text(value, 155, y, { align: 'right' });
+      y += 9;
+    };
+
+    doc.setFontSize(13);
+    doc.text('Student Information', 105, y, { align: 'center' });
+    y += 10;
+    doc.setDrawColor(230,228,218); doc.line(20, y, 190, y); y += 8;
+
+    doc.setFontSize(11);
+    addLine('Name', s.name + ' ' + s.lname);
+    addLine('Phone', s.phone);
+    addLine('National ID', s.code);
+    addLine('Course', s.course);
+    addLine('Date', date);
+
+    y += 6;
+    doc.setFontSize(13);
+    doc.text('Exam Results', 105, y, { align: 'center' });
+    y += 10;
+    doc.setDrawColor(230,228,218); doc.line(20, y, 190, y); y += 8;
+
+    doc.setFontSize(11);
+    addLine('Exam Score (80%)', examScEl);
+    addLine('Correct Answers', correctEl);
+    addLine('Wrong Answers', wrongEl);
+    addLine('Unanswered', skipEl);
+
+    y += 10;
+    doc.setFillColor(196, 146, 42);
+    doc.roundedRect(60, y, 90, 22, 4, 4, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(14);
+    doc.text('Final Score: ' + scoreEl, 105, y + 14, { align: 'center' });
+
+    y += 32;
+    doc.setTextColor(150, 150, 150);
+    doc.setFontSize(9);
+    doc.text('* Final score = 80% Exam + 20% Class Performance (class score added by instructor)', 105, y, { align: 'center' });
+
+    y += 16;
+    doc.setFillColor(245, 244, 240);
+    doc.rect(20, y, 170, 28, 'F');
+    doc.setTextColor(50, 50, 50);
+    doc.setFontSize(10);
+    doc.text('Khanevadeh Bardasht | Tel: 02191090934 | Instagram: @bardashtt', 105, y + 10, { align: 'center' });
+    doc.text('First and only free acting school in Iran', 105, y + 19, { align: 'center' });
+
+    doc.save(`exam-result-${s.name}-${s.lname}.pdf`);
+  }
+
+  // ── ابزار ────────────────────────────────
+  function toPersian(n) {
+    return String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+  }
+
+  // تعداد سوال‌ها را در صفحه اطلاعات نشان بده
+  document.getElementById('q-count').textContent =
+    toPersian(Math.min(EXAM_CONFIG.totalQuestions, QUESTIONS.length));
+
+  // خواندن اطلاعات هنرجو از لینک
+  window.addEventListener('DOMContentLoaded', loadStudentFromURL);
+</script>
+</body>
+</html>

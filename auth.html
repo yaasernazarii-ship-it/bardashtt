@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ورود به حساب کاربری خانواده برداشت با شماره موبایل." />
+  <meta name="keywords" content="ورود خانواده برداشت، لاگین آموزشگاه بازیگری" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://khanevadehbardasht.ir/auth.html" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="fa_IR" />
+  <meta property="og:site_name" content="خانواده برداشت" />
+  <meta property="og:title" content="ورود به حساب | خانواده برداشت" />
+  <meta property="og:description" content="ورود به حساب کاربری خانواده برداشت با شماره موبایل." />
+  <meta property="og:url" content="https://khanevadehbardasht.ir/auth.html" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ورود به حساب | خانواده برداشت" />
+  <meta name="twitter:description" content="ورود به حساب کاربری خانواده برداشت با شماره موبایل." />
+  <title>ورود به حساب | خانواده برداشت</title>
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+<div class="auth-wrap">
+
+  <!-- تصویر چپ -->
+  <div class="auth-visual">
+    <div style="position:relative;text-align:center;padding:48px;">
+      <div style="font-size:5rem;margin-bottom:24px;opacity:0.6;">🎬</div>
+      <h2 style="color:#fff;font-size:1.8rem;font-weight:900;margin-bottom:12px;">خانواده برداشت</h2>
+      <p style="color:rgba(255,255,255,0.5);font-size:0.95rem;line-height:1.8;max-width:280px;margin:0 auto;">اولین و تنها آموزشگاه رایگان بازیگری سینما در ایران</p>
+      <div style="margin-top:40px;display:flex;flex-direction:column;gap:14px;max-width:280px;margin:40px auto 0;">
+        <div style="display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.06);border-radius:10px;padding:14px 16px;">
+          <span style="font-size:1.2rem;">🏆</span>
+          <span style="font-size:0.82rem;color:rgba(255,255,255,0.7);">برنده جایزه بین‌المللی زاگرب</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.06);border-radius:10px;padding:14px 16px;">
+          <span style="font-size:1.2rem;">🎓</span>
+          <span style="font-size:0.82rem;color:rgba(255,255,255,0.7);">مجوز رسمی آموزشی</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.06);border-radius:10px;padding:14px 16px;">
+          <span style="font-size:1.2rem;">✨</span>
+          <span style="font-size:0.82rem;color:rgba(255,255,255,0.7);">۱۰۰٪ رایگان برای همه</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- فرم راست -->
+  <div class="auth-form-wrap">
+    <div class="auth-form">
+      <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:0.82rem;margin-bottom:40px;transition:var(--transition);">← بازگشت به سایت</a>
+
+      <h1 style="font-size:1.8rem;font-weight:900;color:var(--dark);margin-bottom:8px;">ورود به حساب</h1>
+      <p style="color:var(--muted);margin-bottom:36px;font-size:0.95rem;">شماره موبایل خود را وارد کنید</p>
+
+      <!-- مرحله ۱: موبایل -->
+      <div id="step-phone">
+        <div class="form-group">
+          <label class="form-label">شماره موبایل</label>
+          <input type="tel" class="form-input" placeholder="۰۹۱۲۳۴۵۶۷۸۹" maxlength="11" dir="ltr" style="text-align:center;font-size:1.1rem;letter-spacing:0.05em;" />
+          <div class="form-hint">کد تأیید به این شماره ارسال می‌شود</div>
+        </div>
+        <button onclick="showOTP()" class="btn btn--dark btn--full btn--lg" style="margin-bottom:20px;">ارسال کد تأیید</button>
+        <p style="text-align:center;font-size:0.875rem;color:var(--muted);">حساب ندارید؟ <a href="register.html" style="color:var(--gold);font-weight:600;">ثبت‌نام کنید</a></p>
+      </div>
+
+      <!-- مرحله ۲: OTP -->
+      <div id="step-otp" style="display:none;">
+        <div id="auth-demo-box" style="display:none;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:0.9rem;color:#92400E;text-align:center;">
+          حالت آزمایشی — کد تأیید شما: <strong id="auth-demo-code" style="font-size:1.2rem;letter-spacing:0.1em;color:#B45309;"></strong>
+        </div>
+        <div class="alert alert--info">📱 کد ۶ رقمی به شماره شما ارسال شد</div>
+        <div class="form-group" style="text-align:center;">
+          <label class="form-label" style="text-align:center;display:block;">کد تأیید را وارد کنید</label>
+          <div style="margin:20px 0;">
+            <div class="otp-wrap">
+              <input class="otp-input" type="text" maxlength="1" />
+              <input class="otp-input" type="text" maxlength="1" />
+              <input class="otp-input" type="text" maxlength="1" />
+              <input class="otp-input" type="text" maxlength="1" />
+              <input class="otp-input" type="text" maxlength="1" />
+              <input class="otp-input" type="text" maxlength="1" />
+            </div>
+          </div>
+          <p style="font-size:0.8rem;color:var(--muted);">ارسال مجدد کد تا <strong style="color:var(--dark);" id="timer">۰۲:۰۰</strong></p>
+        </div>
+        <button class="btn btn--dark btn--full btn--lg" style="margin-bottom:16px;" onclick="doLogin()">ورود به حساب</button>
+        <button onclick="showPhone()" class="btn btn--ghost btn--full" style="font-size:0.85rem;">← تغییر شماره موبایل</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  let authPhone = '';
+  let authOTP = '';
+  let authTimerInterval = null;
+
+  function showOTP(){
+    authPhone = document.querySelector('#step-phone input[type="tel"]').value.trim();
+    if(!authPhone || !/^09[0-9]{9}$/.test(authPhone)){
+      alert('لطفاً یک شماره موبایل معتبر وارد کنید.');
+      return;
+    }
+
+    authOTP = String(Math.floor(100000 + Math.random() * 900000));
+    document.getElementById('auth-demo-code').textContent = authOTP;
+    document.getElementById('auth-demo-box').style.display = 'block';
+
+    document.getElementById('step-phone').style.display = 'none';
+    document.getElementById('step-otp').style.display = 'block';
+
+    if(authTimerInterval) clearInterval(authTimerInterval);
+    let s = 120;
+    authTimerInterval = setInterval(() => {
+      s--;
+      const m = Math.floor(s/60).toString().padStart(2,'0');
+      const sec = (s%60).toString().padStart(2,'0');
+      document.getElementById('timer').textContent = m + ':' + sec;
+      if(s <= 0){ clearInterval(authTimerInterval); document.getElementById('timer').textContent = 'منقضی شد'; }
+    }, 1000);
+
+    setTimeout(() => document.querySelector('#step-otp .otp-input').focus(), 100);
+  }
+
+  function showPhone(){
+    document.getElementById('step-otp').style.display = 'none';
+    document.getElementById('step-phone').style.display = 'block';
+    document.getElementById('auth-demo-box').style.display = 'none';
+    if(authTimerInterval) clearInterval(authTimerInterval);
+  }
+
+  function doLogin(){
+    const entered = [...document.querySelectorAll('#step-otp .otp-input')].map(i => i.value).join('');
+    if(entered.length < 6){ alert('لطفاً کد ۶ رقمی را کامل وارد کنید.'); return; }
+
+    if(entered !== authOTP){
+      document.querySelectorAll('#step-otp .otp-input').forEach(i => {
+        i.value = '';
+        i.style.borderColor = '#DC2626';
+        setTimeout(() => i.style.borderColor = '', 1500);
+      });
+      document.querySelector('#step-otp .otp-input').focus();
+      alert('کد وارد شده اشتباه است. لطفاً دوباره تلاش کنید.');
+      return;
+    }
+
+    if(authTimerInterval) clearInterval(authTimerInterval);
+
+    const existing = JSON.parse(localStorage.getItem('bardasht_user') || 'null');
+    localStorage.setItem('bardasht_user', JSON.stringify({
+      name: existing?.name || authPhone,
+      role: existing?.role || 'هنرجو',
+      phone: authPhone,
+      loggedIn: true
+    }));
+    window.location.href = 'dashboard.html';
+  }
+</script>
+</body>
+</html>

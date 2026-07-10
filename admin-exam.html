@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="پنل مدیریت آزمون فارغ‌التحصیلی خانواده برداشت." />
+  <meta name="keywords" content="" />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="https://khanevadehbardasht.ir/admin-exam.html" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="fa_IR" />
+  <meta property="og:site_name" content="خانواده برداشت" />
+  <meta property="og:title" content="پنل ادمین — آزمون | خانواده برداشت" />
+  <meta property="og:description" content="پنل مدیریت آزمون فارغ‌التحصیلی خانواده برداشت." />
+  <meta property="og:url" content="https://khanevadehbardasht.ir/admin-exam.html" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="پنل ادمین — آزمون | خانواده برداشت" />
+  <meta name="twitter:description" content="پنل مدیریت آزمون فارغ‌التحصیلی خانواده برداشت." />
+  <title>پنل ادمین — آزمون | خانواده برداشت</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    body { background: var(--surface); }
+    .admin-wrap { max-width: 780px; margin: 0 auto; padding: 48px 24px; }
+    .link-box {
+      background: var(--surface);
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-size: 0.82rem;
+      color: var(--dark);
+      font-family: monospace;
+      word-break: break-all;
+      direction: ltr;
+      text-align: left;
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+    .student-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      margin-bottom: 10px;
+    }
+    .student-row .info { flex: 1; }
+    .student-row .info strong { font-size: 0.9rem; display: block; }
+    .student-row .info span { font-size: 0.78rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">خانواده <span>برداشت</span></a>
+    <ul class="nav__links">
+      <li><a href="index.html">خانه</a></li>
+      <li><a href="about.html">درباره ما</a></li>
+      <li><a href="courses.html">دوره‌ها</a></li>
+      <li class="has-dropdown">
+        <a href="#">آموزش ▾</a>
+        <ul class="dropdown">
+          <li><a href="online-learning.html">یادگیری آنلاین</a></li>
+          <li><a href="certificate.html">آزمون فارغ‌التحصیلی</a></li>
+          <li><a href="verify.html">استعلام گواهینامه</a></li>
+          <li><a href="dashboard.html">داشبورد هنرجو</a></li>
+        </ul>
+      </li>
+      <li><a href="actors.html">بازیگران</a></li>
+      <li><a href="gallery.html">گالری</a></li>
+      <li><a href="news.html">اخبار</a></li>
+      <li><a href="faq.html">سوالات متداول</a></li>
+    </ul>
+    <div class="nav__actions">
+      <span class="tag tag--wine">پنل ادمین</span>
+    </div>
+    <button class="nav__menu-btn">☰</button>
+  </div>
+</nav>
+
+<div class="admin-wrap">
+  <div style="margin-bottom:36px;">
+    <span class="tag tag--gold" style="margin-bottom:14px;display:inline-block;">مدیریت آزمون فارغ‌التحصیلی</span>
+    <h1 style="font-size:1.8rem;font-weight:900;color:var(--dark);margin-bottom:8px;">ساخت لینک آزمون فارغ‌التحصیلی</h1>
+    <p style="color:var(--muted);">برای هنرجویانی که تمام دوره‌ها را گذرانده‌اند، لینک اختصاصی آزمون بسازید.</p>
+  </div>
+
+  <!-- فرم ساخت لینک -->
+  <div class="card" style="margin-bottom:32px;">
+    <div class="card__body">
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:20px;">اطلاعات هنرجو</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="form-group"><label class="form-label">نام</label><input id="a-name" type="text" class="form-input" placeholder="نام هنرجو" /></div>
+        <div class="form-group"><label class="form-label">نام خانوادگی</label><input id="a-lname" type="text" class="form-input" placeholder="نام خانوادگی" /></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="form-group"><label class="form-label">شماره موبایل</label><input id="a-phone" type="tel" class="form-input" placeholder="09..." dir="ltr" /></div>
+        <div class="form-group"><label class="form-label">رشته / تخصص</label>
+          <select id="a-course" class="form-select">
+            <option value="">انتخاب کنید</option>
+            <option>بازیگری سینما</option>
+            <option>بازیگری تئاتر</option>
+            <option>بازیگری و فیلمسازی</option>
+            <option>کارگردانی</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">کد ملی</label><input id="a-code" type="text" class="form-input" placeholder="۱۰ رقم" maxlength="10" dir="ltr" /></div>
+
+      <!-- نمره کلاسی -->
+      <div style="background:rgba(196,146,42,0.06);border:1px solid rgba(196,146,42,0.2);border-radius:var(--radius);padding:20px;margin-top:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+          <div>
+            <h4 style="font-size:0.9rem;font-weight:700;margin-bottom:3px;">نمره کلاسی هنرجو (۲۰٪)</h4>
+            <p style="font-size:0.78rem;color:var(--muted);">این نمره توسط استاد وارد می‌شود و در لینک رمزگذاری می‌شود</p>
+          </div>
+          <div style="text-align:center;">
+            <div id="class-score-display" style="font-size:2.5rem;font-weight:900;color:var(--gold);line-height:1;">۸۵</div>
+            <div style="font-size:0.7rem;color:var(--muted);">از ۱۰۰</div>
+          </div>
+        </div>
+        <input type="range" id="a-class-score" min="0" max="100" value="85" step="1"
+          oninput="document.getElementById('class-score-display').textContent=toPersian(this.value)"
+          style="width:100%;accent-color:var(--gold);cursor:pointer;" />
+        <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);margin-top:4px;"><span>۰</span><span>۵۰</span><span>۱۰۰</span></div>
+      </div>
+    </div>
+    <div class="card__footer">
+      <button onclick="generateLink()" class="btn btn--dark">🔗 ساخت لینک آزمون</button>
+    </div>
+  </div>
+
+  <!-- لینک ساخته‌شده -->
+  <div id="link-result" style="display:none;" class="card" style="margin-bottom:32px;">
+    <div class="card__body">
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:6px;">لینک آزمون آماده شد</h3>
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:16px;">این لینک را فقط برای هنرجوی فارغ‌التحصیل ارسال کنید (واتساپ، پیامک، ایمیل)</p>
+      <div class="link-box" id="generated-link">—</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button onclick="copyLink()" class="btn btn--dark btn--sm">📋 کپی لینک</button>
+        <a id="whatsapp-btn" href="#" target="_blank" class="btn btn--outline btn--sm" style="color:#25D366;border-color:#25D366;">📱 ارسال واتساپ</a>
+        <a id="test-link-btn" href="#" target="_blank" class="btn btn--ghost btn--sm">🔗 باز کردن لینک</a>
+      </div>
+      <div id="copy-toast" style="display:none;margin-top:10px;" class="alert alert--success">✅ لینک کپی شد!</div>
+    </div>
+  </div>
+
+  <!-- لینک‌های ساخته‌شده اخیر -->
+  <div class="card">
+    <div class="card__body">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h3 style="font-size:1rem;font-weight:700;">لینک‌های اخیر</h3>
+        <button onclick="clearHistory()" class="btn btn--ghost btn--sm" style="font-size:0.78rem;color:var(--wine);">پاک کردن</button>
+      </div>
+      <div id="history-list">
+        <p style="color:var(--muted);font-size:0.875rem;text-align:center;padding:20px 0;">هنوز لینکی ساخته نشده</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- راهنما -->
+  <div style="margin-top:28px;" class="alert alert--info">
+    💡 <strong>راهنما:</strong> هر لینک فقط برای یک هنرجوی فارغ‌التحصیل کار می‌کند. نمره کلاسی را قبل از ارسال لینک وارد کنید. پس از تکمیل آزمون، نتیجه خودکار به ایمیل آموزشگاه ارسال و گواهی فارغ‌التحصیلی صادر می‌شود.
+  </div>
+</div>
+
+<script src="js/questions.js"></script>
+<script>
+  let currentLink = '';
+
+  function generateLink() {
+    const name   = document.getElementById('a-name').value.trim();
+    const lname  = document.getElementById('a-lname').value.trim();
+    const phone  = document.getElementById('a-phone').value.trim();
+    const course = document.getElementById('a-course').value;
+    const code   = document.getElementById('a-code').value.trim();
+
+    if (!name || !lname || !phone || !course || !code) {
+      alert('لطفاً همه فیلدها را پر کنید.');
+      return;
+    }
+
+    const classScore = parseInt(document.getElementById('a-class-score').value);
+    const token = btoa(encodeURIComponent(JSON.stringify({ name, lname, phone, course, code, classScore })));
+    const base  = window.location.href.replace('admin-exam.html', '');
+    currentLink = `${base}certificate.html?s=${token}`;
+
+    document.getElementById('generated-link').textContent = currentLink;
+    document.getElementById('test-link-btn').href = currentLink;
+    document.getElementById('whatsapp-btn').href =
+      `https://wa.me/${phone.replace(/^0/, '98')}?text=${encodeURIComponent('لینک آزمون فارغ‌التحصیلی خانواده برداشت:\n' + currentLink)}`;
+    document.getElementById('link-result').style.display = 'block';
+    document.getElementById('link-result').scrollIntoView({ behavior: 'smooth' });
+
+    // ذخیره در تاریخچه
+    saveHistory({ name, lname, phone, course, classScore, link: currentLink, date: new Date().toLocaleDateString('fa-IR') });
+    renderHistory();
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(currentLink).then(() => {
+      const t = document.getElementById('copy-toast');
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 2500);
+    });
+  }
+
+  function saveHistory(item) {
+    const h = JSON.parse(localStorage.getItem('exam_history') || '[]');
+    h.unshift(item);
+    localStorage.setItem('exam_history', JSON.stringify(h.slice(0, 20)));
+  }
+
+  function renderHistory() {
+    const h = JSON.parse(localStorage.getItem('exam_history') || '[]');
+    const el = document.getElementById('history-list');
+    if (!h.length) {
+      el.innerHTML = '<p style="color:var(--muted);font-size:0.875rem;text-align:center;padding:20px 0;">هنوز لینکی ساخته نشده</p>';
+      return;
+    }
+    el.innerHTML = h.map(item => `
+      <div class="student-row">
+        <div style="width:38px;height:38px;background:var(--surface);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">👤</div>
+        <div class="info">
+          <strong>${item.name} ${item.lname}</strong>
+          <span>${item.course} · نمره کلاسی: ${item.classScore ?? '—'} · ${item.phone} · ${item.date}</span>
+        </div>
+        <button onclick="navigator.clipboard.writeText('${item.link}')" class="btn btn--outline btn--sm">📋 کپی</button>
+        <a href="https://wa.me/${item.phone.replace(/^0/,'98')}?text=${encodeURIComponent('لینک آزمون:\n'+item.link)}" target="_blank" class="btn btn--outline btn--sm" style="color:#25D366;border-color:#25D366;">واتساپ</a>
+      </div>
+    `).join('');
+  }
+
+  function clearHistory() {
+    if (confirm('آیا مطمئنید؟')) {
+      localStorage.removeItem('exam_history');
+      renderHistory();
+    }
+  }
+
+  renderHistory();
+</script>
+</body>
+</html>

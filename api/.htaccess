@@ -1,0 +1,11 @@
+# فقط درخواست‌های POST مجاز هستند
+<LimitExcept POST OPTIONS>
+  Require all denied
+</LimitExcept>
+
+# جلوگیری از نمایش محتوای پوشه
+Options -Indexes
+
+# امنیت session
+php_value session.cookie_httponly 1
+php_value session.use_strict_mode 1

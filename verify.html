@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="استعلام و تأیید صحت گواهینامه فارغ‌التحصیلی خانواده برداشت. گواهی رسمی بازیگری سینما." />
+  <meta name="keywords" content="استعلام گواهینامه بازیگری، تأیید مدرک بازیگری، گواهی رسمی سینما" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://khanevadehbardasht.ir/verify.html" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="fa_IR" />
+  <meta property="og:site_name" content="خانواده برداشت" />
+  <meta property="og:title" content="استعلام گواهینامه | خانواده برداشت" />
+  <meta property="og:description" content="استعلام و تأیید صحت گواهینامه فارغ‌التحصیلی خانواده برداشت. گواهی رسمی بازیگری سینما." />
+  <meta property="og:url" content="https://khanevadehbardasht.ir/verify.html" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="استعلام گواهینامه | خانواده برداشت" />
+  <meta name="twitter:description" content="استعلام و تأیید صحت گواهینامه فارغ‌التحصیلی خانواده برداشت. گواهی رسمی بازیگری سینما." />
+  <title>استعلام گواهینامه | خانواده برداشت</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .verify-wrap { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    .verify-hero {
+      text-align: center;
+      padding: 64px 24px 40px;
+      background: linear-gradient(135deg, #0C0C0C 0%, #1a1a1a 100%);
+      color: #fff;
+      margin-bottom: 0;
+    }
+    .verify-hero .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(196,146,42,0.15); border: 1px solid rgba(196,146,42,0.3);
+      color: #C4922A; border-radius: 100px; padding: 6px 16px;
+      font-size: 0.8rem; font-weight: 600; margin-bottom: 20px;
+    }
+    .verify-hero h1 { font-size: 2rem; font-weight: 900; margin-bottom: 10px; }
+    .verify-hero p { color: rgba(255,255,255,0.5); font-size: 0.95rem; }
+
+    /* فرم جستجو */
+    .search-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin: -20px auto 32px;
+      position: relative;
+      z-index: 2;
+      max-width: 560px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+    }
+    .search-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--dark); }
+    .search-row { display: flex; gap: 10px; }
+    .search-row input { flex: 1; }
+
+    /* نتیجه */
+    #result-area { display: none; }
+
+    .status-valid {
+      display: flex; align-items: center; gap: 14px;
+      background: #F0FDF4; border: 2px solid #86EFAC;
+      border-radius: 14px; padding: 20px 24px; margin-bottom: 28px;
+    }
+    .status-valid .icon { font-size: 2.2rem; flex-shrink: 0; }
+    .status-valid h3 { font-size: 1.1rem; font-weight: 800; color: #15803D; margin-bottom: 4px; }
+    .status-valid p { font-size: 0.85rem; color: #166534; }
+
+    .status-invalid {
+      display: flex; align-items: center; gap: 14px;
+      background: #FEF2F2; border: 2px solid #FECACA;
+      border-radius: 14px; padding: 20px 24px; margin-bottom: 28px;
+    }
+    .status-invalid .icon { font-size: 2.2rem; flex-shrink: 0; }
+    .status-invalid h3 { font-size: 1.1rem; font-weight: 800; color: #DC2626; margin-bottom: 4px; }
+    .status-invalid p { font-size: 0.85rem; color: #991B1B; }
+
+    /* کارت گواهینامه */
+    #certificate-card {
+      background: #fff;
+      border: 3px solid #C4922A;
+      border-radius: 16px;
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+      font-family: 'Vazirmatn', sans-serif;
+      direction: rtl;
+    }
+    .corner {
+      position: absolute; width: 40px; height: 40px;
+    }
+    .corner--tr { top:12px; right:12px; border-top:3px solid #C4922A; border-right:3px solid #C4922A; border-radius:4px 0 0 0; }
+    .corner--tl { top:12px; left:12px;  border-top:3px solid #C4922A; border-left:3px solid #C4922A;  border-radius:0 4px 0 0; }
+    .corner--br { bottom:12px; right:12px; border-bottom:3px solid #C4922A; border-right:3px solid #C4922A; border-radius:0 0 0 4px; }
+    .corner--bl { bottom:12px; left:12px;  border-bottom:3px solid #C4922A; border-left:3px solid #C4922A;  border-radius:0 0 4px 0; }
+    .watermark {
+      position: absolute; top:50%; left:50%;
+      transform: translate(-50%,-50%) rotate(-30deg);
+      font-size: 7rem; font-weight: 900; opacity: 0.03;
+      color: #000; white-space: nowrap; pointer-events: none;
+    }
+
+    .cert-header {
+      text-align: center;
+      border-bottom: 1px solid #E2E0DA;
+      padding-bottom: 24px; margin-bottom: 28px;
+    }
+    .cert-header .verified-stamp {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #F0FDF4; border: 1.5px solid #86EFAC;
+      color: #15803D; border-radius: 100px;
+      padding: 5px 14px; font-size: 0.78rem; font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .cert-name-box {
+      background: #FAFAF8; border-radius: 12px;
+      padding: 24px; margin-bottom: 28px; text-align: center;
+    }
+    .cert-stats {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px; margin-bottom: 28px; text-align: center;
+    }
+    .cert-stat {
+      border: 1px solid #E2E0DA; border-radius: 10px; padding: 14px;
+    }
+    .cert-stat .val { font-size: 1.4rem; font-weight: 900; color: #C4922A; }
+    .cert-stat .lbl { font-size: 0.7rem; color: #888; margin-top: 4px; }
+    .cert-sig {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      border-top: 1px solid #E2E0DA; padding-top: 24px; flex-wrap: wrap; gap: 16px;
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      nav, footer { display: none !important; }
+      .verify-hero, .search-card { display: none !important; }
+      .status-valid { display: none !important; }
+      body { background: #fff; }
+    }
+    @media (max-width: 640px) {
+      #certificate-card { padding: 32px 20px; }
+      .cert-stats { grid-template-columns: 1fr; }
+      .search-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav no-print">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">خانواده <span>برداشت</span></a>
+    <ul class="nav__links">
+      <li><a href="index.html">خانه</a></li>
+      <li><a href="about.html">درباره ما</a></li>
+      <li><a href="courses.html">دوره‌ها</a></li>
+      <li class="has-dropdown">
+        <a href="#">آموزش ▾</a>
+        <ul class="dropdown">
+          <li><a href="online-learning.html">یادگیری آنلاین</a></li>
+          <li><a href="certificate.html">آزمون فارغ‌التحصیلی</a></li>
+          <li><a href="verify.html">استعلام گواهینامه</a></li>
+          <li><a href="dashboard.html">داشبورد هنرجو</a></li>
+        </ul>
+      </li>
+      <li><a href="actors.html">بازیگران</a></li>
+      <li><a href="gallery.html">گالری</a></li>
+      <li><a href="news.html">اخبار</a></li>
+      <li><a href="faq.html">سوالات متداول</a></li>
+    </ul>
+    <div class="nav__actions">
+      <a href="verify.html" class="btn btn--gold btn--sm active">استعلام گواهینامه</a>
+    </div>
+    <button class="nav__menu-btn">☰</button>
+  </div>
+</nav>
+
+<!-- هدر تاریک -->
+<div class="verify-hero no-print">
+  <div class="badge">🎓 سامانه استعلام گواهینامه</div>
+  <h1>استعلام گواهینامه</h1>
+  <p>صحت گواهینامه فارغ‌التحصیلی خانواده برداشت را تأیید کنید</p>
+</div>
+
+<!-- فرم جستجو -->
+<div class="verify-wrap">
+  <div class="search-card no-print">
+    <h3>شماره گواهینامه را وارد کنید</h3>
+    <div class="search-row">
+      <input id="cert-input" type="text" class="form-input" placeholder="مثال: BRD-A1B2C3" dir="ltr"
+             style="font-family:monospace;letter-spacing:0.05em;" />
+      <button onclick="searchCert()" class="btn btn--dark">استعلام</button>
+    </div>
+    <p style="font-size:0.78rem;color:var(--muted);margin-top:12px;">
+      یا اگر لینک استعلام دارید، آن را در مرورگر باز کنید.
+    </p>
+  </div>
+
+  <!-- نتیجه استعلام -->
+  <div id="result-area">
+
+    <!-- وضعیت -->
+    <div id="status-box"></div>
+
+    <!-- کارت گواهینامه -->
+    <div id="certificate-card">
+      <div class="corner corner--tr"></div>
+      <div class="corner corner--tl"></div>
+      <div class="corner corner--br"></div>
+      <div class="corner corner--bl"></div>
+      <div class="watermark">برداشت</div>
+
+      <!-- هدر -->
+      <div class="cert-header">
+        <div class="verified-stamp">✅ گواهینامه معتبر — تأییدشده توسط خانواده برداشت</div>
+        <div style="font-size:2rem;margin-bottom:8px;">🎬</div>
+        <div style="font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#888;margin-bottom:6px;">KHANEVADEH BARDASHT</div>
+        <h2 style="font-size:1.4rem;font-weight:900;color:#0C0C0C;margin-bottom:4px;">خانواده برداشت</h2>
+        <p style="font-size:0.8rem;color:#888;">اولین و تنها آموزشگاه رایگان بازیگری سینما در ایران</p>
+      </div>
+
+      <!-- عنوان -->
+      <div style="text-align:center;margin-bottom:28px;">
+        <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.14em;color:#C4922A;text-transform:uppercase;margin-bottom:10px;">CERTIFICATE OF GRADUATION</div>
+        <h3 style="font-size:1.7rem;font-weight:900;color:#0C0C0C;margin-bottom:6px;">گواهی فارغ‌التحصیلی</h3>
+        <p style="font-size:0.85rem;color:#888;">این گواهی رسمی به افتخار فارغ‌التحصیلی از آموزشگاه خانواده برداشت اعطا می‌گردد</p>
+      </div>
+
+      <!-- نام -->
+      <div class="cert-name-box">
+        <p style="font-size:0.78rem;color:#888;margin-bottom:8px;">گواهی فارغ‌التحصیلی اعطا می‌شود به</p>
+        <h2 id="c-name" style="font-size:2rem;font-weight:900;color:#0C0C0C;margin-bottom:4px;">—</h2>
+        <p style="font-size:0.9rem;font-weight:600;color:#C4922A;margin-bottom:0;">فارغ‌التحصیل رشته <span id="c-field">—</span></p>
+      </div>
+
+      <!-- اطلاعات -->
+      <div class="cert-stats">
+        <div class="cert-stat">
+          <div class="val" id="c-score">—</div>
+          <div class="lbl">نمره نهایی</div>
+        </div>
+        <div class="cert-stat">
+          <div class="val" id="c-date" style="font-size:0.95rem;">—</div>
+          <div class="lbl">تاریخ صدور</div>
+        </div>
+        <div class="cert-stat">
+          <div class="val" id="c-id" style="font-size:0.85rem;font-family:monospace;">—</div>
+          <div class="lbl">شماره گواهینامه</div>
+        </div>
+      </div>
+
+      <!-- امضا -->
+      <div class="cert-sig">
+        <div style="text-align:center;">
+          <div style="font-size:1.2rem;font-weight:800;color:#0C0C0C;font-style:italic;margin-bottom:6px;">یاسر نظری</div>
+          <div style="font-size:0.72rem;color:#888;">موسس و مدرس اصلی</div>
+          <div style="width:80px;height:1px;background:#C4922A;margin:8px auto 0;"></div>
+        </div>
+        <div style="text-align:center;">
+          <div style="width:64px;height:64px;background:linear-gradient(135deg,#C4922A,#E8B84B);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 6px;">🎬</div>
+          <div style="font-size:0.7rem;color:#888;">مهر رسمی</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:1.2rem;font-weight:800;color:#0C0C0C;font-style:italic;margin-bottom:6px;">خانواده برداشت</div>
+          <div style="font-size:0.72rem;color:#888;">آموزشگاه رسمی</div>
+          <div style="width:80px;height:1px;background:#C4922A;margin:8px auto 0;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- دکمه‌ها -->
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap;" class="no-print">
+      <button onclick="window.print()" class="btn btn--dark btn--lg">📥 دانلود / چاپ PDF</button>
+      <button onclick="navigator.share ? navigator.share({title:'گواهینامه خانواده برداشت', url: window.location.href}) : copyCurrentURL()" class="btn btn--outline btn--lg">🔗 اشتراک‌گذاری</button>
+    </div>
+
+  </div><!-- /result-area -->
+
+  <!-- حالت خطا -->
+  <div id="error-area" style="display:none;text-align:center;padding:64px 24px;">
+    <div style="font-size:3rem;margin-bottom:16px;">🔍</div>
+    <h3 style="font-size:1.2rem;font-weight:800;color:var(--dark);margin-bottom:8px;">گواهینامه‌ای یافت نشد</h3>
+    <p style="color:var(--muted);margin-bottom:24px;">شماره گواهینامه اشتباه است یا این گواهینامه در سیستم ثبت نشده.</p>
+    <a href="about.html" class="btn btn--outline">تماس با آموزشگاه</a>
+  </div>
+
+</div>
+
+<footer class="footer no-print">
+  <div class="footer__grid">
+    <div class="footer__brand">
+      <h2>خانواده برداشت</h2>
+      <p>اولین و تنها آموزشگاه رایگان بازیگری سینما در ایران.</p>
+    </div>
+    <div class="footer__col"><h4>شعبه‌ها</h4><ul>
+      <li><a href="#">🏙️ تهران</a></li>
+      <li><a href="#">🌿 مازندران</a></li>
+    </ul></div>
+    <div class="footer__col"><h4>صفحات</h4><ul>
+      <li><a href="courses.html">دوره‌ها</a></li>
+      <li><a href="certificate.html">آزمون فارغ‌التحصیلی</a></li>
+          <li><a href="verify.html">استعلام گواهینامه</a></li>
+      <li><a href="faq.html">سوالات متداول</a></li>
+    </ul></div>
+    <div class="footer__col"><h4>ارتباط</h4><ul>
+      <li><a href="tel:02191090934">📞 02191090934</a></li>
+      <li><a href="https://instagram.com/bardashtt" target="_blank">📸 اینستاگرام</a></li>
+    </ul></div>
+  </div>
+  <div class="footer__bottom"><p>© ۱۴۰۳ خانواده برداشت — تمامی حقوق محفوظ است</p></div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+  function toPersian(n) {
+    return String(n).replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+  }
+
+  // ── بارگذاری از URL ─────────────────────────
+  function loadFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const c = params.get('c');
+    if (!c) return;
+    try {
+      const data = JSON.parse(decodeURIComponent(atob(c)));
+      showCertificate(data);
+    } catch(e) {
+      showError();
+    }
+  }
+
+  // ── جستجو با شماره ─────────────────────────
+  function searchCert() {
+    const input = document.getElementById('cert-input').value.trim().toUpperCase();
+    if (!input) { alert('لطفاً شماره گواهینامه را وارد کنید.'); return; }
+    if (!input.startsWith('BRD-')) {
+      alert('شماره گواهینامه باید با BRD- شروع شود.');
+      return;
+    }
+    // چون بدون بک‌اند هستیم، راهنمایی می‌کنیم که از لینک استفاده کنن
+    document.getElementById('error-area').style.display = 'block';
+    document.getElementById('result-area').style.display = 'none';
+    document.getElementById('error-area').innerHTML = `
+      <div style="font-size:3rem;margin-bottom:16px;">ℹ️</div>
+      <h3 style="font-size:1.2rem;font-weight:800;color:var(--dark);margin-bottom:8px;">برای استعلام از لینک اختصاصی استفاده کنید</h3>
+      <p style="color:var(--muted);margin-bottom:8px;">
+        دارنده گواهینامه باید لینک استعلام را که هنگام دریافت گواهینامه برایش صادر شده برایتان بفرستد.
+      </p>
+      <p style="color:var(--muted);margin-bottom:24px;font-size:0.85rem;">
+        شماره گواهینامه وارد شده: <strong style="font-family:monospace;color:var(--dark);">${input}</strong>
+      </p>
+      <a href="about.html" class="btn btn--outline">تماس با آموزشگاه</a>
+    `;
+  }
+
+  // ── نمایش گواهینامه ─────────────────────────
+  function showCertificate(data) {
+    document.getElementById('result-area').style.display = 'block';
+    document.getElementById('error-area').style.display = 'none';
+
+    document.getElementById('c-name').textContent  = data.name  || '—';
+    document.getElementById('c-field').textContent = data.field || '—';
+    document.getElementById('c-score').textContent = toPersian(data.score) + ' از ۱۰۰';
+    document.getElementById('c-date').textContent  = data.date  || '—';
+    document.getElementById('c-id').textContent    = data.id    || '—';
+
+    const statusBox = document.getElementById('status-box');
+    statusBox.innerHTML = `
+      <div class="status-valid">
+        <div class="icon">✅</div>
+        <div>
+          <h3>گواهینامه معتبر است</h3>
+          <p>این گواهینامه رسمی توسط آموزشگاه خانواده برداشت صادر و تأیید شده است.<br>
+          شماره: <strong style="font-family:monospace;">${data.id}</strong> — تاریخ صدور: <strong>${data.date}</strong></p>
+        </div>
+      </div>
+    `;
+  }
+
+  function showError() {
+    document.getElementById('error-area').style.display = 'block';
+    document.getElementById('result-area').style.display = 'none';
+  }
+
+  function copyCurrentURL() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      alert('لینک کپی شد!');
+    });
+  }
+
+  // ── اجرا ─────────────────────────────────────
+  loadFromURL();
+</script>
+</body>
+</html>
