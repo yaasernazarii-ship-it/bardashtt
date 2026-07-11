@@ -19,6 +19,28 @@
   <meta name="twitter:description" content="آشنایی با خانواده برداشت، اولین آموزشگاه رایگان بازیگری سینما در ایران. داستان ما، تیم آموزشی، شعبه تهران و مازندران." />
   <title>درباره ما | خانواده برداشت — آموزشگاه رایگان بازیگری</title>
   <link rel="stylesheet" href="css/main.css" />
+<style>
+    /* ── Support Chat (global) ── */
+    .support-chat-box { position:fixed;bottom:24px;left:24px;width:360px;max-height:500px;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.18);z-index:1000;display:flex;flex-direction:column;transform:translateY(20px) scale(0.97);opacity:0;pointer-events:none;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+    .support-chat-box.open { transform:translateY(0) scale(1);opacity:1;pointer-events:all; }
+    .support-chat-head { display:flex;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px solid #E2E0DA; }
+    .support-chat-head .av { width:40px;height:40px;border-radius:50%;background:#0C0C0C;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0; }
+    .support-chat-head h4 { font-size:0.95rem;font-weight:700;margin-bottom:2px; }
+    .support-chat-head p { font-size:0.75rem;color:#22C55E;font-weight:600; }
+    .support-chat-head .close-btn { margin-right:auto;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#888;padding:4px; }
+    .support-chat-msgs { flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;min-height:200px; }
+    .chat-msg { max-width:80%;padding:10px 14px;border-radius:14px;font-size:0.875rem;line-height:1.6; }
+    .chat-msg--bot { background:#F3F2EE;border-bottom-right-radius:4px;align-self:flex-end; }
+    .chat-msg--user { background:#0C0C0C;color:#fff;border-bottom-left-radius:4px;align-self:flex-start; }
+    .support-chat-foot { padding:12px 16px;border-top:1px solid #E2E0DA;display:flex;gap:8px; }
+    .support-chat-foot input { flex:1;border:1.5px solid #E2E0DA;border-radius:100px;padding:9px 16px;font-size:0.875rem;outline:none;font-family:inherit; }
+    .support-chat-foot button { background:#0C0C0C;color:#fff;border:none;border-radius:50%;width:38px;height:38px;cursor:pointer;font-size:1rem;flex-shrink:0; }
+    .support-name-form { padding:16px; }
+    .support-name-form input { width:100%;border:1.5px solid #E2E0DA;border-radius:10px;padding:10px 14px;font-size:0.875rem;margin-bottom:10px;font-family:inherit;box-sizing:border-box; }
+    .support-name-form button { width:100%;background:#0C0C0C;color:#fff;border:none;border-radius:10px;padding:11px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit; }
+    .support-phone-note { font-size:0.78rem;color:#888;text-align:center;padding:0 16px 12px; }
+    @media(max-width:768px){ .support-chat-box { left:12px;right:12px;width:auto;bottom:16px; } }
+  </style>
 </head>
 <body>
 <nav class="nav">
@@ -39,9 +61,62 @@
       </li>
       <li><a href="actors.html">بازیگران</a></li>
       <li><a href="gallery.html">گالری</a></li>
+      <!-- آثار -->
+      <li class="has-dropdown">
+        <a href="#">آثار ▾</a>
+        <ul class="dropdown" style="min-width:210px;">
+          <li><a href="works-output.html">خروجی خانواده برداشت</a></li>
+          <li class="drop-sep"></li>
+          <li class="has-submenu">
+            <a href="#">تولید ما ◂</a>
+            <ul class="submenu">
+              <li><a href="works-cinema.html">تولیدات سینمایی</a></li>
+              <li><a href="works-advertising.html">تولیدات تبلیغاتی</a></li>
+            </ul>
+          </li>
+          <li class="drop-sep"></li>
+          <li><a href="works-resume.html">پشتوانه علمی و هنری</a></li>
+        </ul>
+      </li>
       <li><a href="news.html">اخبار</a></li>
       <li><a href="podcast.html">پادکست</a></li>
       <li><a href="faq.html">سوالات متداول</a></li>
+      <!-- پشتیبانی -->
+      <li class="has-dropdown">
+        <a href="#">
+          <span class="nav__support-dot"></span>
+          پشتیبانی ▾
+        </a>
+        <ul class="dropdown dropdown--support">
+          <li>
+            <a href="faq.html">
+              <span class="drop-icon">📋</span>
+              سوالات متداول
+            </a>
+          </li>
+          <li class="drop-sep"></li>
+          <li>
+            <button onclick="openSupportChat()">
+              <span class="drop-icon">💬</span>
+              <span>
+                چت آنلاین
+                <span class="drop-phone">پاسخ سریع از تیم ما</span>
+              </span>
+              <span class="drop-online-dot" style="margin-right:auto;"></span>
+            </button>
+          </li>
+          <li class="drop-sep"></li>
+          <li>
+            <a href="tel:02191090934">
+              <span class="drop-icon">📞</span>
+              <span>
+                تماس با پشتیبانی
+                <span class="drop-phone">02191090934</span>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </li>
     </ul>
     <div class="nav__actions">
       <a href="auth.html" class="btn btn--outline btn--sm">ورود</a>
@@ -150,5 +225,79 @@
   </div>
 </footer>
 <script src="js/main.js"></script>
+
+<!-- ░ Support Chat Modal ░ -->
+<div class="support-chat-box" id="supportChatBox">
+  <div class="support-chat-head">
+    <div class="av">🎬</div>
+    <div>
+      <h4>پشتیبانی خانواده برداشت</h4>
+      <p>● آنلاین</p>
+    </div>
+    <button class="close-btn" onclick="closeSupportChat()">✕</button>
+  </div>
+  <div id="chat-step-name">
+    <div class="support-chat-msgs" style="min-height:80px;">
+      <div class="chat-msg chat-msg--bot">سلام! 👋 خوش آمدید. قبل از شروع لطفاً اسم و شماره موبایلتون رو بنویسید.</div>
+    </div>
+    <div class="support-name-form">
+      <input type="text" id="chat-user-name" placeholder="نام شما" />
+      <input type="tel" id="chat-user-phone" placeholder="شماره موبایل (اختیاری)" dir="ltr" style="text-align:center;" />
+      <button onclick="startChat()">شروع گفتگو ←</button>
+    </div>
+  </div>
+  <div id="chat-step-talk" style="display:none;flex-direction:column;flex:1;">
+    <div class="support-chat-msgs" id="chatMsgs">
+      <div class="chat-msg chat-msg--bot" id="chat-welcome-msg"></div>
+    </div>
+    <div class="support-chat-foot">
+      <input type="text" id="chatInput" placeholder="پیام خود را بنویسید..." onkeydown="if(event.key===\'Enter\')sendSupportMsg()" />
+      <button onclick="sendSupportMsg()">↑</button>
+    </div>
+    <div class="support-phone-note">پیام شما مستقیم برای تیم پشتیبانی ارسال می‌شود</div>
+  </div>
+</div>
+
+<script>
+
+  /* ── Support Chat (global) ── */
+  let chatUserName = '';
+  function openSupportChat() {
+    document.getElementById('supportChatBox').classList.add('open');
+  }
+  function closeSupportChat() {
+    document.getElementById('supportChatBox').classList.remove('open');
+  }
+  function startChat() {
+    const name = document.getElementById('chat-user-name').value.trim();
+    if (!name) { document.getElementById('chat-user-name').focus(); return; }
+    chatUserName = name;
+    document.getElementById('chat-step-name').style.display = 'none';
+    document.getElementById('chat-step-talk').style.display = 'flex';
+    document.getElementById('chat-welcome-msg').textContent = 'سلام ' + name + ' عزیز! 😊 چطور می‌تونم کمکت کنم؟';
+    setTimeout(() => document.getElementById('chatInput').focus(), 100);
+  }
+  function sendSupportMsg() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+    input.value = '';
+    appendChatMsg(msg, 'user');
+    const fd = new FormData();
+    fd.append('name', chatUserName);
+    fd.append('phone', document.getElementById('chat-user-phone')?.value || '');
+    fd.append('message', msg);
+    fetch('api/support-chat.php', { method: 'POST', body: fd }).catch(() => {});
+    setTimeout(() => appendChatMsg('پیامتون رسید! 🙏 در اسرع وقت پاسخ می‌دیم. تماس مستقیم: 02191090934', 'bot'), 800);
+  }
+  function appendChatMsg(text, who) {
+    const msgs = document.getElementById('chatMsgs');
+    const div = document.createElement('div');
+    div.className = 'chat-msg chat-msg--' + (who === 'user' ? 'user' : 'bot');
+    div.textContent = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+</script>
 </body>
 </html>

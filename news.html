@@ -2,23 +2,18 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="آخرین اخبار، رویدادها و اطلاعیه‌های آموزشگاه بازیگری خانواده برداشت." />
-  <meta name="keywords" content="اخبار بازیگری، رویداد سینما ایران، اطلاعیه آموزشگاه بازیگری" />
+  <meta name="description" content="اخبار خانواده برداشت؛ آخرین اطلاعیه‌ها، خبرها و رویدادهای آموزشگاه بازیگری خانواده برداشت." />
+  <meta name="keywords" content="اخبار خانواده برداشت، اخبار آموزشگاه بازیگری، اطلاعیه بازیگری، رویداد سینمایی" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://khanevadehbardasht.ir/news.html" />
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:locale" content="fa_IR" />
-  <meta property="og:site_name" content="خانواده برداشت" />
-  <meta property="og:title" content="اخبار و رویدادها | خانواده برداشت" />
-  <meta property="og:description" content="آخرین اخبار، رویدادها و اطلاعیه‌های آموزشگاه بازیگری خانواده برداشت." />
-  <meta property="og:url" content="https://khanevadehbardasht.ir/news.html" />
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="اخبار و رویدادها | خانواده برداشت" />
-  <meta name="twitter:description" content="آخرین اخبار، رویدادها و اطلاعیه‌های آموزشگاه بازیگری خانواده برداشت." />
-  <title>اخبار و رویدادها | خانواده برداشت</title>
+  <title>اخبار | خانواده برداشت</title>
   <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .empty-news{background:var(--white);border:1px dashed var(--border);border-radius:var(--radius-lg);padding:72px 32px;text-align:center;}
+    .empty-news .ico{font-size:4rem;margin-bottom:18px;opacity:.35;}
+    .empty-news h2{font-size:1.5rem;font-weight:800;color:var(--dark);margin-bottom:10px;}
+    .empty-news p{color:var(--muted);font-size:.95rem;line-height:1.8;max-width:560px;margin:0 auto;}
+  </style>
 </head>
 <body>
 <nav class="nav">
@@ -28,118 +23,37 @@
       <li><a href="index.html">خانه</a></li>
       <li><a href="about.html">درباره ما</a></li>
       <li><a href="courses.html">دوره‌ها</a></li>
-      <li class="has-dropdown">
-        <a href="#">آموزش ▾</a>
-        <ul class="dropdown">
-          <li><a href="online-learning.html">یادگیری آنلاین</a></li>
-          <li><a href="certificate.html">آزمون فارغ‌التحصیلی</a></li>
-          <li><a href="verify.html">استعلام گواهینامه</a></li>
-          <li><a href="dashboard.html">داشبورد هنرجو</a></li>
-        </ul>
-      </li>
+      <li class="has-dropdown"><a href="#">آموزش ▾</a><ul class="dropdown"><li><a href="online-learning.html">یادگیری آنلاین</a></li><li><a href="certificate.html">آزمون فارغ‌التحصیلی</a></li><li><a href="verify.html">استعلام گواهینامه</a></li><li><a href="dashboard.html">داشبورد هنرجو</a></li></ul></li>
       <li><a href="actors.html">بازیگران</a></li>
       <li><a href="gallery.html">گالری</a></li>
+      <li class="has-dropdown"><a href="#">آثار ▾</a><ul class="dropdown" style="min-width:210px;"><li><a href="works-output.html">خروجی خانواده برداشت</a></li><li class="drop-sep"></li><li class="has-submenu"><a href="#">تولید ما ◂</a><ul class="submenu"><li><a href="works-cinema.html">تولیدات سینمایی</a></li><li><a href="works-advertising.html">تولیدات تبلیغاتی</a></li></ul></li><li class="drop-sep"></li><li><a href="works-resume.html">پشتوانه علمی و هنری</a></li></ul></li>
       <li><a href="news.html" class="active">اخبار</a></li>
       <li><a href="podcast.html">پادکست</a></li>
       <li><a href="faq.html">سوالات متداول</a></li>
+      <li class="has-dropdown"><a href="#"><span class="nav__support-dot"></span>پشتیبانی ▾</a><ul class="dropdown dropdown--support"><li><a href="faq.html"><span class="drop-icon">📋</span>سوالات متداول</a></li><li class="drop-sep"></li><li><a href="tel:02191090934"><span class="drop-icon">📞</span><span>تماس با پشتیبانی<span class="drop-phone">02191090934</span></span></a></li></ul></li>
     </ul>
     <div class="nav__actions"><a href="auth.html" class="btn btn--outline btn--sm">ورود</a><a href="register.html" class="btn btn--dark btn--sm">ثبت‌نام</a></div>
+    <button class="nav__menu-btn">☰</button>
   </div>
 </nav>
 
 <div class="page-header">
-  <h1>اخبار و رویدادها</h1>
-  <p>آخرین اخبار، دوره‌های جدید و رویدادهای خانواده برداشت</p>
+  <h1>اخبار</h1>
+  <p>آخرین خبرها و اطلاعیه‌های خانواده برداشت</p>
   <div class="breadcrumb"><a href="index.html">خانه</a> › اخبار</div>
 </div>
 
 <section style="background:var(--bg);">
   <div class="container">
-    <!-- خبر ویژه -->
-    <div style="background:var(--dark);border-radius:var(--radius-lg);padding:48px;margin-bottom:48px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;">
-      <div>
-        <span class="tag tag--gold" style="margin-bottom:16px;display:inline-block;">📌 ویژه</span>
-        <h2 style="color:#fff;font-size:1.8rem;font-weight:800;margin-bottom:14px;line-height:1.4;">ثبت‌نام دوره مقدماتی بازیگری — ترم پاییز ۱۴۰۳</h2>
-        <p style="color:rgba(255,255,255,0.6);line-height:1.85;margin-bottom:24px;">ظرفیت محدود — همین حالا ثبت‌نام کنید و مسیر بازیگری حرفه‌ای خود را شروع کنید.</p>
-        <div style="display:flex;gap:24px;margin-bottom:28px;">
-          <div><div style="font-size:1.4rem;font-weight:800;color:var(--gold-lt);">۱ مهر</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.4);">شروع دوره</div></div>
-          <div><div style="font-size:1.4rem;font-weight:800;color:var(--gold-lt);">رایگان</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.4);">هزینه دوره</div></div>
-          <div><div style="font-size:1.4rem;font-weight:800;color:var(--gold-lt);">تهران</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.4);">مکان</div></div>
-        </div>
-        <a href="register.html" class="btn btn--gold btn--lg">ثبت‌نام رایگان</a>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:center;font-size:8rem;opacity:0.1;">🎬</div>
-    </div>
-
-    <!-- خبرها -->
-    <div class="grid-3">
-      <div class="news-card">
-        <div class="news-card__img">🏆</div>
-        <div class="news-card__body">
-          <div class="news-card__meta"><span class="tag tag--gold">موفقیت</span><span style="font-size:0.78rem;color:var(--muted);">۱۵ شهریور ۱۴۰۳</span></div>
-          <h3>هنرجوی برداشت در جشنواره ملی درخشید</h3>
-          <p>یکی از هنرجویان خانواده برداشت موفق به کسب جایزه بهترین بازیگر در جشنواره فیلم کوتاه شد.</p>
-          <a href="#" class="btn btn--outline btn--sm">ادامه مطلب</a>
-        </div>
-      </div>
-      <div class="news-card">
-        <div class="news-card__img">📅</div>
-        <div class="news-card__body">
-          <div class="news-card__meta"><span class="tag tag--dark">اردو</span><span style="font-size:0.78rem;color:var(--muted);">۱ شهریور ۱۴۰۳</span></div>
-          <h3>اردوی ۷ روزه مازندران — ثبت‌نام آغاز شد</h3>
-          <p>کمپ آموزشی تابستانه در فضای طبیعی شمال کشور با حضور اساتید مجرب و تجربه عملی.</p>
-          <a href="#" class="btn btn--outline btn--sm">ادامه مطلب</a>
-        </div>
-      </div>
-      <div class="news-card">
-        <div class="news-card__img">🎓</div>
-        <div class="news-card__body">
-          <div class="news-card__meta"><span class="tag tag--dark">دوره</span><span style="font-size:0.78rem;color:var(--muted);">۲۰ مرداد ۱۴۰۳</span></div>
-          <h3>راه‌اندازی دوره فیلمسازی و بازیگری مقابل دوربین</h3>
-          <p>دوره جدید فیلمسازی با ترکیب آموزش بازیگری و مبانی فیلمسازی از مهر ماه شروع می‌شود.</p>
-          <a href="#" class="btn btn--outline btn--sm">ادامه مطلب</a>
-        </div>
-      </div>
-      <div class="news-card">
-        <div class="news-card__img">📸</div>
-        <div class="news-card__body">
-          <div class="news-card__meta"><span class="tag tag--dark">رویداد</span><span style="font-size:0.78rem;color:var(--muted);">۵ مرداد ۱۴۰۳</span></div>
-          <h3>آفیش تبلیغاتی ترم جدید منتشر شد</h3>
-          <p>تصاویر و ویدیوهای آفیش ترم جدید در اینستاگرام منتشر شد. برنداشت را دنبال کنید.</p>
-          <a href="#" class="btn btn--outline btn--sm">ادامه مطلب</a>
-        </div>
-      </div>
-      <div class="news-card">
-        <div class="news-card__img">🌿</div>
-        <div class="news-card__body">
-          <div class="news-card__meta"><span class="tag tag--green">شعبه</span><span style="font-size:0.78rem;color:var(--muted);">۱ تیر ۱۴۰۳</span></div>
-          <h3>شعبه مازندران رسماً افتتاح شد</h3>
-          <p>شعبه دوم خانواده برداشت در استان مازندران با استقبال گسترده هنرجویان شمالی افتتاح شد.</p>
-          <a href="#" class="btn btn--outline btn--sm">ادامه مطلب</a>
-        </div>
-      </div>
-      <div class="news-card">
-        <div class="news-card__img">🎬</div>
-        <div class="news-card__body">
-          <div class="news-card__meta"><span class="tag tag--gold">استاد</span><span style="font-size:0.78rem;color:var(--muted);">۱۰ خرداد ۱۴۰۳</span></div>
-          <h3>مصاحبه با یاسر نظری — مسیر رایگان کردن آموزش</h3>
-          <p>در گفتگویی صمیمی، موسس خانواده برداشت از ایده اولیه و چالش‌های مسیر صحبت کرد.</p>
-          <a href="#" class="btn btn--outline btn--sm">ادامه مطلب</a>
-        </div>
-      </div>
+    <div class="empty-news">
+      <div class="ico">📰</div>
+      <h2>بخش اخبار آماده انتشار است</h2>
+      <p>در این بخش می‌توانید خبرها، اطلاعیه‌ها و رویدادهای جدید خانواده برداشت را به‌صورت روزانه یا هفتگی آپلود کنید.</p>
     </div>
   </div>
 </section>
 
-<footer class="footer">
-  <div class="footer__grid">
-    <div class="footer__brand"><h2>خانواده برداشت</h2><p>اولین و تنها آموزشگاه رایگان بازیگری سینما در ایران.</p></div>
-    <div class="footer__col"><h4>شعبه‌ها</h4><ul><li><a href="#">🏙️ تهران</a></li><li><a href="#">🌿 مازندران</a></li></ul></div>
-    <div class="footer__col"><h4>صفحات</h4><ul><li><a href="about.html">درباره ما</a></li><li><a href="courses.html">دوره‌ها</a></li><li><a href="news.html">اخبار</a></li></ul></div>
-    <div class="footer__col"><h4>ارتباط</h4><ul><li><a href="tel:02191090934">📞 02191090934</a></li><li><a href="https://instagram.com/bardashtt" target="_blank">📸 اینستاگرام</a></li></ul></div>
-  </div>
-  <div class="footer__bottom"><p>© ۱۴۰۳ خانواده برداشت</p><div class="footer__social"><a href="https://instagram.com/bardashtt" target="_blank">📸</a><a href="https://ble.ir/bardasht_family" target="_blank">💬</a><a href="tel:02191090934">📞</a></div></div>
-</footer>
+<footer class="footer"><div class="footer__bottom"><p>© ۱۴۰۳ خانواده برداشت</p><div class="footer__social"><a href="https://instagram.com/bardashtt" target="_blank">📸</a><a href="tel:02191090934">📞</a></div></div></footer>
 <script src="js/main.js"></script>
 </body>
 </html>

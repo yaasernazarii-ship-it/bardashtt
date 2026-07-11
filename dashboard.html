@@ -78,10 +78,11 @@
       <li><a href="#">📅 تقویم کلاس‌ها</a></li>
       <li><a href="#">📈 پیشرفت تحصیلی</a></li>
       <li><a href="insurance.html">🪪 بیمه‌نامه</a></li>
+      <li><a href="#" onclick="openChat();return false;">🎬 دستیار سینمایی</a></li>
       <div class="sep">حساب کاربری</div>
       <li><a href="profile.html">👤 پروفایل</a></li>
       <li><a href="#">⚙️ تنظیمات</a></li>
-      <li><a href="auth.html">← خروج</a></li>
+      <li><a href="#" onclick="logout()">← خروج</a></li>
     </ul>
   </aside>
 
@@ -177,5 +178,238 @@
 </div>
 
 <script src="js/main.js"></script>
+<script>
+  // بررسی دسترسی — فقط هنرجو
+  (function(){
+    const u = JSON.parse(localStorage.getItem('bardasht_user') || 'null');
+    if (!u || !u.loggedIn) { window.location.href = 'auth.html'; return; }
+    if (u.role === 'فیلمساز') { window.location.href = 'actors.html'; return; }
+    if (u.role === 'علاقه‌مند') { window.location.href = 'index.html'; return; }
+    // نمایش نام کاربر
+    const nameEl = document.querySelector('.sidebar-menu')?.closest('aside')?.querySelector('[style*="font-weight:700"]');
+    if (nameEl && u.name) nameEl.textContent = u.name;
+  })();
+
+  function logout() {
+    if (confirm('آیا می‌خواهید از حساب خود خارج شوید؟')) {
+      localStorage.removeItem('bardasht_user');
+      window.location.href = 'auth.html';
+    }
+  }
+</script>
+
+<!-- ══════════════════════════════════════
+     دستیار هوشمند سینمایی
+══════════════════════════════════════ -->
+<style>
+  #chat-btn {
+    position: fixed; bottom: 28px; left: 28px; z-index: 900;
+    background: var(--dark); color: #fff;
+    border: none; border-radius: 100px;
+    padding: 14px 22px; font-family: inherit; font-size: 0.9rem;
+    font-weight: 700; cursor: pointer; display: flex; align-items: center;
+    gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  #chat-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.3); }
+  #chat-btn .dot { width:8px;height:8px;background:#22C55E;border-radius:50%;animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+
+  #chat-panel {
+    position: fixed; bottom: 90px; left: 28px; z-index: 901;
+    width: 380px; max-width: calc(100vw - 40px);
+    background: var(--white); border-radius: 20px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.18);
+    display: none; flex-direction: column;
+    overflow: hidden; border: 1px solid var(--border);
+    animation: chatIn 0.25s ease;
+  }
+  @keyframes chatIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+  #chat-head {
+    background: var(--dark); padding: 16px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  #chat-head .title { color:#fff; font-weight:800; font-size:0.95rem; display:flex; gap:8px; align-items:center; }
+  #chat-head .subtitle { color:rgba(255,255,255,0.5); font-size:0.72rem; margin-top:2px; }
+  #chat-head button { background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;font-size:1.1rem;padding:4px; }
+  #chat-head button:hover { color:#fff; }
+
+  #chat-messages {
+    flex:1; overflow-y:auto; padding:16px; display:flex;
+    flex-direction:column; gap:12px; min-height:320px; max-height:380px;
+  }
+  .msg { max-width:85%; display:flex; flex-direction:column; gap:4px; }
+  .msg.user { align-self:flex-end; align-items:flex-end; }
+  .msg.bot  { align-self:flex-start; align-items:flex-start; }
+  .msg .bubble {
+    padding: 10px 14px; border-radius: 16px;
+    font-size: 0.88rem; line-height: 1.7; word-break: break-word;
+  }
+  .msg.user .bubble { background:var(--dark); color:#fff; border-radius:16px 4px 16px 16px; }
+  .msg.bot  .bubble { background:var(--surface); color:var(--dark); border-radius:4px 16px 16px 16px; border:1px solid var(--border); }
+  .msg .time { font-size:0.65rem; color:var(--light); }
+
+  .typing-dots { display:flex; gap:4px; padding:10px 14px; background:var(--surface); border-radius:4px 16px 16px 16px; border:1px solid var(--border); }
+  .typing-dots span { width:6px;height:6px;background:var(--light);border-radius:50%;animation:dot 1.2s infinite; }
+  .typing-dots span:nth-child(2){ animation-delay:.2s }
+  .typing-dots span:nth-child(3){ animation-delay:.4s }
+  @keyframes dot { 0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)} }
+
+  #chat-input-wrap {
+    padding: 12px 16px; border-top: 1px solid var(--border);
+    display: flex; gap: 8px; align-items: center; background: var(--white);
+  }
+  #chat-input {
+    flex:1; border:1.5px solid var(--border); border-radius:100px;
+    padding:10px 16px; font-family:inherit; font-size:0.88rem;
+    color:var(--dark); outline:none; transition:border-color 0.2s;
+    background: var(--surface);
+  }
+  #chat-input:focus { border-color:var(--gold); background:#fff; }
+  #chat-send {
+    width:38px; height:38px; border-radius:50%;
+    background:var(--dark); border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:1rem; transition:background 0.2s; flex-shrink:0;
+  }
+  #chat-send:hover { background:var(--gold); }
+
+  #chat-panel .suggest-wrap { padding: 0 16px 12px; display:flex; gap:6px; flex-wrap:wrap; }
+  #chat-panel .suggest { background:var(--surface); border:1px solid var(--border); border-radius:100px; padding:5px 12px; font-size:0.75rem; color:var(--muted); cursor:pointer; white-space:nowrap; font-family:inherit; transition:all 0.2s; }
+  #chat-panel .suggest:hover { border-color:var(--gold); color:var(--dark); }
+</style>
+
+<!-- دکمه چت -->
+<button id="chat-btn" onclick="openChat()">
+  <span>🎬</span> دستیار سینمایی <div class="dot"></div>
+</button>
+
+<!-- پنل چت -->
+<div id="chat-panel">
+  <div id="chat-head">
+    <div>
+      <div class="title">🎬 سینا — دستیار سینمایی</div>
+      <div class="subtitle">فقط به سوالات سینما و بازیگری پاسخ می‌دهم</div>
+    </div>
+    <button onclick="closeChat()">✕</button>
+  </div>
+
+  <div id="chat-messages">
+    <!-- پیام خوش‌آمد -->
+  </div>
+
+  <!-- پیشنهادهای سریع -->
+  <div class="suggest-wrap" id="suggests">
+    <button class="suggest" onclick="quickSend(this)">تکنیک استانیسلاوسکی چیست؟</button>
+    <button class="suggest" onclick="quickSend(this)">بهترین فیلم‌های ایرانی؟</button>
+    <button class="suggest" onclick="quickSend(this)">چطور بازیگر بهتری بشم؟</button>
+  </div>
+
+  <div id="chat-input-wrap">
+    <input type="text" id="chat-input" placeholder="سوال سینمایی بپرسید..." onkeydown="if(event.key==='Enter')sendChat()" />
+    <button id="chat-send" onclick="sendChat()">↑</button>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────
+const chatHistory = [];
+let chatOpen = false;
+let chatWaiting = false;
+
+// ── Open / Close ───────────────────────
+function openChat() {
+  document.getElementById('chat-panel').style.display = 'flex';
+  chatOpen = true;
+  if (!document.querySelector('#chat-messages .msg')) addWelcome();
+  setTimeout(() => document.getElementById('chat-input').focus(), 100);
+}
+function closeChat() {
+  document.getElementById('chat-panel').style.display = 'none';
+  chatOpen = false;
+}
+
+// ── Welcome message ────────────────────
+function addWelcome() {
+  addMessage('bot', 'سلام! من **سینا** هستم، دستیار هوشمند سینمایی خانواده برداشت 🎬\n\nهر سوالی درباره بازیگری، کارگردانی، فیلمنامه، تاریخ سینما یا تکنیک‌های بازیگری داری بپرس!');
+}
+
+// ── Add message bubble ─────────────────
+function addMessage(role, text) {
+  const wrap = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  const now = new Date().toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'});
+  // ساده‌ترین markdown: **bold** و newline
+  const html = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+  div.innerHTML = `<div class="bubble">${html}</div><div class="time">${now}</div>`;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+  return div;
+}
+
+// ── Typing indicator ───────────────────
+function showTyping() {
+  const wrap = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg bot'; div.id = 'typing-indicator';
+  div.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+function hideTyping() {
+  document.getElementById('typing-indicator')?.remove();
+}
+
+// ── Send message ───────────────────────
+function sendChat() {
+  if (chatWaiting) return;
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  document.getElementById('suggests').style.display = 'none';
+  addMessage('user', text);
+  chatHistory.push({ role: 'user', content: text });
+
+  chatWaiting = true;
+  document.getElementById('chat-send').disabled = true;
+  showTyping();
+
+  fetch('api/chat.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: text, history: chatHistory.slice(-10) })
+  })
+  .then(r => r.json())
+  .then(res => {
+    hideTyping();
+    chatWaiting = false;
+    document.getElementById('chat-send').disabled = false;
+    if (res.ok) {
+      addMessage('bot', res.reply);
+      chatHistory.push({ role: 'assistant', content: res.reply });
+    } else {
+      addMessage('bot', '⚠️ ' + (res.msg || 'خطایی رخ داد. دوباره تلاش کنید.'));
+    }
+  })
+  .catch(() => {
+    hideTyping();
+    chatWaiting = false;
+    document.getElementById('chat-send').disabled = false;
+    // حالت محلی — بدون سرور
+    addMessage('bot', '⚠️ برای استفاده از دستیار هوشمند، سایت باید روی سرور باشد.\n\nبعد از آپلود روی هاست، این بخش کاملاً فعال می‌شود. 🚀');
+  });
+}
+
+function quickSend(btn) {
+  document.getElementById('chat-input').value = btn.textContent;
+  sendChat();
+}
+</script>
 </body>
 </html>

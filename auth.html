@@ -148,13 +148,15 @@
     }
     if(authTimerInterval) clearInterval(authTimerInterval);
     const existing = JSON.parse(localStorage.getItem('bardasht_user') || 'null');
+    const role = existing?.role || 'هنرجو';
     localStorage.setItem('bardasht_user', JSON.stringify({
       name: existing?.name || authPhone,
-      role: existing?.role || 'هنرجو',
+      role: role,
       phone: authPhone,
       loggedIn: true
     }));
-    window.location.href = 'dashboard.html';
+    const redirectMap = { 'هنرجو': 'dashboard.html', 'فیلمساز': 'actors.html', 'علاقه‌مند': 'index.html' };
+    window.location.href = redirectMap[role] || 'index.html';
   }
 </script>
 </body>
