@@ -16,9 +16,36 @@
   </style>
 </head>
 <body>
+<!-- ░░ SITE HEADER ░░ -->
+<header class="site-header">
+  <div class="site-header__inner">
+    <!-- لوگو (سمت راست) -->
+    <div class="site-header__logo">
+      <a href="index.html">
+        <img src="uploads/imgg.png" alt="خانواده برداشت — آموزشگاه رایگان بازیگری سینما" />
+      </a>
+    </div>
+    <!-- دکمه پشتیبانی -->
+    <div class="site-header__support">
+      <button class="hdr-support-btn" onclick="this.closest('.site-header__support').classList.toggle('open')">
+        <span class="nav__support-dot"></span>پشتیبانی
+      </button>
+      <ul class="hdr-support-drop">
+        <li><a href="faq.html"><span class="drop-icon">📋</span>سوالات متداول</a></li>
+        <li class="drop-sep"></li>
+        <li><button onclick="openSupportChat();this.closest('.site-header__support').classList.remove('open')"><span class="drop-icon">💬</span><span>چت آنلاین<span class="drop-phone">پاسخ سریع از تیم ما</span></span><span class="drop-online-dot"></span></button></li>
+        <li class="drop-sep"></li>
+        <li><a href="tel:02191090934"><span class="drop-icon">📞</span><span>تماس با ما<span class="drop-phone">02191090934</span></span></a></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
 <nav class="nav">
   <div class="nav__inner">
-    <a href="index.html" class="nav__logo">خانواده <span>برداشت</span></a>
+    <a href="index.html" class="nav__logo">
+      <img src="uploads/imgg.png" alt="خانواده برداشت" />
+    </a>
     <ul class="nav__links">
       <li><a href="index.html">خانه</a></li>
       <li><a href="about.html">درباره ما</a></li>
@@ -30,8 +57,6 @@
       <li><a href="news.html" class="active">اخبار</a></li>
       <li><a href="blog.html">وبلاگ</a></li>
       <li><a href="podcast.html">پادکست</a></li>
-      <li><a href="faq.html">سوالات متداول</a></li>
-      <li class="has-dropdown"><a href="#"><span class="nav__support-dot"></span>پشتیبانی ▾</a><ul class="dropdown dropdown--support"><li><a href="faq.html"><span class="drop-icon">📋</span>سوالات متداول</a></li><li class="drop-sep"></li><li><a href="tel:02191090934"><span class="drop-icon">📞</span><span>تماس با پشتیبانی<span class="drop-phone">02191090934</span></span></a></li></ul></li>
     </ul>
     <div class="nav__actions"><a href="auth.html" class="btn btn--outline btn--sm">ورود</a><a href="register.html" class="btn btn--dark btn--sm">ثبت‌نام</a></div>
     <button class="nav__menu-btn">☰</button>
@@ -55,6 +80,13 @@
 </section>
 
 <footer class="footer"><div class="footer__bottom"><p>© ۱۴۰۳ خانواده برداشت</p><div class="footer__social"><a href="https://instagram.com/bardashtt" target="_blank">📸</a><a href="tel:02191090934">📞</a></div></div></footer>
-<script src="js/main.js"></script>
+<script src="js/main.js">
+  // بستن dropdown پشتیبانی هدر با کلیک خارج
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.site-header__support')) {
+      document.querySelectorAll('.site-header__support.open').forEach(el => el.classList.remove('open'));
+    }
+  });
+</script>
 </body>
 </html>
