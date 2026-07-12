@@ -128,6 +128,7 @@
       <li><a href="blog.html">وبلاگ</a></li>
       <li><a href="podcast.html">پادکست</a></li>
     </ul>
+    <button class="nav__menu-btn">☰</button>
     <div class="nav__actions"><a href="auth.html" class="btn btn--outline btn--sm">ورود</a></div>
   </div>
 </nav>
@@ -301,23 +302,37 @@
   }
 </script>
 
-<!-- ░ Support Chat Modal ░ -->
+<!-- ░ دکمه شناور AI چت ░ -->
+<button id="ai-chat-fab" onclick="openSupportChat()" title="گفتگو با دستیار هوشمند" style="
+  position:fixed; bottom:24px; left:24px; z-index:999;
+  width:56px; height:56px; border-radius:50%;
+  background:linear-gradient(135deg,#0C0C0C,#2a2a2a);
+  color:#fff; border:none; cursor:pointer;
+  box-shadow:0 4px 20px rgba(0,0,0,0.35);
+  font-size:1.5rem; display:flex; align-items:center; justify-content:center;
+  transition:transform .2s, box-shadow .2s;
+" onmouseover="this.style.transform='scale(1.1)';this.style.boxShadow='0 6px 28px rgba(0,0,0,0.4)'"
+   onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 20px rgba(0,0,0,0.35)'">
+  🤖
+  <span style="position:absolute;top:4px;right:4px;width:12px;height:12px;background:#22C55E;border-radius:50%;border:2px solid #fff;"></span>
+</button>
+
+<!-- ░ AI Chat Modal ░ -->
 <div class="support-chat-box" id="supportChatBox">
   <div class="support-chat-head">
-    <div class="av">🎬</div>
+    <div class="av" style="font-size:1.4rem;">🤖</div>
     <div>
-      <h4>پشتیبانی خانواده برداشت</h4>
-      <p>● آنلاین</p>
+      <h4>دستیار هوشمند برداشت</h4>
+      <p>● آنلاین — پاسخ فوری</p>
     </div>
     <button class="close-btn" onclick="closeSupportChat()">✕</button>
   </div>
   <div id="chat-step-name">
     <div class="support-chat-msgs" style="min-height:80px;">
-      <div class="chat-msg chat-msg--bot">سلام! 👋 خوش آمدید. قبل از شروع لطفاً اسم و شماره موبایلتون رو بنویسید.</div>
+      <div class="chat-msg chat-msg--bot">سلام! 👋 من دستیار هوشمند خانواده برداشتم. هر سوالی درباره دوره‌ها، ثبت‌نام یا این هنرجو داری بپرس.</div>
     </div>
     <div class="support-name-form">
-      <input type="text" id="chat-user-name" placeholder="نام شما" />
-      <input type="tel" id="chat-user-phone" placeholder="شماره موبایل (اختیاری)" dir="ltr" style="text-align:center;" />
+      <input type="text" id="chat-user-name" placeholder="اسمت رو بنویس..." />
       <button onclick="startChat()">شروع گفتگو ←</button>
     </div>
   </div>
@@ -326,22 +341,44 @@
       <div class="chat-msg chat-msg--bot" id="chat-welcome-msg"></div>
     </div>
     <div class="support-chat-foot">
-      <input type="text" id="chatInput" placeholder="پیام خود را بنویسید..." onkeydown="if(event.key===\'Enter\')sendSupportMsg()" />
+      <input type="text" id="chatInput" placeholder="سوالت رو بنویس..." onkeydown="if(event.key==='Enter')sendSupportMsg()" />
       <button onclick="sendSupportMsg()">↑</button>
     </div>
-    <div class="support-phone-note">پیام شما مستقیم برای تیم پشتیبانی ارسال می‌شود</div>
   </div>
 </div>
 
 <script>
-
-  /* ── Support Chat (global) ── */
+  /* ── AI Chat ── */
   let chatUserName = '';
+
+  const AI_REPLIES = [
+    { keys: ['ثبت‌نام','ثبت نام','عضویت','چطور وارد','join'], reply: 'برای ثبت‌نام کافیه به صفحه ثبت‌نام بری و فرم رو پر کنی. آموزش کاملاً رایگانه! 🎉 فقط هزینه پلاتو و بیمه پرداخت می‌شه.' },
+    { keys: ['هزینه','قیمت','شهریه','پول','رایگان'], reply: 'آموزش در خانواده برداشت کاملاً رایگانه ✅ هنرجوها فقط هزینه اجاره پلاتو + بیمه رو می‌پردازن.' },
+    { keys: ['دوره','کلاس','آموزش','مقدماتی','تکمیلی','پیشرفته'], reply: 'ما ۵ مرحله داریم: مقدماتی، تکمیلی، اردو، پیشرفته و فیلمسازی. هر مرحله با آزمون فارغ‌التحصیلی ختم می‌شه. برای جزئیات صفحه دوره‌ها رو ببین 🎭' },
+    { keys: ['آدرس','محل','کجا','تهران','مازندران','شعبه'], reply: 'خانواده برداشت دو شعبه داره: 📍 تهران و 📍 مازندران. برای اطلاعات دقیق با ما تماس بگیر: 02191090934' },
+    { keys: ['تماس','تلفن','شماره','ایمیل','واتساپ','بله'], reply: '📞 تلفن: 02191090934\n📸 اینستاگرام: bardashtt@\n💬 بله: ble.ir/bardasht_family' },
+    { keys: ['مدرک','گواهی','گواهینامه','سرتیفیکیت'], reply: 'بله! بعد از هر مرحله آزمون فارغ‌التحصیلی برگزار می‌شه و گواهینامه رسمی صادر می‌شه 📜' },
+    { keys: ['اردو','اردوگاه'], reply: 'اردوی آموزشی مرحله سوم هست — یه تجربه فشرده و حرفه‌ای در محیط واقعی فیلمسازی. جزئیات بیشتر از تیم پشتیبانی بپرس.' },
+    { keys: ['بیمه','پلاتو'], reply: 'پلاتو = فضای آموزشی که اجاره می‌شه. بیمه هم برای هنرجویان صادر می‌شه. هر دو هزینه خیلی کمی داره و از شهریه‌های کلاس بازیگری معمول خیلی ارزون‌تره.' },
+    { keys: ['سلام','درود','هی','hi','hello'], reply: `سلام ${chatUserName} عزیز! 😊 خوش اومدی. چه سوالی داری؟` },
+    { keys: ['ممنون','مرسی','تشکر','thanks'], reply: 'خواهش می‌کنم! 🙏 اگه سوال دیگه‌ای داری در خدمتم.' },
+  ];
+
+  function getAIReply(msg) {
+    const lower = msg.toLowerCase();
+    for (const item of AI_REPLIES) {
+      if (item.keys.some(k => lower.includes(k))) return item.reply;
+    }
+    return `سوال خوبیه! برای پاسخ دقیق‌تر با تیم ما تماس بگیر:\n📞 02191090934\n📸 اینستاگرام: bardashtt@`;
+  }
+
   function openSupportChat() {
     document.getElementById('supportChatBox').classList.add('open');
+    document.getElementById('ai-chat-fab').style.display = 'none';
   }
   function closeSupportChat() {
     document.getElementById('supportChatBox').classList.remove('open');
+    document.getElementById('ai-chat-fab').style.display = 'flex';
   }
   function startChat() {
     const name = document.getElementById('chat-user-name').value.trim();
@@ -349,7 +386,7 @@
     chatUserName = name;
     document.getElementById('chat-step-name').style.display = 'none';
     document.getElementById('chat-step-talk').style.display = 'flex';
-    document.getElementById('chat-welcome-msg').textContent = 'سلام ' + name + ' عزیز! 😊 چطور می‌تونم کمکت کنم؟';
+    document.getElementById('chat-welcome-msg').textContent = `سلام ${name} عزیز! 😊 هر سوالی درباره دوره‌ها، هزینه‌ها یا این هنرجو داری بپرس.`;
     setTimeout(() => document.getElementById('chatInput').focus(), 100);
   }
   function sendSupportMsg() {
@@ -358,12 +395,11 @@
     if (!msg) return;
     input.value = '';
     appendChatMsg(msg, 'user');
-    const fd = new FormData();
-    fd.append('name', chatUserName);
-    fd.append('phone', document.getElementById('chat-user-phone')?.value || '');
-    fd.append('message', msg);
-    fetch('api/support-chat.php', { method: 'POST', body: fd }).catch(() => {});
-    setTimeout(() => appendChatMsg('پیامتون رسید! 🙏 در اسرع وقت پاسخ می‌دیم. تماس مستقیم: 02191090934', 'bot'), 800);
+    const typing = appendChatMsg('...', 'bot');
+    setTimeout(() => {
+      typing.textContent = getAIReply(msg);
+      document.getElementById('chatMsgs').scrollTop = 9999;
+    }, 600 + Math.random() * 400);
   }
   function appendChatMsg(text, who) {
     const msgs = document.getElementById('chatMsgs');
@@ -372,14 +408,15 @@
     div.textContent = text;
     msgs.appendChild(div);
     msgs.scrollTop = msgs.scrollHeight;
+    return div;
   }
 
-  // بستن dropdown پشتیبانی هدر با کلیک خارج
   document.addEventListener('click', function(e) {
     if (!e.target.closest('.site-header__support')) {
       document.querySelectorAll('.site-header__support.open').forEach(el => el.classList.remove('open'));
     }
   });
 </script>
+
 </body>
 </html>

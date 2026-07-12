@@ -40,30 +40,39 @@ const menuBtn  = document.querySelector('.nav__menu-btn');
 const navLinks = document.querySelector('.nav__links');
 
 if (menuBtn && navLinks) {
-  // پس‌زمینه تاریک هنگام باز بودن منو
   const backdrop = document.createElement('div');
   backdrop.className = 'nav__backdrop';
   document.body.appendChild(backdrop);
+
+  // دکمه‌های ورود/ثبت‌نام برای drawer موبایل
+  const navActions = document.querySelector('.nav__actions');
+  let drawerActions = null;
+  if (navActions) {
+    drawerActions = document.createElement('div');
+    drawerActions.className = 'nav__drawer-actions';
+    drawerActions.innerHTML = navActions.innerHTML;
+    document.body.appendChild(drawerActions);
+  }
 
   function openNav() {
     navLinks.classList.add('nav__links--open');
     backdrop.classList.add('active');
     menuBtn.textContent = '✕';
     document.body.style.overflow = 'hidden';
+    if (drawerActions) drawerActions.classList.add('visible');
   }
   function closeNav() {
     navLinks.classList.remove('nav__links--open');
     backdrop.classList.remove('active');
     menuBtn.textContent = '☰';
     document.body.style.overflow = '';
+    if (drawerActions) drawerActions.classList.remove('visible');
   }
 
   menuBtn.addEventListener('click', () =>
     navLinks.classList.contains('nav__links--open') ? closeNav() : openNav()
   );
   backdrop.addEventListener('click', closeNav);
-
-  // بستن با ESC
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNav(); });
 }
 
