@@ -301,71 +301,8 @@
 </script>
 
 
-<!-- ░░ BOTTOM NAV (mobile) ░░ -->
-<nav class="mobile-bottom-nav">
-  <a href="index.html" class="bn-home active">
-    <span class="bn-icon">🏠</span>
-    <span>خانه</span>
-  </a>
-  <a href="courses.html" class="bn-courses">
-    <span class="bn-icon">🎬</span>
-    <span>دوره‌ها</span>
-  </a>
-  <a href="actors.html" class="bn-actors">
-    <span class="bn-icon">🎭</span>
-    <span>بازیگران</span>
-  </a>
-  <a href="gallery.html" class="bn-gallery">
-    <span class="bn-icon">🖼️</span>
-    <span>گالری</span>
-  </a>
-  <button class="bn-menu-btn" onclick="document.querySelector('.nav__menu-btn').click()">
-    <span class="bn-icon">☰</span>
-    <span>منو</span>
-  </button>
-</nav>
 
 
-<script>
-// ── Mobile Nav ──────────────────────────────
-(function(){
-  var btn  = document.querySelector('.nav__menu-btn');
-  var list = document.querySelector('.nav__links');
-  var back = document.querySelector('.nav__backdrop');
-  var acts = document.querySelector('.nav__drawer-actions');
-  if (!btn || !list) return;
-
-  function openMenu(){
-    list.classList.add('nav__links--open');
-    if (back)  back.classList.add('active');
-    if (acts)  acts.classList.add('visible');
-    btn.textContent = '✕';
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMenu(){
-    list.classList.remove('nav__links--open');
-    if (back)  back.classList.remove('active');
-    if (acts)  acts.classList.remove('visible');
-    btn.textContent = '☰';
-    document.body.style.overflow = '';
-  }
-
-  btn.addEventListener('click', function(e){
-    e.stopPropagation();
-    list.classList.contains('nav__links--open') ? closeMenu() : openMenu();
-  });
-  if (back) back.addEventListener('click', closeMenu);
-
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape') closeMenu();
-  });
-
-  // بستن با کلیک روی لینک
-  list.querySelectorAll('a').forEach(function(a){
-    a.addEventListener('click', function(){ closeMenu(); });
-  });
-})();
-</script>
 
 </body>
 </html>

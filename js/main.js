@@ -44,14 +44,14 @@ if (menuBtn && navLinks) {
   backdrop.className = 'nav__backdrop';
   document.body.appendChild(backdrop);
 
-  // دکمه‌های ورود/ثبت‌نام برای drawer موبایل
+  // دکمه‌های ورود/ثبت‌نام برای drawer موبایل — داخل خود drawer تا z-index درست بماند
   const navActions = document.querySelector('.nav__actions');
   let drawerActions = null;
   if (navActions) {
     drawerActions = document.createElement('div');
     drawerActions.className = 'nav__drawer-actions';
     drawerActions.innerHTML = navActions.innerHTML;
-    document.body.appendChild(drawerActions);
+    navLinks.appendChild(drawerActions);
   }
 
   function openNav() {
@@ -75,6 +75,46 @@ if (menuBtn && navLinks) {
   backdrop.addEventListener('click', closeNav);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNav(); });
 }
+
+// ── Mobile Bottom Nav (تزریق داینامیک) ───
+(function () {
+  const nav = document.querySelector('.nav');
+  if (!nav || document.querySelector('.mobile-bottom-nav')) return;
+
+  const current = location.pathname.split('/').pop() || 'index.html';
+  const items = [
+    { ico: '🏠', label: 'خانه',    href: 'index.html' },
+    { ico: '🎓', label: 'دوره‌ها',  href: 'courses.html' },
+    { ico: '✍️', label: 'ثبت‌نام',  href: 'register.html', accent: true },
+    { ico: '📞', label: 'تماس',    href: 'tel:02191090934' },
+    { ico: '☰', label: 'منو',      menu: true },
+  ];
+
+  const bar = document.createElement('nav');
+  bar.className = 'mobile-bottom-nav';
+  bar.setAttribute('aria-label', 'ناوبری موبایل');
+
+  items.forEach(it => {
+    const el = document.createElement(it.menu ? 'button' : 'a');
+    el.className = 'mbn-item' + (it.accent ? ' mbn-item--accent' : '');
+    el.innerHTML = `<span class="mbn-ico">${it.ico}</span><span>${it.label}</span>`;
+    if (it.menu) {
+      el.type = 'button';
+      el.addEventListener('click', () => {
+        const mb = document.querySelector('.nav__menu-btn');
+        const links = document.querySelector('.nav__links');
+        if (mb && links) mb.click();
+        else window.location.href = 'index.html';
+      });
+    } else {
+      el.href = it.href;
+      if (it.href === current) el.classList.add('active');
+    }
+    bar.appendChild(el);
+  });
+
+  document.body.appendChild(bar);
+})();
 
 // ── Smooth scroll for anchor links ───────
 document.querySelectorAll('a[href^="#"]').forEach(a => {

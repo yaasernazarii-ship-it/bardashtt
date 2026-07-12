@@ -244,7 +244,8 @@ section { padding: 96px 0; }
   border-bottom: 1px solid var(--border);
   padding: 0 24px;
 }
-.nav__inner {
+.nav__inner,
+.nav__container {
   max-width: 1140px;
   margin: 0 auto;
   display: flex;
@@ -795,7 +796,7 @@ section { padding: 96px 0; }
   top: 0; right: 0; left: 0; bottom: 0;
   width: 100%;
   background: var(--dark);
-  padding: 80px 32px 48px;
+  padding: 80px 32px 110px;
   z-index: 500;
   overflow-y: auto;
   gap: 0;
@@ -883,42 +884,60 @@ section { padding: 96px 0; }
 }
 
 @media (max-width: 768px) {
-  /* ── Site Header مخفی ── */
+  /* ── Header بالایی موبایل حذف — همه‌چیز داخل nav ── */
   .site-header { display: none; }
 
-  /* ── Nav ثابت بالا (app-like) ── */
+  /* ── Nav موبایل: لوگو (راست) + دکمه منوی همبرگر (چپ) ── */
   .nav {
-    position: fixed !important;
-    top: 0; left: 0; right: 0;
-    background: #fff !important;
-    backdrop-filter: none !important;
-    box-shadow: 0 2px 16px rgba(0,0,0,.09);
-    padding: 0;
-    z-index: 200;
+    position: sticky !important;
+    top: 0;
+    background: rgba(250,250,248,0.97) !important;
+    backdrop-filter: blur(16px) !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    padding: 0 14px;
+    z-index: 500; /* بالاتر از bottom-nav تا drawer روی آن بیفتد */
   }
-  .nav__inner { padding: 0 16px; height: 54px; gap: 12px; }
-  .nav__logo img { height: 36px; mix-blend-mode: multiply; }
-  .nav__links { display: none; }
-  .nav__actions { display: none; }
+  .nav__inner,
+  .nav__container {
+    height: 60px;
+    min-height: 60px;
+    gap: 12px;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+  /* صفحه‌های فرم‌محور (audition) منوی کشویی ندارند — دکمه همبرگر حذف */
+  .nav__container .nav__menu-btn { display: none !important; }
+  .nav__logo { order: 1; }
+  .nav__logo img { height: 40px; mix-blend-mode: multiply; }
+  /* دکمه‌های ورود/ثبت‌نام از نوار بالا حذف — داخل drawer و bottom-nav در دسترس‌اند */
+  .nav__actions { display: none !important; }
   .nav__menu-btn {
     display: flex !important;
-    align-items: center; justify-content: center;
-    width: 40px; height: 40px;
-    background: var(--dark); color: #fff;
-    border-radius: 10px; font-size: 1.15rem;
-    border: none; cursor: pointer; flex-shrink: 0;
-    transition: background .15s;
+    align-items: center;
+    justify-content: center;
+    order: 2;
+    position: relative;
+    z-index: 501; /* بالاتر از drawer تا دکمه بستن (✕) قابل لمس بماند */
+    width: 46px;
+    height: 46px;
+    font-size: 1.55rem;
+    color: var(--dark);
+    border-radius: 12px;
+    background: var(--surface);
+    transition: background .18s;
   }
-  .nav__menu-btn:hover { background: #333; }
+  .nav__menu-btn:active { background: var(--border); }
+  /* لینک‌ها فقط داخل منوی کشویی (drawer) نمایش داده می‌شوند */
+  .nav__links { display: none; }
 
-  /* بدنه: فضا برای ناو ثابت */
-  body { padding-top: 54px; }
+  body { padding-top: 0; }
 
   /* ── Layout ── */
   .grid-2 { grid-template-columns: 1fr; }
-  .page-header { padding: 36px 16px 28px; }
-  .page-header h1 { font-size: 1.5rem; }
-  .page-header p { font-size: .88rem; }
+  .page-header { padding: 48px 16px 42px; }
+  .page-header h1 { font-size: 1.7rem; }
+  .page-header p { font-size: .92rem; }
 }
 
 @media (max-width: 640px) {
@@ -1010,61 +1029,162 @@ section { padding: 96px 0; }
 /* ══════════════════════════════════════
    ناوبار پایین موبایل (Bottom Nav)
 ══════════════════════════════════════ */
-.mobile-bottom-nav {
-  display: none;
-}
+.mobile-bottom-nav { display: none; }
 
 @media (max-width: 768px) {
   .mobile-bottom-nav {
-    display: flex;
+    display: flex !important;
     position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: #fff;
+    bottom: 0; right: 0; left: 0;
+    height: 62px;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(16px);
     border-top: 1px solid var(--border);
-    z-index: 300;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -3px 18px rgba(0,0,0,.07);
+    z-index: 480;
+    padding-bottom: env(safe-area-inset-bottom, 0);
   }
-  .mobile-bottom-nav a,
-  .mobile-bottom-nav button {
+  .mbn-item {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 3px;
-    padding: 8px 4px;
     font-family: inherit;
-    font-size: 0.62rem;
+    font-size: .66rem;
     font-weight: 600;
     color: var(--muted);
     background: none;
     border: none;
     cursor: pointer;
     text-decoration: none;
-    transition: color .15s;
-    -webkit-tap-highlight-color: transparent;
+    transition: color .18s;
   }
-  .mobile-bottom-nav a .bn-icon,
-  .mobile-bottom-nav button .bn-icon {
-    font-size: 1.25rem;
-    line-height: 1;
-  }
-  .mobile-bottom-nav a.active,
-  .mobile-bottom-nav a:hover,
-  .mobile-bottom-nav button:hover {
-    color: var(--gold);
-  }
-  .mobile-bottom-nav .bn-menu-btn .bn-icon {
-    font-size: 1.15rem;
+  .mbn-item .mbn-ico { font-size: 1.35rem; line-height: 1; }
+  .mbn-item:active { color: var(--dark); }
+  .mbn-item.active { color: var(--dark); }
+  /* دکمه مرکزی برجسته (ثبت‌نام) */
+  .mbn-item--accent { color: var(--gold); }
+  .mbn-item--accent .mbn-ico {
+    width: 48px; height: 48px;
+    margin-top: -24px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 20px rgba(196,146,42,.42);
+    border: 3px solid var(--bg);
   }
 
-  /* فضا برای ناوبار پایین */
-  body { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+  /* فاصله پایین صفحه تا محتوا زیر نوار پنهان نشود */
+  body { padding-bottom: 62px; }
+  /* چت پشتیبانی بالاتر از نوار پایین */
+  .support-chat-box { bottom: 76px !important; }
 
-  /* منوی کشویی موبایل — بهبود */
-  .nav__links--open {
-    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  /* مقیاس‌پذیری عمومی برای همه عرض‌ها */
+  html, body { width: 100%; max-width: 100%; }
+  body { overflow-x: hidden; }
+  .container,
+  .container--sm,
+  section,
+  main,
+  header,
+  nav,
+  footer {
+    max-width: 100%;
+  }
+  img,
+  video,
+  iframe {
+    max-width: 100%;
+    height: auto;
+  }
+  .card,
+  .course-card,
+  .actor-card,
+  .profile-card,
+  .news-card,
+  .podcast-card,
+  .stat-box,
+  .upload-box,
+  .filter-wrap,
+  .payment-box,
+  .appt-box,
+  .calendar-wrap,
+  .insurance-cert,
+  .support-chat-box {
+    max-width: 100%;
+  }
+
+  /* Touch-friendly controls */
+  .btn,
+  button,
+  .form-input,
+  .form-select,
+  .form-textarea,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+  .btn { width: 100%; padding-inline: 18px; white-space: normal; text-align: center; }
+  .nav .btn,
+  .footer .btn,
+  .site-footer .btn,
+  .mobile-bottom-nav .btn { width: auto; }
+
+  /* Inline layouts used across pages */
+  [style*="display:flex"],
+  [style*="display: flex"] {
+    min-width: 0;
+  }
+  [style*="justify-content:space-between"],
+  [style*="justify-content: space-between"] {
+    gap: 12px !important;
+  }
+  [style*="grid-template-columns:repeat(4"],
+  [style*="grid-template-columns: repeat(4"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  [style*="grid-template-columns:repeat(5"],
+  [style*="grid-template-columns: repeat(5"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Tables and wide code blocks */
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  pre, code {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+
+  /* Better mobile spacing for common page wrappers */
+  [class$="-wrap"],
+  [class*="-wrap "] {
+    max-width: 100%;
+  }
+  .exam-wrap,
+  .admin-wrap,
+  .audit-wrap,
+  .reg-wrap {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  /* Chat as mobile sheet */
+  .support-chat-box {
+    left: 10px !important;
+    right: 10px !important;
+    width: auto !important;
+    max-height: calc(100vh - 100px) !important;
+    border-radius: 18px !important;
   }
 }
 
