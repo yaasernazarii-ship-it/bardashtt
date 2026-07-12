@@ -1,10 +1,7 @@
 <?php
 /**
- * دستیار هوشمند سینمایی — خانواده برداشت
- * سرویس: Groq API (رایگان)
- *
- * POST /api/chat.php
- * body: message=..., history=[{role,content}...]
+ * دستیار سینمایی «سینا» — خانواده برداشت
+ * Groq AI (llama-3.3-70b)
  */
 
 header('Content-Type: application/json; charset=utf-8');
@@ -15,99 +12,71 @@ header('Access-Control-Allow-Headers: Content-Type');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
 if ($_SERVER['REQUEST_METHOD'] !== 'POST')    { echo json_encode(['ok'=>false,'msg'=>'فقط POST']); exit; }
 
-// ─── تنظیمات ────────────────────────────────────
-define('GROQ_API_KEY', 'YOUR_GROQ_API_KEY');   // از groq.com رایگان بگیر
+define('GROQ_API_KEY', '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');
 define('GROQ_MODEL',   'llama-3.3-70b-versatile');
-// ─────────────────────────────────────────────────
 
 $body    = json_decode(file_get_contents('php://input'), true);
 $message = trim($body['message'] ?? '');
 $history = $body['history'] ?? [];
 
-if (!$message) {
-    echo json_encode(['ok' => false, 'msg' => 'پیام خالی است']);
-    exit;
-}
+if (!$message) { echo json_encode(['ok'=>false,'msg'=>'پیام خالی']); exit; }
 
 $systemPrompt = <<<PROMPT
 تو «سینا» هستی — دستیار هوشمند تخصصی آموزشگاه بازیگری «خانواده برداشت» در ایران.
 
-وظیفه تو: پاسخ دادن به سوالات هنرجویان درباره سینما و بازیگری.
+درباره آموزشگاه:
+- اولین و تنها آموزشگاه رایگان بازیگری سینما در ایران
+- آموزش کاملاً رایگان است؛ هنرجوها فقط هزینه پلاتو (فضای آموزشی) + بیمه می‌پردازند
+- ۵ مرحله آموزشی: مقدماتی، تکمیلی، اردو، پیشرفته، فیلمسازی
+- هر مرحله با آزمون فارغ‌التحصیلی و گواهینامه ختم می‌شود
+- دو شعبه: تهران و مازندران
+- تلفن: 02191090934
+- اینستاگرام: bardashtt@
 
-موضوعاتی که پاسخ می‌دهی:
+حوزه تخصص تو:
 - تکنیک‌های بازیگری (استانیسلاوسکی، متد اکتینگ، مایزنر، برشت و...)
 - تاریخ سینمای ایران و جهان
 - کارگردانان و بازیگران مشهور
 - فیلمنامه‌نویسی و ساختار داستان
-- زبان بدن، بیان، و حضور در صحنه
-- دوربین، نور، و اصطلاحات فنی سینما
-- معرفی فیلم‌ها و آثار مهم سینمایی
-- نقد و تحلیل فیلم
-- جوایز سینمایی (اسکار، کن، برلین و...)
+- زبان بدن، بیان، حضور در صحنه
+- اصطلاحات فنی سینما (نما، تدوین، نور، صدا)
+- معرفی و نقد فیلم
+- جوایز سینمایی
 
-اگر سوال ربطی به سینما، بازیگری یا هنر هفتم نداشت، با احترام بگو:
-«این سوال خارج از حوزه تخصص من (سینما و بازیگری) است. خوشحال می‌شوم سوالات سینمایی شما را پاسخ دهم! 🎬»
-
-قوانین پاسخ:
-- همیشه به فارسی پاسخ بده
-- مختصر، مفید و دوستانه باش
-- از ایموجی‌های مرتبط استفاده کن
-- اگر نمی‌دانی صادقانه بگو
+قوانین:
+- همیشه به فارسی روان و دوستانه پاسخ بده
+- از ایموجی مرتبط استفاده کن
+- پاسخ‌ها را ساختارمند (با bullet یا bold) بنویس
+- اگر سوال خارج از سینما و بازیگری بود، مودبانه بگو خارج از حوزه‌ات است
 PROMPT;
 
-// ساخت آرایه پیام‌ها
 $messages = [['role' => 'system', 'content' => $systemPrompt]];
-
-// تاریخچه مکالمه (حداکثر ۱۰ پیام قبلی)
-$recentHistory = array_slice($history, -10);
-foreach ($recentHistory as $h) {
-    if (in_array($h['role'] ?? '', ['user', 'assistant']) && !empty($h['content'])) {
+foreach (array_slice($history, -10) as $h) {
+    if (in_array($h['role'] ?? '', ['user','assistant']) && !empty($h['content'])) {
         $messages[] = ['role' => $h['role'], 'content' => $h['content']];
     }
 }
-
 $messages[] = ['role' => 'user', 'content' => $message];
-
-$payload = json_encode([
-    'model'       => GROQ_MODEL,
-    'messages'    => $messages,
-    'temperature' => 0.7,
-    'max_tokens'  => 1024,
-]);
 
 $ch = curl_init('https://api.groq.com/openai/v1/chat/completions');
 curl_setopt_array($ch, [
     CURLOPT_POST           => true,
-    CURLOPT_POSTFIELDS     => $payload,
+    CURLOPT_POSTFIELDS     => json_encode(['model'=>GROQ_MODEL,'messages'=>$messages,'temperature'=>0.7,'max_tokens'=>1024]),
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_TIMEOUT        => 30,
-    CURLOPT_SSL_VERIFYPEER => true,
-    CURLOPT_HTTPHEADER     => [
-        'Content-Type: application/json',
-        'Authorization: Bearer ' . GROQ_API_KEY,
-    ],
+    CURLOPT_HTTPHEADER     => ['Content-Type: application/json','Authorization: Bearer '.GROQ_API_KEY],
 ]);
 
 $response = curl_exec($ch);
-$curlErr  = curl_error($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$err      = curl_error($ch);
+$code     = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
-if ($curlErr) {
-    echo json_encode(['ok' => false, 'msg' => 'خطا در اتصال به سرویس هوش مصنوعی']);
-    exit;
-}
+if ($err) { echo json_encode(['ok'=>false,'msg'=>'خطا در اتصال']); exit; }
 
 $res = json_decode($response, true);
-
-if ($httpCode === 200 && isset($res['choices'][0]['message']['content'])) {
-    echo json_encode([
-        'ok'      => true,
-        'reply'   => $res['choices'][0]['message']['content'],
-        'tokens'  => $res['usage']['total_tokens'] ?? 0,
-    ]);
+if ($code === 200 && isset($res['choices'][0]['message']['content'])) {
+    echo json_encode(['ok'=>true,'reply'=>$res['choices'][0]['message']['content']], JSON_UNESCAPED_UNICODE);
 } else {
-    $errMsg = $res['error']['message'] ?? 'خطای ناشناخته';
-    error_log('[Chat] Groq error: ' . $errMsg);
-    echo json_encode(['ok' => false, 'msg' => 'خطا در پردازش پیام. لطفاً دوباره تلاش کنید.']);
+    echo json_encode(['ok'=>false,'msg'=>'خطا در پردازش پیام']);
 }
