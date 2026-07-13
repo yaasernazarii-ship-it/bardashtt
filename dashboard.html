@@ -59,9 +59,70 @@
     .bar.active { background:var(--gold); }
     .bar-label { font-size:0.65rem;color:var(--muted);text-align:center;margin-top:4px; }
     @media(max-width:900px){ .dash-layout{grid-template-columns:1fr;} .sidebar{display:none;} }
+    /* ناو داشبورد — فقط موبایل نمایش داده می‌شود */
+    @media(min-width:901px){ .dash-nav { display:none !important; } }
+    /* تب‌های ناوبری پایین داشبورد (موبایل) */
+    .dash-bottom-nav {
+      display: none;
+    }
+    @media(max-width:900px){
+      .main-area { padding: 16px 14px 80px; }
+      .dash-header { flex-direction:column; align-items:flex-start; gap:10px; }
+      .dash-header .btn { width:100%; text-align:center; justify-content:center; }
+      .dash-bottom-nav {
+        display: flex;
+        position: fixed; bottom:0; right:0; left:0;
+        background: rgba(255,255,255,0.97);
+        backdrop-filter: blur(16px);
+        border-top: 1px solid var(--border);
+        box-shadow: 0 -3px 18px rgba(0,0,0,.07);
+        z-index: 480;
+        padding-bottom: env(safe-area-inset-bottom,0);
+        height: 62px;
+      }
+      .dash-bottom-nav a {
+        flex:1; display:flex; flex-direction:column;
+        align-items:center; justify-content:center;
+        gap:3px; font-size:.66rem; font-weight:600;
+        color:var(--muted); text-decoration:none;
+      }
+      .dash-bottom-nav a.active { color:var(--dark); }
+      .dash-bottom-nav a span:first-child { font-size:1.25rem; line-height:1; }
+      .dash-bottom-nav a.accent { color:var(--gold); }
+    }
   </style>
 </head>
 <body>
+
+<!-- ناوبری بالا — فقط موبایل -->
+<nav class="nav dash-nav">
+  <div class="nav__inner">
+    <a href="index.html" class="nav__logo">
+      <img src="uploads/imgg.png" alt="خانواده برداشت" />
+    </a>
+    <ul class="nav__links">
+      <li><a href="index.html">خانه</a></li>
+      <li><a href="courses.html">دوره‌ها</a></li>
+      <li><a href="actors.html">بازیگران</a></li>
+      <li><a href="insurance.html">بیمه‌نامه</a></li>
+      <li><a href="profile.html">پروفایل</a></li>
+    </ul>
+    <div class="nav__actions" style="display:flex;align-items:center;gap:10px;">
+      <a href="index.html" class="btn btn--outline btn--sm">خانه</a>
+    </div>
+    <button class="nav__menu-btn">☰</button>
+  </div>
+</nav>
+
+<!-- تب پایین داشبورد (موبایل) -->
+<nav class="dash-bottom-nav" aria-label="ناوبری داشبورد">
+  <a href="dashboard.html" class="active"><span>📊</span><span>داشبورد</span></a>
+  <a href="#"><span>📅</span><span>تقویم</span></a>
+  <a href="insurance.html"><span>🪪</span><span>بیمه‌نامه</span></a>
+  <a href="profile.html"><span>👤</span><span>پروفایل</span></a>
+  <a href="index.html" class="accent"><span>🏠</span><span>سایت</span></a>
+</nav>
+
 <div class="dash-layout">
 
   <!-- سایدبار -->

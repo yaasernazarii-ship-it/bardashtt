@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# صفحات خصوصی
+Disallow: /admin-exam.html
+Disallow: /dashboard.html
+Disallow: /insurance.html
+Disallow: /certificate.html
+
+# نقشه سایت
+Sitemap: https://khanevadehbardasht.ir/sitemap.xml

@@ -1129,10 +1129,19 @@ section { padding: 96px 0; }
     min-height: 44px;
   }
   .btn { width: 100%; padding-inline: 18px; white-space: normal; text-align: center; }
+  /* استثناها: دکمه‌هایی که نباید full-width بشوند */
   .nav .btn,
+  .dash-nav .btn,
   .footer .btn,
   .site-footer .btn,
-  .mobile-bottom-nav .btn { width: auto; }
+  .mobile-bottom-nav .btn,
+  .dash-bottom-nav .btn,
+  .actor-card__footer .btn,
+  .card__footer .btn,
+  .podcast-card .btn,
+  [style*="display:flex"] .btn,
+  [style*="display: flex"] .btn,
+  [style*="gap:"] .btn { width: auto; }
 
   /* Inline layouts used across pages */
   [style*="display:flex"],
