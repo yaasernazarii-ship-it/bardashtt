@@ -1,32 +1,52 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
-import HomeSlider from '@/components/HomeSlider';
 
 export const metadata = {
   title: 'خانواده برداشت | اولین آموزشگاه رایگان بازیگری سینما در ایران',
   description: 'خانواده برداشت — اولین و تنها آموزشگاه رایگان بازیگری سینما در ایران. دوره‌های مقدماتی، تکمیلی و پیشرفته بازیگری در تهران و مازندران. ثبت‌نام رایگان.',
-  alternates: { canonical: 'https://khanevadehbardasht.ir/' },
+  alternates: { canonical: 'https://www.bardashtt.com/' },
 };
 
 export default function HomePage() {
   return (
     <PageLayout>
-      {/* اسلایدر */}
-      <HomeSlider />
-
-      {/* نوار CTA */}
-      <div className="cta-strip">
-        <div className="cta-strip__inner">
-          <div className="cta-strip__text">
-            <h2>اولین آموزشگاه رایگان بازیگری سینما در ایران</h2>
-            <p>از سال ۱۳۹۷ · با مجوز رسمی · تهران و مازندران</p>
+      {/* Hero */}
+      <section className="home-hero">
+        <div className="home-hero__bg" />
+        <div className="container home-hero__inner">
+          <div className="home-hero__content">
+            <div className="home-hero__eyebrow">
+              <span /> اولین آموزشگاه رایگان بازیگری سینما در ایران
+            </div>
+            <h1>استعداد بازیگری‌ات را جدی بگیر؛ آموزش حرفه‌ای، رایگان و قابل اعتماد</h1>
+            <p>
+              خانواده برداشت از سال ۱۳۹۷ بستری رسمی برای کشف، آموزش و آماده‌سازی هنرجویان بازیگری در تهران و مازندران فراهم کرده است؛ با مسیر آموزشی مرحله‌به‌مرحله، فضای هنری و نگاه حرفه‌ای به آینده.
+            </p>
+            <div className="home-hero__actions">
+              <Link href="/audition" className="btn btn--gold btn--lg">ثبت‌نام در کلاس‌ها</Link>
+              <Link href="/register" className="btn btn--hero-secondary btn--lg">ساخت حساب رایگان</Link>
+            </div>
+            <div className="home-hero__trust">
+              <div><strong>۱۰۰٪</strong><span>رایگان</span></div>
+              <div><strong>۱۳۹۷</strong><span>سال تأسیس</span></div>
+              <div><strong>۲</strong><span>شعبه فعال</span></div>
+            </div>
           </div>
-          <div className="cta-strip__btns">
-            <Link href="/audition" className="btn btn--dark">ثبت‌نام در کلاس‌ها</Link>
-            <Link href="/register" className="btn btn--outline">ساخت حساب رایگان</Link>
+          <div className="home-hero__visual" aria-hidden="true">
+            <div className="cinema-card cinema-card--main">
+              <span className="cinema-card__label">مسیر هنرجو</span>
+              <strong>از علاقه تا اجرای حرفه‌ای</strong>
+              <p>بیان، بدن، تحلیل نقش، کار مقابل دوربین</p>
+            </div>
+            <div className="cinema-card cinema-card--floating">
+              <span>🎬</span>
+              <strong>آموزش سینمایی</strong>
+            </div>
+            <div className="cinema-orbit cinema-orbit--one" />
+            <div className="cinema-orbit cinema-orbit--two" />
           </div>
         </div>
-      </div>
+      </section>
 
       {/* آمار */}
       <div className="stats-bar">

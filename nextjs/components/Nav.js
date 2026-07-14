@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -40,76 +40,52 @@ const navLinks = [
   { href: '/blog', label: 'وبلاگ' },
 ];
 
-export default function Nav() {
+export default function Nav({ onOpenChat }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState(null);
-  const [openSubmenu, setOpenSubmenu] = useState(null);
   const pathname = usePathname();
-  const backdropRef = useRef(null);
 
   useEffect(() => {
     setMenuOpen(false);
-    setOpenDropdown(null);
-    setOpenSubmenu(null);
   }, [pathname]);
 
   useEffect(() => {
+    document.body.classList.toggle('nav-open', menuOpen);
+    document.documentElement.classList.toggle('nav-open', menuOpen);
     if (menuOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = '';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+      document.body.classList.remove('nav-open');
+      document.documentElement.classList.remove('nav-open');
+    };
   }, [menuOpen]);
 
   const isActive = (href) => pathname === href || (href !== '/' && pathname.startsWith(href));
 
   return (
     <>
-      <nav className="nav">
+      <nav className="nav" aria-label="ناوبری اصلی">
         <div className="nav__inner">
           <Link href="/" className="nav__logo">
             <Image src="/imgg.png" alt="خانواده برداشت" width={90} height={30} style={{ height: 30, width: 'auto' }} />
           </Link>
-          <ul className={`nav__links${menuOpen ? ' nav__links--open' : ''}`}>
-            <li className="nav__drawer-head">
-              <div>
-                <strong>منوی سایت</strong>
-                <span>خانواده برداشت</span>
-              </div>
-              <button type="button" onClick={() => setMenuOpen(false)} aria-label="بستن منو">✕</button>
-            </li>
+          <ul className="nav__links">
             {navLinks.map((item, i) => (
               item.children ? (
-                <li key={i} className={`has-dropdown${openDropdown === i ? ' is-open' : ''}`}>
-                  <button
-                    type="button"
-                    className={`nav__dropdown-toggle${openDropdown === i ? ' active' : ''}`}
-                    onClick={() => {
-                      if (window.innerWidth <= 900) {
-                        setOpenDropdown(openDropdown === i ? null : i);
-                        setOpenSubmenu(null);
-                      }
-                    }}
-                  >
+                <li key={i} className="has-dropdown">
+                  <button type="button" className="nav__dropdown-toggle">
                     <span>{item.label}</span>
-                    <span className="nav__caret" aria-hidden="true">{openDropdown === i ? '−' : '+'}</span>
+                    <span className="nav__caret" aria-hidden="true" />
                   </button>
                   <ul className="dropdown" style={item.label === 'آثار' ? { minWidth: 210 } : {}}>
                     {item.children.map((child, j) => (
                       child.type === 'sep' ? (
                         <li key={j} className="drop-sep" />
                       ) : child.sub ? (
-                        <li key={j} className={`has-submenu${openSubmenu === `${i}-${j}` ? ' is-open' : ''}`}>
-                          <button
-                            type="button"
-                            className="nav__submenu-toggle"
-                            onClick={() => {
-                              if (window.innerWidth <= 900) {
-                                const key = `${i}-${j}`;
-                                setOpenSubmenu(openSubmenu === key ? null : key);
-                              }
-                            }}
-                          >
+                        <li key={j} className="has-submenu">
+                          <button type="button" className="nav__submenu-toggle">
                             <span>{child.label}</span>
-                            <span className="nav__caret nav__caret--sub" aria-hidden="true">{openSubmenu === `${i}-${j}` ? '−' : '+'}</span>
+                            <span className="nav__caret nav__caret--sub" aria-hidden="true" />
                           </button>
                           <ul className="submenu">
                             {child.sub.map((s, k) => (
@@ -125,31 +101,67 @@ export default function Nav() {
                 </li>
               ) : (
                 <li key={i}>
-                  <Link href={item.href} className={isActive(item.href) ? 'active' : ''}>
-                    {item.label}
-                  </Link>
+                  <Link href={item.href} className={isActive(item.href) ? 'active' : ''} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</Link>
                 </li>
               )
             ))}
-            <li className="nav__drawer-actions visible" style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '20px 24px', borderTop: '1px solid var(--border)', marginTop: 'auto' }}>
-              <Link href="/auth" className="btn btn--outline">ورود</Link>
-              <Link href="/register" className="btn btn--dark">ثبت‌نام</Link>
-            </li>
           </ul>
           <div className="nav__actions">
+            <button type="button" className="nav__support-btn" onClick={onOpenChat}><span className="nav__support-dot" />پشتیبانی</button>
             <Link href="/auth" className="btn btn--outline btn--sm">ورود</Link>
             <Link href="/register" className="btn btn--dark btn--sm">ثبت‌نام</Link>
           </div>
-          <button className="nav__menu-btn" onClick={() => setMenuOpen(p => !p)} aria-label="منو">
+          <button
+            type="button"
+            className="nav__menu-btn"
+            onClick={() => setMenuOpen(p => !p)}
+            aria-label={menuOpen ? 'بستن منو' : 'باز کردن منو'}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+          >
             {menuOpen ? '✕' : '☰'}
           </button>
         </div>
       </nav>
       <div
-        ref={backdropRef}
         className={`nav__backdrop${menuOpen ? ' active' : ''}`}
         onClick={() => setMenuOpen(false)}
       />
+      <aside id="mobile-menu" className={`mobile-drawer${menuOpen ? ' mobile-drawer--open' : ''}`} aria-hidden={!menuOpen}>
+        <div className="mobile-drawer__head">
+          <div>
+            <strong>منوی سایت</strong>
+            <span>خانواده برداشت</span>
+          </div>
+          <button type="button" onClick={() => setMenuOpen(false)} aria-label="بستن منو">✕</button>
+        </div>
+        <div className="mobile-drawer__links">
+          {navLinks.map((item, i) => (
+            item.children ? (
+              <details key={i} className="mobile-drawer__group">
+                <summary>{item.label}</summary>
+                <div className="mobile-drawer__sub">
+                  {item.children.map((child, j) => (
+                    child.type === 'sep' ? null : child.sub ? (
+                      <details key={j} className="mobile-drawer__group mobile-drawer__group--nested">
+                        <summary>{child.label}</summary>
+                        <div className="mobile-drawer__sub">
+                          {child.sub.map((s, k) => <Link key={k} href={s.href}>{s.label}</Link>)}
+                        </div>
+                      </details>
+                    ) : <Link key={j} href={child.href}>{child.label}</Link>
+                  ))}
+                </div>
+              </details>
+            ) : <Link key={i} href={item.href} className={isActive(item.href) ? 'active' : ''} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</Link>
+          ))}
+        </div>
+        <div className="mobile-drawer__actions">
+          <button type="button" className="btn btn--outline" onClick={onOpenChat}>پشتیبانی آنلاین</button>
+          <Link href="/auth" className="btn btn--outline">ورود</Link>
+          <Link href="/register" className="btn btn--dark">ثبت‌نام</Link>
+        </div>
+      </aside>
     </>
   );
 }

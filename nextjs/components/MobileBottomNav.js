@@ -7,31 +7,23 @@ const items = [
   { ico: '🎓', label: 'دوره‌ها', href: '/courses' },
   { ico: '✍️', label: 'ثبت‌نام', href: '/register', accent: true },
   { ico: '📞', label: 'تماس', href: 'tel:02191090934' },
-  { ico: '☰', label: 'منو', menu: true },
 ];
 
-export default function MobileBottomNav({ onMenuClick }) {
+export default function MobileBottomNav() {
   const pathname = usePathname();
 
   return (
     <nav className="mobile-bottom-nav" aria-label="ناوبری موبایل">
-      {items.map((item, i) =>
-        item.menu ? (
-          <button key={i} className="mbn-item" type="button" onClick={onMenuClick}>
-            <span className="mbn-ico">{item.ico}</span>
-            <span>{item.label}</span>
-          </button>
-        ) : (
-          <Link
-            key={i}
-            href={item.href}
-            className={`mbn-item${item.accent ? ' mbn-item--accent' : ''}${pathname === item.href ? ' active' : ''}`}
-          >
-            <span className="mbn-ico">{item.ico}</span>
-            <span>{item.label}</span>
-          </Link>
-        )
-      )}
+      {items.map((item, i) => (
+        <Link
+          key={i}
+          href={item.href}
+          className={`mbn-item${item.accent ? ' mbn-item--accent' : ''}${pathname === item.href ? ' active' : ''}`}
+        >
+          <span className="mbn-ico">{item.ico}</span>
+          <span>{item.label}</span>
+        </Link>
+      ))}
     </nav>
   );
 }

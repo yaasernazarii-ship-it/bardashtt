@@ -8,18 +8,29 @@ const vazirmatn = Vazirmatn({
   display: 'swap',
 });
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
+
 export const metadata = {
-  metadataBase: new URL('https://khanevadehbardasht.ir'),
+  metadataBase: new URL('https://www.bardashtt.com'),
+  applicationName: 'خانواده برداشت',
   title: {
-    default: 'خانواده برداشت | اولین آموزشگاه رایگان بازیگری سینما در ایران',
+    default: 'خانواده برداشت | آموزش رایگان بازیگری سینما',
     template: '%s | خانواده برداشت',
   },
-  description: 'خانواده برداشت — اولین و تنها آموزشگاه رایگان بازیگری سینما در ایران. دوره‌های مقدماتی، تکمیلی و پیشرفته بازیگری در تهران و مازندران. ثبت‌نام رایگان.',
+  description: 'خانواده برداشت، آموزشگاه رایگان بازیگری سینما در ایران با دوره‌های مقدماتی، تکمیلی، پیشرفته و فیلمسازی در تهران و مازندران.',
   keywords: ['آموزشگاه بازیگری رایگان', 'دوره بازیگری سینما', 'کلاس بازیگری ایران', 'خانواده برداشت', 'یاسر نظری', 'آموزش بازیگری تهران'],
+  alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
     locale: 'fa_IR',
     siteName: 'خانواده برداشت',
+    url: '/',
+    title: 'خانواده برداشت | آموزش رایگان بازیگری سینما',
+    description: 'آموزش رایگان و حرفه‌ای بازیگری سینما برای کشف و پرورش استعدادهای هنری.',
   },
   twitter: { card: 'summary_large_image' },
   robots: { index: true, follow: true },
@@ -36,7 +47,7 @@ export default function RootLayout({ children }) {
               '@context': 'https://schema.org',
               '@type': 'EducationalOrganization',
               name: 'خانواده برداشت',
-              url: 'https://khanevadehbardasht.ir',
+              url: 'https://www.bardashtt.com',
               telephone: '+982191090934',
             }),
           }}

@@ -8,4 +8,4 @@ Disallow: /insurance.html
 Disallow: /certificate.html
 
 # نقشه سایت
-Sitemap: https://khanevadehbardasht.ir/sitemap.xml
+Sitemap: https://www.bardashtt.com/sitemap.xml

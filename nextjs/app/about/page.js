@@ -5,7 +5,7 @@ import PageSlider from '@/components/PageSlider';
 export const metadata = {
   title: 'درباره ما — آموزشگاه رایگان بازیگری',
   description: 'آشنایی با خانواده برداشت، اولین آموزشگاه رایگان بازیگری سینما در ایران. داستان ما، تیم آموزشی، شعبه تهران و مازندران.',
-  alternates: { canonical: 'https://khanevadehbardasht.ir/about' },
+  alternates: { canonical: 'https://www.bardashtt.com/about' },
 };
 
 export default function AboutPage() {
