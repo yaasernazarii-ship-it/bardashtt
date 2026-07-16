@@ -57,8 +57,8 @@ export default function AdminEnrollments() {
               <span>{dateFmt.format(new Date(r.createdAt))}</span>
             </div>
             {r.aiAnalysis && <p className="enroll-admin-ai">{r.aiAnalysis}</p>}
-            {r.videoRef && <div className="enroll-admin-ref">کد پیگیری فرم: <b dir="ltr">{r.videoRef}</b></div>}
-            {r.videoUrl && <a className="enroll-admin-video" href={r.videoUrl} target="_blank" rel="noopener noreferrer">🎬 باز کردن فرم ویدیوها (با کد پیگیری بالا مطابقت دهید)</a>}
+            {r.nationalId && <div className="enroll-admin-ref">کد ملی: <b dir="ltr">{r.nationalId}</b></div>}
+            {r.videoUrl && <a className="enroll-admin-video" href={r.videoUrl} target="_blank" rel="noopener noreferrer">🎬 باز کردن فرم ویدیوها (با کد ملی بالا مطابقت دهید)</a>}
             {r.status === 'submitted' && (
               <div className="enroll-actions" style={{ marginTop: 12 }}>
                 <button className="btn btn--dark" disabled={busyId === r.id} onClick={() => act(r.id, 'approve')}>تأیید و ساخت حساب</button>

@@ -27,6 +27,24 @@ export const ACTOR_TYPES = ['بازیگر احساسی', 'بازیگر بیان�
 // فرم ارسال ویدیوی معرفی هنرجو (فرم‌افزار).
 export const VIDEO_FORM_URL = 'https://formafzar.com/form/wo6jb';
 
+// اعتبارسنجی کد ملی ایرانی (۱۰ رقم + رقم کنترلی). ورودی می‌تواند ارقام فارسی داشته باشد.
+export function normalizeNationalId(value) {
+  return String(value || '')
+    .replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[^\d]/g, '');
+}
+
+export function isValidNationalId(value) {
+  const code = normalizeNationalId(value);
+  if (!/^\d{10}$/.test(code)) return false;
+  if (/^(\d)\1{9}$/.test(code)) return false; // رد ارقام یکسان
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += Number(code[i]) * (10 - i);
+  const r = sum % 11;
+  const check = Number(code[9]);
+  return r < 2 ? check === r : check === 11 - r;
+}
+
 // اعتبارسنجی پاسخ‌ها: آرایه‌ای از اندیس گزینه‌ها به طول سؤالات.
 export function validateAnswers(answers) {
   if (!Array.isArray(answers) || answers.length !== QUESTIONS.length) return null;

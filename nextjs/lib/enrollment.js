@@ -2,7 +2,7 @@
 import { chat, isAiConfigured } from './ai';
 import { QUESTIONS, ACTOR_TYPES } from './enrollmentData';
 
-export { COURSES, QUESTIONS, ACTOR_TYPES, VIDEO_FORM_URL, courseByKey, validateAnswers } from './enrollmentData';
+export { COURSES, QUESTIONS, ACTOR_TYPES, VIDEO_FORM_URL, courseByKey, validateAnswers, isValidNationalId, normalizeNationalId } from './enrollmentData';
 
 // تشخیص محلی (پشتیبان) بر پایه‌ی مجموع گزینه‌ها، در صورت در دسترس نبودن هوش مصنوعی.
 function fallbackType(answers) {

@@ -10,7 +10,7 @@ export async function GET() {
     orderBy: [{ status: 'asc' }, { createdAt: 'desc' }],
     select: {
       id: true, courseTitle: true, fullName: true, phone: true, status: true,
-      actorType: true, aiAnalysis: true, videoUrl: true, videoRef: true, adminNote: true,
+      actorType: true, aiAnalysis: true, videoUrl: true, nationalId: true, adminNote: true,
       answers: true, createdAt: true,
     },
   });
