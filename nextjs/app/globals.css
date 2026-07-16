@@ -1063,3 +1063,145 @@ summary:focus-visible {
   padding-top: 14px;
 }
 .chat-input .form-input { flex: 1 1 auto; }
+
+/* ===== فرایند ثبت‌نام دوره‌ها (Enrollment) ===== */
+.enroll-steps {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 22px;
+  padding: 0;
+  justify-content: center;
+}
+.enroll-steps li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.enroll-steps__num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+}
+.enroll-steps li.active { color: var(--dark); }
+.enroll-steps li.active .enroll-steps__num { background: var(--gold); border-color: var(--gold); color: var(--dark); }
+.enroll-steps li.done .enroll-steps__num { background: var(--dark); border-color: var(--dark); color: #fff; }
+
+.enroll-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 28px;
+}
+.enroll-card__title { font-size: 1.1rem; margin: 0 0 18px; color: var(--dark); }
+
+.enroll-courses {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.enroll-course {
+  font-family: inherit;
+  text-align: center;
+  padding: 14px 8px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: 0.15s;
+}
+.enroll-course:hover { border-color: var(--gold); }
+.enroll-course.active { border-color: var(--gold); background: #FFFBF0; }
+.enroll-course__num { font-size: 0.7rem; font-weight: 800; color: var(--gold); }
+.enroll-course__title { font-weight: 800; color: var(--dark); }
+.enroll-course__sub { font-size: 0.72rem; color: var(--muted); }
+
+.enroll-q {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 12px;
+}
+.enroll-q__idx { color: var(--gold); font-weight: 800; font-size: 0.75rem; margin-bottom: 8px; }
+.enroll-q__text { font-size: 0.98rem; margin: 0 0 14px; color: var(--dark); }
+.enroll-q__opts { display: grid; gap: 8px; }
+.enroll-opt {
+  font-family: inherit;
+  text-align: right;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.enroll-opt:hover { border-color: var(--gold); }
+.enroll-opt.active { border-color: var(--gold); background: #FFFBF0; }
+
+.enroll-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; margin-top: 8px; }
+
+.enroll-result { text-align: center; padding: 10px 0; }
+.enroll-result__emoji { font-size: 3.4rem; }
+.enroll-result__label { color: var(--muted); font-weight: 700; }
+.enroll-result__type { color: var(--dark); font-size: 1.8rem; margin: 8px 0 12px; }
+.enroll-result__text { color: var(--muted); line-height: 1.9; max-width: 520px; margin: 0 auto 22px; }
+
+/* لیست ادمین */
+.enroll-admin-list { display: grid; gap: 14px; }
+.enroll-admin-item {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+}
+.enroll-admin-item.status-approved { border-inline-start: 4px solid #15803D; }
+.enroll-admin-item.status-rejected { border-inline-start: 4px solid #DC2626; }
+.enroll-admin-item.status-submitted { border-inline-start: 4px solid var(--gold); }
+.enroll-admin-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.enroll-admin-phone { color: var(--muted); margin-inline-start: 10px; font-size: 0.85rem; }
+.enroll-admin-meta { display: flex; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: 0.82rem; margin: 10px 0; }
+.enroll-admin-ai { color: var(--text); background: var(--surface); border-radius: 10px; padding: 12px 14px; line-height: 1.8; font-size: 0.88rem; margin: 8px 0; }
+.enroll-admin-video { display: inline-block; color: var(--dark); font-weight: 700; margin-top: 4px; }
+
+.enroll-badge { padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 800; white-space: nowrap; }
+.badge-submitted { background: #FFF7ED; color: #92400E; }
+.badge-approved { background: #F0FDF4; color: #15803D; }
+.badge-rejected { background: #FEF2F2; color: #DC2626; }
+
+/* پنل هنرجو */
+.enroll-empty { text-align: center; background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 40px 24px; }
+.enroll-empty p { color: var(--muted); margin-bottom: 18px; }
+.enroll-mine { display: grid; gap: 16px; }
+.enroll-mine-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+.enroll-mine-type { margin: 10px 0; color: var(--dark); }
+.enroll-mine-ok { color: #15803D; font-weight: 700; margin-top: 12px; }
+.enroll-mine-date { color: var(--muted); font-size: 0.78rem; margin-top: 12px; }
+.enroll-timeline { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 12px; }
+.enroll-timeline li { display: flex; align-items: center; gap: 12px; color: var(--muted); }
+.enroll-timeline__dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--surface); border: 1px solid var(--border);
+  font-size: 0.8rem; font-weight: 800; flex: none;
+}
+.enroll-timeline li.done { color: var(--dark); font-weight: 700; }
+.enroll-timeline li.done .enroll-timeline__dot { background: #15803D; border-color: #15803D; color: #fff; }
+
+@media (max-width: 640px) {
+  .enroll-card { padding: 18px; }
+  .enroll-steps li .enroll-steps__label { display: none; }
+  .enroll-actions .btn { flex: 1 1 auto; }
+}

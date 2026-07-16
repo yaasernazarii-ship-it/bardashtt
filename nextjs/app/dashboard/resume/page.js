@@ -11,7 +11,7 @@ export default async function ResumePage() {
 
   return (
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
-      <DashboardSidebar active="resume" isAdmin={isManager(user)} />
+      <DashboardSidebar active="resume" isAdmin={user.role === 'admin'} isManager={isManager(user)} />
       <main className="main-area">
         <div style={{ marginBottom: 28 }}>
           <h1 className="heading">رزومه بازیگری</h1>

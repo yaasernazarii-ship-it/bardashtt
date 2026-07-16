@@ -14,7 +14,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
-      <DashboardSidebar active="dashboard" isAdmin={isManager(user)} />
+      <DashboardSidebar active="dashboard" isAdmin={user.role === 'admin'} isManager={isManager(user)} />
       <main className="main-area">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 32 }}>
           <div><h1 className="heading">داشبورد هنرجو</h1><p style={{ color: 'var(--muted)' }}>خوش آمدید {name}؛ وضعیت آموزشی شما اینجاست.</p></div>

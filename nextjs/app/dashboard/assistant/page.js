@@ -11,7 +11,7 @@ export default async function AssistantPage() {
 
   return (
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
-      <DashboardSidebar active="assistant" isAdmin={isManager(user)} />
+      <DashboardSidebar active="assistant" isAdmin={user.role === 'admin'} isManager={isManager(user)} />
       <main className="main-area">
         <div style={{ marginBottom: 24 }}>
           <h1 className="heading">دستیار هوشمند کتاب</h1>

@@ -18,6 +18,7 @@ model User {
   updatedAt   DateTime     @updatedAt
   sessions    Session[]
   resume      ActorResume?
+  enrollments Enrollment[]
 }
 
 model OtpCode {
@@ -97,4 +98,25 @@ model BookChunk {
   createdAt DateTime @default(now())
 
   @@index([idx])
+}
+
+model Enrollment {
+  id          String   @id @default(cuid())
+  courseKey   String // شناسه دوره (۰۱ تا ۰۵)
+  courseTitle String
+  fullName    String
+  phone       String
+  status      String   @default("submitted") // submitted | approved | rejected
+  answers     Json? // پاسخ‌های تست آنلاین
+  actorType   String? // تیپ بازیگری تشخیص‌داده‌شده توسط هوش مصنوعی
+  aiAnalysis  String? // تحلیل متنی هوش مصنوعی
+  videoUrl    String? // لینک ویدیوی ارسالی هنرجو
+  adminNote   String? // یادداشت/دلیل ادمین
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([phone])
 }
