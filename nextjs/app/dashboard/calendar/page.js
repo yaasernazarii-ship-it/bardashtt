@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { getSessionUser } from '@/lib/auth';
+import { getSessionUser, isManager } from '@/lib/auth';
+import CalendarBoard from '@/components/CalendarBoard';
 
 export const metadata = { title: 'تقویم کلاس' };
 
@@ -25,11 +26,13 @@ export default async function CalendarPage() {
       <main className="main-area">
         <div style={{ marginBottom: 28 }}>
           <h1 className="heading">تقویم کلاس</h1>
-          <p style={{ color: 'var(--muted)' }}>برنامه کلاس‌های شما به‌صورت تقویمی اینجا نمایش داده می‌شود.</p>
+          <p style={{ color: 'var(--muted)' }}>
+            {isManager(user)
+              ? 'برنامه کلاس‌ها را مدیریت کنید؛ هنرجویان همین فهرست را می‌بینند.'
+              : 'برنامه کلاس‌های شما به‌صورت تقویمی اینجا نمایش داده می‌شود.'}
+          </p>
         </div>
-        <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 32, textAlign: 'center' }}>
-          <p style={{ color: 'var(--muted)' }}>این بخش در مرحله بعد فعال می‌شود.</p>
-        </div>
+        <CalendarBoard />
       </main>
     </div>
   );

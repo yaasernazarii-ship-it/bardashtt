@@ -5,6 +5,10 @@ import { prisma } from './prisma';
 export const SESSION_COOKIE = 'bsid';
 const SESSION_TTL_DAYS = 30;
 
+export function isManager(user) {
+  return !!user && (user.role === 'admin' || user.role === 'editor');
+}
+
 export function normalizePhone(input) {
   const digits = String(input || '').replace(/[^\d]/g, '');
   if (/^09\d{9}$/.test(digits)) return digits;
