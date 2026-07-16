@@ -1,28 +1,42 @@
+import Link from 'next/link';
+import { prisma } from '@/lib/prisma';
 import SimplePage from '@/components/SimplePage';
 
-export const metadata = { title: 'بازیگران', description: 'معرفی مسیر رشد بازیگران و استعدادهای خانواده برداشت.' };
+export const metadata = {
+  title: 'بانک بازیگران',
+  description: 'فهرست رزومه بازیگران خانواده برداشت برای فیلم‌سازان و کارگردانان.',
+  alternates: { canonical: 'https://www.bardashtt.com/actors' },
+};
 
-const actors = [
-  ['هنرجوی مقدماتی', 'شروع مسیر با تمرین بیان، بدن و شناخت نقش'],
-  ['هنرجوی تکمیلی', 'تمرکز روی تکنیک، تحلیل متن و اجرای صحنه'],
-  ['آماده تست', 'آماده‌سازی برای تست بازیگری و حضور مقابل دوربین'],
-  ['گروه نوجوان', 'آموزش امن، هدفمند و متناسب با سن نوجوانان'],
-  ['گروه بزرگسال', 'مسیر جدی برای علاقه‌مندان ورود حرفه‌ای'],
-  ['استعدادهای شمال', 'شناسایی و رشد هنرجویان شعبه مازندران'],
-];
+export const dynamic = 'force-dynamic';
 
-export default function ActorsPage() {
+export default async function ActorsPage() {
+  const actors = await prisma.actorResume.findMany({
+    where: { isPublic: true },
+    orderBy: { updatedAt: 'desc' },
+    select: { id: true, fullName: true, headline: true, city: true, photoUrl: true, gender: true },
+  });
+
   return (
-    <SimplePage title="بازیگران" subtitle="مسیر رشد استعدادهایی که در خانواده برداشت آموزش می‌بینند" tag="هنرجویان">
-      <div className="responsive-grid-3">
-        {actors.map(([name, text], i) => (
-          <div key={name} className="content-card" style={{ textAlign: 'center' }}>
-            <div className="content-card__icon" style={{ margin: '0 auto 16px' }}>{i + 1}</div>
-            <h3>{name}</h3>
-            <p>{text}</p>
-          </div>
-        ))}
-      </div>
+    <SimplePage title="بانک بازیگران" subtitle="رزومه بازیگران خانواده برداشت؛ ویژه فیلم‌سازان و کارگردانان" tag="بازیگران" cta={false}>
+      {actors.length === 0 ? (
+        <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 40, textAlign: 'center' }}>
+          <p style={{ color: 'var(--muted)' }}>هنوز رزومه‌ای برای نمایش عمومی ثبت نشده است.</p>
+        </div>
+      ) : (
+        <div className="responsive-grid-3">
+          {actors.map((a) => (
+            <Link key={a.id} href={`/actors/${a.id}`} className="content-card actor-card">
+              <div className="actor-photo" style={a.photoUrl ? { backgroundImage: `url(${a.photoUrl})` } : undefined}>
+                {!a.photoUrl && <span>{a.gender === 'female' ? '👩‍🎤' : '🎭'}</span>}
+              </div>
+              <h3 style={{ margin: '12px 0 4px' }}>{a.fullName}</h3>
+              {a.headline && <p style={{ color: 'var(--muted)', margin: 0 }}>{a.headline}</p>}
+              {a.city && <span className="tag tag--gold" style={{ marginTop: 10, alignSelf: 'flex-start' }}>{a.city}</span>}
+            </Link>
+          ))}
+        </div>
+      )}
     </SimplePage>
   );
 }

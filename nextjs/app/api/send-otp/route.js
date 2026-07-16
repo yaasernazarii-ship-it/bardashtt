@@ -1,11 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { normalizePhone } from '@/lib/auth';
-
-// اتصال به پنل پیامک بعداً از طریق همین تابع انجام می‌شود.
-async function sendSms(/* phone, code */) {
-  // TODO: وقتی اطلاعات پنل پیامک ارسال شد، ارسال واقعی اینجا اضافه می‌شود.
-  return { delivered: false };
-}
+import { isSmsConfigured, sendOtpSms } from '@/lib/sms';
 
 export async function POST(request) {
   try {
@@ -25,12 +20,18 @@ export async function POST(request) {
     });
     await prisma.otpCode.create({ data: { phone, code, expiresAt } });
 
-    const sms = await sendSms(phone, code);
+    const sms = await sendOtpSms(phone, code);
 
-    // تا وقتی پنل پیامک وصل نشده، کد برای تست برگردانده می‌شود.
-    const payload = { ok: true };
-    if (!sms.delivered) payload.devOtp = code;
-    return Response.json(payload);
+    if (isSmsConfigured()) {
+      // پنل پیامک وصل است؛ کد فقط از طریق پیامک ارسال می‌شود.
+      if (!sms.delivered) {
+        return Response.json({ ok: false, error: 'ارسال پیامک ناموفق بود. کمی بعد دوباره تلاش کنید.' }, { status: 502 });
+      }
+      return Response.json({ ok: true });
+    }
+
+    // حالت تست: تا وقتی پنل پیامک وصل نشده، کد برای آزمایش برگردانده می‌شود.
+    return Response.json({ ok: true, devOtp: code });
   } catch {
     return Response.json({ ok: false, error: 'درخواست نامعتبر است.' }, { status: 400 });
   }

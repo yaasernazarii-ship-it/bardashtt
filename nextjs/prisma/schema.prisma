@@ -8,15 +8,16 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(cuid())
-  phone       String    @unique
+  id          String       @id @default(cuid())
+  phone       String       @unique
   displayName String?
   city        String?
   birthYear   Int?
-  role        String    @default("member") // member | filmmaker | editor | admin
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  role        String       @default("member") // member | filmmaker | editor | admin
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   sessions    Session[]
+  resume      ActorResume?
 }
 
 model OtpCode {
@@ -54,4 +55,36 @@ model ClassEvent {
   updatedAt   DateTime @updatedAt
 
   @@index([startsAt])
+}
+
+model ActorResume {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName    String
+  headline    String?
+  bio         String?
+  gender      String?
+  city        String?
+  birthYear   Int?
+  heightCm    Int?
+  skills      String?
+  experience  String?
+  photoUrl    String?
+  showreelUrl String?
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isPublic])
+}
+
+model GalleryItem {
+  id          String   @id @default(cuid())
+  imageUrl    String
+  caption     String?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
 }
