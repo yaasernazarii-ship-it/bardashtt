@@ -1,7 +1,6 @@
-'use client';
 import Link from 'next/link';
-import { useState } from 'react';
 import PageLayout from '@/components/PageLayout';
+import AuthForm from '@/components/AuthForm';
 
 const perks = [
   { title: 'ورود سریع', text: 'فقط با شماره موبایل و کد تأیید، بدون رمزهای پیچیده.' },
@@ -9,8 +8,13 @@ const perks = [
   { title: 'مناسب موبایل', text: 'فرآیند ورود برای استفاده سریع روی گوشی بهینه شده است.' },
 ];
 
+export const metadata = {
+  title: 'ورود هنرجویان',
+  description: 'ورود به حساب کاربری خانواده برداشت با شماره موبایل و کد تأیید.',
+  alternates: { canonical: 'https://www.bardashtt.com/auth' },
+};
+
 export default function AuthPage() {
-  const [otpSent, setOtpSent] = useState(false);
   return (
     <PageLayout>
       <div className="page-header">
@@ -39,20 +43,10 @@ export default function AuthPage() {
               ))}
             </div>
           </div>
-          <form className="form-shell" onSubmit={(e) => { e.preventDefault(); setOtpSent(true); }}>
-            <div className="form-shell__head">
-              <h2>ورود با شماره موبایل</h2>
-              <p>شماره موبایل خود را وارد کنید تا کد تأیید برایتان ارسال شود.</p>
-            </div>
-            {otpSent && <div className="alert alert--info">کد تأیید آزمایشی: 1234</div>}
-            <div className="form-group">
-              <label className="form-label">شماره موبایل</label>
-              <input className="form-input" dir="ltr" type="tel" required placeholder="09xxxxxxxxx" />
-            </div>
-            {otpSent && <div className="otp-wrap">{[0,1,2,3].map(i => <input key={i} className="otp-input" maxLength="1" inputMode="numeric" />)}</div>}
-            <button className="btn btn--dark btn--full">{otpSent ? 'ورود' : 'دریافت کد'}</button>
+          <div>
+            <AuthForm />
             <p className="form-hint" style={{ textAlign: 'center', marginTop: 14 }}>حساب ندارید؟ <Link href="/register" style={{ color: 'var(--dark)', fontWeight: 800 }}>عضویت رایگان</Link></p>
-          </form>
+          </div>
         </div>
       </section>
     </PageLayout>

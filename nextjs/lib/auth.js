@@ -1,0 +1,52 @@
+import { randomBytes } from 'crypto';
+import { cookies } from 'next/headers';
+import { prisma } from './prisma';
+
+export const SESSION_COOKIE = 'bsid';
+const SESSION_TTL_DAYS = 30;
+
+export function normalizePhone(input) {
+  const digits = String(input || '').replace(/[^\d]/g, '');
+  if (/^09\d{9}$/.test(digits)) return digits;
+  if (/^9\d{9}$/.test(digits)) return '0' + digits;
+  if (/^989\d{9}$/.test(digits)) return '0' + digits.slice(2);
+  return null;
+}
+
+export async function createSession(userId) {
+  const token = randomBytes(32).toString('hex');
+  const expiresAt = new Date(Date.now() + SESSION_TTL_DAYS * 24 * 60 * 60 * 1000);
+  await prisma.session.create({ data: { token, userId, expiresAt } });
+
+  const store = await cookies();
+  store.set(SESSION_COOKIE, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    expires: expiresAt,
+  });
+  return token;
+}
+
+export async function getSessionUser() {
+  const store = await cookies();
+  const token = store.get(SESSION_COOKIE)?.value;
+  if (!token) return null;
+
+  const session = await prisma.session.findUnique({
+    where: { token },
+    include: { user: true },
+  });
+  if (!session || session.expiresAt < new Date()) return null;
+  return session.user;
+}
+
+export async function destroySession() {
+  const store = await cookies();
+  const token = store.get(SESSION_COOKIE)?.value;
+  if (token) {
+    await prisma.session.deleteMany({ where: { token } });
+    store.delete(SESSION_COOKIE);
+  }
+}

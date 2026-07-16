@@ -1,0 +1,10 @@
+import { getSessionUser } from '@/lib/auth';
+
+export async function GET() {
+  const user = await getSessionUser();
+  if (!user) return Response.json({ ok: false, user: null }, { status: 401 });
+  return Response.json({
+    ok: true,
+    user: { id: user.id, phone: user.phone, displayName: user.displayName, city: user.city, birthYear: user.birthYear, role: user.role },
+  });
+}
