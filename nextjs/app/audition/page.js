@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import PageLayout from '@/components/PageLayout';
-import { COURSES, QUESTIONS } from '@/lib/enrollmentData';
+import { COURSES, QUESTIONS, VIDEO_FORM_URL } from '@/lib/enrollmentData';
 
 const STEPS = ['دوره و مشخصات', 'تست آنلاین', 'نتیجه هوش مصنوعی', 'ارسال ویدیو', 'پایان'];
 
@@ -12,7 +12,7 @@ export default function AuditionPage() {
   const [phone, setPhone] = useState('');
   const [answers, setAnswers] = useState({});
   const [analysis, setAnalysis] = useState(null); // { actorType, analysis }
-  const [videoUrl, setVideoUrl] = useState('');
+  const [videoConfirmed, setVideoConfirmed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
@@ -48,7 +48,7 @@ export default function AuditionPage() {
           answers: QUESTIONS.map((_, i) => answers[i]),
           actorType: analysis?.actorType,
           aiAnalysis: analysis?.analysis,
-          videoUrl,
+          videoConfirmed,
         }),
       });
       const data = await res.json();
@@ -140,13 +140,16 @@ export default function AuditionPage() {
               <>
                 <h3 className="enroll-card__title">ارسال ویدیوی معرفی</h3>
                 <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 16 }}>
-                  یک ویدیوی کوتاه از خودتان (معرفی و یک اجرای کوتاه) در آپارات، اینستاگرام یا گوگل‌درایو بارگذاری کنید و لینک آن را اینجا وارد نمایید. پس از بررسی و تأیید مدیر، حساب کاربری شما به‌صورت خودکار ساخته می‌شود.
+                  یک ویدیوی کوتاه از خودتان (معرفی و یک اجرای کوتاه) از طریق فرم زیر ارسال کنید. حتماً همان نام و شماره موبایلی را که در این ثبت‌نام وارد کرده‌اید در فرم بنویسید تا درخواست شما شناسایی شود. پس از بررسی و تأیید مدیر، حساب کاربری شما به‌صورت خودکار ساخته می‌شود.
                 </p>
-                <div className="form-group"><label className="form-label">لینک ویدیو</label>
-                  <input className="form-input" dir="ltr" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://..." /></div>
+                <a className="btn btn--gold btn--full" href={VIDEO_FORM_URL} target="_blank" rel="noopener noreferrer" style={{ marginBottom: 16 }}>باز کردن فرم ارسال ویدیو ↗</a>
+                <label className="enroll-confirm">
+                  <input type="checkbox" checked={videoConfirmed} onChange={(e) => setVideoConfirmed(e.target.checked)} />
+                  <span>ویدیوی معرفی خود را از طریق فرم ارسال کردم.</span>
+                </label>
                 <div className="enroll-actions">
                   <button className="btn btn--outline" onClick={() => setStep(2)}>بازگشت</button>
-                  <button className="btn btn--dark" disabled={busy || !videoUrl.trim()} onClick={submitAll}>{busy ? 'در حال ثبت…' : 'ثبت نهایی درخواست'}</button>
+                  <button className="btn btn--dark" disabled={busy || !videoConfirmed} onClick={submitAll}>{busy ? 'در حال ثبت…' : 'ثبت نهایی درخواست'}</button>
                 </div>
               </>
             )}

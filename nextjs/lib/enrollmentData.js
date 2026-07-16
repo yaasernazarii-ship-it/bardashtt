@@ -24,6 +24,9 @@ export const QUESTIONS = [
 
 export const ACTOR_TYPES = ['بازیگر احساسی', 'بازیگر بیانی', 'بازیگر فیزیکی', 'بازیگر تحلیلی'];
 
+// فرم ارسال ویدیوی معرفی هنرجو (فرم‌افزار).
+export const VIDEO_FORM_URL = 'https://formafzar.com/form/wo6jb';
+
 // اعتبارسنجی پاسخ‌ها: آرایه‌ای از اندیس گزینه‌ها به طول سؤالات.
 export function validateAnswers(answers) {
   if (!Array.isArray(answers) || answers.length !== QUESTIONS.length) return null;

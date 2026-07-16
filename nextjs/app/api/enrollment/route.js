@@ -1,17 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { normalizePhone } from '@/lib/auth';
-import { courseByKey, validateAnswers } from '@/lib/enrollment';
-
-const ACTOR_TYPES = ['بازیگر احساسی', 'بازیگر بیانی', 'بازیگر فیزیکی', 'بازیگر تحلیلی'];
-
-function validVideoUrl(url) {
-  try {
-    const u = new URL(url);
-    return u.protocol === 'http:' || u.protocol === 'https:';
-  } catch {
-    return false;
-  }
-}
+import { courseByKey, validateAnswers, ACTOR_TYPES, VIDEO_FORM_URL } from '@/lib/enrollment';
 
 export async function POST(request) {
   try {
@@ -20,7 +9,7 @@ export async function POST(request) {
     const fullName = String(body.fullName || '').trim().slice(0, 80);
     const phone = normalizePhone(body.phone);
     const answers = validateAnswers(body.answers);
-    const videoUrl = String(body.videoUrl || '').trim();
+    const videoConfirmed = body.videoConfirmed === true;
     const actorType = ACTOR_TYPES.includes(body.actorType) ? body.actorType : null;
     const aiAnalysis = String(body.aiAnalysis || '').trim().slice(0, 600) || null;
 
@@ -28,7 +17,7 @@ export async function POST(request) {
     if (!fullName) return Response.json({ ok: false, error: 'نام و نام خانوادگی را وارد کنید.' }, { status: 400 });
     if (!phone) return Response.json({ ok: false, error: 'شماره موبایل معتبر نیست.' }, { status: 400 });
     if (!answers) return Response.json({ ok: false, error: 'به همه سؤال‌های تست پاسخ دهید.' }, { status: 400 });
-    if (!validVideoUrl(videoUrl)) return Response.json({ ok: false, error: 'لینک ویدیوی معتبر (http/https) وارد کنید.' }, { status: 400 });
+    if (!videoConfirmed) return Response.json({ ok: false, error: 'ابتدا ویدیوی خود را از طریق فرم ارسال و سپس تأیید کنید.' }, { status: 400 });
 
     // اگر همین فرد برای همین دوره ثبت‌نام باز (در انتظار) دارد، تکراری نساز.
     const existing = await prisma.enrollment.findFirst({
@@ -47,7 +36,7 @@ export async function POST(request) {
         answers,
         actorType,
         aiAnalysis,
-        videoUrl: videoUrl.slice(0, 500),
+        videoUrl: VIDEO_FORM_URL,
         status: 'submitted',
       },
     });
