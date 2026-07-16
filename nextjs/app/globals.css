@@ -882,3 +882,40 @@ summary:focus-visible {
     border-bottom: 1px solid var(--border);
   }
 }
+
+/* ---- Admin users table ---- */
+.table-wrap {
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .9rem;
+  min-width: 560px;
+}
+.data-table th,
+.data-table td {
+  padding: 14px 16px;
+  text-align: right;
+  border-bottom: 1px solid var(--border);
+}
+.data-table th {
+  background: var(--surface);
+  color: var(--muted);
+  font-weight: 700;
+  font-size: .82rem;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.role-select { padding: 8px 10px; min-width: 120px; }
+.role-tag {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  color: var(--dark);
+  font-size: .82rem;
+  font-weight: 700;
+}

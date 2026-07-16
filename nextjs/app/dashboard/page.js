@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { getSessionUser } from '@/lib/auth';
+import { getSessionUser, isManager } from '@/lib/auth';
 import LogoutButton from '@/components/LogoutButton';
+import DashboardSidebar from '@/components/DashboardSidebar';
 
 export const metadata = { title: 'داشبورد هنرجو' };
 
@@ -13,18 +14,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
-      <aside className="sidebar">
-        <div className="sidebar-logo"><Link href="/">خانواده <span>برداشت</span></Link></div>
-        <ul className="sidebar-menu">
-          <li><Link className="active" href="/dashboard">🏠 داشبورد</Link></li>
-          <li><Link href="/dashboard/calendar">🗓 تقویم کلاس</Link></li>
-          <li><Link href="/dashboard/assistant">🤖 دستیار کتاب</Link></li>
-          <li><Link href="/dashboard/profile">👤 پروفایل</Link></li>
-          <li><Link href="/courses">🎓 دوره‌ها</Link></li>
-          <li className="sep">سایت</li>
-          <li><Link href="/">بازگشت به سایت</Link></li>
-        </ul>
-      </aside>
+      <DashboardSidebar active="dashboard" isAdmin={isManager(user)} />
       <main className="main-area">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 32 }}>
           <div><h1 className="heading">داشبورد هنرجو</h1><p style={{ color: 'var(--muted)' }}>خوش آمدید {name}؛ وضعیت آموزشی شما اینجاست.</p></div>

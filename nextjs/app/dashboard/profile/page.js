@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { getSessionUser } from '@/lib/auth';
+import { getSessionUser, isManager } from '@/lib/auth';
 import ProfileForm from '@/components/ProfileForm';
+import DashboardSidebar from '@/components/DashboardSidebar';
 
 export const metadata = { title: 'پروفایل هنرجو' };
 
@@ -11,18 +11,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
-      <aside className="sidebar">
-        <div className="sidebar-logo"><Link href="/">خانواده <span>برداشت</span></Link></div>
-        <ul className="sidebar-menu">
-          <li><Link href="/dashboard">🏠 داشبورد</Link></li>
-          <li><Link href="/dashboard/calendar">🗓 تقویم کلاس</Link></li>
-          <li><Link href="/dashboard/assistant">🤖 دستیار کتاب</Link></li>
-          <li><Link className="active" href="/dashboard/profile">👤 پروفایل</Link></li>
-          <li><Link href="/courses">🎓 دوره‌ها</Link></li>
-          <li className="sep">سایت</li>
-          <li><Link href="/">بازگشت به سایت</Link></li>
-        </ul>
-      </aside>
+      <DashboardSidebar active="profile" isAdmin={isManager(user)} />
       <main className="main-area">
         <div style={{ marginBottom: 28 }}>
           <h1 className="heading">پروفایل من</h1>
