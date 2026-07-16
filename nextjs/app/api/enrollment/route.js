@@ -10,6 +10,7 @@ export async function POST(request) {
     const phone = normalizePhone(body.phone);
     const answers = validateAnswers(body.answers);
     const videoConfirmed = body.videoConfirmed === true;
+    const videoRef = String(body.videoRef || '').trim().slice(0, 60) || null;
     const actorType = ACTOR_TYPES.includes(body.actorType) ? body.actorType : null;
     const aiAnalysis = String(body.aiAnalysis || '').trim().slice(0, 600) || null;
 
@@ -18,6 +19,7 @@ export async function POST(request) {
     if (!phone) return Response.json({ ok: false, error: 'شماره موبایل معتبر نیست.' }, { status: 400 });
     if (!answers) return Response.json({ ok: false, error: 'به همه سؤال‌های تست پاسخ دهید.' }, { status: 400 });
     if (!videoConfirmed) return Response.json({ ok: false, error: 'ابتدا ویدیوی خود را از طریق فرم ارسال و سپس تأیید کنید.' }, { status: 400 });
+    if (!videoRef) return Response.json({ ok: false, error: 'کد پیگیری فرم را وارد کنید تا ویدیوی شما شناسایی شود.' }, { status: 400 });
 
     // اگر همین فرد برای همین دوره ثبت‌نام باز (در انتظار) دارد، تکراری نساز.
     const existing = await prisma.enrollment.findFirst({
@@ -37,6 +39,7 @@ export async function POST(request) {
         actorType,
         aiAnalysis,
         videoUrl: VIDEO_FORM_URL,
+        videoRef,
         status: 'submitted',
       },
     });

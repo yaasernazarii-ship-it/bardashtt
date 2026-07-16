@@ -1176,6 +1176,7 @@ summary:focus-visible {
 .enroll-admin-phone { color: var(--muted); margin-inline-start: 10px; font-size: 0.85rem; }
 .enroll-admin-meta { display: flex; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: 0.82rem; margin: 10px 0; }
 .enroll-admin-ai { color: var(--text); background: var(--surface); border-radius: 10px; padding: 12px 14px; line-height: 1.8; font-size: 0.88rem; margin: 8px 0; }
+.enroll-admin-ref { display: inline-block; background: rgba(198, 160, 74, 0.14); color: var(--dark); border: 1px solid var(--gold); border-radius: 8px; padding: 6px 12px; font-size: 0.85rem; margin: 6px 0; }
 .enroll-admin-video { display: inline-block; color: var(--dark); font-weight: 700; margin-top: 4px; }
 
 .enroll-badge { padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 800; white-space: nowrap; }

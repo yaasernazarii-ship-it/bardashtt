@@ -111,6 +111,7 @@ model Enrollment {
   actorType   String? // تیپ بازیگری تشخیص‌داده‌شده توسط هوش مصنوعی
   aiAnalysis  String? // تحلیل متنی هوش مصنوعی
   videoUrl    String? // لینک ویدیوی ارسالی هنرجو
+  videoRef    String? // کد پیگیری فرم ارسال ویدیو (برای تطبیق خودکار ویدیو با درخواست)
   adminNote   String? // یادداشت/دلیل ادمین
   userId      String?
   user        User?    @relation(fields: [userId], references: [id])

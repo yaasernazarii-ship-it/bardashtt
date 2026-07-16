@@ -13,6 +13,7 @@ export default function AuditionPage() {
   const [answers, setAnswers] = useState({});
   const [analysis, setAnalysis] = useState(null); // { actorType, analysis }
   const [videoConfirmed, setVideoConfirmed] = useState(false);
+  const [videoRef, setVideoRef] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
@@ -49,6 +50,7 @@ export default function AuditionPage() {
           actorType: analysis?.actorType,
           aiAnalysis: analysis?.analysis,
           videoConfirmed,
+          videoRef,
         }),
       });
       const data = await res.json();
@@ -140,16 +142,20 @@ export default function AuditionPage() {
               <>
                 <h3 className="enroll-card__title">ارسال ویدیوی معرفی</h3>
                 <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 16 }}>
-                  یک ویدیوی کوتاه از خودتان (معرفی و یک اجرای کوتاه) از طریق فرم زیر ارسال کنید. حتماً همان نام و شماره موبایلی را که در این ثبت‌نام وارد کرده‌اید در فرم بنویسید تا درخواست شما شناسایی شود. پس از بررسی و تأیید مدیر، حساب کاربری شما به‌صورت خودکار ساخته می‌شود.
+                  یک ویدیوی کوتاه از خودتان (معرفی و یک اجرای کوتاه) از طریق فرم زیر ارسال کنید. پس از ثبت فرم، یک <b>کد پیگیری</b> به شما نمایش داده می‌شود؛ آن کد را در کادر زیر وارد کنید تا ویدیوی شما به‌صورت خودکار به این درخواست وصل شود.
                 </p>
                 <a className="btn btn--gold btn--full" href={VIDEO_FORM_URL} target="_blank" rel="noopener noreferrer" style={{ marginBottom: 16 }}>باز کردن فرم ارسال ویدیو ↗</a>
                 <label className="enroll-confirm">
                   <input type="checkbox" checked={videoConfirmed} onChange={(e) => setVideoConfirmed(e.target.checked)} />
                   <span>ویدیوی معرفی خود را از طریق فرم ارسال کردم.</span>
                 </label>
+                <div className="form-group" style={{ marginTop: 4 }}>
+                  <label className="form-label">کد پیگیری فرم</label>
+                  <input className="form-input" dir="ltr" value={videoRef} onChange={(e) => setVideoRef(e.target.value)} placeholder="کد پیگیری نمایش‌داده‌شده پس از ثبت فرم" />
+                </div>
                 <div className="enroll-actions">
                   <button className="btn btn--outline" onClick={() => setStep(2)}>بازگشت</button>
-                  <button className="btn btn--dark" disabled={busy || !videoConfirmed} onClick={submitAll}>{busy ? 'در حال ثبت…' : 'ثبت نهایی درخواست'}</button>
+                  <button className="btn btn--dark" disabled={busy || !videoConfirmed || videoRef.trim().length < 3} onClick={submitAll}>{busy ? 'در حال ثبت…' : 'ثبت نهایی درخواست'}</button>
                 </div>
               </>
             )}
