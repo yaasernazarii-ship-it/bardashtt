@@ -88,3 +88,13 @@ model GalleryItem {
 
   @@index([createdAt])
 }
+
+model BookChunk {
+  id        String   @id @default(cuid())
+  idx       Int
+  content   String
+  embedding Json
+  createdAt DateTime @default(now())
+
+  @@index([idx])
+}

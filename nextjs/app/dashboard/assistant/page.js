@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSessionUser, isManager } from '@/lib/auth';
 import DashboardSidebar from '@/components/DashboardSidebar';
+import AssistantChat from '@/components/AssistantChat';
 
 export const metadata = { title: 'دستیار کتاب' };
 
@@ -12,13 +13,11 @@ export default async function AssistantPage() {
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
       <DashboardSidebar active="assistant" isAdmin={isManager(user)} />
       <main className="main-area">
-        <div style={{ marginBottom: 28 }}>
+        <div style={{ marginBottom: 24 }}>
           <h1 className="heading">دستیار هوشمند کتاب</h1>
-          <p style={{ color: 'var(--muted)' }}>پرسش‌های خود را بر اساس کتاب و جزوه‌های آقای نظری بپرسید.</p>
+          <p style={{ color: 'var(--muted)' }}>پرسش‌های خود را بر اساس کتاب «متد پنج سوال طلایی» اثر یاسر نظری بپرسید.</p>
         </div>
-        <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 32, textAlign: 'center' }}>
-          <p style={{ color: 'var(--muted)' }}>این بخش پس از بارگذاری کتاب و جزوه‌ها فعال می‌شود.</p>
-        </div>
+        <AssistantChat />
       </main>
     </div>
   );
