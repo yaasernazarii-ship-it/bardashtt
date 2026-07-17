@@ -33,6 +33,12 @@ export default function AboutPage() {
         .cred-card .cico { font-size:2.2rem;margin-bottom:16px; }
         .cred-card h3 { font-size:1rem;font-weight:800;color:var(--dark);margin-bottom:10px; }
         .cred-card p { font-size:.83rem;color:var(--muted);line-height:1.7; }
+        .about-cards { display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:960px;margin:0 auto; }
+        .about-card { background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:34px 30px; }
+        .about-card__ico { font-size:2rem;margin-bottom:14px; }
+        .about-card h3 { font-size:1.15rem;font-weight:800;color:var(--dark);margin-bottom:12px; }
+        .about-card p { font-size:.88rem;color:var(--muted);line-height:1.95; }
+        .about-card b { color:var(--dark);font-weight:700; }
         .resume-grid { display:grid;grid-template-columns:1fr 1fr;gap:24px; }
         .resume-block { background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:30px 28px; }
         .resume-block--wide { grid-column:1 / -1; }
@@ -64,6 +70,7 @@ export default function AboutPage() {
           .values-grid{grid-template-columns:1fr;}
           .resume-grid{grid-template-columns:1fr;}
           .skills-groups{grid-template-columns:1fr;}
+          .about-cards{grid-template-columns:1fr;}
         }
         @media(max-width:640px){ .cred-grid{grid-template-columns:1fr;} }
       `}</style>
@@ -103,6 +110,45 @@ export default function AboutPage() {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* معرفی آموزشگاه */}
+      <section style={{ background: 'var(--bg)' }}>
+        <div className="container">
+          <div style={{ textAlign: 'center', marginBottom: 40, maxWidth: 780, marginInline: 'auto' }}>
+            <span className="tag tag--gold">آموزشگاه خانواده برداشت</span>
+            <h2 className="heading" style={{ marginTop: 14 }}>جایی که رویاهای سینمایی به واقعیت می‌پیوندند</h2>
+            <div className="line line--center" />
+            <p style={{ color: 'var(--muted)', lineHeight: 2, marginTop: 18 }}>
+              «خانواده برداشت» فراتر از یک فضای آموزشی، یک جامعه‌ی بزرگ هنری است؛ جایی که بیش از ۲۰۰ هزار هنرجو و علاقه‌مند به سینما گرد هم آمده‌اند تا مسیر حرفه‌ای شدن را با اصالت، صداقت و آموزش‌های استاندارد طی کنند.
+            </p>
+          </div>
+
+          <div className="about-cards">
+            <div className="about-card">
+              <div className="about-card__ico">🎬</div>
+              <h3>چرا خانواده برداشت؟</h3>
+              <p>
+                ما معتقدیم سینما یعنی «زندگی». اینجا آموزش بازیگری و فیلم‌سازی صرفاً محدود به تئوری‌های کتابی نیست؛ بلکه متمرکز بر <b>«متد پنج سؤال طلایی»</b> و انتقال تجربه‌ی عملی است که یاسر نظری در بیش از ۸۰ پروژه‌ی سینمایی کسب کرده است. هدف ما این است که هنرجو در پایان دوره تنها یک بازیگر نباشد، بلکه یک آرتیستِ صاحب‌سبک و تحلیلگر رفتار باشد.
+              </p>
+            </div>
+            <div className="about-card">
+              <div className="about-card__ico">🛡️</div>
+              <h3>اعتبار و مجوزها</h3>
+              <p>
+                تعهد ما به آموزش اصولی با پشتوانه‌ی قانونیِ کامل همراه است. آموزشگاه ما تحت عنوان <b>«آموزشگاه آزاد سینمایی تک‌برداشت»</b> دارای مجوزهای رسمی زیر است:
+              </p>
+              <ul className="resume-list" style={{ marginTop: 14 }}>
+                <li><span className="li-ico">◆</span><span>پروانه تأسیس آموزشگاه آزاد سینمایی — سازمان آموزش فنی و حرفه‌ای کشور</span></li>
+                <li><span className="li-ico">◆</span><span>پروانه‌های فعالیت در حوزه‌ی کارگردانی، فیلم‌نامه‌نویسی و مشاوره‌ی کسب‌وکار فرهنگی — وزارت فرهنگ و ارشاد اسلامی</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <p style={{ textAlign: 'center', color: 'var(--muted)', lineHeight: 2, marginTop: 32, maxWidth: 780, marginInline: 'auto' }}>
+            این مجوزها گواه آن است که شما در فضایی کاملاً استاندارد، قانونی و معتبر آموزش می‌بینید. ما در «خانواده برداشت» پلی هستیم میان استعدادهای نهفته‌ی شما و سینمای حرفه‌ای ایران؛ جایی که قرار است با هم، آینده‌ای روشن برای سینمای این سرزمین بسازیم.
+          </p>
         </div>
       </section>
 
