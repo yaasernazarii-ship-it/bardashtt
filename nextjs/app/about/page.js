@@ -33,6 +33,22 @@ export default function AboutPage() {
         .cred-card .cico { font-size:2.2rem;margin-bottom:16px; }
         .cred-card h3 { font-size:1rem;font-weight:800;color:var(--dark);margin-bottom:10px; }
         .cred-card p { font-size:.83rem;color:var(--muted);line-height:1.7; }
+        .resume-grid { display:grid;grid-template-columns:1fr 1fr;gap:24px; }
+        .resume-block { background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:30px 28px; }
+        .resume-block--wide { grid-column:1 / -1; }
+        .resume-block h3 { display:flex;align-items:center;gap:10px;font-size:1.05rem;font-weight:800;color:var(--dark);margin-bottom:18px; }
+        .resume-block h3 .rico { font-size:1.3rem; }
+        .resume-list { list-style:none;display:flex;flex-direction:column;gap:12px;padding:0;margin:0; }
+        .resume-list li { display:flex;gap:10px;font-size:.88rem;color:var(--muted);line-height:1.8; }
+        .resume-list li .li-ico { color:var(--gold);flex-shrink:0;font-size:.7rem;margin-top:.45em; }
+        .resume-list li b { color:var(--dark);font-weight:700; }
+        .skills-groups { display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:920px;margin:0 auto; }
+        .skills-group { background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:26px 24px; }
+        .skills-group__label { display:inline-block;font-size:.8rem;font-weight:800;color:var(--gold);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--gold); }
+        .skills-chips { display:flex;flex-wrap:wrap;gap:10px; }
+        .skill-chip { display:inline-flex;align-items:center;gap:7px;background:var(--white);border:1px solid var(--border);border-radius:999px;padding:8px 14px;font-size:.82rem;font-weight:600;color:var(--dark);transition:all .25s; }
+        .skill-chip:hover { border-color:var(--gold);box-shadow:0 4px 14px rgba(196,146,42,.12); }
+        .skill-chip .sk-ico { font-size:1rem; }
         .values-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:20px; }
         .value-item { padding:36px 28px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--border); }
         .value-item .vnum { font-size:2.5rem;font-weight:900;color:var(--border);line-height:1;margin-bottom:16px; }
@@ -46,6 +62,8 @@ export default function AboutPage() {
           .founder-tags{justify-content:center;}
           .cred-grid{grid-template-columns:1fr 1fr;}
           .values-grid{grid-template-columns:1fr;}
+          .resume-grid{grid-template-columns:1fr;}
+          .skills-groups{grid-template-columns:1fr;}
         }
         @media(max-width:640px){ .cred-grid{grid-template-columns:1fr;} }
       `}</style>
@@ -102,28 +120,96 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* موسس */}
+      {/* بنیان‌گذار */}
       <section style={{ background: 'var(--bg)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <span className="tag tag--dark">موسس</span>
+            <span className="tag tag--dark">بنیان‌گذار</span>
             <h2 className="heading" style={{ marginTop: 14 }}>یاسر نظری</h2>
             <div className="line line--center" />
+            <p style={{ color: 'var(--gold)', fontWeight: 700, marginTop: 10 }}>سینماگر، نویسنده و تحلیلگر رفتار</p>
           </div>
-          <div className="founder-card">
+          <div className="founder-card" style={{ alignItems: 'flex-start' }}>
             <div className="founder-avatar">🎬</div>
             <div>
               <div className="founder-name">یاسر نظری</div>
-              <div className="founder-title">موسس، استاد اصلی و کارگردان</div>
+              <div className="founder-title">کارگردان سینما · نویسنده کتاب «پنج متد طلایی»</div>
               <div className="founder-tags">
-                <span className="tag tag--dark">تهیه‌کننده سینما</span>
-                <span className="tag tag--dark">کارگردان</span>
-                <span className="tag tag--gold">دانش‌آموخته آکسفورد</span>
+                <span className="tag tag--dark">کارگردان سینما</span>
+                <span className="tag tag--dark">تهیه‌کننده</span>
+                <span className="tag tag--gold">دکتری فیلم‌سازی</span>
+                <span className="tag tag--gold">ارشد آکسفورد</span>
                 <span className="tag tag--gold">برنده جایزه زاگرب</span>
               </div>
-              <p className="founder-bio">
-                تهیه‌کننده و کارگردان سینما، دانش‌آموخته دانشگاه آکسفورد انگلستان و برنده جایزه بهترین کارگردانی از جشنواره بین‌المللی زاگرب کرواسی. بنیان‌گذار خانواده برداشت با هدف دموکراتیزه کردن آموزش بازیگری در ایران و دسترسی آزاد همه به هنر سینما.
+              <p className="founder-bio" style={{ marginBottom: 14 }}>
+                یاسر نظری، کارگردان سینما و نویسنده کتاب «پنج متد طلایی»، فعالیت هنری خود را با رویکردی عمیق، فلسفی و نمادین پیگیری می‌کند. او معتقد است سینما فراتر از یک سرگرمی، ابزاری برای واکاوی پیچیدگی‌های رفتار انسانی است.
               </p>
+              <p className="founder-bio" style={{ marginBottom: 14 }}>
+                تخصص و دانش او حاصل سال‌ها تجربه عملی در بیش از ۸۰ پروژه سینمایی، تلویزیونی و تبلیغاتی در مقام کارگردان، تهیه‌کننده و مدیر تولید است. او با تکیه بر تحصیلات آکادمیک خود — شامل مدرک درجه یک هنری (معادل دکتری فیلم‌سازی) از کالج ابن‌سینا گرجستان و کارشناسی ارشد فیلم‌سازی از دانشگاه آکسفورد انگلستان — و همچنین کسب افتخارات بین‌المللی نظیر جایزه بهترین کارگردانی از جشنواره زاگرب کرواسی، نگاهی استاندارد و جهانی به هنر سینما دارد.
+              </p>
+              <p className="founder-bio">
+                وی علاوه بر فعالیت‌های هنری، با دریافت مجوزهای رسمی از وزارت فرهنگ و ارشاد اسلامی و سازمان فنی و حرفه‌ای کشور، بنیان‌گذار «آموزشگاه خانواده برداشت» است؛ مجموعه‌ای که امروز با همراهی بیش از ۲۰۰ هزار هنرجو و علاقه‌مند، به یکی از پرمخاطب‌ترین قطب‌های آموزشی بازیگری در کشور تبدیل شده است. او با تلفیق هنر، تحلیل رفتار و مهارت‌های کسب‌وکار، بستری فراهم کرده تا هنرجویان نه‌تنها تکنیک بازیگری، بلکه مهارت‌های زیستن و حضور در فضای حرفه‌ای سینما را بیاموزند.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* سوابق و افتخارات حرفه‌ای */}
+      <section style={{ background: 'var(--white)' }}>
+        <div className="container">
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <span className="tag tag--gold">رزومه حرفه‌ای</span>
+            <h2 className="heading" style={{ marginTop: 14 }}>سوابق و افتخارات یاسر نظری</h2>
+            <div className="line line--center" />
+          </div>
+
+          <div className="resume-grid">
+            <div className="resume-block">
+              <h3><span className="rico">🎓</span> تحصیلات</h3>
+              <ul className="resume-list">
+                <li><span className="li-ico">◆</span><span><b>مدرک درجه یک هنری</b> (معادل دکتری فیلم‌سازی) — کالج ابن‌سینا، گرجستان</span></li>
+                <li><span className="li-ico">◆</span><span><b>کارشناسی ارشد فیلم‌سازی</b> — دانشگاه آکسفورد، انگلستان</span></li>
+              </ul>
+            </div>
+
+            <div className="resume-block">
+              <h3><span className="rico">🏆</span> افتخارات</h3>
+              <ul className="resume-list">
+                <li><span className="li-ico">◆</span><span><b>برنده جایزه بهترین کارگردان</b> — جشنواره زاگرب، کرواسی</span></li>
+              </ul>
+            </div>
+
+            <div className="resume-block resume-block--wide">
+              <h3><span className="rico">📜</span> مجوزهای رسمی</h3>
+              <ul className="resume-list">
+                <li><span className="li-ico">◆</span><span>پروانه فعالیت <b>کارگردانی و فیلم‌نامه‌نویسی</b> — وزارت فرهنگ و ارشاد اسلامی</span></li>
+                <li><span className="li-ico">◆</span><span>پروانه فعالیت <b>مشاوره فرهنگی و هنری کسب‌وکار</b> — وزارت فرهنگ و ارشاد اسلامی</span></li>
+                <li><span className="li-ico">◆</span><span>پروانه تأسیس <b>آموزشگاه آزاد سینمایی «تک برداشت»</b> — سازمان فنی و حرفه‌ای کشور</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div style={{ marginTop: 36 }}>
+            <h3 style={{ textAlign: 'center', fontSize: '1.05rem', fontWeight: 800, color: 'var(--dark)', marginBottom: 22 }}>حوزه تخصصی و مهارت‌ها</h3>
+            <div className="skills-groups">
+              <div className="skills-group">
+                <span className="skills-group__label">هنری</span>
+                <div className="skills-chips">
+                  <span className="skill-chip"><span className="sk-ico">🎬</span>کارگردانی سینما</span>
+                  <span className="skill-chip"><span className="sk-ico">✍️</span>فیلم‌نامه‌نویسی</span>
+                  <span className="skill-chip"><span className="sk-ico">🎭</span>مربیگری بازیگری</span>
+                </div>
+              </div>
+              <div className="skills-group">
+                <span className="skills-group__label">تحلیلی و مدیریتی</span>
+                <div className="skills-chips">
+                  <span className="skill-chip"><span className="sk-ico">🧠</span>تحلیل رفتار</span>
+                  <span className="skill-chip"><span className="sk-ico">🎤</span>فن بیان و سخنوری</span>
+                  <span className="skill-chip"><span className="sk-ico">💼</span>مشاوره کسب‌وکار فرهنگی</span>
+                  <span className="skill-chip"><span className="sk-ico">📋</span>مدیریت تولید و برنامه‌ریزی</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
