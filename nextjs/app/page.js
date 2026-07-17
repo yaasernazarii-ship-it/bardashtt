@@ -2,7 +2,7 @@ import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
 
 export const metadata = {
-  title: 'خانواده برداشت | اولین آموزشگاه رایگان بازیگری سینما در ایران',
+  title: '3656400 | خانواده برداشت | اولین آموزشگاه رایگان بازیگری سینما در ایران',
   description: 'خانواده برداشت — اولین و تنها آموزشگاه رایگان بازیگری سینما در ایران. دوره‌های مقدماتی، تکمیلی و پیشرفته بازیگری در تهران و مازندران. ثبت‌نام رایگان.',
   alternates: { canonical: 'https://www.bardashtt.com/' },
 };
