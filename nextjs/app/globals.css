@@ -554,6 +554,12 @@ body.nav-open {
 
 /* ── FOOTER ─────────────────────────────── */
 .site-footer { background: var(--dark); padding: 0; }
+.sf-seals {
+  max-width: 1200px; margin: 0 auto; padding: 22px 24px 0;
+  display: flex; justify-content: center;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.sf-enamad img { height: 90px; width: auto; border-radius: 8px; background: #fff; padding: 4px; }
 .sf-bottom {
   max-width: 1200px; margin: 0 auto; padding: 18px 24px;
   display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
