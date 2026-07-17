@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // pdfkit فایل‌های داخلی (فونت‌های AFM/داده‌ها) را در زمان اجرا از node_modules می‌خواند؛
+  // باید از باندل‌شدن توسط سرور خارج بماند.
+  serverExternalPackages: ['pdfkit', 'fontkit'],
   images: {
     unoptimized: false,
     remotePatterns: [],

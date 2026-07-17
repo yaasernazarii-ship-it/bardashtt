@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { normalizePhone } from '@/lib/auth';
 import { courseByKey, validateAnswers, ACTOR_TYPES, VIDEO_FORM_URL, isValidNationalId, normalizeNationalId } from '@/lib/enrollment';
+import { notifyEnrollment } from '@/lib/enrollmentNotify';
 
 export async function POST(request) {
   try {
@@ -29,7 +30,7 @@ export async function POST(request) {
       return Response.json({ ok: false, error: 'برای این دوره یک درخواست در انتظار بررسی دارید.' }, { status: 409 });
     }
 
-    await prisma.enrollment.create({
+    const enrollment = await prisma.enrollment.create({
       data: {
         courseKey: course.key,
         courseTitle: course.title,
@@ -43,6 +44,9 @@ export async function POST(request) {
         status: 'submitted',
       },
     });
+
+    // ارسال آنی PDF به «بله» بدون بلاک‌کردن پاسخ (خطا مسیر ثبت‌نام را مختل نمی‌کند).
+    notifyEnrollment(enrollment).catch(() => {});
 
     return Response.json({ ok: true });
   } catch {
