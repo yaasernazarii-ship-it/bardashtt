@@ -15,9 +15,8 @@ export default function AboutPage() {
         .story-grid { display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center; }
         .story-img { aspect-ratio:4/5;border-radius:var(--radius-lg);overflow:hidden;position:relative;background:linear-gradient(145deg,#1a1208 0%,#2a1f0d 45%,#0d0a05 100%);background-size:cover;background-position:center; }
         .story-img::after { content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55) 0%,transparent 55%); }
-        .story-img-badge { position:absolute;bottom:20px;right:20px;z-index:2;background:var(--gold);border-radius:10px;padding:12px 18px; }
-        .story-img-badge strong { display:block;font-size:.9rem;font-weight:800;color:#000; }
-        .story-img-badge span { font-size:.72rem;font-weight:600;color:rgba(0,0,0,.65); }
+        .story-logo-badge { position:absolute;bottom:20px;right:20px;z-index:2;background:rgba(255,255,255,.94);border-radius:14px;padding:10px;width:78px;height:78px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.3); }
+        .story-logo-badge img { width:100%;height:100%;object-fit:contain; }
         .story-year-badge { position:absolute;top:20px;left:20px;z-index:2;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px 16px; }
         .story-year-badge span { display:block;font-size:.68rem;font-weight:600;color:rgba(255,255,255,.6);margin-bottom:2px; }
         .story-year-badge strong { font-size:1.1rem;font-weight:900;color:#fff; }
@@ -81,14 +80,13 @@ export default function AboutPage() {
       <section style={{ background: 'var(--white)' }}>
         <div className="container">
           <div className="story-grid">
-            <div className="story-img">
+            <div className="story-img" style={{ backgroundImage: 'url(/story-venue.jpg)' }}>
               <div className="story-year-badge">
                 <span>تأسیس</span>
                 <strong>۱۳۹۷</strong>
               </div>
-              <div className="story-img-badge">
-                <strong>جایزه بین‌المللی زاگرب</strong>
-                <span>بهترین کارگردانی · کرواسی</span>
+              <div className="story-logo-badge">
+                <img src="/bardasht-logo.png" alt="خانه برداشت" />
               </div>
             </div>
             <div>
