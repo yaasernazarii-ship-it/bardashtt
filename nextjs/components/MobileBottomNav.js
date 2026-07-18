@@ -4,8 +4,7 @@ import { usePathname } from 'next/navigation';
 
 const items = [
   { ico: '🏠', label: 'خانه', href: '/' },
-  { ico: '🎓', label: 'دوره‌ها', href: '/courses' },
-  { ico: '✍️', label: 'ثبت‌نام', href: '/register', accent: true },
+  { ico: '🎓', label: 'دوره‌ها', href: '/courses', accent: true },
   { ico: '📞', label: 'تماس', href: 'tel:02191090934' },
 ];
 

@@ -109,7 +109,6 @@ export default function Nav({ onOpenChat }) {
           <div className="nav__actions">
             <button type="button" className="nav__support-btn" onClick={onOpenChat}><span className="nav__support-dot" />پشتیبانی</button>
             <Link href="/auth" className="btn btn--outline btn--sm">ورود</Link>
-            <Link href="/register" className="btn btn--dark btn--sm">ثبت‌نام</Link>
           </div>
           <button
             type="button"
@@ -159,7 +158,6 @@ export default function Nav({ onOpenChat }) {
         <div className="mobile-drawer__actions">
           <button type="button" className="btn btn--outline" onClick={onOpenChat}>پشتیبانی آنلاین</button>
           <Link href="/auth" className="btn btn--outline">ورود</Link>
-          <Link href="/register" className="btn btn--dark">ثبت‌نام</Link>
         </div>
       </aside>
     </>

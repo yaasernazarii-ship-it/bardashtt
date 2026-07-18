@@ -66,8 +66,8 @@ export default function FaqPage() {
                 <div className="feature-list__item">
                   <div className="feature-list__icon">۱</div>
                   <div>
-                    <strong>ثبت‌نام را سریع شروع کنید</strong>
-                    <span>اگر آماده ورود به مسیر آموزشی هستید، از فرم ثبت‌نام اقدام کنید.</span>
+                    <strong>دوره‌ها را ببینید</strong>
+                    <span>اگر آماده ورود به مسیر آموزشی هستید، از صفحهٔ دوره‌ها ثبت‌نام را آغاز کنید.</span>
                   </div>
                 </div>
                 <div className="feature-list__item">
@@ -80,7 +80,7 @@ export default function FaqPage() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 18 }}>
                 <a href="tel:02191090934" className="btn btn--gold">تماس مستقیم</a>
-                <Link href="/register" className="btn btn--hero-secondary">ثبت‌نام رایگان</Link>
+                <Link href="/courses" className="btn btn--hero-secondary">مشاهده دوره‌ها</Link>
               </div>
             </aside>
             <div>

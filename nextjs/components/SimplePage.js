@@ -18,9 +18,9 @@ export default function SimplePage({ title, subtitle, tag = 'خانواده بر
           {cta && (
             <div className="cta-card">
               <h3>برای شروع آماده‌اید؟</h3>
-              <p>اگر می‌خواهید مسیر بازیگری را حرفه‌ای و بدون مانع مالی شروع کنید، همین حالا ثبت‌نام را آغاز کنید.</p>
+              <p>دوره‌های خانواده برداشت رایگان است. برای دیدن دوره‌ها و شروع ثبت‌نام، به صفحهٔ دوره‌ها بروید.</p>
               <div className="cta-card__actions">
-                <Link href="/register" className="btn btn--gold">ثبت‌نام در کلاس‌ها</Link>
+                <Link href="/courses" className="btn btn--gold">مشاهده دوره‌ها</Link>
                 <a href="tel:02191090934" className="btn btn--hero-secondary">تماس مستقیم</a>
               </div>
             </div>
