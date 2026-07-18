@@ -1,15 +1,39 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+
+const STORAGE_KEY = 'bardasht_support_chat';
+
+function loadStored() {
+  if (typeof window === 'undefined') return null;
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch { return null; }
+}
 
 export default function SupportChat({ isOpen, onClose }) {
   const [step, setStep] = useState('name'); // 'name' | 'chat'
   const [userName, setUserName] = useState('');
   const [userPhone, setUserPhone] = useState('');
+  const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [inputVal, setInputVal] = useState('');
+  const [sending, setSending] = useState(false);
   const msgsRef = useRef(null);
   const nameRef = useRef(null);
   const inputRef = useRef(null);
+  const lastAtRef = useRef(null);
+  const convIdRef = useRef(null);
+
+  convIdRef.current = conversationId;
+
+  // بازیابی گفتگوی قبلی از localStorage
+  useEffect(() => {
+    const stored = loadStored();
+    if (stored?.conversationId) {
+      setUserName(stored.name || '');
+      setUserPhone(stored.phone || '');
+      setConversationId(stored.conversationId);
+      setStep('chat');
+    }
+  }, []);
 
   useEffect(() => {
     if (isOpen && step === 'name') setTimeout(() => nameRef.current?.focus(), 100);
@@ -20,25 +44,62 @@ export default function SupportChat({ isOpen, onClose }) {
     if (msgsRef.current) msgsRef.current.scrollTop = msgsRef.current.scrollHeight;
   }, [messages]);
 
+  const poll = useCallback(async () => {
+    const id = convIdRef.current;
+    if (!id) return;
+    try {
+      const url = `/api/support-chat?conversationId=${encodeURIComponent(id)}${lastAtRef.current ? `&after=${encodeURIComponent(lastAtRef.current)}` : ''}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.ok && data.messages?.length) {
+        setMessages((prev) => {
+          const seen = new Set(prev.map((m) => m.id).filter(Boolean));
+          const incoming = data.messages.filter((m) => !seen.has(m.id));
+          return incoming.length ? [...prev, ...incoming] : prev;
+        });
+        lastAtRef.current = data.messages[data.messages.length - 1].createdAt;
+      }
+    } catch { /* silent */ }
+  }, []);
+
+  // polling برای پاسخ‌های پشتیبانی
+  useEffect(() => {
+    if (step !== 'chat' || !conversationId) return;
+    poll();
+    const t = setInterval(poll, 4000);
+    return () => clearInterval(t);
+  }, [step, conversationId, poll]);
+
   function startChat() {
     if (!userName.trim()) { nameRef.current?.focus(); return; }
     setStep('chat');
-    setMessages([{ who: 'bot', text: `سلام ${userName.trim()} عزیز! 😊 چطور می‌تونم کمکت کنم؟` }]);
+    setMessages([{ id: 'welcome', role: 'bot', body: `سلام ${userName.trim()} عزیز! 😊 پیامتون رو بنویسید، پشتیبانی همین‌جا پاسخ می‌ده.` }]);
   }
 
-  function sendMsg() {
+  async function sendMsg() {
     const msg = inputVal.trim();
-    if (!msg) return;
+    if (!msg || sending) return;
     setInputVal('');
-    setMessages(prev => [...prev, { who: 'user', text: msg }]);
-    fetch('/api/support-chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: userName, phone: userPhone, message: msg }),
-    }).catch(() => {});
-    setTimeout(() => {
-      setMessages(prev => [...prev, { who: 'bot', text: 'پیامتون رسید! 🙏 به زودی پاسخ می‌دیم. تماس: 02191090934' }]);
-    }, 800);
+    setSending(true);
+    const localId = `local-${Date.now()}`;
+    setMessages((prev) => [...prev, { id: localId, role: 'visitor', body: msg }]);
+    try {
+      const res = await fetch('/api/support-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversationId, name: userName, phone: userPhone, message: msg }),
+      });
+      const data = await res.json();
+      if (data.ok && data.conversationId) {
+        if (data.conversationId !== conversationId) {
+          setConversationId(data.conversationId);
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ conversationId: data.conversationId, name: userName, phone: userPhone }));
+          } catch { /* ignore */ }
+        }
+      }
+    } catch { /* silent */ }
+    setSending(false);
   }
 
   return (
@@ -69,16 +130,16 @@ export default function SupportChat({ isOpen, onClose }) {
         <>
           <div className="support-chat-msgs" ref={msgsRef}>
             {messages.map((m, i) => (
-              <div key={i} className={`chat-msg chat-msg--${m.who === 'user' ? 'user' : 'bot'}`}>{m.text}</div>
+              <div key={m.id || i} className={`chat-msg chat-msg--${m.role === 'visitor' ? 'user' : 'bot'}`}>{m.body}</div>
             ))}
           </div>
           <div className="support-chat-foot">
             <input ref={inputRef} type="text" placeholder="پیام بنویسید..." value={inputVal}
               onChange={e => setInputVal(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && sendMsg()} />
-            <button onClick={sendMsg}>↑</button>
+            <button onClick={sendMsg} disabled={sending}>↑</button>
           </div>
-          <div className="support-phone-note">پیام شما مستقیم برای تیم پشتیبانی ارسال می‌شود</div>
+          <div className="support-phone-note">پاسخ پشتیبانی همین‌جا به‌صورت زنده نمایش داده می‌شود</div>
         </>
       )}
     </div>
