@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
+import { loadContent } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'خانواده برداشت | اولین آموزشگاه رایگان بازیگری سینما در ایران',
@@ -7,7 +8,10 @@ export const metadata = {
   alternates: { canonical: 'https://www.bardashtt.com/' },
 };
 
-export default function HomePage() {
+export const dynamic = 'force-dynamic';
+
+export default async function HomePage() {
+  const t = await loadContent();
   return (
     <PageLayout>
       {/* Hero */}
@@ -18,15 +22,15 @@ export default function HomePage() {
             <img src="/bardasht-logo.png" alt="خانه برداشت" />
           </div>
           <div className="home-hero__eyebrow">
-            <span /> اولین آموزشگاه رایگان بازیگری سینما در ایران
+            <span /> {t('home.hero.eyebrow')}
           </div>
           <h1 className="home-hero__slogan">
-            استعداد بازیگری‌ات را جدی بگیر
-            <span>آموزش حرفه‌ای، رایگان و قابل‌اعتماد</span>
+            {t('home.hero.title')}
+            <span>{t('home.hero.subtitle')}</span>
           </h1>
           <div className="home-hero__actions home-hero__actions--center">
-            <Link href="/courses" className="btn btn--gold btn--lg">مشاهده دوره‌ها</Link>
-            <Link href="/about" className="btn btn--hero-secondary btn--lg">درباره ما</Link>
+            <Link href="/courses" className="btn btn--gold btn--lg">{t('home.hero.ctaPrimary')}</Link>
+            <Link href="/about" className="btn btn--hero-secondary btn--lg">{t('home.hero.ctaSecondary')}</Link>
           </div>
         </div>
       </section>
@@ -36,19 +40,19 @@ export default function HomePage() {
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
             <span className="tag tag--dark">شعبه‌ها</span>
-            <h2 className="heading" style={{ marginTop: 14 }}>ما کجاییم؟</h2>
+            <h2 className="heading" style={{ marginTop: 14 }}>{t('home.branch.heading')}</h2>
           </div>
           <div className="branch-row">
             <div className="branch-card">
               <div className="bnum">۰۱</div>
-              <h3>تهران</h3>
-              <p>مرکز اصلی خانواده برداشت در پایتخت. دوره‌های تخصصی با حضور موسس و اساتید مجرب.</p>
+              <h3>{t('home.branch1.title')}</h3>
+              <p>{t('home.branch1.desc')}</p>
               <div className="active-dot">فعال</div>
             </div>
             <div className="branch-card">
               <div className="bnum">۰۲</div>
-              <h3>مازندران</h3>
-              <p>شعبه شمال کشور — فرصتی برای استعدادهای استان مازندران و مناطق همجوار.</p>
+              <h3>{t('home.branch2.title')}</h3>
+              <p>{t('home.branch2.desc')}</p>
               <div className="active-dot">فعال</div>
             </div>
           </div>
@@ -60,17 +64,17 @@ export default function HomePage() {
         <div className="contact-cell">
           <div className="ico">📞</div>
           <div className="lbl">تماس مستقیم</div>
-          <a href="tel:02191090934">02191090934</a>
+          <a href={`tel:${t('contact.phone')}`}>{t('contact.phone')}</a>
         </div>
         <div className="contact-cell">
           <div className="ico">📸</div>
           <div className="lbl">اینستاگرام</div>
-          <a href="https://instagram.com/bardashtt" target="_blank" rel="noopener noreferrer">@bardashtt</a>
+          <a href={t('contact.instagramUrl')} target="_blank" rel="noopener noreferrer">{t('contact.instagram')}</a>
         </div>
         <div className="contact-cell">
           <div className="ico">💬</div>
           <div className="lbl">کانال بله</div>
-          <a href="https://ble.ir/bardasht_family" target="_blank" rel="noopener noreferrer">@bardasht_family</a>
+          <a href={t('contact.baleUrl')} target="_blank" rel="noopener noreferrer">{t('contact.bale')}</a>
         </div>
       </div>
     </PageLayout>

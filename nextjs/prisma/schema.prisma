@@ -141,6 +141,13 @@ model Post {
   @@index([published, createdAt])
 }
 
+model SiteContent {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
 model Enrollment {
   id          String   @id @default(cuid())
   courseKey   String // شناسه دوره (۰۱ تا ۰۵)

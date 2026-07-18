@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
 import PageSlider from '@/components/PageSlider';
+import { loadContent } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'درباره ما — آموزشگاه رایگان بازیگری',
@@ -8,7 +9,10 @@ export const metadata = {
   alternates: { canonical: 'https://www.bardashtt.com/about' },
 };
 
-export default function AboutPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function AboutPage() {
+  const t = await loadContent();
   return (
     <PageLayout>
       <style>{`
@@ -98,20 +102,20 @@ export default function AboutPage() {
             </div>
             <div>
               <span className="tag tag--gold">داستان ما</span>
-              <h2 className="heading" style={{ marginTop: 16 }}>از ۱۳۹۷ تا امروز</h2>
+              <h2 className="heading" style={{ marginTop: 16 }}>{t('about.story.heading')}</h2>
               <div className="line" />
               <p className="body-lg" style={{ marginBottom: 20 }}>
                 خانواده برداشت با یک باور ساده اما انقلابی شکل گرفت:<br />
-                <strong>استعداد نباید گرو پول باشد.</strong>
+                <strong>{t('about.story.lead')}</strong>
               </p>
               <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 16 }}>
-                از همان روز اول تصمیم گرفتیم درهایمان را برای همه باز بگذاریم. امروز به عنوان تنها آموزشگاه رایگان بازیگری سینما در کشور شناخته می‌شویم؛ با مجوز رسمی، دوره‌های تخصصی و کمپ‌های آموزشی که برای هنرجویان در تمامی سنین طراحی شده‌اند.
+                {t('about.story.p1')}
               </p>
               <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 16 }}>
-                هنرجویان علاوه بر حضور در کلاس‌ها، در آفیش‌ها و اردوهای آموزشی ۲۴ ساعته تا ۱۰ روزه شرکت می‌کنند و از نزدیک با فضای واقعی تولید آثار سینمایی آشنا می‌شوند.
+                {t('about.story.p2')}
               </p>
               <p style={{ color: 'var(--muted)', lineHeight: 1.9 }}>
-                ما باور داریم هر استعدادی شایسته دیده شدن است و هر رویا می‌تواند با آموزش درست به واقعیت تبدیل شود.
+                {t('about.story.p3')}
               </p>
             </div>
           </div>
@@ -123,10 +127,10 @@ export default function AboutPage() {
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 40, maxWidth: 780, marginInline: 'auto' }}>
             <span className="tag tag--gold">آموزشگاه خانواده برداشت</span>
-            <h2 className="heading" style={{ marginTop: 14 }}>جایی که رویاهای سینمایی به واقعیت می‌پیوندند</h2>
+            <h2 className="heading" style={{ marginTop: 14 }}>{t('about.intro.heading')}</h2>
             <div className="line line--center" />
             <p style={{ color: 'var(--muted)', lineHeight: 2, marginTop: 18 }}>
-              «خانواده برداشت» فراتر از یک فضای آموزشی، یک جامعه‌ی بزرگ هنری است؛ جایی که بیش از ۲۰۰ هزار هنرجو و علاقه‌مند به سینما گرد هم آمده‌اند تا مسیر حرفه‌ای شدن را با اصالت، صداقت و آموزش‌های استاندارد طی کنند.
+              {t('about.intro.lead')}
             </p>
           </div>
 
@@ -183,8 +187,8 @@ export default function AboutPage() {
           <div className="founder-card" style={{ alignItems: 'flex-start' }}>
             <div className="founder-avatar"><img src="/founder-yaser.jpg" alt="یاسر نظری، بنیان‌گذار خانواده برداشت" /></div>
             <div>
-              <div className="founder-name">یاسر نظری</div>
-              <div className="founder-title">کارگردان سینما · نویسنده کتاب «پنج متد طلایی»</div>
+              <div className="founder-name">{t('about.founder.name')}</div>
+              <div className="founder-title">{t('about.founder.title')}</div>
               <div className="founder-tags">
                 <span className="tag tag--dark">کارگردان سینما</span>
                 <span className="tag tag--dark">تهیه‌کننده</span>
@@ -193,13 +197,13 @@ export default function AboutPage() {
                 <span className="tag tag--gold">برنده جایزه زاگرب</span>
               </div>
               <p className="founder-bio" style={{ marginBottom: 14 }}>
-                یاسر نظری، کارگردان سینما و نویسنده کتاب «پنج متد طلایی»، فعالیت هنری خود را با رویکردی عمیق، فلسفی و نمادین پیگیری می‌کند. او معتقد است سینما فراتر از یک سرگرمی، ابزاری برای واکاوی پیچیدگی‌های رفتار انسانی است.
+                {t('about.founder.bio1')}
               </p>
               <p className="founder-bio" style={{ marginBottom: 14 }}>
-                تخصص و دانش او حاصل سال‌ها تجربه عملی در بیش از ۸۰ پروژه سینمایی، تلویزیونی و تبلیغاتی در مقام کارگردان، تهیه‌کننده و مدیر تولید است. او با تکیه بر تحصیلات آکادمیک خود — شامل مدرک درجه یک هنری (معادل دکتری فیلم‌سازی) از کالج ابن‌سینا گرجستان و کارشناسی ارشد فیلم‌سازی از دانشگاه آکسفورد انگلستان — و همچنین کسب افتخارات بین‌المللی نظیر جایزه بهترین کارگردانی از جشنواره زاگرب کرواسی، نگاهی استاندارد و جهانی به هنر سینما دارد.
+                {t('about.founder.bio2')}
               </p>
               <p className="founder-bio">
-                وی علاوه بر فعالیت‌های هنری، با دریافت مجوزهای رسمی از وزارت فرهنگ و ارشاد اسلامی و سازمان فنی و حرفه‌ای کشور، بنیان‌گذار «آموزشگاه خانواده برداشت» است؛ مجموعه‌ای که امروز با همراهی بیش از ۲۰۰ هزار هنرجو و علاقه‌مند، به یکی از پرمخاطب‌ترین قطب‌های آموزشی بازیگری در کشور تبدیل شده است. او با تلفیق هنر، تحلیل رفتار و مهارت‌های کسب‌وکار، بستری فراهم کرده تا هنرجویان نه‌تنها تکنیک بازیگری، بلکه مهارت‌های زیستن و حضور در فضای حرفه‌ای سینما را بیاموزند.
+                {t('about.founder.bio3')}
               </p>
             </div>
           </div>
@@ -315,9 +319,9 @@ export default function AboutPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, maxWidth: 720, margin: '0 auto' }}>
             {[
-              { ico: '📞', lbl: 'تلفن', val: '02191090934', href: 'tel:02191090934' },
-              { ico: '📸', lbl: 'اینستاگرام', val: '@bardashtt', href: 'https://instagram.com/bardashtt' },
-              { ico: '💬', lbl: 'کانال بله', val: '@bardasht_family', href: 'https://ble.ir/bardasht_family' },
+              { ico: '📞', lbl: 'تلفن', val: t('contact.phone'), href: `tel:${t('contact.phone')}` },
+              { ico: '📸', lbl: 'اینستاگرام', val: t('contact.instagram'), href: t('contact.instagramUrl') },
+              { ico: '💬', lbl: 'کانال بله', val: t('contact.bale'), href: t('contact.baleUrl') },
             ].map(c => (
               <div key={c.lbl} style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 'var(--radius)', padding: '16px 12px', textAlign: 'center' }}>
                 <div style={{ fontSize: '1.4rem', marginBottom: 6 }}>{c.ico}</div>
