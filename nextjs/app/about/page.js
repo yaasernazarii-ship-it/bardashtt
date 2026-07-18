@@ -47,6 +47,12 @@ export default function AboutPage() {
         .resume-list li { display:flex;gap:10px;font-size:.88rem;color:var(--muted);line-height:1.8; }
         .resume-list li .li-ico { color:var(--gold);flex-shrink:0;font-size:.7rem;margin-top:.45em; }
         .resume-list li b { color:var(--dark);font-weight:700; }
+        .edu-certs { display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px; }
+        .edu-cert { display:block;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;transition:all .25s; }
+        .edu-cert:hover { border-color:var(--gold);box-shadow:0 8px 22px rgba(196,146,42,.14);transform:translateY(-2px); }
+        .edu-cert img { width:100%;aspect-ratio:4/3;object-fit:cover;object-position:top;display:block; }
+        .edu-cert__cap { display:block;padding:8px 10px;font-size:.72rem;font-weight:700;color:var(--muted);text-align:center;border-top:1px solid var(--border); }
+        @media(max-width:480px){ .edu-certs{grid-template-columns:1fr;} }
         .skills-groups { display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:920px;margin:0 auto; }
         .skills-group { background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:26px 24px; }
         .skills-group__label { display:inline-block;font-size:.8rem;font-weight:800;color:var(--gold);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--gold); }
@@ -215,6 +221,16 @@ export default function AboutPage() {
                 <li><span className="li-ico">◆</span><span><b>مدرک درجه یک هنری</b> (معادل دکتری فیلم‌سازی) — کالج ابن‌سینا، گرجستان</span></li>
                 <li><span className="li-ico">◆</span><span><b>کارشناسی ارشد فیلم‌سازی</b> — دانشگاه آکسفورد، انگلستان</span></li>
               </ul>
+              <div className="edu-certs">
+                <a className="edu-cert" href="/edu-avicenna.jpg" target="_blank" rel="noopener noreferrer">
+                  <img src="/edu-avicenna.jpg" alt="گواهی کالج بین‌المللی ابن‌سینا — گرجستان" loading="lazy" />
+                  <span className="edu-cert__cap">کالج ابن‌سینا · گرجستان</span>
+                </a>
+                <a className="edu-cert" href="/edu-oxford.jpg" target="_blank" rel="noopener noreferrer">
+                  <img src="/edu-oxford.jpg" alt="گواهی آکادمی آکسفورد" loading="lazy" />
+                  <span className="edu-cert__cap">آکسفورد · انگلستان</span>
+                </a>
+              </div>
             </div>
 
             <div className="resume-block">
