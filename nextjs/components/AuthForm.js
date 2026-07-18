@@ -3,6 +3,14 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
+function safeNext() {
+  try {
+    const n = new URLSearchParams(window.location.search).get('next');
+    if (n && n.startsWith('/') && !n.startsWith('//')) return n;
+  } catch { /* ignore */ }
+  return '/dashboard';
+}
+
 export default function AuthForm() {
   const router = useRouter();
   const [step, setStep] = useState('phone'); // phone | code
@@ -46,7 +54,7 @@ export default function AuthForm() {
       });
       const data = await res.json();
       if (!data.ok) { setError(data.error || 'کد نادرست است.'); return; }
-      router.push('/dashboard');
+      router.push(safeNext());
       router.refresh();
     } catch {
       setError('ارتباط با سرور برقرار نشد.');

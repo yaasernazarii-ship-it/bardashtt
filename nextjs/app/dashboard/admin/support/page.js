@@ -7,7 +7,7 @@ export const metadata = { title: 'پشتیبانی آنلاین' };
 
 export default async function AdminSupportPage() {
   const user = await getSessionUser();
-  if (!user) redirect('/auth');
+  if (!user) redirect('/auth?next=/dashboard/admin/support');
   if (!isManager(user)) redirect('/dashboard');
 
   return (
