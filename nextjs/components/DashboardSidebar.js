@@ -26,6 +26,7 @@ export default function DashboardSidebar({ active, isAdmin = false, isManager = 
             <li className="sep">مدیریت</li>
             <li><Link className={active === 'enrollments' ? 'active' : undefined} href="/dashboard/admin/enrollments">📋 بررسی ثبت‌نام‌ها</Link></li>
             <li><Link className={active === 'support' ? 'active' : undefined} href="/dashboard/admin/support">💬 پشتیبانی آنلاین</Link></li>
+            <li><Link className={active === 'posts' ? 'active' : undefined} href="/dashboard/admin/posts">📝 مطالب و اخبار</Link></li>
             <li><Link className={active === 'admin' ? 'active' : undefined} href="/dashboard/admin">⚙️ کاربران</Link></li>
           </>
         )}

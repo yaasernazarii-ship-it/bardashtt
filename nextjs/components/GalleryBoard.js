@@ -9,7 +9,20 @@ export default function GalleryBoard() {
   const [imageUrl, setImageUrl] = useState('');
   const [caption, setCaption] = useState('');
   const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+
+  async function upload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true); setError('');
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const data = await res.json();
+    setUploading(false);
+    if (data.ok) setImageUrl(data.url); else setError(data.error || 'آپلود ناموفق بود.');
+  }
 
   async function load() {
     const res = await fetch('/api/gallery');
@@ -54,7 +67,12 @@ export default function GalleryBoard() {
           {error && <div className="alert alert--error" style={{ marginBottom: 12 }}>{error}</div>}
           <div className="cal-form-grid">
             <div className="form-group">
-              <label className="form-label">نشانی تصویر (URL) *</label>
+              <label className="form-label">آپلود عکس از دستگاه</label>
+              <input type="file" accept="image/*" className="form-input" onChange={upload} />
+              {uploading && <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>در حال آپلود…</span>}
+            </div>
+            <div className="form-group">
+              <label className="form-label">یا نشانی تصویر (URL)</label>
               <input className="form-input" dir="ltr" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://…" />
             </div>
             <div className="form-group">

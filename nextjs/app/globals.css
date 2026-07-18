@@ -1216,6 +1216,22 @@ summary:focus-visible {
   .admin-support__pane { min-height: 420px; }
 }
 
+/* مطالب و اخبار (عمومی) */
+.post-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.post-card { display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; text-decoration: none; color: inherit; transition: box-shadow .2s, transform .2s; }
+.post-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.08); transform: translateY(-2px); }
+.post-card__cover { width: 100%; height: 180px; object-fit: cover; }
+.post-card__body { padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+.post-card__title { font-size: 1.1rem; color: var(--dark); margin: 0; }
+.post-card__excerpt { color: var(--muted); font-size: 0.9rem; line-height: 1.8; margin: 0; }
+.post-card__meta { display: flex; gap: 14px; color: var(--muted); font-size: 0.78rem; margin-top: 4px; }
+
+.post-article { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: clamp(20px, 4vw, 40px); }
+.post-article__cover { width: 100%; border-radius: 12px; margin-bottom: 20px; }
+.post-article__p { color: var(--text); line-height: 2.1; margin: 0 0 16px; font-size: 1rem; }
+.post-video { position: relative; width: 100%; aspect-ratio: 16 / 9; margin-bottom: 22px; border-radius: 12px; overflow: hidden; background: #000; }
+.post-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
 .enroll-badge { padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 800; white-space: nowrap; }
 .badge-submitted { background: #FFF7ED; color: #92400E; }
 .badge-approved { background: #F0FDF4; color: #15803D; }
