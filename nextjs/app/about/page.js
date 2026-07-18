@@ -22,6 +22,7 @@ export default function AboutPage() {
         .story-year-badge strong { font-size:1.1rem;font-weight:900;color:#fff; }
         .founder-card { background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:52px 48px;display:grid;grid-template-columns:160px 1fr;gap:48px;align-items:center;max-width:860px;margin:0 auto; }
         .founder-avatar { width:160px;height:160px;border-radius:50%;overflow:hidden;flex-shrink:0;background:linear-gradient(145deg,#1a1208,#2a1f0d);display:flex;align-items:center;justify-content:center;font-size:3.5rem;border:3px solid var(--gold); }
+        .founder-avatar img { width:100%;height:100%;object-fit:cover;object-position:center top;display:block; }
         .founder-name { font-size:1.8rem;font-weight:900;color:var(--dark);margin-bottom:6px; }
         .founder-title { font-size:.9rem;color:var(--gold);font-weight:700;margin-bottom:20px; }
         .founder-tags { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px; }
@@ -180,7 +181,7 @@ export default function AboutPage() {
             <p style={{ color: 'var(--gold)', fontWeight: 700, marginTop: 10 }}>سینماگر، نویسنده و تحلیلگر رفتار</p>
           </div>
           <div className="founder-card" style={{ alignItems: 'flex-start' }}>
-            <div className="founder-avatar">🎬</div>
+            <div className="founder-avatar"><img src="/founder-yaser.jpg" alt="یاسر نظری، بنیان‌گذار خانواده برداشت" /></div>
             <div>
               <div className="founder-name">یاسر نظری</div>
               <div className="founder-title">کارگردان سینما · نویسنده کتاب «پنج متد طلایی»</div>
