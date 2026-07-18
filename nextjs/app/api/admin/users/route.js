@@ -1,10 +1,10 @@
 import { prisma } from '@/lib/prisma';
-import { getSessionUser } from '@/lib/auth';
+import { getSessionUser, isManager } from '@/lib/auth';
 
 export async function GET() {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
-  if (user.role !== 'admin') return Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 });
+  if (!isManager(user)) return Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 });
 
   const users = await prisma.user.findMany({
     orderBy: { createdAt: 'desc' },

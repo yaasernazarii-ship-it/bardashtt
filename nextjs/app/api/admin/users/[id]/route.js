@@ -1,12 +1,12 @@
 import { prisma } from '@/lib/prisma';
-import { getSessionUser } from '@/lib/auth';
+import { getSessionUser, isManager } from '@/lib/auth';
 
 const ROLES = ['member', 'editor', 'admin'];
 
 export async function PATCH(request, { params }) {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
-  if (user.role !== 'admin') return Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 });
+  if (!isManager(user)) return Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 });
 
   const { id } = await params;
   if (id === user.id) {

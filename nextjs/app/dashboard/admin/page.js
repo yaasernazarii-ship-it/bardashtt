@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getSessionUser } from '@/lib/auth';
+import { getSessionUser, isManager } from '@/lib/auth';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import AdminUsers from '@/components/AdminUsers';
 
@@ -7,8 +7,8 @@ export const metadata = { title: 'مدیریت کاربران' };
 
 export default async function AdminPage() {
   const user = await getSessionUser();
-  if (!user) redirect('/auth');
-  if (user.role !== 'admin') redirect('/dashboard');
+  if (!user) redirect('/auth?next=/dashboard/admin');
+  if (!isManager(user)) redirect('/dashboard');
 
   return (
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
