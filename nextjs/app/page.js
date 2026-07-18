@@ -13,37 +13,20 @@ export default function HomePage() {
       {/* Hero */}
       <section className="home-hero">
         <div className="home-hero__bg" />
-        <div className="container home-hero__inner">
-          <div className="home-hero__content">
-            <div className="home-hero__eyebrow">
-              <span /> اولین آموزشگاه رایگان بازیگری سینما در ایران
-            </div>
-            <h1>استعداد بازیگری‌ات را جدی بگیر؛ آموزش حرفه‌ای، رایگان و قابل اعتماد</h1>
-            <p>
-              خانواده برداشت از سال ۱۳۹۷ بستری رسمی برای کشف، آموزش و آماده‌سازی هنرجویان بازیگری در تهران و مازندران فراهم کرده است؛ با مسیر آموزشی مرحله‌به‌مرحله، فضای هنری و نگاه حرفه‌ای به آینده.
-            </p>
-            <div className="home-hero__actions">
-              <Link href="/audition" className="btn btn--gold btn--lg">ثبت‌نام در کلاس‌ها</Link>
-              <Link href="/register" className="btn btn--hero-secondary btn--lg">ساخت حساب رایگان</Link>
-            </div>
-            <div className="home-hero__trust">
-              <div><strong>۱۰۰٪</strong><span>رایگان</span></div>
-              <div><strong>۱۳۹۷</strong><span>سال تأسیس</span></div>
-              <div><strong>۲</strong><span>شعبه فعال</span></div>
-            </div>
+        <div className="container home-hero__inner home-hero__inner--center">
+          <div className="home-hero__logo">
+            <img src="/bardasht-logo.png" alt="خانه برداشت" />
           </div>
-          <div className="home-hero__visual" aria-hidden="true">
-            <div className="cinema-card cinema-card--main">
-              <span className="cinema-card__label">مسیر هنرجو</span>
-              <strong>از علاقه تا اجرای حرفه‌ای</strong>
-              <p>بیان، بدن، تحلیل نقش، کار مقابل دوربین</p>
-            </div>
-            <div className="cinema-card cinema-card--floating">
-              <span>🎬</span>
-              <strong>آموزش سینمایی</strong>
-            </div>
-            <div className="cinema-orbit cinema-orbit--one" />
-            <div className="cinema-orbit cinema-orbit--two" />
+          <div className="home-hero__eyebrow">
+            <span /> اولین آموزشگاه رایگان بازیگری سینما در ایران
+          </div>
+          <h1 className="home-hero__slogan">
+            استعداد بازیگری‌ات را جدی بگیر
+            <span>آموزش حرفه‌ای، رایگان و قابل‌اعتماد</span>
+          </h1>
+          <div className="home-hero__actions home-hero__actions--center">
+            <Link href="/courses" className="btn btn--gold btn--lg">مشاهده دوره‌ها</Link>
+            <Link href="/about" className="btn btn--hero-secondary btn--lg">درباره ما</Link>
           </div>
         </div>
       </section>
