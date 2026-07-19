@@ -1,6 +1,9 @@
 import SimplePage from '@/components/SimplePage';
+import { loadContent } from '@/lib/siteContent';
 
 export const metadata = { title: 'یادگیری آنلاین', description: 'منابع آنلاین آموزشی خانواده برداشت برای تمرین بازیگری در خانه.' };
+
+export const dynamic = 'force-dynamic';
 
 const lessons = [
   ['تمرین بیان', 'تمرین‌های روزانه برای وضوح صدا، ریتم و کنترل نفس'],
@@ -9,12 +12,13 @@ const lessons = [
   ['تمرین مقابل دوربین', 'آشنایی با قاب، نگاه، سکوت و بازی مینیمال'],
 ];
 
-export default function OnlineLearningPage() {
+export default async function OnlineLearningPage() {
+  const t = await loadContent();
   return (
-    <SimplePage title="یادگیری آنلاین" subtitle="منابع آموزشی برای تمرین در خانه" tag="آموزش آنلاین">
+    <SimplePage title={t('online.title')} subtitle={t('online.subtitle')} tag={t('online.tag')}>
       <div className="stack-card" style={{ marginBottom: 22 }}>
-        <h2 className="subheading" style={{ marginBottom: 12 }}>تمرین‌های مکمل برای رشد مستمر</h2>
-        <p className="body-lg">در این بخش آموزش‌های آنلاین، تمرین‌های بیان، بدن و تحلیل متن برای هنرجویان منتشر می‌شود تا مسیر آموزش فقط به کلاس محدود نماند.</p>
+        <h2 className="subheading" style={{ marginBottom: 12 }}>{t('online.heading')}</h2>
+        <p className="body-lg">{t('online.body')}</p>
       </div>
       <div className="responsive-grid-4">
         {lessons.map(([title, text], index) => (

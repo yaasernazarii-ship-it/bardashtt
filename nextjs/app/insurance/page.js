@@ -1,6 +1,9 @@
 import SimplePage from '@/components/SimplePage';
+import { loadContent } from '@/lib/siteContent';
 
 export const metadata = { title: 'بیمه هنرجویان', description: 'پوشش بیمه‌ای و ایمنی هنرجویان در دوره‌ها و اردوهای خانواده برداشت.' };
+
+export const dynamic = 'force-dynamic';
 
 const items = [
   ['کلاس‌ها', 'پوشش و ثبت اطلاعات هنرجویان برای حضور منظم در برنامه‌ها'],
@@ -8,12 +11,13 @@ const items = [
   ['پشتیبانی', 'اطلاع‌رسانی و همراهی تیم اجرایی در طول فعالیت‌های حضوری'],
 ];
 
-export default function InsurancePage() {
+export default async function InsurancePage() {
+  const t = await loadContent();
   return (
-    <SimplePage title="بیمه هنرجویان" subtitle="پوشش بیمه‌ای در دوره‌ها و اردوها" tag="ایمنی">
+    <SimplePage title={t('insurance.title')} subtitle={t('insurance.subtitle')} tag={t('insurance.tag')}>
       <div className="stack-card" style={{ marginBottom: 22 }}>
-        <h2 className="subheading" style={{ marginBottom: 12 }}>امنیت و آرامش هنرجو برای ما جدی است</h2>
-        <p className="body-lg">خانواده برداشت برای هنرجویان در برنامه‌های آموزشی، کلاس‌ها و اردوها پوشش بیمه‌ای و فرآیندهای مراقبتی در نظر می‌گیرد تا مسیر آموزش با اطمینان بیشتری طی شود.</p>
+        <h2 className="subheading" style={{ marginBottom: 12 }}>{t('insurance.heading')}</h2>
+        <p className="body-lg">{t('insurance.body')}</p>
       </div>
       <div className="responsive-grid-3">
         {items.map(([title, text], index) => (

@@ -1,5 +1,6 @@
 import PageLayout from '@/components/PageLayout';
 import CoursesExplorer from '@/components/CoursesExplorer';
+import { loadContent } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'دوره‌های بازیگری',
@@ -7,10 +8,13 @@ export const metadata = {
   alternates: { canonical: 'https://www.bardashtt.com/courses' },
 };
 
-export default function CoursesPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function CoursesPage() {
+  const t = await loadContent();
   return (
     <PageLayout>
-      <CoursesExplorer />
+      <CoursesExplorer heading={t('courses.title')} subheading={t('courses.subtitle')} />
     </PageLayout>
   );
 }

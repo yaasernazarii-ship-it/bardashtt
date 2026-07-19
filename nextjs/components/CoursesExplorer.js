@@ -35,15 +35,15 @@ const courses = [
   },
 ];
 
-export default function CoursesExplorer() {
+export default function CoursesExplorer({ heading = 'مسیر آموزشی خانواده برداشت', subheading = '۵ مرحله برای تبدیل علاقه به مهارت حرفه‌ای' }) {
   const [active, setActive] = useState(0);
   const c = courses[active];
   return (
     <>
       <section className="path-section">
         <div className="path-section__title">
-          <h1>مسیر آموزشی خانواده برداشت</h1>
-          <p>۵ مرحله برای تبدیل علاقه به مهارت حرفه‌ای</p>
+          <h1>{heading}</h1>
+          <p>{subheading}</p>
         </div>
         <div className="path-track">
           {courses.map((course, i) => (

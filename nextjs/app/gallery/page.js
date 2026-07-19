@@ -1,5 +1,6 @@
 import SimplePage from '@/components/SimplePage';
 import GalleryBoard from '@/components/GalleryBoard';
+import { loadContent } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'گالری',
@@ -7,9 +8,12 @@ export const metadata = {
   alternates: { canonical: 'https://www.bardashtt.com/gallery' },
 };
 
-export default function GalleryPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function GalleryPage() {
+  const t = await loadContent();
   return (
-    <SimplePage title="گالری" subtitle="لحظه‌هایی از کلاس‌ها، اردوها و فعالیت‌های ما" tag="تصاویر">
+    <SimplePage title={t('gallery.title')} subtitle={t('gallery.subtitle')} tag={t('gallery.tag')}>
       <GalleryBoard />
     </SimplePage>
   );

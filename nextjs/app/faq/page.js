@@ -1,11 +1,14 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
 import Accordion from '@/components/Accordion';
+import { loadContent } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'سوالات متداول',
   description: 'پاسخ به سوالات پرتکرار درباره دوره‌ها، ثبت‌نام، آزمون و گواهینامه خانواده برداشت.',
 };
+
+export const dynamic = 'force-dynamic';
 
 const groups = [
   {
@@ -36,14 +39,15 @@ const summary = [
   { title: 'ارتباط مستقیم', text: 'اگر پاسخ سؤال‌تان اینجا نیست، می‌توانید سریع با پشتیبانی تماس بگیرید.' },
 ];
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const t = await loadContent();
   return (
     <PageLayout>
       <div className="page-header">
         <div className="page-header__inner">
-          <div className="page-header__tag">راهنمای هنرجویان</div>
-          <h1>سوالات متداول</h1>
-          <p>پاسخ سوال‌های رایج درباره ثبت‌نام، دوره‌ها، گواهینامه و روند آموزشی خانواده برداشت.</p>
+          <div className="page-header__tag">{t('faq.tag')}</div>
+          <h1>{t('faq.title')}</h1>
+          <p>{t('faq.subtitle')}</p>
           <div className="breadcrumb"><Link href="/">خانه</Link> › سوالات متداول</div>
         </div>
       </div>
@@ -60,8 +64,8 @@ export default function FaqPage() {
           <div className="faq-grid">
             <aside className="faq-side">
               <span className="tag tag--gold" style={{ marginBottom: 14 }}>پشتیبانی مستقیم</span>
-              <h3>اگر پاسخ را پیدا نکردید</h3>
-              <p>اگر سوال شما در این بخش نیست، تیم پشتیبانی خانواده برداشت آماده پاسخ‌گویی مستقیم به شماست.</p>
+              <h3>{t('faq.side.heading')}</h3>
+              <p>{t('faq.side.text')}</p>
               <div className="feature-list">
                 <div className="feature-list__item">
                   <div className="feature-list__icon">۱</div>
@@ -79,7 +83,7 @@ export default function FaqPage() {
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 18 }}>
-                <a href="tel:02191090934" className="btn btn--gold">تماس مستقیم</a>
+                <a href={`tel:${t('contact.phone')}`} className="btn btn--gold">تماس مستقیم</a>
                 <Link href="/courses" className="btn btn--hero-secondary">مشاهده دوره‌ها</Link>
               </div>
             </aside>

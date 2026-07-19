@@ -39,6 +39,97 @@ export const CONTENT_GROUPS = [
     ],
   },
   {
+    id: 'courses',
+    title: 'صفحهٔ دوره‌ها',
+    fields: [
+      { key: 'courses.title', label: 'عنوان', type: 'text', default: 'مسیر آموزشی خانواده برداشت' },
+      { key: 'courses.subtitle', label: 'زیرعنوان', type: 'text', default: '۵ مرحله برای تبدیل علاقه به مهارت حرفه‌ای' },
+    ],
+  },
+  {
+    id: 'gallery',
+    title: 'صفحهٔ گالری',
+    fields: [
+      { key: 'gallery.tag', label: 'برچسب', type: 'text', default: 'تصاویر' },
+      { key: 'gallery.title', label: 'عنوان', type: 'text', default: 'گالری' },
+      { key: 'gallery.subtitle', label: 'زیرعنوان', type: 'text', default: 'لحظه‌هایی از کلاس‌ها، اردوها و فعالیت‌های ما' },
+    ],
+  },
+  {
+    id: 'faq',
+    title: 'سؤالات متداول',
+    fields: [
+      { key: 'faq.tag', label: 'برچسب بالای عنوان', type: 'text', default: 'راهنمای هنرجویان' },
+      { key: 'faq.title', label: 'عنوان', type: 'text', default: 'سوالات متداول' },
+      { key: 'faq.subtitle', label: 'زیرعنوان', type: 'text', default: 'پاسخ سوال‌های رایج درباره ثبت‌نام، دوره‌ها، گواهینامه و روند آموزشی خانواده برداشت.' },
+      { key: 'faq.side.heading', label: 'عنوان کادر پشتیبانی', type: 'text', default: 'اگر پاسخ را پیدا نکردید' },
+      { key: 'faq.side.text', label: 'متن کادر پشتیبانی', type: 'textarea', default: 'اگر سوال شما در این بخش نیست، تیم پشتیبانی خانواده برداشت آماده پاسخ‌گویی مستقیم به شماست.' },
+    ],
+  },
+  {
+    id: 'certificate',
+    title: 'گواهینامه / آزمون فارغ‌التحصیلی',
+    fields: [
+      { key: 'certificate.tag', label: 'برچسب', type: 'text', default: 'گواهینامه' },
+      { key: 'certificate.title', label: 'عنوان', type: 'text', default: 'آزمون فارغ‌التحصیلی' },
+      { key: 'certificate.subtitle', label: 'زیرعنوان', type: 'text', default: 'ارزیابی نهایی و دریافت گواهینامه' },
+      { key: 'certificate.heading', label: 'عنوان متن اصلی', type: 'text', default: 'مسیر دریافت گواهینامه' },
+      { key: 'certificate.body', label: 'متن اصلی', type: 'textarea', default: 'پس از گذراندن مراحل آموزشی، هنرجو وارد ارزیابی نهایی می‌شود. این ارزیابی فقط یک امتحان تئوری نیست؛ عملکرد واقعی هنرجو در تمرین، اجرا و حضور گروهی بررسی می‌شود.' },
+      { key: 'certificate.result', label: 'متن کادر نتیجهٔ نهایی', type: 'textarea', default: 'هنرجویان موفق، گواهینامه رسمی مسیر آموزشی خود را دریافت می‌کنند و برای مراحل بعدی معرفی و آماده‌سازی می‌شوند.' },
+    ],
+  },
+  {
+    id: 'insurance',
+    title: 'بیمهٔ هنرجویان',
+    fields: [
+      { key: 'insurance.tag', label: 'برچسب', type: 'text', default: 'ایمنی' },
+      { key: 'insurance.title', label: 'عنوان', type: 'text', default: 'بیمه هنرجویان' },
+      { key: 'insurance.subtitle', label: 'زیرعنوان', type: 'text', default: 'پوشش بیمه‌ای در دوره‌ها و اردوها' },
+      { key: 'insurance.heading', label: 'عنوان متن اصلی', type: 'text', default: 'امنیت و آرامش هنرجو برای ما جدی است' },
+      { key: 'insurance.body', label: 'متن اصلی', type: 'textarea', default: 'خانواده برداشت برای هنرجویان در برنامه‌های آموزشی، کلاس‌ها و اردوها پوشش بیمه‌ای و فرآیندهای مراقبتی در نظر می‌گیرد تا مسیر آموزش با اطمینان بیشتری طی شود.' },
+    ],
+  },
+  {
+    id: 'onlineLearning',
+    title: 'یادگیری آنلاین',
+    fields: [
+      { key: 'online.tag', label: 'برچسب', type: 'text', default: 'آموزش آنلاین' },
+      { key: 'online.title', label: 'عنوان', type: 'text', default: 'یادگیری آنلاین' },
+      { key: 'online.subtitle', label: 'زیرعنوان', type: 'text', default: 'منابع آموزشی برای تمرین در خانه' },
+      { key: 'online.heading', label: 'عنوان متن اصلی', type: 'text', default: 'تمرین‌های مکمل برای رشد مستمر' },
+      { key: 'online.body', label: 'متن اصلی', type: 'textarea', default: 'در این بخش آموزش‌های آنلاین، تمرین‌های بیان، بدن و تحلیل متن برای هنرجویان منتشر می‌شود تا مسیر آموزش فقط به کلاس محدود نماند.' },
+    ],
+  },
+  {
+    id: 'blog',
+    title: 'وبلاگ',
+    fields: [
+      { key: 'blog.tag', label: 'برچسب', type: 'text', default: 'مطالب آموزشی' },
+      { key: 'blog.title', label: 'عنوان', type: 'text', default: 'وبلاگ' },
+      { key: 'blog.subtitle', label: 'زیرعنوان', type: 'text', default: 'مطالب آموزشی درباره بازیگری و سینما' },
+    ],
+  },
+  {
+    id: 'podcast',
+    title: 'پادکست',
+    fields: [
+      { key: 'podcast.tag', label: 'برچسب', type: 'text', default: 'صوت' },
+      { key: 'podcast.title', label: 'عنوان', type: 'text', default: 'پادکست' },
+      { key: 'podcast.subtitle', label: 'زیرعنوان', type: 'text', default: 'گفتگوها و آموزش‌های صوتی درباره بازیگری' },
+    ],
+  },
+  {
+    id: 'register',
+    title: 'ثبت‌نام رایگان',
+    fields: [
+      { key: 'register.tag', label: 'برچسب بالای عنوان', type: 'text', default: 'عضویت رایگان' },
+      { key: 'register.title', label: 'عنوان', type: 'text', default: 'ثبت‌نام در خانواده برداشت' },
+      { key: 'register.subtitle', label: 'زیرعنوان', type: 'text', default: 'درخواست عضویت خود را ثبت کنید تا تیم ما برای ادامه مسیر آموزشی با شما در ارتباط باشد.' },
+      { key: 'register.side.heading', label: 'عنوان کادر کناری', type: 'text', default: 'شروع مسیر بازیگری بدون مانع مالی' },
+      { key: 'register.side.text', label: 'متن کادر کناری', type: 'textarea', default: 'اگر می‌خواهید به‌صورت جدی وارد مسیر آموزش بازیگری شوید، این فرم اولین قدم برای ارتباط با تیم خانواده برداشت است.' },
+    ],
+  },
+  {
     id: 'contact',
     title: 'اطلاعات تماس (مشترک همهٔ صفحات)',
     fields: [
