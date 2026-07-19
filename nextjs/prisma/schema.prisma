@@ -8,17 +8,40 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(cuid())
-  phone       String       @unique
-  displayName String?
-  city        String?
-  birthYear   Int?
-  role        String       @default("member") // member | filmmaker | editor | admin
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  sessions    Session[]
-  resume      ActorResume?
-  enrollments Enrollment[]
+  id           String       @id @default(cuid())
+  phone        String       @unique
+  displayName  String?
+  city         String?
+  birthYear    Int?
+  role         String       @default("member") // member | student | filmmaker | editor | admin
+  username     String?      @unique
+  passwordHash String?
+  nationalId   String?
+  branch       String? // تهران | مازندران
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  sessions     Session[]
+  resume       ActorResume?
+  enrollments  Enrollment[]
+}
+
+model SignupRequest {
+  id         String   @id @default(cuid())
+  role       String // student | filmmaker
+  firstName  String
+  lastName   String
+  phone      String
+  nationalId String?
+  branch     String? // تهران | مازندران (برای هنرجو)
+  status     String   @default("pending") // pending | approved | rejected
+  username   String? // نام کاربری ساخته‌شده هنگام تأیید
+  userId     String? // حساب کاربری ساخته‌شده پس از تأیید
+  adminNote  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([status])
+  @@index([phone])
 }
 
 model OtpCode {

@@ -17,7 +17,7 @@ export function normalizePhone(input) {
   return null;
 }
 
-export async function createSession(userId) {
+export async function createSession(userId, { remember = true } = {}) {
   const token = randomBytes(32).toString('hex');
   const expiresAt = new Date(Date.now() + SESSION_TTL_DAYS * 24 * 60 * 60 * 1000);
   await prisma.session.create({ data: { token, userId, expiresAt } });
@@ -28,7 +28,8 @@ export async function createSession(userId) {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
-    expires: expiresAt,
+    // «مرا به خاطر بسپار»: کوکی ماندگار؛ در غیر این صورت کوکی موقتِ نشست (با بستن مرورگر پاک می‌شود).
+    ...(remember ? { expires: expiresAt } : {}),
   });
   return token;
 }

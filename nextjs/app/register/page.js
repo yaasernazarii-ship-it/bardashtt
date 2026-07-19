@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
-import RegisterForm from '@/components/RegisterForm';
+import SignupWizard from '@/components/SignupWizard';
 import { loadContent } from '@/lib/siteContent';
 
 const benefits = [
@@ -47,7 +47,7 @@ export default async function RegisterPage() {
               ))}
             </div>
           </div>
-          <RegisterForm />
+          <SignupWizard />
         </div>
       </section>
     </PageLayout>
