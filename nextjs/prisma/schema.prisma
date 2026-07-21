@@ -31,8 +31,10 @@ model SignupRequest {
   firstName  String
   lastName   String
   phone      String
-  nationalId String?
-  branch     String? // تهران | مازندران (برای هنرجو)
+  nationalId String? // کد ملی (برای فیلمساز)
+  branch     String? // تهران | ساری (برای هنرجو)
+  birthDate  String? // تاریخ تولد (برای هنرجو)
+  idCardImage String? // عکس شناسنامه یا کارت ملی (برای هنرجو)
   status     String   @default("pending") // pending | approved | rejected
   username   String? // نام کاربری ساخته‌شده هنگام تأیید
   userId     String? // حساب کاربری ساخته‌شده پس از تأیید

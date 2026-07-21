@@ -74,7 +74,7 @@ export default function AdminSignups() {
       {error && <div className="alert alert--error" style={{ marginBottom: 12 }}>{error}</div>}
       {result && (
         <div className="alert alert--success" style={{ marginBottom: 16, lineHeight: 2 }}>
-          حساب هنرجو ساخته شد. این اطلاعات را برای او ارسال کنید:<br />
+          حساب کاربری ساخته شد. این اطلاعات را برای کاربر ارسال کنید:<br />
           نام کاربری: <b dir="ltr">{result.username}</b> — رمز عبور: <b dir="ltr">{result.password}</b>
         </div>
       )}
@@ -91,14 +91,25 @@ export default function AdminSignups() {
               </span>
             </div>
             <div style={{ color: 'var(--muted)', fontSize: '.9rem', lineHeight: 2 }}>
-              <div>شماره تماس: <span dir="ltr">{r.phone}</span></div>
+              {r.phone && <div>شماره تماس: <span dir="ltr">{r.phone}</span></div>}
               {r.nationalId && <div>کد ملی: <span dir="ltr">{r.nationalId}</span></div>}
-              {r.branch && <div>شعبه: {r.branch}</div>}
+              {r.branch && <div>شعبه ثبت‌نامی: {r.branch}</div>}
+              {r.birthDate && <div>تاریخ تولد: <span dir="ltr">{r.birthDate}</span></div>}
               {r.username && <div>نام کاربری: <b dir="ltr">{r.username}</b></div>}
             </div>
 
+            {r.idCardImage && (
+              <div style={{ marginTop: 10 }}>
+                <p style={{ color: 'var(--muted)', fontSize: '.82rem', marginBottom: 6 }}>عکس شناسنامه یا کارت ملی (برای مشاهده کلیک کنید):</p>
+                <a href={r.idCardImage} target="_blank" rel="noopener noreferrer">
+                  <img src={r.idCardImage} alt="عکس شناسنامه" style={{ maxWidth: '100%', maxHeight: 160, borderRadius: 10, border: '1px solid var(--border)' }} />
+                </a>
+              </div>
+            )}
+
             {r.status === 'pending' && (
               <div style={{ marginTop: 14, borderTop: '1px solid var(--border)', paddingTop: 14 }}>
+                <p style={{ fontWeight: 700, marginBottom: 10 }}>ساخت نام کاربری و رمز عبور <span style={{ color: 'var(--muted)', fontWeight: 400, fontSize: '.85rem' }}>(پس از تأیید، این اطلاعات را برای کاربر ارسال کنید)</span></p>
                 <div className="form-group">
                   <label className="form-label">نام کاربری</label>
                   <input className="form-input" dir="ltr" placeholder="مثلاً ali1234"

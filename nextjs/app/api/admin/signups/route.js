@@ -20,6 +20,8 @@ export async function GET() {
       phone: r.phone,
       nationalId: r.nationalId,
       branch: r.branch,
+      birthDate: r.birthDate,
+      idCardImage: r.idCardImage,
       status: r.status,
       username: r.username,
       adminNote: r.adminNote,

@@ -36,8 +36,14 @@ export async function PATCH(request, { params }) {
     return Response.json({ ok: false, error: 'رمز عبور حداقل ۶ کاراکتر باشد.' }, { status: 400 });
   }
 
+  // فیلمساز ممکن است شماره تماس نداشته باشد؛ چون شماره در مدل کاربر یکتا و الزامی است،
+  // برای فیلمساز یک شناسه‌ی یکتای جایگزین بر پایه‌ی کد ملی می‌سازیم.
+  const accountPhone = (req.phone && req.phone.length >= 10)
+    ? req.phone
+    : `fm${req.nationalId || req.id}`;
+
   // نام کاربری نباید متعلق به حساب دیگری باشد.
-  const taken = await prisma.user.findFirst({ where: { username, phone: { not: req.phone } } });
+  const taken = await prisma.user.findFirst({ where: { username, phone: { not: accountPhone } } });
   if (taken) {
     return Response.json({ ok: false, error: 'این نام کاربری قبلاً استفاده شده است.' }, { status: 409 });
   }
@@ -47,9 +53,9 @@ export async function PATCH(request, { params }) {
   const role = req.role === 'filmmaker' ? 'filmmaker' : 'student';
 
   const account = await prisma.user.upsert({
-    where: { phone: req.phone },
+    where: { phone: accountPhone },
     update: { displayName, username, passwordHash, nationalId: req.nationalId, branch: req.branch, role },
-    create: { phone: req.phone, displayName, username, passwordHash, nationalId: req.nationalId, branch: req.branch, role },
+    create: { phone: accountPhone, displayName, username, passwordHash, nationalId: req.nationalId, branch: req.branch, role },
   });
 
   await prisma.signupRequest.update({
