@@ -91,10 +91,13 @@ export default function AdminSignups() {
               </span>
             </div>
             <div style={{ color: 'var(--muted)', fontSize: '.9rem', lineHeight: 2 }}>
+              <div>نام و نام خانوادگی: {r.firstName} {r.lastName}</div>
+              <div>نقش: {ROLE_LABEL[r.role] || r.role}</div>
               {r.phone && <div>شماره تماس: <span dir="ltr">{r.phone}</span></div>}
               {r.nationalId && <div>کد ملی: <span dir="ltr">{r.nationalId}</span></div>}
               {r.branch && <div>شعبه ثبت‌نامی: {r.branch}</div>}
               {r.birthDate && <div>تاریخ تولد: <span dir="ltr">{r.birthDate}</span></div>}
+              {r.createdAt && <div>تاریخ ثبت درخواست: <span dir="ltr">{new Date(r.createdAt).toLocaleString('fa-IR')}</span></div>}
               {r.username && <div>نام کاربری: <b dir="ltr">{r.username}</b></div>}
             </div>
 
