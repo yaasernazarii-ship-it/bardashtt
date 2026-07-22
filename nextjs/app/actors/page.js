@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { getSessionUser } from '@/lib/auth';
 import SimplePage from '@/components/SimplePage';
 
 export const metadata = {
@@ -11,6 +13,9 @@ export const metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function ActorsPage() {
+  const user = await getSessionUser();
+  if (!user) redirect('/auth?next=/actors');
+
   const actors = await prisma.actorResume.findMany({
     where: { isPublic: true },
     orderBy: { updatedAt: 'desc' },

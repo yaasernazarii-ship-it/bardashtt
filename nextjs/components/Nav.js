@@ -42,11 +42,23 @@ const navLinks = [
 
 export default function Nav({ onOpenChat }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const pathname = usePathname();
 
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/me').then((r) => r.json()).then((d) => { if (alive) setUser(d.ok ? d.user : null); }).catch(() => {});
+    return () => { alive = false; };
+  }, [pathname]);
+
+  async function logout() {
+    try { await fetch('/api/logout', { method: 'POST' }); } catch { /* ignore */ }
+    window.location.href = '/';
+  }
 
   useEffect(() => {
     document.body.classList.toggle('nav-open', menuOpen);
@@ -108,7 +120,14 @@ export default function Nav({ onOpenChat }) {
           </ul>
           <div className="nav__actions">
             <button type="button" className="nav__support-btn" onClick={onOpenChat}><span className="nav__support-dot" />پشتیبانی</button>
-            <Link href="/auth" className="btn btn--outline btn--sm">ورود</Link>
+            {user ? (
+              <>
+                <Link href="/dashboard" className="btn btn--dark btn--sm">داشبورد</Link>
+                <button type="button" className="btn btn--outline btn--sm" onClick={logout}>خروج</button>
+              </>
+            ) : (
+              <Link href="/auth" className="btn btn--outline btn--sm">ورود</Link>
+            )}
           </div>
           <button
             type="button"
@@ -157,7 +176,14 @@ export default function Nav({ onOpenChat }) {
         </div>
         <div className="mobile-drawer__actions">
           <button type="button" className="btn btn--outline" onClick={onOpenChat}>پشتیبانی آنلاین</button>
-          <Link href="/auth" className="btn btn--outline">ورود</Link>
+          {user ? (
+            <>
+              <Link href="/dashboard" className="btn btn--dark">داشبورد</Link>
+              <button type="button" className="btn btn--outline" onClick={logout}>خروج از حساب</button>
+            </>
+          ) : (
+            <Link href="/auth" className="btn btn--outline">ورود</Link>
+          )}
         </div>
       </aside>
     </>

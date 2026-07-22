@@ -82,6 +82,23 @@ model SignupRequest {
   @@index([phone])
 }
 
+model BookingRequest {
+  id          String   @id @default(cuid())
+  actorId     String // شناسهٔ رزومهٔ بازیگر
+  actorName   String // نام بازیگر (کپی برای نمایش سریع)
+  userId      String? // فیلمساز/کاربر ثبت‌کننده
+  name        String // نام تماس‌گیرنده
+  phone       String // شماره تماس
+  message     String // پیام/توضیح ست تایم
+  status      String   @default("new") // new | contacted | done | rejected
+  adminNote   String? // یادداشت ادمین/ادیتور
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([actorId])
+}
+
 model OtpCode {
   id        String   @id @default(cuid())
   phone     String

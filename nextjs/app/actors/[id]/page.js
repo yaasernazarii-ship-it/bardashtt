@@ -1,7 +1,9 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { getSessionUser } from '@/lib/auth';
 import SimplePage from '@/components/SimplePage';
+import ActorBooking from '@/components/ActorBooking';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,6 +22,9 @@ export async function generateMetadata({ params }) {
 
 export default async function ActorDetailPage({ params }) {
   const { id } = await params;
+  const user = await getSessionUser();
+  if (!user) redirect(`/auth?next=/actors/${id}`);
+
   const a = await prisma.actorResume.findFirst({ where: { id, isPublic: true } });
   if (!a) notFound();
 
@@ -61,6 +66,7 @@ export default async function ActorDetailPage({ params }) {
               <a href={a.showreelUrl} target="_blank" rel="noopener noreferrer" className="btn btn--dark">مشاهده نمونه‌کار</a>
             </div>
           )}
+          <ActorBooking actorId={a.id} actorName={a.fullName} defaultName={user.displayName || ''} defaultPhone={user.phone || ''} />
         </div>
       </div>
     </SimplePage>
