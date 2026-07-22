@@ -20,6 +20,7 @@ export async function POST(request) {
     let branch = null;
     let birthDate = null;
     let idCardImage = null;
+    let goal = null;
 
     if (role === 'student') {
       phone = normalizePhone(b.phone);
@@ -34,10 +35,14 @@ export async function POST(request) {
         return Response.json({ ok: false, error: 'عکس شناسنامه یا کارت ملی را بارگذاری کنید.' }, { status: 400 });
       }
     } else {
-      // فیلمساز: نام، نام خانوادگی و کد ملی
+      // فیلمساز: نام، نام خانوادگی، کد ملی و هدف
       nationalId = String(b.nationalId || '').replace(/[^\d]/g, '').slice(0, 10);
+      goal = String(b.goal || '').trim().slice(0, 1000);
       if (nationalId.length !== 10) {
         return Response.json({ ok: false, error: 'کد ملی باید ۱۰ رقم باشد.' }, { status: 400 });
+      }
+      if (!goal) {
+        return Response.json({ ok: false, error: 'هدف خود از انتخاب خانواده برداشت را بنویسید.' }, { status: 400 });
       }
     }
 
@@ -60,6 +65,7 @@ export async function POST(request) {
         branch,
         birthDate,
         idCardImage,
+        goal,
       },
     });
 

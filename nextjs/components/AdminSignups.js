@@ -97,6 +97,7 @@ export default function AdminSignups() {
               {r.nationalId && <div>کد ملی: <span dir="ltr">{r.nationalId}</span></div>}
               {r.branch && <div>شعبه ثبت‌نامی: {r.branch}</div>}
               {r.birthDate && <div>تاریخ تولد: <span dir="ltr">{r.birthDate}</span></div>}
+              {r.goal && <div>هدف از انتخاب خانواده برداشت: {r.goal}</div>}
               {r.createdAt && <div>تاریخ ثبت درخواست: <span dir="ltr">{new Date(r.createdAt).toLocaleString('fa-IR')}</span></div>}
               {r.username && <div>نام کاربری: <b dir="ltr">{r.username}</b></div>}
             </div>

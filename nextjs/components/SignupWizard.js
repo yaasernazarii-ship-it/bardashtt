@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-const EMPTY = { firstName: '', lastName: '', phone: '', nationalId: '', branch: 'تهران', birthDate: '', idCardImage: '' };
+const EMPTY = { firstName: '', lastName: '', phone: '', nationalId: '', branch: 'تهران', birthDate: '', idCardImage: '', goal: '' };
 
 export default function SignupWizard() {
   const [role, setRole] = useState(''); // '' | 'student' | 'filmmaker'
@@ -90,10 +90,10 @@ export default function SignupWizard() {
   if (role === 'filmmaker') {
     return (
       <form className="form-shell" onSubmit={(e) => submit(e, {
-        role: 'filmmaker', firstName: form.firstName, lastName: form.lastName, nationalId: form.nationalId,
+        role: 'filmmaker', firstName: form.firstName, lastName: form.lastName, nationalId: form.nationalId, goal: form.goal,
       })}>
         <div className="form-shell__head">
-          <h2>ثبت‌نام فیلمساز</h2>
+          <h2>ساخت حساب کاربری فیلمساز</h2>
           <p>اطلاعات زیر را کامل کنید تا پس از تأیید، حساب کاربری شما ساخته شود.</p>
         </div>
         {error && <div className="alert alert--error">{error}</div>}
@@ -104,6 +104,9 @@ export default function SignupWizard() {
         <div className="form-group"><label className="form-label">کد ملی</label>
           <input className="form-input" dir="ltr" inputMode="numeric" maxLength={10} required placeholder="کد ملی ۱۰ رقمی"
             value={form.nationalId} onChange={(e) => set('nationalId', e.target.value.replace(/[^\d]/g, ''))} /></div>
+        <div className="form-group"><label className="form-label">هدفتان از انتخاب خانواده برداشت</label>
+          <textarea className="form-input" rows={4} required placeholder="کمی درباره‌ی هدف و انگیزه‌تان بنویسید…"
+            value={form.goal} onChange={(e) => set('goal', e.target.value)} /></div>
         <button className="btn btn--dark btn--full" disabled={loading}>{loading ? 'در حال ثبت…' : 'ثبت درخواست'}</button>
         <button type="button" className="btn btn--ghost btn--full" style={{ marginTop: 8 }} onClick={reset}>بازگشت</button>
       </form>
@@ -117,7 +120,7 @@ export default function SignupWizard() {
       branch: form.branch, birthDate: form.birthDate, idCardImage: form.idCardImage,
     })}>
       <div className="form-shell__head">
-        <h2>ثبت‌نام هنرجو</h2>
+        <h2>ساخت حساب کاربری هنرجو</h2>
         <p>اطلاعات زیر را کامل کنید تا پس از تأیید، حساب کاربری شما ساخته شود.</p>
       </div>
       {error && <div className="alert alert--error">{error}</div>}

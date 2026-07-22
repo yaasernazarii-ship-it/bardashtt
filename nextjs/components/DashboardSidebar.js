@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 const items = [
   { key: 'dashboard', href: '/dashboard', label: '🏠 داشبورد' },
+  { key: 'schedule', href: '/dashboard/schedule', label: '📅 برنامه و تقویم من' },
   { key: 'enrollment', href: '/dashboard/enrollment', label: '🎓 ثبت‌نام من' },
   { key: 'calendar', href: '/dashboard/calendar', label: '🗓 تقویم کلاس' },
   { key: 'assistant', href: '/dashboard/assistant', label: '🤖 دستیار کتاب' },
@@ -26,6 +27,7 @@ export default function DashboardSidebar({ active, isAdmin = false, isManager = 
             <li className="sep">مدیریت</li>
             <li><Link className={active === 'enrollments' ? 'active' : undefined} href="/dashboard/admin/enrollments">📋 بررسی ثبت‌نام‌ها</Link></li>
             <li><Link className={active === 'signups' ? 'active' : undefined} href="/dashboard/admin/signups">✅ تأیید حساب‌ها</Link></li>
+            <li><Link className={active === 'classes' ? 'active' : undefined} href="/dashboard/admin/classes">📅 کلاس‌ها و تقویم</Link></li>
             <li><Link className={active === 'support' ? 'active' : undefined} href="/dashboard/admin/support">💬 پشتیبانی آنلاین</Link></li>
             <li><Link className={active === 'posts' ? 'active' : undefined} href="/dashboard/admin/posts">📝 مطالب و اخبار</Link></li>
             <li><Link className={active === 'content' ? 'active' : undefined} href="/dashboard/admin/content">📄 متن صفحات</Link></li>

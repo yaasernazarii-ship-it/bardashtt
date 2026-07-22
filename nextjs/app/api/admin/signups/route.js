@@ -22,6 +22,7 @@ export async function GET() {
       branch: r.branch,
       birthDate: r.birthDate,
       idCardImage: r.idCardImage,
+      goal: r.goal,
       status: r.status,
       username: r.username,
       adminNote: r.adminNote,

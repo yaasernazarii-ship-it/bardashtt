@@ -17,12 +17,47 @@ model User {
   username     String?      @unique
   passwordHash String?
   nationalId   String?
-  branch       String? // تهران | مازندران
+  branch       String? // تهران | ساری
+  courseTitle  String? // دوره‌ای که هنرجو در آن است
+  classGroupId String? // کلاس/گروه هنرجو
+  classGroup   ClassGroup?  @relation(fields: [classGroupId], references: [id])
+  scheduleSeenAt DateTime? // آخرین باری که هنرجو برنامه‌اش را دید (برای نوتیفیکیشن)
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   sessions     Session[]
   resume       ActorResume?
   enrollments  Enrollment[]
+
+  @@index([classGroupId])
+}
+
+model ClassGroup {
+  id          String         @id @default(cuid())
+  name        String // نام کلاس/گروه
+  branch      String // تهران | ساری
+  courseTitle String? // دوره
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  members     User[]
+  sessions    ClassSession[]
+
+  @@index([branch])
+}
+
+model ClassSession {
+  id               String     @id @default(cuid())
+  groupId          String
+  group            ClassGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  title            String
+  startsAt         DateTime
+  chartDescription String? // چارت درسی جلسه
+  tools            String? // ابزار لازم برای جلسه
+  homework         String? // تمرین و اتود جلسه
+  createdById      String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  @@index([groupId, startsAt])
 }
 
 model SignupRequest {
@@ -35,6 +70,7 @@ model SignupRequest {
   branch     String? // تهران | ساری (برای هنرجو)
   birthDate  String? // تاریخ تولد (برای هنرجو)
   idCardImage String? // عکس شناسنامه یا کارت ملی (برای هنرجو)
+  goal       String? // هدف از انتخاب خانواده برداشت (برای فیلمساز)
   status     String   @default("pending") // pending | approved | rejected
   username   String? // نام کاربری ساخته‌شده هنگام تأیید
   userId     String? // حساب کاربری ساخته‌شده پس از تأیید
