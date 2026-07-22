@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
-import AuthForm from '@/components/AuthForm';
+import AccountPanel from '@/components/AccountPanel';
 
 const perks = [
   { title: 'ورود سریع', text: 'فقط با شماره موبایل و کد تأیید، بدون رمزهای پیچیده.' },
@@ -44,8 +44,7 @@ export default function AuthPage() {
             </div>
           </div>
           <div>
-            <AuthForm />
-            <p className="form-hint" style={{ textAlign: 'center', marginTop: 14 }}>حساب ندارید؟ <Link href="/register" style={{ color: 'var(--dark)', fontWeight: 800 }}>عضویت رایگان</Link></p>
+            <AccountPanel />
           </div>
         </div>
       </section>
