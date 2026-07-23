@@ -51,11 +51,13 @@ export async function PATCH(request, { params }) {
   const displayName = `${req.firstName} ${req.lastName}`.trim();
   const passwordHash = hashPassword(password);
   const role = req.role === 'filmmaker' ? 'filmmaker' : 'student';
+  // وضعیت تحصیلی هنرجو در لحظه‌ی ساخت حساب: فارغ‌التحصیل → بدون تقویم کلاس.
+  const graduated = role === 'student' ? !!body.graduated : false;
 
   const account = await prisma.user.upsert({
     where: { phone: accountPhone },
-    update: { displayName, username, passwordHash, passwordPlain: password, active: true, nationalId: req.nationalId, branch: req.branch, role },
-    create: { phone: accountPhone, displayName, username, passwordHash, passwordPlain: password, nationalId: req.nationalId, branch: req.branch, role },
+    update: { displayName, username, passwordHash, passwordPlain: password, active: true, nationalId: req.nationalId, branch: req.branch, role, graduated },
+    create: { phone: accountPhone, displayName, username, passwordHash, passwordPlain: password, nationalId: req.nationalId, branch: req.branch, role, graduated },
   });
 
   await prisma.signupRequest.update({

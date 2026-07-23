@@ -68,6 +68,9 @@ export default function AdminClasses() {
         <button className="btn btn--dark" type="submit">افزودن کلاس</button>
       </form>
 
+      {/* فهرست اسامیِ هنرجویانِ در حال تحصیل، جدا به تفکیک شعبه */}
+      <StudentRoster students={students} />
+
       {groups.length === 0 ? (
         <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 28, textAlign: 'center' }}>
           <p style={{ color: 'var(--muted)' }}>هنوز کلاسی ساخته نشده است.</p>
@@ -85,8 +88,66 @@ export default function AdminClasses() {
   );
 }
 
+function StudentRoster({ students }) {
+  const [q, setQ] = useState('');
+  const query = q.trim().toLowerCase();
+  const match = (s) => !query || [s.displayName, s.username, s.phone].some((v) => (v || '').toLowerCase().includes(query));
+
+  const columns = BRANCHES.map((branch) => ({
+    branch,
+    list: students.filter((s) => (s.branch === branch) && match(s)),
+  }));
+  // هنرجوی بدون شعبه‌ی مشخص
+  const others = students.filter((s) => !s.branch && match(s));
+
+  return (
+    <div className="form-shell" style={{ marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
+        <h2 className="heading" style={{ fontSize: '1.1rem', margin: 0 }}>فهرست هنرجویان (به تفکیک شعبه)</h2>
+        <input className="form-input" placeholder="جستجوی نام هنرجو…" value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 280 }} />
+      </div>
+      <p style={{ fontSize: '.78rem', color: 'var(--muted)', marginTop: 0, marginBottom: 14 }}>فقط هنرجویانِ در حال تحصیل نمایش داده می‌شوند؛ فارغ‌التحصیل‌ها در این فهرست نمی‌آیند.</p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 14 }}>
+        {columns.map((col) => (
+          <div key={col.branch} style={{ background: 'var(--surface)', borderRadius: 12, padding: 14 }}>
+            <div style={{ fontWeight: 800, marginBottom: 10, display: 'flex', justifyContent: 'space-between' }}>
+              <span>شعبه {col.branch}</span>
+              <span style={{ color: 'var(--muted)', fontSize: '.82rem' }}>{col.list.length.toLocaleString('fa-IR')} نفر</span>
+            </div>
+            {col.list.length === 0 ? (
+              <p style={{ color: 'var(--muted)', fontSize: '.82rem', margin: 0 }}>موردی نیست.</p>
+            ) : (
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 6, maxHeight: 260, overflowY: 'auto' }}>
+                {col.list.map((s) => (
+                  <li key={s.id} style={{ fontSize: '.85rem', padding: '6px 8px', background: '#fff', borderRadius: 8, border: '1px solid var(--border)' }}>
+                    {s.displayName || s.phone}
+                    {s.username && <span style={{ color: 'var(--muted)' }}> · {s.username}</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
+        {others.length > 0 && (
+          <div style={{ background: 'var(--surface)', borderRadius: 12, padding: 14 }}>
+            <div style={{ fontWeight: 800, marginBottom: 10 }}>بدون شعبه</div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 6, maxHeight: 260, overflowY: 'auto' }}>
+              {others.map((s) => (
+                <li key={s.id} style={{ fontSize: '.85rem', padding: '6px 8px', background: '#fff', borderRadius: 8, border: '1px solid var(--border)' }}>
+                  {s.displayName || s.phone}{s.username && <span style={{ color: 'var(--muted)' }}> · {s.username}</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function GroupCard({ group, students, open, onToggle, onChanged }) {
   const branchStudents = students.filter((s) => !s.branch || s.branch === group.branch);
+  const [memberQuery, setMemberQuery] = useState('');
   const [memberIds, setMemberIds] = useState(group.members.map((m) => m.id));
   const [savingMembers, setSavingMembers] = useState(false);
   const [sessions, setSessions] = useState(null);
@@ -178,8 +239,14 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
             {branchStudents.length === 0 ? (
               <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>هنرجوی تأییدشده‌ای در شعبه‌ی {group.branch} وجود ندارد.</p>
             ) : (
+              <>
+              <input className="form-input" placeholder="جستجوی نام هنرجو برای انتخاب…" value={memberQuery}
+                onChange={(e) => setMemberQuery(e.target.value)} style={{ maxWidth: 320, marginBottom: 8 }} />
               <div style={{ display: 'grid', gap: 6, gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', maxHeight: 220, overflowY: 'auto', padding: 4 }}>
-                {branchStudents.map((s) => {
+                {branchStudents.filter((s) => {
+                  const mq = memberQuery.trim().toLowerCase();
+                  return !mq || [s.displayName, s.username, s.phone].some((v) => (v || '').toLowerCase().includes(mq));
+                }).map((s) => {
                   const inOther = s.classGroupId && s.classGroupId !== group.id && !memberIds.includes(s.id);
                   return (
                     <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '.85rem', padding: '6px 8px', borderRadius: 8, background: 'var(--surface)', cursor: 'pointer' }}>
@@ -190,6 +257,7 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
                   );
                 })}
               </div>
+              </>
             )}
             <button type="button" className="btn btn--dark btn--sm" style={{ marginTop: 10 }} onClick={saveMembers} disabled={savingMembers}>
               {savingMembers ? 'در حال ذخیره…' : 'ذخیره هنرجویان'}

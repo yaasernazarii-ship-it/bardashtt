@@ -4,6 +4,18 @@ import { hashPassword } from '@/lib/password';
 
 const ROLES = ['member', 'student', 'filmmaker', 'editor', 'admin'];
 
+function str(v, max) {
+  if (typeof v !== 'string') return null;
+  const t = v.trim().slice(0, max);
+  return t || null;
+}
+function intOrNull(v, min, max) {
+  if (v === undefined || v === null || v === '') return null;
+  const n = parseInt(v, 10);
+  if (Number.isNaN(n) || n < min || n > max) return null;
+  return n;
+}
+
 // جزئیات کامل پنل یک کاربر برای ادمین/ادیتور: رزومه، ثبت‌نام‌ها، مدارک بارگذاری‌شده.
 export async function GET(request, { params }) {
   const user = await getSessionUser();
@@ -15,7 +27,7 @@ export async function GET(request, { params }) {
     where: { id },
     select: {
       id: true, phone: true, displayName: true, city: true, role: true, username: true,
-      passwordPlain: true, active: true, branch: true, courseTitle: true, nationalId: true, createdAt: true,
+      passwordPlain: true, active: true, branch: true, graduated: true, courseTitle: true, nationalId: true, createdAt: true,
       resume: true,
       enrollments: { orderBy: { createdAt: 'desc' } },
     },
@@ -60,7 +72,40 @@ export async function PATCH(request, { params }) {
       return Response.json({ ok: true, moderated: action });
     }
 
+    // ساخت/ویرایش رزومه‌ی هنرجو توسط ادمین/ادیتور (هنرجو خودش دسترسی ویرایش ندارد)
+    if (body.resume && typeof body.resume === 'object') {
+      const b = body.resume;
+      const target = await prisma.user.findUnique({ where: { id }, select: { displayName: true } });
+      if (!target) return Response.json({ ok: false, error: 'کاربر یافت نشد.' }, { status: 404 });
+      const fullName = str(b.fullName, 80) || target.displayName || 'هنرجو';
+      const rData = {
+        fullName,
+        headline: str(b.headline, 100),
+        bio: str(b.bio, 600),
+        gender: ['male', 'female'].includes(b.gender) ? b.gender : null,
+        city: str(b.city, 60),
+        birthYear: intOrNull(b.birthYear, 1300, 1420),
+        heightCm: intOrNull(b.heightCm, 100, 230),
+        skills: str(b.skills, 300),
+        experience: str(b.experience, 1500),
+        photoUrl: str(b.photoUrl, 500),
+        showreelUrl: str(b.showreelUrl, 500),
+        isPublic: !!b.isPublic,
+      };
+      const resume = await prisma.actorResume.upsert({
+        where: { userId: id },
+        update: rData,
+        create: { userId: id, ...rData },
+      });
+      return Response.json({ ok: true, resume });
+    }
+
     const data = {};
+
+    // فارغ‌التحصیل / بازگرداندن به تحصیل: خاموش/روشن‌کردن تقویم کلاس هنرجو
+    if (body.graduated !== undefined) {
+      data.graduated = !!body.graduated;
+    }
 
     // تغییر نقش
     if (body.role !== undefined) {
@@ -90,7 +135,7 @@ export async function PATCH(request, { params }) {
     const updated = await prisma.user.update({
       where: { id },
       data,
-      select: { id: true, phone: true, displayName: true, city: true, role: true, username: true, passwordPlain: true, active: true, branch: true },
+      select: { id: true, phone: true, displayName: true, city: true, role: true, username: true, passwordPlain: true, active: true, branch: true, graduated: true },
     });
     return Response.json({ ok: true, user: updated });
   } catch {

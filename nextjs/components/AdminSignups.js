@@ -42,7 +42,7 @@ export default function AdminSignups() {
     const res = await fetch(`/api/admin/signups/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'approve', username, password }),
+      body: JSON.stringify({ action: 'approve', username, password, graduated: !!c.graduated }),
     });
     const data = await res.json();
     setBusyId('');
@@ -126,6 +126,16 @@ export default function AdminSignups() {
                     <button type="button" className="btn btn--outline" onClick={() => setCred(r.id, 'password', randomPassword())}>ساخت رمز</button>
                   </div>
                 </div>
+                {r.role === 'student' && (
+                  <div className="form-group">
+                    <label className="form-label">وضعیت تحصیلی</label>
+                    <select className="form-input" value={(creds[r.id]?.graduated) ? 'graduated' : 'enrolled'}
+                      onChange={(e) => setCred(r.id, 'graduated', e.target.value === 'graduated')}>
+                      <option value="enrolled">در حال تحصیل (تقویم کلاس فعال باشد)</option>
+                      <option value="graduated">فارغ‌التحصیل (بدون تقویم کلاس)</option>
+                    </select>
+                  </div>
+                )}
                 <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
                   <button className="btn btn--dark" disabled={busyId === r.id} onClick={() => approve(r.id)}>
                     {busyId === r.id ? 'در حال تأیید…' : 'تأیید و ساخت حساب'}

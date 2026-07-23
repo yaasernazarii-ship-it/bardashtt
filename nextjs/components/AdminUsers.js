@@ -52,6 +52,13 @@ export default function AdminUsers() {
     patch(u.id, { active: next });
   }
 
+  function toggleGraduated(u) {
+    const next = !u.graduated;
+    const name = u.displayName || u.username || u.phone;
+    if (next && !window.confirm(`«${name}» فارغ‌التحصیل شود؟ تقویم کلاس از داشبورد او حذف و نامش از انتخاب اسامیِ تقویم کنار می‌رود.`)) return;
+    patch(u.id, { graduated: next });
+  }
+
   async function resetPassword(u) {
     const pass = window.prompt(`رمز عبور جدید برای «${u.displayName || u.username}» را وارد کنید (حداقل ۶ کاراکتر):`);
     if (pass === null) return;
@@ -86,6 +93,7 @@ export default function AdminUsers() {
               <th>عضویت</th>
               <th>نقش</th>
               <th>وضعیت</th>
+              <th>تحصیل</th>
               <th>عملیات</th>
             </tr>
           </thead>
@@ -123,6 +131,17 @@ export default function AdminUsers() {
                   }}>{u.active === false ? 'غیرفعال' : 'فعال'}</span>
                 </td>
                 <td>
+                  {u.role !== 'student' ? (
+                    <span style={{ color: 'var(--muted)', fontSize: '.8rem' }}>—</span>
+                  ) : (
+                    <span style={{
+                      background: u.graduated ? '#E0E7FF' : '#FEF3C7',
+                      color: u.graduated ? '#3730A3' : '#92400E',
+                      borderRadius: 999, padding: '3px 10px', fontSize: '.78rem', fontWeight: 700,
+                    }}>{u.graduated ? 'فارغ‌التحصیل' : 'در حال تحصیل'}</span>
+                  )}
+                </td>
+                <td>
                   {u.id === currentUserId ? (
                     <span style={{ color: 'var(--muted)', fontSize: '.8rem' }}>—</span>
                   ) : (
@@ -130,6 +149,12 @@ export default function AdminUsers() {
                       <button type="button" className="btn btn--sm btn--outline" onClick={() => setPanelId(u.id)}>مشاهده پنل</button>
                       {u.username && (
                         <button type="button" className="btn btn--sm btn--outline" disabled={savingId === u.id} onClick={() => resetPassword(u)}>رمز جدید</button>
+                      )}
+                      {u.role === 'student' && (
+                        <button type="button" className={`btn btn--sm ${u.graduated ? 'btn--dark' : 'btn--outline'}`}
+                          disabled={savingId === u.id} onClick={() => toggleGraduated(u)}>
+                          {u.graduated ? 'بازگرداندن به تحصیل' : 'فارغ‌التحصیل'}
+                        </button>
                       )}
                       <button type="button" className={`btn btn--sm ${u.active === false ? 'btn--dark' : 'btn--danger'}`}
                         disabled={savingId === u.id} onClick={() => toggleActive(u)}>
@@ -149,18 +174,31 @@ export default function AdminUsers() {
   );
 }
 
+const EMPTY_RESUME = { fullName: '', headline: '', gender: '', city: '', birthYear: '', heightCm: '', skills: '', bio: '', experience: '', photoUrl: '', showreelUrl: '', isPublic: false };
+
 function UserPanel({ userId, onClose }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [editResume, setEditResume] = useState(false);
+  const [form, setForm] = useState(EMPTY_RESUME);
+  const [savedMsg, setSavedMsg] = useState('');
 
   async function load() {
     setLoading(true);
     const res = await fetch(`/api/admin/users/${userId}`);
     const d = await res.json();
-    if (d.ok) setData(d);
-    else setError(d.error || 'خطا در بارگذاری.');
+    if (d.ok) {
+      setData(d);
+      const r = d.user?.resume;
+      setForm(r ? {
+        fullName: r.fullName || d.user?.displayName || '', headline: r.headline || '', gender: r.gender || '',
+        city: r.city || '', birthYear: r.birthYear || '', heightCm: r.heightCm || '', skills: r.skills || '',
+        bio: r.bio || '', experience: r.experience || '', photoUrl: r.photoUrl || '', showreelUrl: r.showreelUrl || '',
+        isPublic: !!r.isPublic,
+      } : { ...EMPTY_RESUME, fullName: d.user?.displayName || '' });
+    } else setError(d.error || 'خطا در بارگذاری.');
     setLoading(false);
   }
   useEffect(() => { load(); }, [userId]);
@@ -175,6 +213,23 @@ function UserPanel({ userId, onClose }) {
     setBusy(false);
     if (d.ok) load();
     else setError(d.error || 'عملیات انجام نشد.');
+  }
+
+  function setField(k, v) { setForm((f) => ({ ...f, [k]: v })); }
+
+  async function saveResume(e) {
+    e.preventDefault();
+    if (!form.fullName.trim()) { setError('نام و نام خانوادگی رزومه الزامی است.'); return; }
+    setBusy(true); setError(''); setSavedMsg('');
+    const res = await fetch(`/api/admin/users/${userId}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ resume: form }),
+    });
+    const d = await res.json();
+    setBusy(false);
+    if (!d.ok) { setError(d.error || 'ذخیره نشد.'); return; }
+    setSavedMsg('رزومه ذخیره شد ✅');
+    setEditResume(false);
+    load();
   }
 
   const u = data?.user;
@@ -205,7 +260,41 @@ function UserPanel({ userId, onClose }) {
 
             {/* رزومه و بارگذاری‌ها */}
             <div>
-              <h3 style={{ fontWeight: 800, marginBottom: 10 }}>رزومه‌ی بازیگری و بارگذاری‌ها</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, gap: 8 }}>
+                <h3 style={{ fontWeight: 800, margin: 0 }}>رزومه‌ی بازیگری و بارگذاری‌ها</h3>
+                <button type="button" className="btn btn--sm btn--dark" disabled={busy} onClick={() => setEditResume((v) => !v)}>
+                  {editResume ? 'بستن ویرایش' : (r ? 'ویرایش رزومه' : 'ساخت رزومه')}
+                </button>
+              </div>
+              {savedMsg && <div className="alert alert--success" style={{ marginBottom: 10 }}>{savedMsg}</div>}
+
+              {editResume && (
+                <form onSubmit={saveResume} style={{ background: 'var(--surface)', borderRadius: 12, padding: 14, marginBottom: 14, display: 'grid', gap: 10 }}>
+                  <p style={{ fontSize: '.82rem', color: 'var(--muted)', margin: 0 }}>رزومه‌ی هنرجو را شما می‌سازید. هنرجو فقط می‌تواند آن را ببیند و ویدیوی معرفی خودش را اضافه کند.</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                    <div className="form-group" style={{ margin: 0 }}><label className="form-label">نام و نام خانوادگی *</label><input className="form-input" value={form.fullName} onChange={(e) => setField('fullName', e.target.value)} /></div>
+                    <div className="form-group" style={{ margin: 0 }}><label className="form-label">عنوان/تیتر</label><input className="form-input" value={form.headline} onChange={(e) => setField('headline', e.target.value)} /></div>
+                    <div className="form-group" style={{ margin: 0 }}><label className="form-label">جنسیت</label>
+                      <select className="form-input" value={form.gender} onChange={(e) => setField('gender', e.target.value)}>
+                        <option value="">—</option><option value="male">آقا</option><option value="female">خانم</option>
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ margin: 0 }}><label className="form-label">شهر</label><input className="form-input" value={form.city} onChange={(e) => setField('city', e.target.value)} /></div>
+                    <div className="form-group" style={{ margin: 0 }}><label className="form-label">سال تولد</label><input className="form-input" dir="ltr" value={form.birthYear} onChange={(e) => setField('birthYear', e.target.value)} placeholder="1380" /></div>
+                    <div className="form-group" style={{ margin: 0 }}><label className="form-label">قد (سانتی‌متر)</label><input className="form-input" dir="ltr" value={form.heightCm} onChange={(e) => setField('heightCm', e.target.value)} placeholder="175" /></div>
+                  </div>
+                  <div className="form-group" style={{ margin: 0 }}><label className="form-label">مهارت‌ها</label><input className="form-input" value={form.skills} onChange={(e) => setField('skills', e.target.value)} /></div>
+                  <div className="form-group" style={{ margin: 0 }}><label className="form-label">نشانی عکس رزومه (URL)</label><input className="form-input" dir="ltr" value={form.photoUrl} onChange={(e) => setField('photoUrl', e.target.value)} /></div>
+                  <div className="form-group" style={{ margin: 0 }}><label className="form-label">لینک شوریل/نمونه‌کار (URL)</label><input className="form-input" dir="ltr" value={form.showreelUrl} onChange={(e) => setField('showreelUrl', e.target.value)} /></div>
+                  <div className="form-group" style={{ margin: 0 }}><label className="form-label">معرفی</label><textarea className="form-input" rows={3} value={form.bio} onChange={(e) => setField('bio', e.target.value)} /></div>
+                  <div className="form-group" style={{ margin: 0 }}><label className="form-label">سوابق</label><textarea className="form-input" rows={3} value={form.experience} onChange={(e) => setField('experience', e.target.value)} /></div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '.9rem' }}>
+                    <input type="checkbox" checked={form.isPublic} onChange={(e) => setField('isPublic', e.target.checked)} /> نمایش عمومی در فهرست بازیگران
+                  </label>
+                  <div><button type="submit" className="btn btn--dark" disabled={busy}>{busy ? 'در حال ذخیره…' : 'ذخیره رزومه'}</button></div>
+                </form>
+              )}
+
               {!r ? (
                 <p style={{ color: 'var(--muted)', fontSize: '.9rem' }}>این کاربر هنوز رزومه‌ای نساخته است.</p>
               ) : (
@@ -227,6 +316,11 @@ function UserPanel({ userId, onClose }) {
                     <div style={{ fontSize: '.9rem' }}>
                       شوریل/ویدیو: <a href={r.showreelUrl} target="_blank" rel="noopener noreferrer" dir="ltr">{r.showreelUrl}</a>
                       <button type="button" className="btn btn--sm btn--danger" style={{ marginRight: 8 }} disabled={busy} onClick={() => moderate('deleteShowreel', 'لینک شوریل حذف شود؟')}>حذف</button>
+                    </div>
+                  )}
+                  {r.selfVideoUrl && (
+                    <div style={{ fontSize: '.9rem' }}>
+                      🎬 ویدیوی معرفیِ خودِ هنرجو: <a href={r.selfVideoUrl} target="_blank" rel="noopener noreferrer" dir="ltr">{r.selfVideoUrl}</a>
                     </div>
                   )}
                   {r.bio && <div><b style={{ fontSize: '.85rem' }}>معرفی:</b> <p style={{ color: 'var(--muted)', margin: '4px 0', whiteSpace: 'pre-wrap' }}>{r.bio}</p></div>}

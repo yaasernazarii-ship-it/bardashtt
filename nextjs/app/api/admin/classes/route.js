@@ -16,8 +16,9 @@ export async function GET() {
     },
   });
 
+  // فارغ‌التحصیل‌ها در انتخاب اسامیِ تقویم نمی‌آیند.
   const students = await prisma.user.findMany({
-    where: { role: 'student' },
+    where: { role: 'student', graduated: false },
     select: { id: true, displayName: true, phone: true, username: true, branch: true, classGroupId: true },
     orderBy: { createdAt: 'desc' },
   });

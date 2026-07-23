@@ -11,7 +11,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
-      <DashboardSidebar active="profile" isAdmin={user.role === 'admin'} isManager={isManager(user)} />
+      <DashboardSidebar active="profile" isAdmin={user.role === 'admin'} isManager={isManager(user)} graduated={user.graduated} />
       <main className="main-area">
         <div style={{ marginBottom: 28 }}>
           <h1 className="heading">پروفایل من</h1>

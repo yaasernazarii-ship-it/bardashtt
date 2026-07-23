@@ -10,13 +10,15 @@ const items = [
   { key: 'courses', href: '/courses', label: '🎬 دوره‌ها' },
 ];
 
-export default function DashboardSidebar({ active, isAdmin = false, isManager = false }) {
+export default function DashboardSidebar({ active, isAdmin = false, isManager = false, graduated = false }) {
   const showManager = isAdmin || isManager;
+  // هنرجوی فارغ‌التحصیل تقویم کلاس را در منو نمی‌بیند.
+  const visibleItems = graduated ? items.filter((it) => it.key !== 'schedule') : items;
   return (
     <aside className="sidebar">
       <div className="sidebar-logo"><Link href="/">خانواده <span>برداشت</span></Link></div>
       <ul className="sidebar-menu">
-        {items.map((it) => (
+        {visibleItems.map((it) => (
           <li key={it.key}>
             <Link className={active === it.key ? 'active' : undefined} href={it.href}>{it.label}</Link>
           </li>

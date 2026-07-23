@@ -10,7 +10,7 @@ export async function GET() {
     orderBy: { createdAt: 'desc' },
     select: {
       id: true, phone: true, displayName: true, city: true, role: true, createdAt: true,
-      username: true, passwordPlain: true, active: true, branch: true,
+      username: true, passwordPlain: true, active: true, branch: true, graduated: true,
     },
   });
 

@@ -15,6 +15,7 @@ function serialize(r) {
     experience: r.experience,
     photoUrl: r.photoUrl,
     showreelUrl: r.showreelUrl,
+    selfVideoUrl: r.selfVideoUrl,
     isPublic: r.isPublic,
   };
 }
@@ -42,6 +43,11 @@ export async function GET() {
 export async function PUT(request) {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
+  // هنرجو اجازه‌ی ویرایش رزومه را ندارد؛ رزومه‌ی او را خانواده برداشت می‌سازد.
+  // (هنرجو فقط می‌تواند از مسیر /api/resume/video ویدیوی معرفی‌اش را بگذارد.)
+  if (user.role === 'student') {
+    return Response.json({ ok: false, error: 'ویرایش رزومه توسط هنرجو مجاز نیست.' }, { status: 403 });
+  }
 
   try {
     const body = await request.json();
