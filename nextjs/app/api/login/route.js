@@ -17,6 +17,9 @@ export async function POST(request) {
     if (!user || !user.passwordHash || !verifyPassword(password, user.passwordHash)) {
       return Response.json({ ok: false, error: 'نام کاربری یا رمز عبور نادرست است.' }, { status: 401 });
     }
+    if (user.active === false) {
+      return Response.json({ ok: false, error: 'حساب کاربری شما غیرفعال شده است. با پشتیبانی خانواده برداشت تماس بگیرید.' }, { status: 403 });
+    }
 
     await createSession(user.id, { remember });
 

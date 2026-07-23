@@ -4,7 +4,6 @@ const items = [
   { key: 'dashboard', href: '/dashboard', label: '🏠 داشبورد' },
   { key: 'schedule', href: '/dashboard/schedule', label: '📅 برنامه و تقویم من' },
   { key: 'enrollment', href: '/dashboard/enrollment', label: '🎓 ثبت‌نام من' },
-  { key: 'calendar', href: '/dashboard/calendar', label: '🗓 تقویم کلاس' },
   { key: 'assistant', href: '/dashboard/assistant', label: '🤖 دستیار کتاب' },
   { key: 'resume', href: '/dashboard/resume', label: '🎭 رزومه بازیگری' },
   { key: 'profile', href: '/dashboard/profile', label: '👤 پروفایل' },

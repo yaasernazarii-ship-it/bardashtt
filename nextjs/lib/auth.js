@@ -56,6 +56,8 @@ export async function getSessionUser() {
     include: { user: true },
   });
   if (!session || session.expiresAt < new Date()) return null;
+  // حساب غیرفعال‌شده توسط مدیر نباید دسترسی داشته باشد.
+  if (session.user && session.user.active === false) return null;
 
   // نشست کشویی: با هر بازدید کاربر، انقضای نشست تمدید می‌شود تا کاربران فعال هرگز خارج نشوند.
   // برای جلوگیری از نوشتن مکرر، فقط اگر بیش از یک روز از آخرین تمدید گذشته باشد به‌روزرسانی می‌کنیم.

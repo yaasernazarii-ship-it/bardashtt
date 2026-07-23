@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import ShamsiCalendar from '@/components/ShamsiCalendar';
 
 const BRANCHES = ['تهران', 'ساری'];
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { weekday: 'long', month: 'long', day: 'numeric' });
@@ -198,6 +199,13 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
           {/* جلسات */}
           <div>
             <h3 style={{ fontWeight: 800, marginBottom: 8 }}>جلسات کلاس</h3>
+            {sessions && sessions.length > 0 && (
+              <div style={{ marginBottom: 14 }}>
+                <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginBottom: 8 }}>تقویم شمسی این کلاس (همان چیزی که هنرجو می‌بیند):</p>
+                <ShamsiCalendar sessions={sessions} selectedId={editingSession}
+                  onSelectDay={(list) => startEditSession(list[0])} />
+              </div>
+            )}
             <form onSubmit={submitSession} style={{ background: 'var(--surface)', borderRadius: 12, padding: 14, marginBottom: 14, display: 'grid', gap: 10 }}>
               <div style={{ fontWeight: 700, fontSize: '.9rem' }}>{editingSession ? 'ویرایش جلسه' : 'افزودن جلسه جدید'}</div>
               <div className="cal-form-grid">
