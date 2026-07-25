@@ -321,6 +321,7 @@ function UserPanel({ userId, onClose }) {
                   {r.selfVideoUrl && (
                     <div style={{ fontSize: '.9rem' }}>
                       🎬 ویدیوی معرفیِ خودِ هنرجو: <a href={r.selfVideoUrl} target="_blank" rel="noopener noreferrer" dir="ltr">{r.selfVideoUrl}</a>
+                      <button type="button" className="btn btn--sm btn--danger" style={{ marginRight: 8 }} disabled={busy} onClick={() => moderate('deleteSelfVideo', 'ویدیوی معرفیِ بارگذاری‌شده توسط هنرجو حذف شود؟')}>حذف</button>
                     </div>
                   )}
                   {r.bio && <div><b style={{ fontSize: '.85rem' }}>معرفی:</b> <p style={{ color: 'var(--muted)', margin: '4px 0', whiteSpace: 'pre-wrap' }}>{r.bio}</p></div>}

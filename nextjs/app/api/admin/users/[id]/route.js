@@ -63,6 +63,8 @@ export async function PATCH(request, { params }) {
         await prisma.actorResume.updateMany({ where: { userId: id }, data: { photoUrl: null } });
       } else if (action === 'deleteShowreel') {
         await prisma.actorResume.updateMany({ where: { userId: id }, data: { showreelUrl: null } });
+      } else if (action === 'deleteSelfVideo') {
+        await prisma.actorResume.updateMany({ where: { userId: id }, data: { selfVideoUrl: null } });
       } else if (action === 'hideResume') {
         await prisma.actorResume.updateMany({ where: { userId: id }, data: { isPublic: false } });
       } else if (action === 'deleteResume') {
