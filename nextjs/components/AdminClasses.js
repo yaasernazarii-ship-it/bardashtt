@@ -14,7 +14,7 @@ export default function AdminClasses() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [newGroup, setNewGroup] = useState({ name: '', branch: 'تهران', courseTitle: '' });
+  const [newGroup, setNewGroup] = useState({ name: '', branch: 'تهران', courseTitle: '', totalSessions: '8' });
   const [openId, setOpenId] = useState(null);
 
   async function load() {
@@ -36,7 +36,7 @@ export default function AdminClasses() {
     });
     const d = await res.json();
     if (!d.ok) { setError(d.error || 'خطا.'); return; }
-    setNewGroup({ name: '', branch: 'تهران', courseTitle: '' });
+    setNewGroup({ name: '', branch: 'تهران', courseTitle: '', totalSessions: '8' });
     load();
   }
 
@@ -63,6 +63,11 @@ export default function AdminClasses() {
           <div className="form-group">
             <label className="form-label">دوره</label>
             <input className="form-input" value={newGroup.courseTitle} onChange={(e) => setNewGroup({ ...newGroup, courseTitle: e.target.value })} placeholder="مثلاً دوره مقدماتی بازیگری" />
+          </div>
+          <div className="form-group">
+            <label className="form-label">تعداد کل جلسات دوره</label>
+            <input className="form-input" type="number" min={1} max={100} value={newGroup.totalSessions}
+              onChange={(e) => setNewGroup({ ...newGroup, totalSessions: e.target.value })} placeholder="۸" />
           </div>
         </div>
         <button className="btn btn--dark" type="submit">افزودن کلاس</button>
@@ -155,8 +160,23 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
   const [editingSession, setEditingSession] = useState(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
+  const [totalSessions, setTotalSessions] = useState(String(group.totalSessions || 8));
+  const [savingTotal, setSavingTotal] = useState(false);
+  const [attendanceSessionId, setAttendanceSessionId] = useState(null);
 
   useEffect(() => { setMemberIds(group.members.map((m) => m.id)); }, [group]);
+  useEffect(() => { setTotalSessions(String(group.totalSessions || 8)); }, [group.totalSessions]);
+
+  async function saveTotalSessions() {
+    setSavingTotal(true); setMsg('');
+    const res = await fetch(`/api/admin/classes/${group.id}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ totalSessions }),
+    });
+    const d = await res.json();
+    setSavingTotal(false);
+    if (d.ok) { setMsg('تعداد کل جلسات ذخیره شد ✅'); onChanged(); }
+    else setMsg(d.error || 'خطا');
+  }
 
   async function loadSessions() {
     const res = await fetch(`/api/admin/sessions?groupId=${group.id}`);
@@ -233,6 +253,19 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
         <div style={{ borderTop: '1px dashed var(--border)', padding: 16, display: 'grid', gap: 22 }}>
           {msg && <div className="alert alert--info">{msg}</div>}
 
+          {/* تعداد کل جلسات دوره (مبنای محاسبه‌ی درصد پیشرفت) */}
+          <div>
+            <h3 style={{ fontWeight: 800, marginBottom: 8 }}>تعداد کل جلسات دوره</h3>
+            <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginTop: 0, marginBottom: 8 }}>مبنای محاسبه‌ی خودکار درصد پیشرفت هنرجویان این کلاس (پیش‌فرض ۸ جلسه).</p>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input className="form-input" type="number" min={1} max={100} value={totalSessions}
+                onChange={(e) => setTotalSessions(e.target.value)} style={{ maxWidth: 120 }} />
+              <button type="button" className="btn btn--dark btn--sm" onClick={saveTotalSessions} disabled={savingTotal}>
+                {savingTotal ? 'در حال ذخیره…' : 'ذخیره'}
+              </button>
+            </div>
+          </div>
+
           {/* تخصیص هنرجویان */}
           <div>
             <h3 style={{ fontWeight: 800, marginBottom: 8 }}>هنرجویان این کلاس ({group.branch})</h3>
@@ -263,6 +296,9 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
               {savingMembers ? 'در حال ذخیره…' : 'ذخیره هنرجویان'}
             </button>
           </div>
+
+          {/* درصد پیشرفت دستیِ هر هنرجو */}
+          <ProgressOverrides members={group.members} students={students} onChanged={onChanged} />
 
           {/* جلسات */}
           <div>
@@ -318,6 +354,9 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
                           <span style={{ display: 'block', fontWeight: 700 }}>{s.title}</span>
                           <span style={{ display: 'block', color: 'var(--muted)', fontSize: '.78rem' }}>{dateFmt.format(d)} — {timeFmt.format(d)}</span>
                         </span>
+                        <button type="button" className="btn btn--sm btn--outline" onClick={() => setAttendanceSessionId(attendanceSessionId === s.id ? null : s.id)}>
+                          {attendanceSessionId === s.id ? 'بستن حضور و غیاب' : 'حضور و غیاب'}
+                        </button>
                         <button type="button" className="btn btn--sm btn--outline" onClick={() => startEditSession(s)}>ویرایش</button>
                         <button type="button" className="btn btn--sm btn--danger" onClick={() => deleteSession(s.id)}>حذف</button>
                       </li>
@@ -325,9 +364,119 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
                   })}
                 </ul>
               )}
+            {attendanceSessionId && (
+              <SessionAttendance sessionId={attendanceSessionId} onChanged={onChanged} />
+            )}
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function SessionAttendance({ sessionId, onChanged }) {
+  const [members, setMembers] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState('');
+
+  async function load() {
+    setMembers(null);
+    const res = await fetch(`/api/admin/attendance?sessionId=${sessionId}`);
+    const d = await res.json();
+    if (d.ok) setMembers(d.members);
+  }
+  useEffect(() => { load(); }, [sessionId]);
+
+  function setStatus(userId, status) {
+    setMembers((prev) => prev.map((m) => (m.id === userId ? { ...m, status } : m)));
+  }
+
+  async function save() {
+    setSaving(true); setMsg('');
+    const records = members.map((m) => ({ userId: m.id, status: m.status }));
+    const res = await fetch('/api/admin/attendance', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId, records }),
+    });
+    const d = await res.json();
+    setSaving(false);
+    if (d.ok) { setMsg('حضور و غیاب ذخیره شد ✅'); onChanged(); }
+    else setMsg(d.error || 'خطا');
+  }
+
+  return (
+    <div style={{ marginTop: 12, background: 'var(--surface)', borderRadius: 12, padding: 14 }}>
+      <h4 style={{ fontWeight: 800, marginBottom: 8, fontSize: '.92rem' }}>حضور و غیاب این جلسه</h4>
+      {msg && <div className="alert alert--info" style={{ marginBottom: 8 }}>{msg}</div>}
+      {members === null ? (
+        <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>در حال بارگذاری…</p>
+      ) : members.length === 0 ? (
+        <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>این کلاس هنرجویی ندارد.</p>
+      ) : (
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 6, maxHeight: 260, overflowY: 'auto' }}>
+          {members.map((m) => (
+            <li key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#fff', borderRadius: 8, padding: '6px 10px', border: '1px solid var(--border)' }}>
+              <span style={{ flex: 1, fontSize: '.85rem' }}>{m.displayName || m.phone}{m.username && <span style={{ color: 'var(--muted)' }}> · {m.username}</span>}</span>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '.8rem', cursor: 'pointer' }}>
+                <input type="radio" name={`att-${m.id}`} checked={m.status === 'present'} onChange={() => setStatus(m.id, 'present')} />
+                حاضر
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '.8rem', cursor: 'pointer' }}>
+                <input type="radio" name={`att-${m.id}`} checked={m.status === 'absent'} onChange={() => setStatus(m.id, 'absent')} />
+                غایب
+              </label>
+            </li>
+          ))}
+        </ul>
+      )}
+      <button type="button" className="btn btn--dark btn--sm" style={{ marginTop: 10 }} onClick={save} disabled={saving || members === null}>
+        {saving ? 'در حال ذخیره…' : 'ذخیره حضور و غیاب'}
+      </button>
+    </div>
+  );
+}
+
+function ProgressOverrides({ members, students, onChanged }) {
+  const byId = Object.fromEntries(students.map((s) => [s.id, s]));
+  const [values, setValues] = useState(() => Object.fromEntries(members.map((m) => [m.id, byId[m.id]?.progressOverride ?? ''])));
+  const [savingId, setSavingId] = useState(null);
+  const [msg, setMsg] = useState('');
+
+  useEffect(() => {
+    setValues(Object.fromEntries(members.map((m) => [m.id, byId[m.id]?.progressOverride ?? ''])));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [members, students]);
+
+  async function save(userId) {
+    setSavingId(userId); setMsg('');
+    const v = values[userId];
+    const res = await fetch(`/api/admin/users/${userId}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ progressOverride: v === '' ? null : v }),
+    });
+    const d = await res.json();
+    setSavingId(null);
+    if (d.ok) { setMsg('درصد پیشرفت ذخیره شد ✅'); onChanged(); }
+    else setMsg(d.error || 'خطا');
+  }
+
+  if (members.length === 0) return null;
+
+  return (
+    <div>
+      <h3 style={{ fontWeight: 800, marginBottom: 8 }}>درصد پیشرفتِ دستیِ هنرجویان</h3>
+      <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginTop: 0, marginBottom: 8 }}>در صورت خالی‌بودن، درصد پیشرفت از روی حضور و غیاب محاسبه می‌شود.</p>
+      {msg && <div className="alert alert--info" style={{ marginBottom: 8 }}>{msg}</div>}
+      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 6 }}>
+        {members.map((m) => (
+          <li key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--surface)', borderRadius: 8, padding: '6px 10px' }}>
+            <span style={{ flex: 1, fontSize: '.85rem' }}>{m.displayName || m.phone}</span>
+            <input type="number" min={0} max={100} className="form-input" style={{ maxWidth: 90 }} placeholder="خودکار"
+              value={values[m.id]} onChange={(e) => setValues({ ...values, [m.id]: e.target.value })} />
+            <button type="button" className="btn btn--sm btn--outline" onClick={() => save(m.id)} disabled={savingId === m.id}>
+              {savingId === m.id ? '...' : 'ذخیره'}
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

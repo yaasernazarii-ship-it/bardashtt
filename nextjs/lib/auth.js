@@ -10,6 +10,11 @@ export function isManager(user) {
   return !!user && (user.role === 'admin' || user.role === 'editor');
 }
 
+// دسترسی به بانک بازیگران و ثبت درخواست ست‌تایم: فقط فیلمساز و ادمین/ادیتور؛ هنرجو و عضو عادی مجاز نیستند.
+export function isFilmmakerOrManager(user) {
+  return !!user && (user.role === 'filmmaker' || isManager(user));
+}
+
 // دامنه‌ی کوکی را طوری تعیین می‌کنیم که نشست بین bardashtt.com و www.bardashtt.com مشترک باشد؛
 // در محیط توسعه (localhost/IP) کوکی host-only می‌ماند.
 export function cookieDomainForHost(host) {

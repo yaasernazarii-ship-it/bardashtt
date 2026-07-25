@@ -12,7 +12,7 @@ export default async function AdminSupportPage() {
 
   return (
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
-      <DashboardSidebar active="support" isAdmin={user.role === 'admin'} isManager={isManager(user)} />
+      <DashboardSidebar active="support" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} />
       <main className="main-area">
         <div style={{ marginBottom: 28 }}>
           <h1 className="heading">پشتیبانی آنلاین</h1>

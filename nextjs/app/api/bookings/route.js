@@ -1,11 +1,14 @@
 import { prisma } from '@/lib/prisma';
-import { getSessionUser, isManager, normalizePhone } from '@/lib/auth';
+import { getSessionUser, isManager, isFilmmakerOrManager, normalizePhone } from '@/lib/auth';
 import { sendMessage } from '@/lib/bale';
 
 // ثبت درخواست «ست تایم» توسط فیلمساز/کاربر واردشده روی رزومهٔ یک بازیگر.
 export async function POST(request) {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'برای ثبت درخواست ابتدا وارد شوید.' }, { status: 401 });
+  // دفاع لایه‌ای: حتی اگر کسی مستقیم به این API درخواست بزند، فقط فیلمساز/ادمین/ادیتور مجاز است
+  // (هنرجو دسترسی به این بخش را ندارد، چون صفحه‌ی بانک بازیگران برایش نمایش داده نمی‌شود).
+  if (!isFilmmakerOrManager(user)) return Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 });
 
   try {
     const b = await request.json();

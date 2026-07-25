@@ -28,6 +28,7 @@ export async function GET(request, { params }) {
     select: {
       id: true, phone: true, displayName: true, city: true, role: true, username: true,
       passwordPlain: true, active: true, branch: true, graduated: true, courseTitle: true, nationalId: true, createdAt: true,
+      progressOverride: true,
       resume: true,
       enrollments: { orderBy: { createdAt: 'desc' } },
     },
@@ -120,6 +121,17 @@ export async function PATCH(request, { params }) {
       data.active = !!body.active;
     }
 
+    // تعیین دستیِ درصد پیشرفتِ هنرجو توسط ادمین/ادیتور (جای محاسبه‌ی خودکار بر پایه‌ی حضور را می‌گیرد)
+    if (body.progressOverride !== undefined) {
+      if (body.progressOverride === null || body.progressOverride === '') {
+        data.progressOverride = null;
+      } else {
+        const n = intOrNull(body.progressOverride, 0, 100);
+        if (n === null) return Response.json({ ok: false, error: 'درصد پیشرفت باید بین ۰ تا ۱۰۰ باشد.' }, { status: 400 });
+        data.progressOverride = n;
+      }
+    }
+
     // بازنشانی رمز عبور
     if (body.password !== undefined) {
       const password = String(body.password || '');
@@ -135,7 +147,7 @@ export async function PATCH(request, { params }) {
     const updated = await prisma.user.update({
       where: { id },
       data,
-      select: { id: true, phone: true, displayName: true, city: true, role: true, username: true, passwordPlain: true, active: true, branch: true, graduated: true },
+      select: { id: true, phone: true, displayName: true, city: true, role: true, username: true, passwordPlain: true, active: true, branch: true, graduated: true, progressOverride: true },
     });
     return Response.json({ ok: true, user: updated });
   } catch {

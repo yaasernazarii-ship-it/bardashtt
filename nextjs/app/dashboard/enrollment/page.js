@@ -8,10 +8,12 @@ export const metadata = { title: 'ثبت‌نام من' };
 export default async function MyEnrollmentPage() {
   const user = await getSessionUser();
   if (!user) redirect('/auth');
+  // این بخش مخصوص هنرجوست؛ فیلمساز روند ثبت‌نام آموزشی ندارد.
+  if (user.role === 'filmmaker') redirect('/dashboard');
 
   return (
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
-      <DashboardSidebar active="enrollment" isAdmin={user.role === 'admin'} isManager={isManager(user)} graduated={user.graduated} />
+      <DashboardSidebar active="enrollment" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} graduated={user.graduated} />
       <main className="main-area">
         <div style={{ marginBottom: 28 }}>
           <h1 className="heading">ثبت‌نام و روند آموزش من</h1>

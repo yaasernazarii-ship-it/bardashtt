@@ -12,7 +12,7 @@ export default async function AdminBookingsPage() {
 
   return (
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
-      <DashboardSidebar active="bookings" isAdmin={user.role === 'admin'} isManager={isManager(user)} />
+      <DashboardSidebar active="bookings" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} />
       <main className="main-area">
         <div style={{ marginBottom: 28 }}>
           <h1 className="heading">درخواست‌های ست تایم بازیگران</h1>

@@ -18,6 +18,11 @@ export async function PATCH(request, { params }) {
     if (typeof b.name === 'string') data.name = b.name.trim().slice(0, 80);
     if (BRANCHES.includes(b.branch)) data.branch = b.branch;
     if (typeof b.courseTitle === 'string') data.courseTitle = b.courseTitle.trim().slice(0, 120) || null;
+    if (b.totalSessions !== undefined) {
+      const n = parseInt(b.totalSessions, 10);
+      if (Number.isNaN(n) || n < 1 || n > 100) return Response.json({ ok: false, error: 'تعداد جلسات باید بین ۱ تا ۱۰۰ باشد.' }, { status: 400 });
+      data.totalSessions = n;
+    }
 
     if (Object.keys(data).length) {
       await prisma.classGroup.update({ where: { id }, data });

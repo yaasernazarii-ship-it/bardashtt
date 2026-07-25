@@ -25,42 +25,60 @@ model User {
   classGroupId String? // کلاس/گروه هنرجو
   classGroup   ClassGroup?  @relation(fields: [classGroupId], references: [id])
   scheduleSeenAt DateTime? // آخرین باری که هنرجو برنامه‌اش را دید (برای نوتیفیکیشن)
+  progressOverride Int? // درصد پیشرفتِ دستیِ تعیین‌شده توسط ادمین/ادیتور؛ اگر تنظیم شود جای محاسبهٔ خودکار (بر پایه‌ی حضور) را می‌گیرد
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   sessions     Session[]
   resume       ActorResume?
   enrollments  Enrollment[]
+  attendances  Attendance[]
 
   @@index([classGroupId])
 }
 
 model ClassGroup {
-  id          String         @id @default(cuid())
-  name        String // نام کلاس/گروه
-  branch      String // تهران | ساری
-  courseTitle String? // دوره
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  members     User[]
-  sessions    ClassSession[]
+  id            String         @id @default(cuid())
+  name          String // نام کلاس/گروه
+  branch        String // تهران | ساری
+  courseTitle   String? // دوره
+  totalSessions Int            @default(8) // تعداد کل جلسات این دوره (مبنای محاسبه‌ی درصد پیشرفت هنرجو)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  members       User[]
+  sessions      ClassSession[]
 
   @@index([branch])
 }
 
 model ClassSession {
-  id               String     @id @default(cuid())
+  id               String       @id @default(cuid())
   groupId          String
-  group            ClassGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  group            ClassGroup   @relation(fields: [groupId], references: [id], onDelete: Cascade)
   title            String
   startsAt         DateTime
   chartDescription String? // چارت درسی جلسه
   tools            String? // ابزار لازم برای جلسه
   homework         String? // تمرین و اتود جلسه
   createdById      String?
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  attendances      Attendance[]
 
   @@index([groupId, startsAt])
+}
+
+model Attendance {
+  id        String       @id @default(cuid())
+  sessionId String
+  session   ClassSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    String       @default("absent") // present | absent
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@unique([sessionId, userId])
+  @@index([userId])
 }
 
 model SignupRequest {

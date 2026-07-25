@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
-import { getSessionUser } from '@/lib/auth';
+import { getSessionUser, isFilmmakerOrManager } from '@/lib/auth';
 import SimplePage from '@/components/SimplePage';
 import ActorBooking from '@/components/ActorBooking';
 
@@ -24,6 +24,8 @@ export default async function ActorDetailPage({ params }) {
   const { id } = await params;
   const user = await getSessionUser();
   if (!user) redirect(`/auth?next=/actors/${id}`);
+  // بانک بازیگران فقط ویژه‌ی فیلم‌سازان و ادمین/ادیتور است؛ هنرجو و عضو عادی دسترسی ندارند.
+  if (!isFilmmakerOrManager(user)) redirect('/dashboard');
 
   const a = await prisma.actorResume.findFirst({ where: { id, isPublic: true } });
   if (!a) notFound();

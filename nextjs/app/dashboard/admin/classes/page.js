@@ -13,7 +13,7 @@ export default async function AdminClassesPage() {
 
   return (
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
-      <DashboardSidebar active="classes" isAdmin={user.role === 'admin'} isManager={isManager(user)} />
+      <DashboardSidebar active="classes" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} />
       <main className="main-area">
         <div style={{ marginBottom: 28 }}>
           <h1 className="heading">کلاس‌ها و تقویم هنرجویان</h1>

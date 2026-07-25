@@ -85,7 +85,7 @@ export default function StudentSchedule() {
     );
   }
 
-  const { group, progress, passed, total, hasUpdate } = data;
+  const { group, progress, presentCount, totalSessions, hasUpdate } = data;
 
   function selectDay(day) {
     const list = byDay[day.key];
@@ -119,7 +119,7 @@ export default function StudentSchedule() {
           <div style={{ height: 12, background: 'var(--surface)', borderRadius: 999, overflow: 'hidden', border: '1px solid var(--border)' }}>
             <div style={{ width: `${progress}%`, height: '100%', background: 'linear-gradient(90deg,#16A34A,#22C55E)', transition: 'width .4s' }} />
           </div>
-          <div style={{ color: 'var(--muted)', fontSize: '.82rem', marginTop: 10 }}>{faNum(passed)} جلسه از {faNum(total)} جلسه برگزار شده است.</div>
+          <div style={{ color: 'var(--muted)', fontSize: '.82rem', marginTop: 10 }}>{faNum(presentCount)} جلسه حضور از {faNum(totalSessions)} جلسه دوره.</div>
         </div>
       </div>
 
@@ -184,9 +184,18 @@ export default function StudentSchedule() {
                     <span style={{ display: 'block', fontWeight: 800 }}>{s.title}</span>
                     <span style={{ display: 'block', color: 'var(--muted)', fontSize: '.82rem', marginTop: 2 }}>{dateFmt.format(d)} — ساعت {timeFmt.format(d)}</span>
                   </span>
-                  {s.past
-                    ? <span style={{ fontSize: '.75rem', color: '#16A34A', fontWeight: 700 }}>برگزار شد ✓</span>
-                    : <span style={{ fontSize: '.75rem', color: 'var(--muted)' }}>{open ? '▲' : '▼'}</span>}
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {s.attendance === 'present' && (
+                      <span style={{ fontSize: '.72rem', fontWeight: 700, color: '#16A34A', background: 'rgba(22,163,74,.1)', borderRadius: 999, padding: '3px 10px' }}>حاضر بودید ✓</span>
+                    )}
+                    {s.attendance === 'absent' && (
+                      <span style={{ fontSize: '.72rem', fontWeight: 700, color: '#DC2626', background: 'rgba(220,38,38,.1)', borderRadius: 999, padding: '3px 10px' }}>غایب بودید</span>
+                    )}
+                    {!s.attendance && s.past && (
+                      <span style={{ fontSize: '.72rem', color: 'var(--muted)' }}>حضور ثبت نشده</span>
+                    )}
+                    {!s.past && <span style={{ fontSize: '.75rem', color: 'var(--muted)' }}>{open ? '▲' : '▼'}</span>}
+                  </span>
                 </button>
                 {open && (
                   <div style={{ padding: '0 16px 16px', borderTop: '1px dashed var(--border)' }}>

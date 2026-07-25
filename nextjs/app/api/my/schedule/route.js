@@ -21,7 +21,17 @@ export async function GET() {
   const now = Date.now();
   const total = group.sessions.length;
   const passed = group.sessions.filter((s) => s.startsAt.getTime() < now).length;
-  const progress = total ? Math.round((passed / total) * 100) : 0;
+
+  // حضور/غیابِ خودِ هنرجو در جلسات این کلاس
+  const attendances = await prisma.attendance.findMany({ where: { userId: user.id, session: { groupId: group.id } } });
+  const attendanceBySession = Object.fromEntries(attendances.map((a) => [a.sessionId, a.status]));
+  const presentCount = attendances.filter((a) => a.status === 'present').length;
+
+  // پیشرفت: بر پایه‌ی حضورِ هنرجو از تعداد کل جلسات دوره (پیش‌فرض ۸ جلسه)؛
+  // اگر ادمین/ادیتور درصد پیشرفت را دستی تعیین کرده باشد، همان مقدار جایگزین محاسبه‌ی خودکار می‌شود.
+  const totalSessions = group.totalSessions || 8;
+  const computedProgress = totalSessions ? Math.min(100, Math.round((presentCount / totalSessions) * 100)) : 0;
+  const progress = user.progressOverride !== null && user.progressOverride !== undefined ? user.progressOverride : computedProgress;
 
   // نوتیفیکیشن: اگر برنامه بعد از آخرین بازدید هنرجو تغییر کرده باشد
   const hasUpdate = !user.scheduleSeenAt || group.updatedAt.getTime() > new Date(user.scheduleSeenAt).getTime();
@@ -33,6 +43,8 @@ export async function GET() {
     ok: true,
     group: { id: group.id, name: group.name, branch: group.branch, courseTitle: group.courseTitle || user.courseTitle || null },
     progress,
+    presentCount,
+    totalSessions,
     passed,
     total,
     hasUpdate,
@@ -44,6 +56,7 @@ export async function GET() {
       tools: s.tools,
       homework: s.homework,
       past: s.startsAt.getTime() < now,
+      attendance: attendanceBySession[s.id] || null,
     })),
   });
 }

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-const items = [
+const STUDENT_ITEMS = [
   { key: 'dashboard', href: '/dashboard', label: '🏠 داشبورد' },
   { key: 'schedule', href: '/dashboard/schedule', label: '📅 برنامه و تقویم من' },
   { key: 'enrollment', href: '/dashboard/enrollment', label: '🎓 ثبت‌نام من' },
@@ -10,10 +10,23 @@ const items = [
   { key: 'courses', href: '/courses', label: '🎬 دوره‌ها' },
 ];
 
-export default function DashboardSidebar({ active, isAdmin = false, isManager = false, graduated = false }) {
-  const showManager = isAdmin || isManager;
+// منوی اختصاصیِ فیلمساز: به‌جای برنامه/ثبت‌نام/دستیار/رزومهٔ هنرجویی، فقط دسترسی‌های مربوط به خودش را می‌بیند.
+const FILMMAKER_ITEMS = [
+  { key: 'dashboard', href: '/dashboard', label: '🏠 داشبورد' },
+  { key: 'actors', href: '/actors', label: '🎭 بانک بازیگران' },
+  { key: 'profile', href: '/dashboard/profile', label: '👤 پروفایل' },
+  { key: 'courses', href: '/courses', label: '🎬 دوره‌ها' },
+];
+
+function itemsForRole(role, graduated) {
+  if (role === 'filmmaker') return FILMMAKER_ITEMS;
   // هنرجوی فارغ‌التحصیل تقویم کلاس را در منو نمی‌بیند.
-  const visibleItems = graduated ? items.filter((it) => it.key !== 'schedule') : items;
+  return graduated ? STUDENT_ITEMS.filter((it) => it.key !== 'schedule') : STUDENT_ITEMS;
+}
+
+export default function DashboardSidebar({ active, role, isAdmin = false, isManager = false, graduated = false }) {
+  const showManager = isAdmin || isManager;
+  const visibleItems = itemsForRole(role, graduated);
   return (
     <aside className="sidebar">
       <div className="sidebar-logo"><Link href="/">خانواده <span>برداشت</span></Link></div>

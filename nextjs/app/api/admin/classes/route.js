@@ -19,7 +19,7 @@ export async function GET() {
   // فارغ‌التحصیل‌ها در انتخاب اسامیِ تقویم نمی‌آیند.
   const students = await prisma.user.findMany({
     where: { role: 'student', graduated: false },
-    select: { id: true, displayName: true, phone: true, username: true, branch: true, classGroupId: true },
+    select: { id: true, displayName: true, phone: true, username: true, branch: true, classGroupId: true, progressOverride: true },
     orderBy: { createdAt: 'desc' },
   });
 
@@ -39,7 +39,15 @@ export async function POST(request) {
     if (!name) return Response.json({ ok: false, error: 'نام کلاس الزامی است.' }, { status: 400 });
     if (!branch) return Response.json({ ok: false, error: 'شعبه را انتخاب کنید (تهران یا ساری).' }, { status: 400 });
 
-    const group = await prisma.classGroup.create({ data: { name, branch, courseTitle } });
+    // تعداد کل جلسات این دوره (پیش‌فرض ۸ جلسه)؛ مبنای محاسبه‌ی درصد پیشرفت هنرجویان این کلاس است.
+    let totalSessions = 8;
+    if (b.totalSessions !== undefined && b.totalSessions !== '') {
+      const n = parseInt(b.totalSessions, 10);
+      if (Number.isNaN(n) || n < 1 || n > 100) return Response.json({ ok: false, error: 'تعداد جلسات باید بین ۱ تا ۱۰۰ باشد.' }, { status: 400 });
+      totalSessions = n;
+    }
+
+    const group = await prisma.classGroup.create({ data: { name, branch, courseTitle, totalSessions } });
     return Response.json({ ok: true, group });
   } catch {
     return Response.json({ ok: false, error: 'درخواست نامعتبر است.' }, { status: 400 });
