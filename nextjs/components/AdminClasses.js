@@ -150,8 +150,16 @@ function StudentRoster({ students }) {
   );
 }
 
+const TABS = [
+  { id: 'settings', label: 'تنظیمات کلاس' },
+  { id: 'sessions', label: 'جلسات و تقویم' },
+  { id: 'attendance', label: 'حضور و غیاب' },
+  { id: 'progress', label: 'پیشرفت هنرجویان' },
+];
+
 function GroupCard({ group, students, open, onToggle, onChanged }) {
   const branchStudents = students.filter((s) => !s.branch || s.branch === group.branch);
+  const [tab, setTab] = useState('settings');
   const [memberQuery, setMemberQuery] = useState('');
   const [memberIds, setMemberIds] = useState(group.members.map((m) => m.id));
   const [savingMembers, setSavingMembers] = useState(false);
@@ -250,67 +258,98 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
       </div>
 
       {open && (
-        <div style={{ borderTop: '1px dashed var(--border)', padding: 16, display: 'grid', gap: 22 }}>
+        <div style={{ borderTop: '1px dashed var(--border)', padding: 16 }}>
           {msg && <div className="alert alert--info">{msg}</div>}
 
-          {/* تعداد کل جلسات دوره (مبنای محاسبه‌ی درصد پیشرفت) */}
-          <div>
-            <h3 style={{ fontWeight: 800, marginBottom: 8 }}>تعداد کل جلسات دوره</h3>
-            <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginTop: 0, marginBottom: 8 }}>مبنای محاسبه‌ی خودکار درصد پیشرفت هنرجویان این کلاس (پیش‌فرض ۸ جلسه).</p>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <input className="form-input" type="number" min={1} max={100} value={totalSessions}
-                onChange={(e) => setTotalSessions(e.target.value)} style={{ maxWidth: 120 }} />
-              <button type="button" className="btn btn--dark btn--sm" onClick={saveTotalSessions} disabled={savingTotal}>
-                {savingTotal ? 'در حال ذخیره…' : 'ذخیره'}
+          <div className="tab-list" role="tablist">
+            {TABS.map((t) => (
+              <button key={t.id} type="button" role="tab" aria-selected={tab === t.id}
+                className={`tab-btn${tab === t.id ? ' active' : ''}`} onClick={() => setTab(t.id)}>
+                {t.label}
               </button>
+            ))}
+          </div>
+
+          {/* تب ۱: تنظیمات کلاس (تعداد جلسات + تخصیص هنرجویان) */}
+          <div className={`tab-panel${tab === 'settings' ? ' active' : ''}`}>
+            <div style={{ display: 'grid', gap: 22 }}>
+              <div>
+                <h3 style={{ fontWeight: 800, marginBottom: 8 }}>تعداد کل جلسات دوره</h3>
+                <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginTop: 0, marginBottom: 8 }}>مبنای محاسبه‌ی خودکار درصد پیشرفت هنرجویان این کلاس (پیش‌فرض ۸ جلسه).</p>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <input className="form-input" type="number" min={1} max={100} value={totalSessions}
+                    onChange={(e) => setTotalSessions(e.target.value)} style={{ maxWidth: 120 }} />
+                  <button type="button" className="btn btn--dark btn--sm" onClick={saveTotalSessions} disabled={savingTotal}>
+                    {savingTotal ? 'در حال ذخیره…' : 'ذخیره'}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <h3 style={{ fontWeight: 800, marginBottom: 8 }}>هنرجویان این کلاس ({group.branch})</h3>
+                {branchStudents.length === 0 ? (
+                  <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>هنرجوی تأییدشده‌ای در شعبه‌ی {group.branch} وجود ندارد.</p>
+                ) : (
+                  <>
+                  <input className="form-input" placeholder="جستجوی نام هنرجو برای انتخاب…" value={memberQuery}
+                    onChange={(e) => setMemberQuery(e.target.value)} style={{ maxWidth: 320, marginBottom: 8 }} />
+                  <div style={{ display: 'grid', gap: 6, gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', maxHeight: 220, overflowY: 'auto', padding: 4 }}>
+                    {branchStudents.filter((s) => {
+                      const mq = memberQuery.trim().toLowerCase();
+                      return !mq || [s.displayName, s.username, s.phone].some((v) => (v || '').toLowerCase().includes(mq));
+                    }).map((s) => {
+                      const inOther = s.classGroupId && s.classGroupId !== group.id && !memberIds.includes(s.id);
+                      return (
+                        <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '.85rem', padding: '6px 8px', borderRadius: 8, background: 'var(--surface)', cursor: 'pointer' }}>
+                          <input type="checkbox" checked={memberIds.includes(s.id)} onChange={() => toggleMember(s.id)} />
+                          <span>{s.displayName || s.phone}{s.username ? ` (${s.username})` : ''}</span>
+                          {inOther && <span style={{ marginRight: 'auto', fontSize: '.68rem', color: '#B45309' }}>در کلاس دیگر</span>}
+                        </label>
+                      );
+                    })}
+                  </div>
+                  </>
+                )}
+                <button type="button" className="btn btn--dark btn--sm" style={{ marginTop: 10 }} onClick={saveMembers} disabled={savingMembers}>
+                  {savingMembers ? 'در حال ذخیره…' : 'ذخیره هنرجویان'}
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* تخصیص هنرجویان */}
-          <div>
-            <h3 style={{ fontWeight: 800, marginBottom: 8 }}>هنرجویان این کلاس ({group.branch})</h3>
-            {branchStudents.length === 0 ? (
-              <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>هنرجوی تأییدشده‌ای در شعبه‌ی {group.branch} وجود ندارد.</p>
-            ) : (
-              <>
-              <input className="form-input" placeholder="جستجوی نام هنرجو برای انتخاب…" value={memberQuery}
-                onChange={(e) => setMemberQuery(e.target.value)} style={{ maxWidth: 320, marginBottom: 8 }} />
-              <div style={{ display: 'grid', gap: 6, gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', maxHeight: 220, overflowY: 'auto', padding: 4 }}>
-                {branchStudents.filter((s) => {
-                  const mq = memberQuery.trim().toLowerCase();
-                  return !mq || [s.displayName, s.username, s.phone].some((v) => (v || '').toLowerCase().includes(mq));
-                }).map((s) => {
-                  const inOther = s.classGroupId && s.classGroupId !== group.id && !memberIds.includes(s.id);
-                  return (
-                    <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '.85rem', padding: '6px 8px', borderRadius: 8, background: 'var(--surface)', cursor: 'pointer' }}>
-                      <input type="checkbox" checked={memberIds.includes(s.id)} onChange={() => toggleMember(s.id)} />
-                      <span>{s.displayName || s.phone}{s.username ? ` (${s.username})` : ''}</span>
-                      {inOther && <span style={{ marginRight: 'auto', fontSize: '.68rem', color: '#B45309' }}>در کلاس دیگر</span>}
-                    </label>
-                  );
-                })}
-              </div>
-              </>
-            )}
-            <button type="button" className="btn btn--dark btn--sm" style={{ marginTop: 10 }} onClick={saveMembers} disabled={savingMembers}>
-              {savingMembers ? 'در حال ذخیره…' : 'ذخیره هنرجویان'}
-            </button>
-          </div>
-
-          {/* درصد پیشرفت دستیِ هر هنرجو */}
-          <ProgressOverrides members={group.members} students={students} onChanged={onChanged} />
-
-          {/* جلسات */}
-          <div>
-            <h3 style={{ fontWeight: 800, marginBottom: 8 }}>جلسات کلاس</h3>
+          {/* تب ۲: جلسات و تقویم */}
+          <div className={`tab-panel${tab === 'sessions' ? ' active' : ''}`}>
             {sessions && sessions.length > 0 && (
-              <div style={{ marginBottom: 14 }}>
+              <div style={{ marginBottom: 18 }}>
                 <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginBottom: 8 }}>تقویم شمسی این کلاس (همان چیزی که هنرجو می‌بیند):</p>
                 <ShamsiCalendar sessions={sessions} selectedId={editingSession}
                   onSelectDay={(list) => startEditSession(list[0])} />
               </div>
             )}
-            <form onSubmit={submitSession} style={{ background: 'var(--surface)', borderRadius: 12, padding: 14, marginBottom: 14, display: 'grid', gap: 10 }}>
+
+            <h3 style={{ fontWeight: 800, marginBottom: 8, fontSize: '.95rem' }}>فهرست جلسات</h3>
+            {sessions === null ? <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>در حال بارگذاری جلسات…</p>
+              : sessions.length === 0 ? <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>هنوز جلسه‌ای ثبت نشده است.</p>
+              : (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 8, marginBottom: 18 }}>
+                  {sessions.map((s, i) => {
+                    const d = new Date(s.startsAt);
+                    return (
+                      <li key={s.id} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <span style={{ fontWeight: 800, color: 'var(--muted)' }}>{i + 1}</span>
+                        <span style={{ flex: 1 }}>
+                          <span style={{ display: 'block', fontWeight: 700 }}>{s.title}</span>
+                          <span style={{ display: 'block', color: 'var(--muted)', fontSize: '.78rem' }}>{dateFmt.format(d)} — {timeFmt.format(d)}</span>
+                        </span>
+                        <button type="button" className="btn btn--sm btn--outline" onClick={() => startEditSession(s)}>ویرایش</button>
+                        <button type="button" className="btn btn--sm btn--danger" onClick={() => deleteSession(s.id)}>حذف</button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+
+            <form onSubmit={submitSession} style={{ background: 'var(--surface)', borderRadius: 12, padding: 14, display: 'grid', gap: 10 }}>
               <div style={{ fontWeight: 700, fontSize: '.9rem' }}>{editingSession ? 'ویرایش جلسه' : 'افزودن جلسه جدید'}</div>
               <div className="cal-form-grid">
                 <div className="form-group">
@@ -340,33 +379,37 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
               </div>
               <p style={{ fontSize: '.75rem', color: 'var(--muted)', margin: 0 }}>پس از ذخیره، به هنرجویان این کلاس نشان «به‌روزرسانی شد» نمایش داده می‌شود.</p>
             </form>
+          </div>
 
-            {sessions === null ? <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>در حال بارگذاری جلسات…</p>
-              : sessions.length === 0 ? <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>هنوز جلسه‌ای ثبت نشده است.</p>
-              : (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 8 }}>
-                  {sessions.map((s, i) => {
-                    const d = new Date(s.startsAt);
-                    return (
-                      <li key={s.id} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <span style={{ fontWeight: 800, color: 'var(--muted)' }}>{i + 1}</span>
-                        <span style={{ flex: 1 }}>
-                          <span style={{ display: 'block', fontWeight: 700 }}>{s.title}</span>
-                          <span style={{ display: 'block', color: 'var(--muted)', fontSize: '.78rem' }}>{dateFmt.format(d)} — {timeFmt.format(d)}</span>
-                        </span>
-                        <button type="button" className="btn btn--sm btn--outline" onClick={() => setAttendanceSessionId(attendanceSessionId === s.id ? null : s.id)}>
-                          {attendanceSessionId === s.id ? 'بستن حضور و غیاب' : 'حضور و غیاب'}
-                        </button>
-                        <button type="button" className="btn btn--sm btn--outline" onClick={() => startEditSession(s)}>ویرایش</button>
-                        <button type="button" className="btn btn--sm btn--danger" onClick={() => deleteSession(s.id)}>حذف</button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            {attendanceSessionId && (
-              <SessionAttendance sessionId={attendanceSessionId} onChanged={onChanged} />
+          {/* تب ۳: حضور و غیاب */}
+          <div className={`tab-panel${tab === 'attendance' ? ' active' : ''}`}>
+            {sessions === null ? (
+              <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>در حال بارگذاری جلسات…</p>
+            ) : sessions.length === 0 ? (
+              <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>ابتدا از تب «جلسات و تقویم» یک جلسه بسازید تا بتوانید حضور و غیاب ثبت کنید.</p>
+            ) : (
+              <>
+                <div className="form-group" style={{ maxWidth: 360 }}>
+                  <label className="form-label">انتخاب جلسه</label>
+                  <select className="form-input" value={attendanceSessionId || ''}
+                    onChange={(e) => setAttendanceSessionId(e.target.value || null)}>
+                    <option value="">— یک جلسه را انتخاب کنید —</option>
+                    {sessions.map((s, i) => {
+                      const d = new Date(s.startsAt);
+                      return <option key={s.id} value={s.id}>جلسه {i + 1}: {s.title} — {dateFmt.format(d)}</option>;
+                    })}
+                  </select>
+                </div>
+                {attendanceSessionId && (
+                  <SessionAttendance sessionId={attendanceSessionId} onChanged={onChanged} />
+                )}
+              </>
             )}
+          </div>
+
+          {/* تب ۴: پیشرفت دستیِ هنرجویان */}
+          <div className={`tab-panel${tab === 'progress' ? ' active' : ''}`}>
+            <ProgressOverrides members={group.members} students={students} onChanged={onChanged} />
           </div>
         </div>
       )}
