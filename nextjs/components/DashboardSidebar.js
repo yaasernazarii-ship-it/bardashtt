@@ -41,6 +41,7 @@ export default function DashboardSidebar({ active, role, isAdmin = false, isMana
             <li><Link className={active === 'enrollments' ? 'active' : undefined} href="/dashboard/admin/enrollments">📋 بررسی ثبت‌نام‌ها</Link></li>
             <li><Link className={active === 'signups' ? 'active' : undefined} href="/dashboard/admin/signups">✅ تأیید حساب‌ها</Link></li>
             <li><Link className={active === 'classes' ? 'active' : undefined} href="/dashboard/admin/classes">📅 کلاس‌ها و تقویم</Link></li>
+            <li><Link className={active === 'payments' ? 'active' : undefined} href="/dashboard/admin/payments">💳 پرداخت‌ها و شهریه</Link></li>
             <li><Link className={active === 'bookings' ? 'active' : undefined} href="/dashboard/admin/bookings">🎬 درخواست‌های ست تایم</Link></li>
             <li><Link className={active === 'support' ? 'active' : undefined} href="/dashboard/admin/support">💬 پشتیبانی آنلاین</Link></li>
             <li><Link className={active === 'posts' ? 'active' : undefined} href="/dashboard/admin/posts">📝 مطالب و اخبار</Link></li>

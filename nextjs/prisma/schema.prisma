@@ -32,6 +32,7 @@ model User {
   resume       ActorResume?
   enrollments  Enrollment[]
   attendances  Attendance[]
+  payments     Payment[]
 
   @@index([classGroupId])
 }
@@ -268,4 +269,25 @@ model Enrollment {
 
   @@index([status])
   @@index([phone])
+}
+
+// پرداختِ هنرجو: شهریهٔ هر دوره، یا هزینه‌های جدا (بیمه/پلاتو، لوکیشن/تغذیه، افیشِ متفرقه).
+// هر پرداخت یک مبلغِ متغیر و یک «بابت/دلیل» دارد و می‌تواند به یکی از ۵ دوره وصل باشد یا جدا (courseKey خالی).
+model Payment {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String // بابت/دلیل پرداخت (مثلاً «شهریهٔ دورهٔ تکمیلی» یا «هزینهٔ بیمه و پلاتو»)
+  courseKey   String? // اگر مربوط به یکی از ۵ دوره باشد (۰۱ تا ۰۵)؛ برای پرداخت‌های جدا خالی است
+  courseTitle String? // عنوان دورهٔ مرتبط (در صورت وجود)
+  amount      Int // مبلغ به تومان (متغیر؛ ادمین هنگام ساخت وارد می‌کند)
+  status      String    @default("pending") // pending | paid | canceled
+  method      String? // روش پرداخت: online | manual (بعد از اتصال درگاه پر می‌شود)
+  paidAt      DateTime? // زمان پرداخت موفق
+  createdById String? // ادمین/ادیتوری که این پرداخت را ساخته
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId, status])
+  @@index([status])
 }
