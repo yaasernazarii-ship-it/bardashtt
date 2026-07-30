@@ -3,14 +3,14 @@ import PageLayout from '@/components/PageLayout';
 import AccountPanel from '@/components/AccountPanel';
 
 const perks = [
-  { title: 'ورود سریع', text: 'فقط با شماره موبایل و کد تأیید، بدون رمزهای پیچیده.' },
+  { title: 'حساب تأییدشده', text: 'حساب شما پس از بررسی و تأیید خانواده برداشت ساخته می‌شود.' },
   { title: 'دسترسی متمرکز', text: 'کلاس‌ها، آزمون‌ها و وضعیت آموزشی شما در یک فضای ساده.' },
-  { title: 'مناسب موبایل', text: 'فرآیند ورود برای استفاده سریع روی گوشی بهینه شده است.' },
+  { title: 'ورود امن', text: 'با نام کاربری و رمز اختصاصی که برایتان صادر می‌شود وارد می‌شوید.' },
 ];
 
 export const metadata = {
   title: 'ورود هنرجویان',
-  description: 'ورود به حساب کاربری خانواده برداشت با شماره موبایل و کد تأیید.',
+  description: 'ورود به حساب کاربری خانواده برداشت با نام کاربری و رمز عبور.',
   alternates: { canonical: 'https://www.bardashtt.com/auth' },
 };
 
@@ -21,7 +21,7 @@ export default function AuthPage() {
         <div className="page-header__inner">
           <div className="page-header__tag">ورود هنرجویان</div>
           <h1>ورود به حساب کاربری</h1>
-          <p>برای دسترسی به وضعیت آموزشی، برنامه کلاس‌ها و خدمات هنرجویی، با شماره موبایل خود وارد شوید.</p>
+          <p>برای دسترسی به وضعیت آموزشی، برنامه کلاس‌ها و خدمات هنرجویی، با نام کاربری و رمز عبور خود وارد شوید.</p>
           <div className="breadcrumb"><Link href="/">خانه</Link> › ورود</div>
         </div>
       </div>
