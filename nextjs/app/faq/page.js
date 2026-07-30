@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
 import Accordion from '@/components/Accordion';
+import OpenChatButton from '@/components/OpenChatButton';
 import { loadContent } from '@/lib/siteContent';
 
 export const metadata = {
@@ -35,12 +36,6 @@ const groups = [
   },
 ];
 
-const summary = [
-  { title: 'رایگان و رسمی', text: 'تمام مسیر اصلی بدون شهریه و با ساختار مشخص آموزشی برگزار می‌شود.' },
-  { title: 'برای همه سنین', text: 'پذیرش برای کودکان، نوجوانان و بزرگسالان با مسیر متناسب انجام می‌شود.' },
-  { title: 'ارتباط مستقیم', text: 'اگر پاسخ سؤال‌تان اینجا نیست، می‌توانید سریع با پشتیبانی تماس بگیرید.' },
-];
-
 export default async function FaqPage() {
   const t = await loadContent();
   return (
@@ -55,14 +50,6 @@ export default async function FaqPage() {
       </div>
       <section style={{ background: 'var(--bg)' }}>
         <div className="container">
-          <div className="faq-summary">
-            {summary.map(item => (
-              <div key={item.title} className="faq-summary-card">
-                <strong>{item.title}</strong>
-                <span>{item.text}</span>
-              </div>
-            ))}
-          </div>
           <div className="faq-grid">
             <aside className="faq-side">
               <span className="tag tag--gold" style={{ marginBottom: 14 }}>پشتیبانی مستقیم</span>
@@ -85,7 +72,8 @@ export default async function FaqPage() {
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 18 }}>
-                <a href={`tel:${t('contact.phone')}`} className="btn btn--gold">تماس مستقیم</a>
+                <OpenChatButton className="btn btn--gold">پشتیبانی آنلاین</OpenChatButton>
+                <a href={`tel:${t('contact.phone')}`} className="btn btn--hero-secondary">تماس مستقیم</a>
                 <Link href="/courses" className="btn btn--hero-secondary">مشاهده دوره‌ها</Link>
               </div>
             </aside>
