@@ -43,18 +43,24 @@ const navLinks = [
 export default function Nav({ onOpenChat }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
+  const [openIndex, setOpenIndex] = useState(null);
+  const [openSub, setOpenSub] = useState(false);
   const [user, setUser] = useState(null);
   const pathname = usePathname();
   const supportRef = useRef(null);
+  const linksRef = useRef(null);
 
   useEffect(() => {
     setMenuOpen(false);
     setSupportOpen(false);
+    setOpenIndex(null);
+    setOpenSub(false);
   }, [pathname]);
 
   useEffect(() => {
     function handler(e) {
       if (supportRef.current && !supportRef.current.contains(e.target)) setSupportOpen(false);
+      if (linksRef.current && !linksRef.current.contains(e.target)) { setOpenIndex(null); setOpenSub(false); }
     }
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -92,11 +98,17 @@ export default function Nav({ onOpenChat }) {
           <Link href="/" className="nav__logo">
             <Image src="/imgg.png" alt="خانواده برداشت" width={90} height={30} style={{ height: 30, width: 'auto' }} />
           </Link>
-          <ul className="nav__links">
+          <ul className="nav__links" ref={linksRef}>
             {navLinks.map((item, i) => (
               item.children ? (
-                <li key={i} className="has-dropdown">
-                  <button type="button" className="nav__dropdown-toggle">
+                <li key={i} className={`has-dropdown${openIndex === i ? ' is-open' : ''}`}>
+                  <button
+                    type="button"
+                    className="nav__dropdown-toggle"
+                    aria-haspopup="true"
+                    aria-expanded={openIndex === i}
+                    onClick={() => setOpenIndex((p) => (p === i ? null : i))}
+                  >
                     <span>{item.label}</span>
                     <span className="nav__caret" aria-hidden="true" />
                   </button>
@@ -105,19 +117,25 @@ export default function Nav({ onOpenChat }) {
                       child.type === 'sep' ? (
                         <li key={j} className="drop-sep" />
                       ) : child.sub ? (
-                        <li key={j} className="has-submenu">
-                          <button type="button" className="nav__submenu-toggle">
+                        <li key={j} className={`has-submenu${openSub ? ' is-open' : ''}`}>
+                          <button
+                            type="button"
+                            className="nav__submenu-toggle"
+                            aria-haspopup="true"
+                            aria-expanded={openSub}
+                            onClick={(e) => { e.stopPropagation(); setOpenSub((p) => !p); }}
+                          >
                             <span>{child.label}</span>
                             <span className="nav__caret nav__caret--sub" aria-hidden="true" />
                           </button>
                           <ul className="submenu">
                             {child.sub.map((s, k) => (
-                              <li key={k}><Link href={s.href}>{s.label}</Link></li>
+                              <li key={k}><Link href={s.href} onClick={() => { setOpenIndex(null); setOpenSub(false); }}>{s.label}</Link></li>
                             ))}
                           </ul>
                         </li>
                       ) : (
-                        <li key={j}><Link href={child.href}>{child.label}</Link></li>
+                        <li key={j}><Link href={child.href} onClick={() => setOpenIndex(null)}>{child.label}</Link></li>
                       )
                     ))}
                   </ul>
