@@ -534,6 +534,10 @@ body.nav-open {
   transition: var(--transition); white-space: nowrap;
 }
 .nav__support-btn:hover { background: var(--dark); color: #fff; border-color: var(--dark); }
+.nav__support { position: relative; display: inline-flex; }
+.nav__support .nav__caret::before { content: '▾'; }
+.nav__support.open .nav__caret { color: var(--gold); transform: rotate(180deg); }
+.nav__support.open .hdr-support-drop { opacity: 1; pointer-events: all; transform: translateY(0); }
 .nav__menu-btn { display: none; background: none; border: none; font-size: 1.4rem; cursor: pointer; padding: 4px 8px; color: var(--dark); }
 
 /* Backdrop */

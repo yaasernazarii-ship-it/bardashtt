@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -42,12 +42,23 @@ const navLinks = [
 
 export default function Nav({ onOpenChat }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
   const [user, setUser] = useState(null);
   const pathname = usePathname();
+  const supportRef = useRef(null);
 
   useEffect(() => {
     setMenuOpen(false);
+    setSupportOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    function handler(e) {
+      if (supportRef.current && !supportRef.current.contains(e.target)) setSupportOpen(false);
+    }
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -119,7 +130,25 @@ export default function Nav({ onOpenChat }) {
             ))}
           </ul>
           <div className="nav__actions">
-            <button type="button" className="nav__support-btn" onClick={onOpenChat}><span className="nav__support-dot" />پشتیبانی</button>
+            <div className={`nav__support${supportOpen ? ' open' : ''}`} ref={supportRef}>
+              <button type="button" className="nav__support-btn" onClick={() => setSupportOpen(p => !p)} aria-haspopup="true" aria-expanded={supportOpen}>
+                <span className="nav__support-dot" />پشتیبانی
+                <span className="nav__caret" aria-hidden="true" />
+              </button>
+              <ul className="hdr-support-drop">
+                <li><Link href="/faq" onClick={() => setSupportOpen(false)}><span className="drop-icon">📋</span>سوالات متداول</Link></li>
+                <li className="drop-sep" />
+                <li>
+                  <button type="button" onClick={() => { onOpenChat?.(); setSupportOpen(false); }}>
+                    <span className="drop-icon">💬</span>
+                    <span>پشتیبانی آنلاین<span className="drop-phone">گفت‌وگوی زنده با تیم ما</span></span>
+                    <span className="drop-online-dot" />
+                  </button>
+                </li>
+                <li className="drop-sep" />
+                <li><a href="tel:02191090934"><span className="drop-icon">📞</span><span>تماس با ما<span className="drop-phone">021-91090934</span></span></a></li>
+              </ul>
+            </div>
             {user ? (
               <>
                 <Link href="/dashboard" className="btn btn--dark btn--sm">داشبورد</Link>
