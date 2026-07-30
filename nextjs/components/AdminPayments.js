@@ -7,10 +7,20 @@ const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long
 const money = (n) => Number(n || 0).toLocaleString('fa-IR');
 
 const STATUS = {
-  pending: { label: 'در انتظار پرداخت', bg: '#FFF7ED', color: '#92400E', border: '#FED7AA' },
-  paid: { label: 'پرداخت‌شده', bg: '#F0FDF4', color: '#15803D', border: '#BBF7D0' },
-  canceled: { label: 'لغوشده', bg: '#FEF2F2', color: '#DC2626', border: '#FECACA' },
+  pending: { label: 'در انتظار پرداخت' },
+  paid: { label: 'پرداخت‌شده' },
+  canceled: { label: 'لغوشده' },
 };
+
+function StatusBadge({ status }) {
+  const st = STATUS[status] || STATUS.pending;
+  return (
+    <span className={`pay-badge pay-badge--${status}`}>
+      <span className="pay-badge__dot" aria-hidden="true" />
+      {st.label}
+    </span>
+  );
+}
 
 const emptyForm = { userId: '', courseKey: '', title: '', amount: '', promote: false };
 
@@ -162,7 +172,7 @@ export default function AdminPayments() {
         </div>
 
         {form.courseKey && (
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '.88rem', marginBottom: 14, cursor: 'pointer' }}>
+          <label className="pay-toggle">
             <input type="checkbox" checked={form.promote} onChange={(e) => setForm({ ...form, promote: e.target.checked })} />
             هنرجو را هم به همین دوره ارتقا بده (دورهٔ فعلیِ او به‌روزرسانی می‌شود)
           </label>
@@ -172,51 +182,56 @@ export default function AdminPayments() {
       </form>
 
       {/* فهرست پرداخت‌ها */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
+      <div className="pay-filters" role="tablist" aria-label="فیلتر وضعیت پرداخت">
         {[['all', 'همه'], ['pending', 'در انتظار'], ['paid', 'پرداخت‌شده'], ['canceled', 'لغوشده']].map(([k, l]) => (
-          <button key={k} type="button" className={`btn btn--sm ${filter === k ? 'btn--dark' : 'btn--outline'}`} onClick={() => setFilter(k)}>{l}</button>
+          <button key={k} type="button" role="tab" aria-selected={filter === k}
+            className={`pay-chip ${filter === k ? 'is-active' : ''}`} onClick={() => setFilter(k)}>{l}</button>
         ))}
       </div>
 
       {visiblePayments.length === 0 ? (
-        <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 24, textAlign: 'center' }}>
-          <p style={{ color: 'var(--muted)', margin: 0 }}>موردی نیست.</p>
+        <div className="pay-empty">
+          <div className="pay-empty__icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" />
+            </svg>
+          </div>
+          <p style={{ margin: 0 }}>موردی برای نمایش نیست.</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gap: 10 }}>
-          {visiblePayments.map((p) => {
-            const st = STATUS[p.status] || STATUS.pending;
-            return (
-              <div key={p.id} style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: '12px 14px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                  <div style={{ flex: 1, minWidth: 200 }}>
-                    <div style={{ fontWeight: 800 }}>
-                      {p.user?.displayName || p.user?.phone}
-                      {p.user?.username && <span style={{ color: 'var(--muted)', fontWeight: 400 }}> · {p.user.username}</span>}
-                    </div>
-                    <div style={{ fontSize: '.85rem', color: 'var(--muted)' }}>
-                      {p.title}{p.courseTitle ? ` · دورهٔ ${p.courseTitle}` : ' · پرداخت جدا'} · {dateFmt.format(new Date(p.createdAt))}
-                    </div>
+        <div className="pay-list">
+          {visiblePayments.map((p) => (
+            <div key={p.id} className={`pay-card pay-card--${p.status}`}>
+              <div className="pay-card__top">
+                <div className="pay-card__main">
+                  <div className="pay-card__title">
+                    {p.user?.displayName || p.user?.phone}
+                    {p.user?.username && <span style={{ color: 'var(--muted)', fontWeight: 400 }}> · {p.user.username}</span>}
                   </div>
-                  <div style={{ fontWeight: 800, whiteSpace: 'nowrap' }}>{money(p.amount)} تومان</div>
-                  <span style={{ background: st.bg, color: st.color, border: `1px solid ${st.border}`, borderRadius: 999, padding: '3px 12px', fontSize: '.78rem', fontWeight: 700 }}>{st.label}</span>
+                  <div className="pay-card__sub">
+                    {p.title}
+                    <span className="dot">·</span>{p.courseTitle ? `دورهٔ ${p.courseTitle}` : 'پرداخت جدا'}
+                    <span className="dot">·</span>{dateFmt.format(new Date(p.createdAt))}
+                  </div>
                 </div>
-                <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                  <button type="button" className="btn btn--sm btn--outline" onClick={() => copyLink(p.id)}>کپی لینک پرداخت</button>
-                  {p.status === 'pending' && (
-                    <>
-                      <button type="button" className="btn btn--sm btn--dark" onClick={() => act(p.id, 'markPaid')}>ثبت پرداختِ دستی</button>
-                      <button type="button" className="btn btn--sm btn--outline" onClick={() => act(p.id, 'cancel')}>لغو</button>
-                    </>
-                  )}
-                  {p.status === 'canceled' && (
-                    <button type="button" className="btn btn--sm btn--outline" onClick={() => act(p.id, 'reopen')}>بازگردانی</button>
-                  )}
-                  <button type="button" className="btn btn--sm btn--danger" onClick={() => remove(p.id)}>حذف</button>
-                </div>
+                <div className="pay-card__amount">{money(p.amount)}<span>تومان</span></div>
+                <StatusBadge status={p.status} />
               </div>
-            );
-          })}
+              <div className="pay-card__actions">
+                <button type="button" className="btn btn--sm btn--outline" onClick={() => copyLink(p.id)}>کپی لینک پرداخت</button>
+                {p.status === 'pending' && (
+                  <>
+                    <button type="button" className="btn btn--sm btn--dark" onClick={() => act(p.id, 'markPaid')}>ثبت پرداختِ دستی</button>
+                    <button type="button" className="btn btn--sm btn--outline" onClick={() => act(p.id, 'cancel')}>لغو</button>
+                  </>
+                )}
+                {p.status === 'canceled' && (
+                  <button type="button" className="btn btn--sm btn--outline" onClick={() => act(p.id, 'reopen')}>بازگردانی</button>
+                )}
+                <button type="button" className="btn btn--sm btn--danger" onClick={() => remove(p.id)}>حذف</button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

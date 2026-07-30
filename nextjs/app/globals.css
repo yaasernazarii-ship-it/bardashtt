@@ -1261,3 +1261,83 @@ summary:focus-visible {
   .enroll-steps li .enroll-steps__label { display: none; }
   .enroll-actions .btn { flex: 1 1 auto; }
 }
+
+/* ── PAYMENTS · شهریه و پرداخت‌ها ─────────── */
+.pay-filters { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.pay-chip {
+  font-family: inherit; font-size: 0.82rem; font-weight: 600;
+  padding: 8px 18px; border-radius: 100px; cursor: pointer;
+  border: 1.5px solid var(--border); background: var(--white); color: var(--muted);
+  transition: var(--transition);
+}
+.pay-chip:hover { border-color: var(--dark); color: var(--dark); }
+.pay-chip.is-active { background: var(--dark); border-color: var(--dark); color: #fff; }
+
+.pay-list { display: grid; gap: 12px; }
+
+.pay-card {
+  position: relative; overflow: hidden;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 22px;
+  box-shadow: var(--shadow-sm); transition: var(--transition);
+}
+.pay-card::before {
+  content: ''; position: absolute; inset-inline-start: 0; top: 0; bottom: 0;
+  width: 4px; background: var(--border); transition: var(--transition);
+}
+.pay-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.pay-card--pending::before  { background: linear-gradient(180deg, var(--gold), var(--gold-lt)); }
+.pay-card--paid::before     { background: linear-gradient(180deg, #22C55E, #86EFAC); }
+.pay-card--canceled::before { background: #E5E5E5; }
+.pay-card--canceled { opacity: 0.72; }
+
+.pay-card__top { display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+.pay-card__main { flex: 1 1 220px; min-width: 0; }
+.pay-card__title { font-weight: 800; color: var(--dark); font-size: 1rem; line-height: 1.5; }
+.pay-card__sub { font-size: 0.84rem; color: var(--muted); margin-top: 3px; }
+.pay-card__sub .dot { opacity: 0.5; margin: 0 6px; }
+
+.pay-card__amount {
+  font-weight: 800; color: var(--dark); font-size: 1.35rem; white-space: nowrap;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.01em;
+}
+.pay-card__amount span { font-size: 0.82rem; font-weight: 600; color: var(--muted); margin-inline-start: 3px; }
+
+.pay-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  border-radius: 100px; padding: 5px 13px; font-size: 0.76rem; font-weight: 700;
+  border: 1px solid; white-space: nowrap;
+}
+.pay-badge__dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.pay-badge--pending  { background: #FFF7ED; color: #92400E; border-color: #FED7AA; }
+.pay-badge--pending .pay-badge__dot  { background: #D97706; }
+.pay-badge--paid     { background: #F0FDF4; color: #15803D; border-color: #BBF7D0; }
+.pay-badge--paid .pay-badge__dot     { background: #16A34A; }
+.pay-badge--canceled { background: #FEF2F2; color: #DC2626; border-color: #FECACA; }
+.pay-badge--canceled .pay-badge__dot { background: #DC2626; }
+
+.pay-card__actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; justify-content: flex-end; }
+.pay-card__actions--full { justify-content: stretch; }
+
+.pay-empty {
+  background: #fff; border: 1px dashed var(--border); border-radius: var(--radius);
+  padding: 40px 24px; text-align: center; color: var(--muted);
+}
+.pay-empty__icon {
+  width: 48px; height: 48px; margin: 0 auto 14px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--surface); color: var(--light);
+}
+
+.pay-toggle {
+  display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 12px 14px; font-size: 0.86rem; color: var(--body); margin-bottom: 16px;
+  transition: var(--transition);
+}
+.pay-toggle:hover { border-color: var(--gold); }
+.pay-toggle input { margin-top: 3px; accent-color: var(--dark); flex: none; }
+
+@media (max-width: 640px) {
+  .pay-card__amount { font-size: 1.2rem; }
+  .pay-card__actions .btn { flex: 1 1 auto; }
+}
