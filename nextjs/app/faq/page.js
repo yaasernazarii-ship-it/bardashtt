@@ -3,11 +3,13 @@ import PageLayout from '@/components/PageLayout';
 import Accordion from '@/components/Accordion';
 import OpenChatButton from '@/components/OpenChatButton';
 import { loadContent } from '@/lib/siteContent';
+import { SITE_URL, faqJsonLd, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
 
 export const metadata = {
   title: 'سوالات متداول',
   description: 'پاسخ به سوالات پرتکرار درباره دوره‌ها، ثبت‌نام، آزمون و گواهینامه خانواده برداشت.',
-  alternates: { canonical: 'https://www.bardashtt.com/faq' },
+  alternates: { canonical: `${SITE_URL}/faq` },
+  openGraph: { type: 'website', title: 'سوالات متداول | خانواده برداشت', url: `${SITE_URL}/faq` },
 };
 
 export const dynamic = 'force-dynamic';
@@ -37,10 +39,15 @@ const groups = [
   },
 ];
 
+const faqLd = faqJsonLd(groups);
+const breadcrumbLd = breadcrumbJsonLd([{ name: 'خانه', url: SITE_URL }, { name: 'سوالات متداول' }]);
+
 export default async function FaqPage() {
   const t = await loadContent();
   return (
     <PageLayout>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(faqLd)} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(breadcrumbLd)} />
       <div className="page-header">
         <div className="page-header__inner">
           <div className="page-header__tag">{t('faq.tag')}</div>

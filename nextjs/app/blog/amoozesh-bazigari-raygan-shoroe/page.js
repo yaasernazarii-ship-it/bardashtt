@@ -1,15 +1,38 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
+import { SITE_URL, articleJsonLd, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
+
+const TITLE = 'آموزش بازیگری رایگان؛ از کجا شروع کنیم؟ راهنمای کامل ورود به دنیای بازیگری سینما';
+const DESCRIPTION = 'دوست داری بازیگری سینما رو یاد بگیری اما نمی‌دونی از کجا شروع کنی؟ در این مقاله مسیر آموزش بازیگری رایگان و حرفه‌ای رو قدم به قدم بهت نشون می‌دیم.';
+const URL = `${SITE_URL}/blog/amoozesh-bazigari-raygan-shoroe`;
+const PUBLISHED = '2026-07-30T08:00:00+03:30';
 
 export const metadata = {
-  title: 'آموزش بازیگری رایگان؛ از کجا شروع کنیم؟ راهنمای کامل ورود به دنیای بازیگری سینما',
-  description: 'دوست داری بازیگری سینما رو یاد بگیری اما نمی‌دونی از کجا شروع کنی؟ در این مقاله مسیر آموزش بازیگری رایگان و حرفه‌ای رو قدم به قدم بهت نشون می‌دیم.',
-  alternates: { canonical: 'https://www.bardashtt.com/blog/amoozesh-bazigari-raygan-shoroe' },
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: URL },
+  openGraph: {
+    type: 'article',
+    title: TITLE,
+    description: DESCRIPTION,
+    url: URL,
+    publishedTime: PUBLISHED,
+  },
+  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
 };
+
+const articleLd = articleJsonLd({ title: TITLE, description: DESCRIPTION, url: URL, datePublished: PUBLISHED });
+const breadcrumbLd = breadcrumbJsonLd([
+  { name: 'خانه', url: SITE_URL },
+  { name: 'وبلاگ', url: `${SITE_URL}/blog` },
+  { name: TITLE },
+]);
 
 export default function BlogPostPage() {
   return (
     <PageLayout>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(articleLd)} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(breadcrumbLd)} />
       <div className="page-header">
         <div className="page-header__inner">
           <div className="page-header__tag">مطلب آموزشی</div>

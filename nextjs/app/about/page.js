@@ -97,7 +97,7 @@ export default async function AboutPage() {
                 <strong>۱۳۹۷</strong>
               </div>
               <div className="story-logo-badge">
-                <img src="/bardasht-logo.png" alt="خانه برداشت" />
+                <img src="/bardasht-logo.png" alt="خانه برداشت" loading="lazy" decoding="async" />
               </div>
             </div>
             <div>
@@ -185,7 +185,7 @@ export default async function AboutPage() {
             <p style={{ color: 'var(--gold)', fontWeight: 700, marginTop: 10 }}>سینماگر، نویسنده و تحلیلگر رفتار</p>
           </div>
           <div className="founder-card" style={{ alignItems: 'flex-start' }}>
-            <div className="founder-avatar"><img src="/founder-yaser.jpg" alt="یاسر نظری، بنیان‌گذار خانواده برداشت" /></div>
+            <div className="founder-avatar"><img src="/founder-yaser.jpg" alt="یاسر نظری، بنیان‌گذار خانواده برداشت" loading="lazy" decoding="async" /></div>
             <div>
               <div className="founder-name">{t('about.founder.name')}</div>
               <div className="founder-title">{t('about.founder.title')}</div>

@@ -7,6 +7,7 @@ const nextConfig = {
   images: {
     unoptimized: false,
     remotePatterns: [],
+    formats: ['image/avif', 'image/webp'],
   },
   async redirects() {
     return [

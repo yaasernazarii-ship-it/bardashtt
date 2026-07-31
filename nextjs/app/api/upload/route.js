@@ -1,6 +1,7 @@
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { randomBytes } from 'crypto';
+import sharp from 'sharp';
 import { getSessionUser, isManager } from '@/lib/auth';
 
 export const runtime = 'nodejs';
@@ -12,6 +13,8 @@ const EXT_BY_TYPE = {
   'image/webp': 'webp',
   'image/gif': 'gif',
 };
+// فرمت‌هایی که برای سئو و سرعت بارگذاری به WebP تبدیل می‌شوند (gif متحرک دست‌نخورده می‌ماند)
+const CONVERT_TO_WEBP = new Set(['image/jpeg', 'image/png']);
 
 export async function POST(request) {
   const user = await getSessionUser();
@@ -28,14 +31,23 @@ export async function POST(request) {
     if (!ext) {
       return Response.json({ ok: false, error: 'فقط تصویر (jpg, png, webp, gif) مجاز است.' }, { status: 400 });
     }
-    const buf = Buffer.from(await file.arrayBuffer());
+    let buf = Buffer.from(await file.arrayBuffer());
     if (buf.length > MAX_BYTES) {
       return Response.json({ ok: false, error: 'حجم فایل نباید بیشتر از ۶ مگابایت باشد.' }, { status: 400 });
     }
 
+    // برای سرعت بارگذاری و سئو، jpg/png را به WebP فشرده تبدیل می‌کنیم
+    let finalExt = ext;
+    if (CONVERT_TO_WEBP.has(file.type)) {
+      try {
+        buf = await sharp(buf).webp({ quality: 82 }).toBuffer();
+        finalExt = 'webp';
+      } catch { /* در صورت خطای تبدیل، فایل اصلی بدون تغییر ذخیره می‌شود */ }
+    }
+
     const dir = path.join(process.cwd(), 'uploads');
     await mkdir(dir, { recursive: true });
-    const name = `${Date.now()}-${randomBytes(6).toString('hex')}.${ext}`;
+    const name = `${Date.now()}-${randomBytes(6).toString('hex')}.${finalExt}`;
     await writeFile(path.join(dir, name), buf);
 
     return Response.json({ ok: true, url: `/media/${name}` });
