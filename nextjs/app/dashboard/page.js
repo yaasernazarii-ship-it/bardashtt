@@ -57,7 +57,6 @@ export default async function DashboardPage() {
               {!user.graduated && (
                 <Link href="/dashboard/calendar" style={{ background: 'var(--dark)', borderRadius: 'var(--radius)', padding: 24, color: '#fff' }}><div style={{ color: 'rgba(255,255,255,.45)', fontSize: '.75rem', fontWeight: 700 }}>تقویم کلاس</div><h2 style={{ fontSize: '1.5rem', margin: '8px 0' }}>برنامه کلاس‌های شما</h2><p style={{ color: 'var(--gold-lt)' }}>مشاهده تقویم →</p></Link>
               )}
-              <Link href="/dashboard/assistant" style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 24 }}><h3 style={{ fontSize: '.85rem', color: 'var(--muted)', marginBottom: 12 }}>دستیار هوشمند</h3><strong style={{ fontSize: '1.2rem', color: 'var(--dark)' }}>پرسش از کتاب آقای نظری</strong><p style={{ color: 'var(--muted)', marginTop: 8 }}>به‌زودی فعال می‌شود.</p></Link>
               <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 24 }}><h3 style={{ color: 'var(--dark)' }}>حساب کاربری</h3><p style={{ color: 'var(--muted)' }}>شماره موبایل: <span dir="ltr">{user.phone}</span></p><Link href="/dashboard/profile" style={{ color: 'var(--dark)', fontWeight: 700 }}>تکمیل پروفایل →</Link></div>
             </div>
           </>
