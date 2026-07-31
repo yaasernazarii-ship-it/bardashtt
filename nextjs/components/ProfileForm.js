@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 
-export default function ProfileForm({ initial }) {
+export default function ProfileForm({ initial, role }) {
+  const isFilmmaker = role === 'filmmaker';
   const [form, setForm] = useState({
     displayName: initial.displayName || '',
+    contactPhone: initial.contactPhone || '',
     city: initial.city || '',
     birthYear: initial.birthYear || '',
   });
@@ -46,6 +48,12 @@ export default function ProfileForm({ initial }) {
         <label className="form-label">نام و نام خانوادگی</label>
         <input className="form-input" value={form.displayName} onChange={(e) => update('displayName', e.target.value)} autoComplete="name" />
       </div>
+      {isFilmmaker && (
+        <div className="form-group">
+          <label className="form-label">شماره تماس</label>
+          <input className="form-input" dir="ltr" type="tel" inputMode="tel" placeholder="09xxxxxxxxx" autoComplete="tel" value={form.contactPhone} onChange={(e) => update('contactPhone', e.target.value)} />
+        </div>
+      )}
       <div className="form-group">
         <label className="form-label">شهر</label>
         <input className="form-input" value={form.city} onChange={(e) => update('city', e.target.value)} />

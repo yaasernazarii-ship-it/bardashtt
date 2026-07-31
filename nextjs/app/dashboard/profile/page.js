@@ -17,7 +17,7 @@ export default async function ProfilePage() {
           <h1 className="heading">پروفایل من</h1>
           <p style={{ color: 'var(--muted)' }}>اطلاعات حساب کاربری خود را تکمیل و ویرایش کنید.</p>
         </div>
-        <ProfileForm initial={{ phone: user.phone, displayName: user.displayName, city: user.city, birthYear: user.birthYear }} />
+        <ProfileForm role={user.role} initial={{ phone: user.phone, contactPhone: user.contactPhone, displayName: user.displayName, city: user.city, birthYear: user.birthYear }} />
       </main>
     </div>
   );
