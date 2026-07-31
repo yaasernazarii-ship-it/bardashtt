@@ -1,5 +1,6 @@
 import SimplePage from '@/components/SimplePage';
 import GalleryBoard from '@/components/GalleryBoard';
+import SectionPosts from '@/components/SectionPosts';
 import { loadContent } from '@/lib/siteContent';
 
 export const metadata = {
@@ -14,6 +15,7 @@ export default async function GalleryPage() {
   const t = await loadContent();
   return (
     <SimplePage title={t('gallery.title')} subtitle={t('gallery.subtitle')} tag={t('gallery.tag')}>
+      <SectionPosts section="gallery" variant="media" />
       <GalleryBoard />
     </SimplePage>
   );

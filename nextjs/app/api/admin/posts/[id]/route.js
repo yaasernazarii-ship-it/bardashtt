@@ -1,10 +1,12 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
+import { SECTION_VALUES } from '@/lib/sections';
 
 function serialize(p) {
   return {
-    id: p.id, title: p.title, slug: p.slug, excerpt: p.excerpt, body: p.body,
+    id: p.id, title: p.title, slug: p.slug, section: p.section, excerpt: p.excerpt, body: p.body,
     coverImage: p.coverImage, aparatUrl: p.aparatUrl, published: p.published,
+    publishAt: p.publishAt ? p.publishAt.toISOString() : null,
     createdAt: p.createdAt.toISOString(),
   };
 }
@@ -38,6 +40,11 @@ export async function PATCH(request, { params }) {
     if ('coverImage' in b) data.coverImage = b.coverImage ? String(b.coverImage).trim().slice(0, 500) : null;
     if ('aparatUrl' in b) data.aparatUrl = b.aparatUrl ? String(b.aparatUrl).trim().slice(0, 500) : null;
     if ('published' in b) data.published = Boolean(b.published);
+    if ('section' in b && SECTION_VALUES.includes(b.section)) data.section = b.section;
+    if ('publishAt' in b) {
+      const d = b.publishAt ? new Date(b.publishAt) : null;
+      data.publishAt = d && !Number.isNaN(d.getTime()) ? d : null;
+    }
 
     const post = await prisma.post.update({ where: { id }, data });
     return Response.json({ ok: true, post: serialize(post) });

@@ -227,19 +227,22 @@ model SupportMessage {
 }
 
 model Post {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
-  slug        String   @unique
+  slug        String    @unique
+  section     String    @default("news") // بخش مقصد: news, blog, works-*, gallery, course-video
   excerpt     String? // خلاصهٔ کوتاه برای فهرست
   body        String // متن اصلی (پاراگراف‌ها با خط جدید)
   coverImage  String? // نشانی عکس کاور (آپلودی یا URL)
   aparatUrl   String? // لینک ویدیوی آپارات
-  published   Boolean  @default(true)
+  published   Boolean   @default(true)
+  publishAt   DateTime? // زمان انتشار زمان‌بندی‌شده؛ خالی یعنی فوری
   createdById String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([published, createdAt])
+  @@index([section, published, publishAt])
 }
 
 model SiteContent {

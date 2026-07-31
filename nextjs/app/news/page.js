@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import SimplePage from '@/components/SimplePage';
-import { prisma } from '@/lib/prisma';
+import { livePosts } from '@/lib/content';
 
 export const metadata = {
   title: 'اخبار و مطالب',
@@ -12,11 +12,7 @@ export const dynamic = 'force-dynamic';
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
 
 export default async function NewsPage() {
-  const posts = await prisma.post.findMany({
-    where: { published: true },
-    orderBy: { createdAt: 'desc' },
-    take: 60,
-  });
+  const posts = await livePosts('news');
 
   return (
     <SimplePage title="اخبار و مطالب" subtitle="آخرین اخبار، مطالب و ویدیوهای خانواده برداشت" tag="مطالب">

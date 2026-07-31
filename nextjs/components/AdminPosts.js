@@ -1,9 +1,30 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { SECTIONS, sectionLabel } from '@/lib/sections';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
-const EMPTY = { title: '', excerpt: '', body: '', coverImage: '', aparatUrl: '', published: true };
+const dateTimeFmt = new Intl.DateTimeFormat('fa-IR', {
+  year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tehran',
+});
+const EMPTY = { title: '', section: 'news', excerpt: '', body: '', coverImage: '', aparatUrl: '', published: true, publishAt: '' };
+
+// تبدیل زمان ذخیره‌شده (ISO/UTC) به مقدار ورودی datetime-local در ساعت محلی مرورگر.
+function isoToLocalInput(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 16);
+}
+
+// وضعیت نمایشی هر مطلب: پیش‌نویس / زمان‌بندی‌شده / منتشرشده.
+function statusOf(p) {
+  if (!p.published) return { label: 'پیش‌نویس', cls: 'badge-submitted' };
+  if (p.publishAt && new Date(p.publishAt) > new Date()) {
+    return { label: `زمان‌بندی‌شده: ${dateTimeFmt.format(new Date(p.publishAt))}`, cls: 'badge-scheduled' };
+  }
+  return { label: 'منتشرشده', cls: 'badge-approved' };
+}
 
 export default function AdminPosts() {
   const [posts, setPosts] = useState([]);
@@ -30,8 +51,9 @@ export default function AdminPosts() {
   function editPost(p) {
     setEditingId(p.id);
     setForm({
-      title: p.title, excerpt: p.excerpt || '', body: p.body,
+      title: p.title, section: p.section || 'news', excerpt: p.excerpt || '', body: p.body,
       coverImage: p.coverImage || '', aparatUrl: p.aparatUrl || '', published: p.published,
+      publishAt: isoToLocalInput(p.publishAt),
     });
     setError('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -52,12 +74,16 @@ export default function AdminPosts() {
 
   async function save(e) {
     e.preventDefault();
-    if (!form.title.trim() || !form.body.trim()) { setError('عنوان و متن مطلب الزامی است.'); return; }
+    const hasMedia = Boolean(form.coverImage.trim() || form.aparatUrl.trim());
+    if (!form.title.trim()) { setError('عنوان الزامی است.'); return; }
+    if (!form.body.trim() && !hasMedia) { setError('یا متن مطلب را بنویسید یا عکس/ویدیو اضافه کنید.'); return; }
     setSaving(true); setError('');
     const url = editingId ? `/api/admin/posts/${editingId}` : '/api/admin/posts';
     const method = editingId ? 'PATCH' : 'POST';
+    // زمان انتشار در ساعت محلی مرورگر وارد می‌شود؛ به لحظهٔ دقیق (ISO/UTC) تبدیل می‌شود تا مستقل از سرور درست باشد.
+    const payload = { ...form, publishAt: form.publishAt ? new Date(form.publishAt).toISOString() : null };
     const res = await fetch(url, {
-      method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form),
+      method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
     });
     const data = await res.json();
     setSaving(false);
@@ -92,6 +118,16 @@ export default function AdminPosts() {
         {error && <div className="alert alert--error" style={{ marginBottom: 12 }}>{error}</div>}
 
         <div className="form-group">
+          <label className="form-label">بخش مقصد *</label>
+          <select className="form-input" value={form.section} onChange={(e) => set('section', e.target.value)}>
+            {SECTIONS.map((s) => (
+              <option key={s.value} value={s.value}>{s.label}</option>
+            ))}
+          </select>
+          <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>این محتوا در همین بخش سایت نمایش داده می‌شود.</span>
+        </div>
+
+        <div className="form-group">
           <label className="form-label">عنوان *</label>
           <input className="form-input" value={form.title} onChange={(e) => set('title', e.target.value)} placeholder="مثلاً: گزارش اردوی تابستان" />
         </div>
@@ -102,8 +138,8 @@ export default function AdminPosts() {
         </div>
 
         <div className="form-group">
-          <label className="form-label">متن مطلب *</label>
-          <textarea className="form-input" rows={7} value={form.body} onChange={(e) => set('body', e.target.value)} placeholder="متن کامل را اینجا بنویسید. برای پاراگراف جدید یک خط خالی بگذارید." />
+          <label className="form-label">متن مطلب</label>
+          <textarea className="form-input" rows={7} value={form.body} onChange={(e) => set('body', e.target.value)} placeholder="متن کامل را اینجا بنویسید. برای پاراگراف جدید یک خط خالی بگذارید. (برای محتوای فقط عکس/ویدیو می‌تواند خالی بماند)" />
         </div>
 
         <div className="cal-form-grid">
@@ -126,9 +162,17 @@ export default function AdminPosts() {
           </div>
         </div>
 
+        <div className="form-group">
+          <label className="form-label">زمان انتشار (اختیاری)</label>
+          <input type="datetime-local" className="form-input" value={form.publishAt} onChange={(e) => set('publishAt', e.target.value)} />
+          <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>
+            تاریخ و ساعت را انتخاب کنید تا محتوا دقیقاً همان لحظه خودکار منتشر شود. خالی بگذارید تا همین حالا منتشر شود.
+          </span>
+        </div>
+
         <label style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '6px 0 16px' }}>
           <input type="checkbox" checked={form.published} onChange={(e) => set('published', e.target.checked)} />
-          <span>منتشر شود (روی سایت نمایش داده شود)</span>
+          <span>فعال باشد (اگر تیک برداشته شود، پیش‌نویس می‌ماند و هرگز منتشر نمی‌شود)</span>
         </label>
 
         <div style={{ display: 'flex', gap: 10 }}>
@@ -155,11 +199,10 @@ export default function AdminPosts() {
                   )}
                   <strong>{p.title}</strong>
                 </div>
-                <span className={`enroll-badge ${p.published ? 'badge-approved' : 'badge-submitted'}`}>
-                  {p.published ? 'منتشرشده' : 'پیش‌نویس'}
-                </span>
+                {(() => { const s = statusOf(p); return <span className={`enroll-badge ${s.cls}`}>{s.label}</span>; })()}
               </div>
               <div className="enroll-admin-meta">
+                <span>📍 {sectionLabel(p.section)}</span>
                 <span>{dateFmt.format(new Date(p.createdAt))}</span>
                 {p.aparatUrl && <span>🎬 ویدیوی آپارات</span>}
               </div>
