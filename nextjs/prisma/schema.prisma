@@ -232,6 +232,7 @@ model Post {
   title       String
   slug        String    @unique
   section     String    @default("news") // بخش مقصد: news, blog, works-*, gallery, course-video
+  category    String? // دستهٔ وبلاگ (فقط وقتی section = blog کاربرد دارد؛ مقادیر مجاز در lib/blogCategories.js)
   excerpt     String? // خلاصهٔ کوتاه برای فهرست
   body        String // متن اصلی (پاراگراف‌ها با خط جدید)
   coverImage  String? // نشانی عکس کاور (آپلودی یا URL)

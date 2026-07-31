@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { SECTIONS, sectionLabel } from '@/lib/sections';
+import { BLOG_CATEGORIES, blogCategoryLabel } from '@/lib/blogCategories';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
 const dateTimeFmt = new Intl.DateTimeFormat('fa-IR', {
   year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tehran',
 });
-const EMPTY = { title: '', section: 'news', excerpt: '', body: '', coverImage: '', aparatUrl: '', published: true, publishAt: '' };
+const EMPTY = { title: '', section: 'news', category: '', excerpt: '', body: '', coverImage: '', aparatUrl: '', published: true, publishAt: '' };
 
 // تبدیل زمان ذخیره‌شده (ISO/UTC) به مقدار ورودی datetime-local در ساعت محلی مرورگر.
 function isoToLocalInput(iso) {
@@ -51,7 +52,7 @@ export default function AdminPosts() {
   function editPost(p) {
     setEditingId(p.id);
     setForm({
-      title: p.title, section: p.section || 'news', excerpt: p.excerpt || '', body: p.body,
+      title: p.title, section: p.section || 'news', category: p.category || '', excerpt: p.excerpt || '', body: p.body,
       coverImage: p.coverImage || '', aparatUrl: p.aparatUrl || '', published: p.published,
       publishAt: isoToLocalInput(p.publishAt),
     });
@@ -76,6 +77,7 @@ export default function AdminPosts() {
     e.preventDefault();
     const hasMedia = Boolean(form.coverImage.trim() || form.aparatUrl.trim());
     if (!form.title.trim()) { setError('عنوان الزامی است.'); return; }
+    if (form.section === 'blog' && !form.category) { setError('دستهٔ وبلاگ را انتخاب کنید.'); return; }
     if (!form.body.trim() && !hasMedia) { setError('یا متن مطلب را بنویسید یا عکس/ویدیو اضافه کنید.'); return; }
     setSaving(true); setError('');
     const url = editingId ? `/api/admin/posts/${editingId}` : '/api/admin/posts';
@@ -126,6 +128,19 @@ export default function AdminPosts() {
           </select>
           <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>این محتوا در همین بخش سایت نمایش داده می‌شود.</span>
         </div>
+
+        {form.section === 'blog' && (
+          <div className="form-group">
+            <label className="form-label">دستهٔ وبلاگ *</label>
+            <select className="form-input" value={form.category} onChange={(e) => set('category', e.target.value)}>
+              <option value="">— انتخاب کنید —</option>
+              {BLOG_CATEGORIES.map((c) => (
+                <option key={c.value} value={c.value}>{c.label}</option>
+              ))}
+            </select>
+            <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>مطلب در صفحهٔ اختصاصی همین دسته هم نمایش داده می‌شود.</span>
+          </div>
+        )}
 
         <div className="form-group">
           <label className="form-label">عنوان *</label>
@@ -203,6 +218,7 @@ export default function AdminPosts() {
               </div>
               <div className="enroll-admin-meta">
                 <span>📍 {sectionLabel(p.section)}</span>
+                {p.category && <span>🏷️ {blogCategoryLabel(p.category)}</span>}
                 <span>{dateFmt.format(new Date(p.createdAt))}</span>
                 {p.aparatUrl && <span>🎬 ویدیوی آپارات</span>}
               </div>

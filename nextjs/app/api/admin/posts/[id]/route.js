@@ -1,10 +1,11 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { SECTION_VALUES } from '@/lib/sections';
+import { BLOG_CATEGORY_VALUES } from '@/lib/blogCategories';
 
 function serialize(p) {
   return {
-    id: p.id, title: p.title, slug: p.slug, section: p.section, excerpt: p.excerpt, body: p.body,
+    id: p.id, title: p.title, slug: p.slug, section: p.section, category: p.category, excerpt: p.excerpt, body: p.body,
     coverImage: p.coverImage, aparatUrl: p.aparatUrl, published: p.published,
     publishAt: p.publishAt ? p.publishAt.toISOString() : null,
     createdAt: p.createdAt.toISOString(),
@@ -41,6 +42,10 @@ export async function PATCH(request, { params }) {
     if ('aparatUrl' in b) data.aparatUrl = b.aparatUrl ? String(b.aparatUrl).trim().slice(0, 500) : null;
     if ('published' in b) data.published = Boolean(b.published);
     if ('section' in b && SECTION_VALUES.includes(b.section)) data.section = b.section;
+    if ('category' in b || 'section' in b) {
+      const finalSection = data.section || (await prisma.post.findUnique({ where: { id }, select: { section: true } }))?.section;
+      data.category = finalSection === 'blog' && BLOG_CATEGORY_VALUES.includes(b.category) ? b.category : null;
+    }
     if ('publishAt' in b) {
       const d = b.publishAt ? new Date(b.publishAt) : null;
       data.publishAt = d && !Number.isNaN(d.getTime()) ? d : null;

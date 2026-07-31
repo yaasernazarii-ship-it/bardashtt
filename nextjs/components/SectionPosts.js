@@ -1,14 +1,15 @@
 import Link from 'next/link';
 import { livePosts } from '@/lib/content';
 import { aparatEmbedUrl } from '@/lib/aparat';
+import { blogCategoryLabel } from '@/lib/blogCategories';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Tehran' });
 
 // نمایش محتوای زندهٔ یک بخش به‌صورت شبکه‌ای از کارت‌ها.
 // variant='media'   → عکس/ویدیو به‌صورت درجا داخل کارت پخش می‌شود (آثار، گالری، فروش دوره).
 // variant='article' → کارت به صفحهٔ جزئیات لینک می‌شود (اخبار، وبلاگ).
-export default async function SectionPosts({ section, variant = 'media', hrefBase, heading, empty = null }) {
-  const posts = await livePosts(section);
+export default async function SectionPosts({ section, variant = 'media', hrefBase, heading, empty = null, category }) {
+  const posts = await livePosts(section, { category });
   if (posts.length === 0) return empty;
 
   return (
@@ -32,6 +33,7 @@ export default async function SectionPosts({ section, variant = 'media', hrefBas
                 {p.excerpt && <p className="post-card__excerpt">{p.excerpt}</p>}
                 <div className="post-card__meta">
                   <span>{dateFmt.format(new Date(p.publishAt || p.createdAt))}</span>
+                  {p.category && section === 'blog' && <span>{blogCategoryLabel(p.category)}</span>}
                   {p.aparatUrl && <span>🎬 ویدیو</span>}
                 </div>
               </div>

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import SimplePage from '@/components/SimplePage';
 import SectionPosts from '@/components/SectionPosts';
 import { loadContent } from '@/lib/siteContent';
+import { BLOG_CATEGORIES } from '@/lib/blogCategories';
 
 export const metadata = {
   title: 'وبلاگ',
@@ -15,6 +16,11 @@ export default async function BlogPage() {
   const t = await loadContent();
   return (
     <SimplePage title={t('blog.title')} subtitle={t('blog.subtitle')} tag={t('blog.tag')}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
+        {BLOG_CATEGORIES.map((c) => (
+          <Link key={c.value} href={`/blog/category/${c.value}`} className="pay-chip">{c.label}</Link>
+        ))}
+      </div>
       <div className="post-list" style={{ marginBottom: 20 }}>
         <Link href="/blog/amoozesh-bazigari-raygan-shoroe" className="post-card">
           <div className="post-card__body">

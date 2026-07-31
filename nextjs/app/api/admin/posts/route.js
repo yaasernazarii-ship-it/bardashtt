@@ -2,11 +2,12 @@ import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { slugify } from '@/lib/slug';
 import { SECTION_VALUES } from '@/lib/sections';
+import { BLOG_CATEGORY_VALUES } from '@/lib/blogCategories';
 import { randomBytes } from 'crypto';
 
 function serialize(p) {
   return {
-    id: p.id, title: p.title, slug: p.slug, section: p.section, excerpt: p.excerpt, body: p.body,
+    id: p.id, title: p.title, slug: p.slug, section: p.section, category: p.category, excerpt: p.excerpt, body: p.body,
     coverImage: p.coverImage, aparatUrl: p.aparatUrl, published: p.published,
     publishAt: p.publishAt ? p.publishAt.toISOString() : null,
     createdAt: p.createdAt.toISOString(),
@@ -55,11 +56,13 @@ export async function POST(request) {
     if (!body && !hasMedia) return Response.json({ ok: false, error: 'یا متن مطلب را بنویسید یا عکس/ویدیو اضافه کنید.' }, { status: 400 });
 
     const section = SECTION_VALUES.includes(b.section) ? b.section : 'news';
+    const category = section === 'blog' && BLOG_CATEGORY_VALUES.includes(b.category) ? b.category : null;
     const post = await prisma.post.create({
       data: {
         title,
         slug: await uniqueSlug(title),
         section,
+        category,
         excerpt: b.excerpt ? String(b.excerpt).trim().slice(0, 300) : null,
         body,
         coverImage: b.coverImage ? String(b.coverImage).trim().slice(0, 500) : null,

@@ -1,3 +1,5 @@
+import { BLOG_CATEGORY_VALUES } from '@/lib/blogCategories';
+
 const baseUrl = 'https://www.bardashtt.com';
 
 const routes = [
@@ -9,6 +11,7 @@ const routes = [
   '/auth',
   '/blog',
   '/blog/amoozesh-bazigari-raygan-shoroe',
+  ...BLOG_CATEGORY_VALUES.map((c) => `/blog/category/${c}`),
   '/certificate',
   '/dashboard',
   '/faq',
