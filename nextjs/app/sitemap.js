@@ -8,6 +8,7 @@ const routes = [
   '/audition',
   '/auth',
   '/blog',
+  '/blog/amoozesh-bazigari-raygan-shoroe',
   '/certificate',
   '/dashboard',
   '/faq',

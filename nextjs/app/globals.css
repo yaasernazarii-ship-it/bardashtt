@@ -1282,6 +1282,10 @@ summary:focus-visible {
 .post-article { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: clamp(20px, 4vw, 40px); }
 .post-article__cover { width: 100%; border-radius: 12px; margin-bottom: 20px; }
 .post-article__p { color: var(--text); line-height: 2.1; margin: 0 0 16px; font-size: 1rem; }
+.post-article__h2 { color: var(--dark); font-size: 1.35rem; margin: 28px 0 14px; }
+.post-article__h3 { color: var(--dark); font-size: 1.1rem; margin: 20px 0 10px; }
+.post-article__ul { color: var(--text); line-height: 2; margin: 0 0 16px; padding-inline-start: 22px; }
+.post-article__ul li { margin-bottom: 6px; }
 .post-video { position: relative; width: 100%; aspect-ratio: 16 / 9; margin-bottom: 22px; border-radius: 12px; overflow: hidden; background: #000; }
 .post-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 

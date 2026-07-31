@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import SimplePage from '@/components/SimplePage';
 import { loadContent } from '@/lib/siteContent';
 
@@ -14,6 +15,17 @@ export default async function BlogPage() {
   ];
   return (
     <SimplePage title={t('blog.title')} subtitle={t('blog.subtitle')} tag={t('blog.tag')}>
+      <div className="post-list" style={{ marginBottom: 20 }}>
+        <Link href="/blog/amoozesh-bazigari-raygan-shoroe" className="post-card">
+          <div className="post-card__body">
+            <h2 className="post-card__title">آموزش بازیگری رایگان؛ از کجا شروع کنیم؟</h2>
+            <p className="post-card__excerpt">
+              راهنمای کامل و قدم‌به‌قدم ورود به دنیای بازیگری سینما برای علاقه‌مندانی که می‌خواهند بدون
+              هزینه شروع کنند.
+            </p>
+          </div>
+        </Link>
+      </div>
       <div style={{ display: 'grid', gap: 16 }}>
         {posts.map(([ptitle, d]) => (
           <article key={ptitle} style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 24 }}>
