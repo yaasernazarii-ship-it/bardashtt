@@ -7,6 +7,7 @@ import { loadContent } from '@/lib/siteContent';
 export const metadata = {
   title: 'سوالات متداول',
   description: 'پاسخ به سوالات پرتکرار درباره دوره‌ها، ثبت‌نام، آزمون و گواهینامه خانواده برداشت.',
+  alternates: { canonical: 'https://www.bardashtt.com/faq' },
 };
 
 export const dynamic = 'force-dynamic';

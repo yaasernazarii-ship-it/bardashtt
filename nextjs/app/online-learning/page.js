@@ -1,7 +1,11 @@
 import SimplePage from '@/components/SimplePage';
 import { loadContent } from '@/lib/siteContent';
 
-export const metadata = { title: 'یادگیری آنلاین', description: 'منابع آنلاین آموزشی خانواده برداشت برای تمرین بازیگری در خانه.' };
+export const metadata = {
+  title: 'یادگیری آنلاین',
+  description: 'منابع آنلاین آموزشی خانواده برداشت برای تمرین بازیگری در خانه.',
+  alternates: { canonical: 'https://www.bardashtt.com/online-learning' },
+};
 
 export const dynamic = 'force-dynamic';
 

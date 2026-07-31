@@ -16,7 +16,11 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const post = await findPost(slug);
   if (!post) return { title: 'مطلب یافت نشد' };
-  return { title: post.title, description: post.excerpt || undefined };
+  return {
+    title: post.title,
+    description: post.excerpt || undefined,
+    alternates: { canonical: `https://www.bardashtt.com/news/${post.slug}` },
+  };
 }
 
 export default async function PostPage({ params }) {

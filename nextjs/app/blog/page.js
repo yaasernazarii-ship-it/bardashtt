@@ -2,7 +2,11 @@ import Link from 'next/link';
 import SimplePage from '@/components/SimplePage';
 import { loadContent } from '@/lib/siteContent';
 
-export const metadata = { title: 'وبلاگ', description: 'مطالب آموزشی و تحلیلی درباره بازیگری و سینما.' };
+export const metadata = {
+  title: 'وبلاگ',
+  description: 'مطالب آموزشی و تحلیلی درباره بازیگری و سینما.',
+  alternates: { canonical: 'https://www.bardashtt.com/blog' },
+};
 
 export const dynamic = 'force-dynamic';
 

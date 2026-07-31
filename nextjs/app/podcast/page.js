@@ -1,7 +1,11 @@
 import SimplePage from '@/components/SimplePage';
 import { loadContent } from '@/lib/siteContent';
 
-export const metadata = { title: 'پادکست', description: 'پادکست‌های آموزشی و گفتگوهای سینمایی خانواده برداشت.' };
+export const metadata = {
+  title: 'پادکست',
+  description: 'پادکست‌های آموزشی و گفتگوهای سینمایی خانواده برداشت.',
+  alternates: { canonical: 'https://www.bardashtt.com/podcast' },
+};
 
 export const dynamic = 'force-dynamic';
 

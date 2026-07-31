@@ -1,7 +1,11 @@
 import SimplePage from '@/components/SimplePage';
 import { loadContent } from '@/lib/siteContent';
 
-export const metadata = { title: 'بیمه هنرجویان', description: 'پوشش بیمه‌ای و ایمنی هنرجویان در دوره‌ها و اردوهای خانواده برداشت.' };
+export const metadata = {
+  title: 'بیمه هنرجویان',
+  description: 'پوشش بیمه‌ای و ایمنی هنرجویان در دوره‌ها و اردوهای خانواده برداشت.',
+  alternates: { canonical: 'https://www.bardashtt.com/insurance' },
+};
 
 export const dynamic = 'force-dynamic';
 
