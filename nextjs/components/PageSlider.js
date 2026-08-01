@@ -7,9 +7,12 @@ const gradients = [
   'linear-gradient(155deg,#120900 0%,#261200 50%,#0e0900 100%)',
 ];
 
-export default function PageSlider({ title, count = 3 }) {
+export default function PageSlider({ title, count = 3, images = [] }) {
   const [idx, setIdx] = useState(0);
-  const slides = gradients.slice(0, count);
+  // فقط عکس‌های واقعی را نگه می‌داریم؛ اگر عکسی ثبت نشده باشد به گرادیانِ پیش‌فرض برمی‌گردیم.
+  const pics = (images || []).filter(Boolean);
+  const slides = pics.length ? pics : gradients.slice(0, count);
+  const usingImages = pics.length > 0;
 
   const go = useCallback((n) => {
     setIdx(((n % slides.length) + slides.length) % slides.length);
@@ -22,10 +25,12 @@ export default function PageSlider({ title, count = 3 }) {
 
   return (
     <div style={{ position: 'relative', height: 'clamp(240px,55vh,720px)', overflow: 'hidden', background: '#0a0a0a' }}>
-      {slides.map((g, i) => (
+      {slides.map((s, i) => (
         <div key={i} style={{
           position: 'absolute', inset: 0,
-          background: g,
+          ...(usingImages
+            ? { backgroundImage: `url(${s})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+            : { background: s }),
           opacity: i === idx ? 1 : 0,
           transition: 'opacity 1.4s ease',
         }} />

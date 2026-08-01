@@ -85,13 +85,17 @@ export default async function AboutPage() {
         @media(max-width:640px){ .cred-grid{grid-template-columns:1fr;} }
       `}</style>
 
-      <PageSlider title="خانواده برداشت · درباره ما" count={3} />
+      <PageSlider
+        title={t('about.slider.title')}
+        count={3}
+        images={[t('about.slide1.image'), t('about.slide2.image'), t('about.slide3.image')]}
+      />
 
       {/* داستان */}
       <section style={{ background: 'var(--white)' }}>
         <div className="container">
           <div className="story-grid">
-            <div className="story-img" style={{ backgroundImage: 'url(/story-venue.jpg)' }}>
+            <div className="story-img" style={{ backgroundImage: `url(${t('about.story.image')})` }}>
               <div className="story-year-badge">
                 <span>تأسیس</span>
                 <strong>۱۳۹۷</strong>
@@ -185,7 +189,7 @@ export default async function AboutPage() {
             <p style={{ color: 'var(--gold)', fontWeight: 700, marginTop: 10 }}>سینماگر، نویسنده و تحلیلگر رفتار</p>
           </div>
           <div className="founder-card" style={{ alignItems: 'flex-start' }}>
-            <div className="founder-avatar"><img src="/founder-yaser.jpg" alt="یاسر نظری، بنیان‌گذار خانواده برداشت" loading="lazy" decoding="async" /></div>
+            <div className="founder-avatar"><img src={t('about.founder.image')} alt="یاسر نظری، بنیان‌گذار خانواده برداشت" loading="lazy" decoding="async" /></div>
             <div>
               <div className="founder-name">{t('about.founder.name')}</div>
               <div className="founder-title">{t('about.founder.title')}</div>
@@ -227,12 +231,12 @@ export default async function AboutPage() {
                 <li><span className="li-ico">◆</span><span><b>کارشناسی ارشد فیلم‌سازی</b> — دانشگاه آکسفورد، انگلستان</span></li>
               </ul>
               <div className="edu-certs">
-                <a className="edu-cert" href="/edu-avicenna.jpg" target="_blank" rel="noopener noreferrer">
-                  <img src="/edu-avicenna.jpg" alt="گواهی کالج بین‌المللی ابن‌سینا — گرجستان" loading="lazy" />
+                <a className="edu-cert" href={t('about.edu1.image')} target="_blank" rel="noopener noreferrer">
+                  <img src={t('about.edu1.image')} alt="گواهی کالج بین‌المللی ابن‌سینا — گرجستان" loading="lazy" />
                   <span className="edu-cert__cap">کالج ابن‌سینا · گرجستان</span>
                 </a>
-                <a className="edu-cert" href="/edu-oxford.jpg" target="_blank" rel="noopener noreferrer">
-                  <img src="/edu-oxford.jpg" alt="گواهی آکادمی آکسفورد" loading="lazy" />
+                <a className="edu-cert" href={t('about.edu2.image')} target="_blank" rel="noopener noreferrer">
+                  <img src={t('about.edu2.image')} alt="گواهی آکادمی آکسفورد" loading="lazy" />
                   <span className="edu-cert__cap">آکسفورد · انگلستان</span>
                 </a>
               </div>

@@ -1,13 +1,16 @@
 import { prisma } from '@/lib/prisma';
 
 // رجیستری متن‌های قابل‌ویرایش صفحات.
-// هر فیلد: key یکتا، label فارسی، type ('text' | 'textarea')، و مقدار پیش‌فرض.
+// هر فیلد: key یکتا، label فارسی، type ('text' | 'textarea' | 'image' | 'list')، و مقدار پیش‌فرض.
+//  - image: مقدار یک نشانی تصویر است؛ در پنل با دکمهٔ آپلود قابل‌تغییر است.
+//  - list: چند مورد، هر مورد در یک خط؛ در صفحه با splitLines() به آرایه تبدیل می‌شود.
 // برای افزودن متن جدید کافی است فیلد را اینجا اضافه و در صفحه با t('key') بخوانید.
 export const CONTENT_GROUPS = [
   {
     id: 'home',
     title: 'صفحهٔ اصلی',
     fields: [
+      { key: 'home.hero.logo', label: 'لوگوی بالای صفحهٔ اصلی', type: 'image', default: '/bardasht-logo.png' },
       { key: 'home.hero.eyebrow', label: 'برچسب بالای عنوان', type: 'text', default: 'اولین آموزشگاه رایگان بازیگری سینما در ایران' },
       { key: 'home.hero.title', label: 'عنوان اصلی (شعار)', type: 'text', default: 'استعداد بازیگری‌ات را جدی بگیر' },
       { key: 'home.hero.subtitle', label: 'زیرعنوان شعار', type: 'text', default: 'آموزش حرفه‌ای، رایگان و قابل‌اعتماد' },
@@ -131,6 +134,60 @@ export const CONTENT_GROUPS = [
       { key: 'contact.baleUrl', label: 'کانال بله (لینک کامل)', type: 'text', default: 'https://ble.ir/bardasht_family' },
     ],
   },
+  {
+    id: 'coursesChart',
+    title: 'چارت دوره‌ها (جزئیات هر دوره)',
+    fields: [
+      { key: 'courses.panel.listHeading', label: 'عنوان فهرست سرفصل‌ها', type: 'text', default: 'آنچه یاد می‌گیرید' },
+      { key: 'courses.pay.title', label: 'کادر ثبت‌نام — عنوان', type: 'text', default: 'ثبت‌نام رایگان' },
+      { key: 'courses.pay.text', label: 'کادر ثبت‌نام — متن', type: 'textarea', default: 'تمام دوره‌های اصلی خانواده برداشت بدون شهریه برگزار می‌شود.' },
+      { key: 'courses.pay.button', label: 'کادر ثبت‌نام — دکمه', type: 'text', default: 'شروع ثبت‌نام' },
+
+      { key: 'course.c1.title', label: 'دورهٔ ۱ — نام', type: 'text', default: 'مقدماتی' },
+      { key: 'course.c1.sub', label: 'دورهٔ ۱ — زیرعنوان', type: 'text', default: 'شروع مسیر' },
+      { key: 'course.c1.icon', label: 'دورهٔ ۱ — آیکن (اموجی)', type: 'text', default: '🎭' },
+      { key: 'course.c1.desc', label: 'دورهٔ ۱ — توضیح', type: 'textarea', default: 'ورود به دنیای بازیگری، کشف استعداد درونی و پرورش بیان، بدن، خلاقیت و تمرکز.' },
+      { key: 'course.c1.items', label: 'دورهٔ ۱ — سرفصل‌ها (هر مورد یک خط)', type: 'list', default: 'شناخت استعداد درونی\nبیان\nبدن\nخلاقیت\nتمرکز' },
+
+      { key: 'course.c2.title', label: 'دورهٔ ۲ — نام', type: 'text', default: 'تکمیلی' },
+      { key: 'course.c2.sub', label: 'دورهٔ ۲ — زیرعنوان', type: 'text', default: 'عمق مهارت' },
+      { key: 'course.c2.icon', label: 'دورهٔ ۲ — آیکن (اموجی)', type: 'text', default: '🧩' },
+      { key: 'course.c2.desc', label: 'دورهٔ ۲ — توضیح', type: 'textarea', default: 'تعمیق مهارت‌ها با متدهای حرفه‌ای بازیگری و ساخت و تحلیل شخصیت.' },
+      { key: 'course.c2.items', label: 'دورهٔ ۲ — سرفصل‌ها (هر مورد یک خط)', type: 'list', default: 'متد اکتینگ لی استراسبرگ\nمتد پنج سؤال طلایی\nتحلیل شخصیت\nشخصیت‌پردازی\nمنحنی شخصیت\nتیپ‌سازی' },
+
+      { key: 'course.c3.title', label: 'دورهٔ ۳ — نام', type: 'text', default: 'اردو' },
+      { key: 'course.c3.sub', label: 'دورهٔ ۳ — زیرعنوان', type: 'text', default: 'تجربه عملی' },
+      { key: 'course.c3.icon', label: 'دورهٔ ۳ — آیکن (اموجی)', type: 'text', default: '⛺' },
+      { key: 'course.c3.desc', label: 'دورهٔ ۳ — توضیح', type: 'textarea', default: 'اردوهای آموزشی برای زیستن با شخصیت و تجربه‌ی فضای واقعی تولید فیلم.' },
+      { key: 'course.c3.items', label: 'دورهٔ ۳ — سرفصل‌ها (هر مورد یک خط)', type: 'list', default: 'زیست با شخصیت\nکار گروهی\nآشنایی با قوانین تولید فیلم\nاتودهای گروهی' },
+
+      { key: 'course.c4.title', label: 'دورهٔ ۴ — نام', type: 'text', default: 'پیشرفته' },
+      { key: 'course.c4.sub', label: 'دورهٔ ۴ — زیرعنوان', type: 'text', default: 'حرفه‌ای شدن' },
+      { key: 'course.c4.icon', label: 'دورهٔ ۴ — آیکن (اموجی)', type: 'text', default: '🎥' },
+      { key: 'course.c4.desc', label: 'دورهٔ ۴ — توضیح', type: 'textarea', default: 'بازیگری حرفه‌ای مقابل دوربین و شناخت زبان فنی و روانی سینما.' },
+      { key: 'course.c4.items', label: 'دورهٔ ۴ — سرفصل‌ها (هر مورد یک خط)', type: 'list', default: 'بازی در قاب سینما\nشناخت لنزها\nتدوین برای بازیگر\nزبان مشترک با کارگردان و عوامل\nشناخت جایگاه‌ها در سینما\nروانشناسی بازیگر و کارگردان' },
+
+      { key: 'course.c5.title', label: 'دورهٔ ۵ — نام', type: 'text', default: 'فیلمسازی' },
+      { key: 'course.c5.sub', label: 'دورهٔ ۵ — زیرعنوان', type: 'text', default: 'زبان سینما' },
+      { key: 'course.c5.icon', label: 'دورهٔ ۵ — آیکن (اموجی)', type: 'text', default: '🎬' },
+      { key: 'course.c5.desc', label: 'دورهٔ ۵ — توضیح', type: 'textarea', default: 'تجربه‌ی کامل ساخت و بازی در فیلم، از ایده تا اجرا.' },
+      { key: 'course.c5.items', label: 'دورهٔ ۵ — سرفصل‌ها (هر مورد یک خط)', type: 'list', default: 'ساخت و بازی در فیلم' },
+    ],
+  },
+  {
+    id: 'aboutMedia',
+    title: 'عکس‌ها و اسلایدشوی صفحهٔ «دربارهٔ ما»',
+    fields: [
+      { key: 'about.slide1.image', label: 'اسلاید ۱ (بالای صفحه)', type: 'image', default: '' },
+      { key: 'about.slide2.image', label: 'اسلاید ۲ (بالای صفحه)', type: 'image', default: '' },
+      { key: 'about.slide3.image', label: 'اسلاید ۳ (بالای صفحه)', type: 'image', default: '' },
+      { key: 'about.slider.title', label: 'متن روی اسلایدشو', type: 'text', default: 'خانواده برداشت · درباره ما' },
+      { key: 'about.story.image', label: 'عکس بخش «داستان ما»', type: 'image', default: '/story-venue.jpg' },
+      { key: 'about.founder.image', label: 'عکس بنیان‌گذار', type: 'image', default: '/founder-yaser.jpg' },
+      { key: 'about.edu1.image', label: 'گواهی تحصیلی ۱', type: 'image', default: '/edu-avicenna.jpg' },
+      { key: 'about.edu2.image', label: 'گواهی تحصیلی ۲', type: 'image', default: '/edu-oxford.jpg' },
+    ],
+  },
 ];
 
 // نگاشت key → فیلد (برای اعتبارسنجی و مقدار پیش‌فرض)
@@ -143,6 +200,14 @@ export function isKnownKey(key) {
 
 export function defaultFor(key) {
   return FIELD_BY_KEY.get(key)?.default ?? '';
+}
+
+// تبدیل مقدار فیلدِ فهرستی (چند خطی) به آرایه‌ای از موردها، با حذف خط‌های خالی.
+export function splitLines(value) {
+  return String(value ?? '')
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 // بارگذاری همهٔ متن‌ها از دیتابیس و برگرداندن تابع t(key) با fallback به پیش‌فرض.

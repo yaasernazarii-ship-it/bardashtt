@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-const courses = [
+// مقادیر پیش‌فرض؛ متنِ قابل‌ویرایش از پنل روی این‌ها می‌نشیند (courses prop).
+const DEFAULT_COURSES = [
   {
     num: '۰۱', title: 'مقدماتی', sub: 'شروع مسیر',
     desc: 'ورود به دنیای بازیگری، کشف استعداد درونی و پرورش بیان، بدن، خلاقیت و تمرکز.',
@@ -35,7 +36,15 @@ const courses = [
   },
 ];
 
-export default function CoursesExplorer({ heading = 'مسیر آموزشی خانواده برداشت', subheading = '۵ مرحله برای تبدیل علاقه به مهارت حرفه‌ای' }) {
+export default function CoursesExplorer({
+  heading = 'مسیر آموزشی خانواده برداشت',
+  subheading = '۵ مرحله برای تبدیل علاقه به مهارت حرفه‌ای',
+  courses = DEFAULT_COURSES,
+  listHeading = 'آنچه یاد می‌گیرید',
+  payTitle = 'ثبت‌نام رایگان',
+  payText = 'تمام دوره‌های اصلی خانواده برداشت بدون شهریه برگزار می‌شود.',
+  payButton = 'شروع ثبت‌نام',
+}) {
   const [active, setActive] = useState(0);
   const c = courses[active];
   return (
@@ -72,13 +81,13 @@ export default function CoursesExplorer({ heading = 'مسیر آموزشی خا�
           </div>
           <div className="panel-body">
             <div className="panel-list">
-              <h4>آنچه یاد می‌گیرید</h4>
+              <h4>{listHeading}</h4>
               <ul>{c.items.map(item => <li key={item}>{item}</li>)}</ul>
             </div>
             <div className="payment-box">
-              <h3>ثبت‌نام رایگان</h3>
-              <p>تمام دوره‌های اصلی خانواده برداشت بدون شهریه برگزار می‌شود.</p>
-              <Link href="/audition" className="btn btn--dark btn--full">شروع ثبت‌نام</Link>
+              <h3>{payTitle}</h3>
+              <p>{payText}</p>
+              <Link href="/audition" className="btn btn--dark btn--full">{payButton}</Link>
             </div>
           </div>
         </div>

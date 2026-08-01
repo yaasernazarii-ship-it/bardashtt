@@ -16,7 +16,7 @@ export default async function AdminContentPage() {
       <main className="main-area">
         <div style={{ marginBottom: 28 }}>
           <h1 className="heading">ویرایش متن صفحات</h1>
-          <p style={{ color: 'var(--muted)' }}>متن‌های صفحهٔ اصلی، دربارهٔ ما و اطلاعات تماس را همین‌جا ویرایش کنید. پس از ذخیره، تغییرات بلافاصله روی سایت اعمال می‌شود.</p>
+          <p style={{ color: 'var(--muted)' }}>متن صفحهٔ اصلی، دربارهٔ ما، اطلاعات تماس، جزئیات و سرفصل‌های هر دوره، و همچنین عکس‌ها و اسلایدشوها را همین‌جا ویرایش کنید. پس از ذخیره، تغییرات بلافاصله روی سایت اعمال می‌شود.</p>
         </div>
         <AdminSiteContent />
       </main>
