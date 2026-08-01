@@ -1,5 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
+import { notifyUsers } from '@/lib/notifications';
+
+const sessionDateFmt = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'full', timeStyle: 'short', timeZone: 'Asia/Tehran' });
 
 export async function GET(request) {
   const user = await getSessionUser();
@@ -47,6 +50,16 @@ export async function POST(request) {
     });
     // به‌روزرسانی زمان کلاس → هنرجویان نشان «به‌روزرسانی شد» می‌بینند
     await prisma.classGroup.update({ where: { id: groupId }, data: { updatedAt: new Date() } });
+
+    // اعلانِ اختصاصی به اعضای این کلاس که زمان جلسهٔ جدیدشان مشخص شد
+    const members = await prisma.user.findMany({ where: { classGroupId: groupId }, select: { id: true } });
+    await notifyUsers(members.map((m) => m.id), {
+      title: 'زمان کلاس جدید تعیین شد',
+      body: `${title} — ${sessionDateFmt.format(startsAt)}`,
+      href: '/dashboard/schedule',
+      kind: 'class',
+    });
+
     return Response.json({ ok: true, session });
   } catch {
     return Response.json({ ok: false, error: 'درخواست نامعتبر است.' }, { status: 400 });

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { slugify } from '@/lib/slug';
+import { notifyAll } from '@/lib/notifications';
 import { randomBytes } from 'crypto';
 
 function serialize(c) {
@@ -81,6 +82,10 @@ export async function POST(request) {
       },
       include: { lessons: { orderBy: { order: 'asc' } }, _count: { select: { accesses: true } } },
     });
+    if (course.published) {
+      await notifyAll({ title: 'دورهٔ آنلاین جدید', body: course.title, href: '/online-learning', kind: 'content' });
+    }
+
     return Response.json({ ok: true, course: serialize(course) });
   } catch {
     return Response.json({ ok: false, error: 'درخواست نامعتبر است.' }, { status: 400 });

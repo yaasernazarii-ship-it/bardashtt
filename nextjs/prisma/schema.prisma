@@ -26,6 +26,7 @@ model User {
   classGroupId String? // کلاس/گروه هنرجو
   classGroup   ClassGroup?  @relation(fields: [classGroupId], references: [id])
   scheduleSeenAt DateTime? // آخرین باری که هنرجو برنامه‌اش را دید (برای نوتیفیکیشن)
+  notificationsReadAt DateTime? // آخرین باری که کاربر اعلان‌هایش را دید (برای شمارش خوانده‌نشده‌ها)
   progressOverride Int? // درصد پیشرفتِ دستیِ تعیین‌شده توسط ادمین/ادیتور؛ اگر تنظیم شود جای محاسبهٔ خودکار (بر پایه‌ی حضور) را می‌گیرد
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
@@ -247,6 +248,21 @@ model Post {
 
   @@index([published, createdAt])
   @@index([section, published, publishAt])
+}
+
+// اعلان داخلیِ سایت. userId خالی یعنی «همگانی» (برای همهٔ کاربران واردشده)؛
+// userId پرشده یعنی اعلانِ اختصاصیِ همان کاربر (مثلاً تعیین زمان کلاسِ او).
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String? // null = همگانی
+  title     String
+  body      String?
+  href      String? // لینک مقصد هنگام کلیک
+  kind      String   @default("content") // content | class | system
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
 }
 
 model SiteContent {

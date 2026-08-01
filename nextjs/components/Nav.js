@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import NotificationBell from './NotificationBell';
 
 const navLinks = [
   { href: '/', label: 'خانه' },
@@ -170,6 +171,7 @@ export default function Nav({ onOpenChat }) {
               <Link href="/auth" className="btn btn--outline btn--sm">ورود</Link>
             )}
           </div>
+          {user && <NotificationBell />}
           <button
             type="button"
             className="nav__menu-btn"

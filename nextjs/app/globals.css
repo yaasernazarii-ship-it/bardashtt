@@ -703,6 +703,32 @@ body.nav-open {
 .sidebar-menu li a:hover { background:var(--surface);color:var(--dark); }
 .sidebar-menu li a.active { background:rgba(196,146,42,0.06);color:var(--dark);font-weight:600;border-left-color:var(--gold); }
 .sidebar-menu .sep { font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--light);padding:20px 24px 8px; }
+/* نوار موبایلِ داشبورد؛ به‌صورت پیش‌فرض (دسکتاپ) پنهان است و فقط در media query موبایل ظاهر می‌شود */
+.sidebar-mobilebar { display: none; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--white); }
+.sidebar-mobilebar__logo { font-size: 1rem; font-weight: 900; color: var(--dark); }
+.sidebar-mobilebar__logo span { color: var(--gold); }
+.sidebar-toggle { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 700; color: var(--dark); background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 8px 16px; cursor: pointer; }
+.sidebar-toggle__ico { font-size: 1.1rem; line-height: 1; }
+
+/* زنگ اعلان در ناوبری */
+.notif { position: relative; display: inline-flex; align-items: center; }
+.notif__btn { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); cursor: pointer; transition: var(--transition); }
+.notif__btn:hover { background: var(--white); border-color: var(--dark); }
+.notif__ico { font-size: 1.1rem; line-height: 1; }
+.notif__badge { position: absolute; top: -4px; inset-inline-end: -4px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 100px; background: #e23b3b; color: #fff; font-size: 0.68rem; font-weight: 800; display: flex; align-items: center; justify-content: center; line-height: 1; }
+.notif__panel { position: absolute; top: calc(100% + 10px); inset-inline-end: 0; width: min(340px, calc(100vw - 32px)); background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 12px 40px rgba(0,0,0,.14); z-index: 1200; overflow: hidden; }
+.notif__head { padding: 14px 16px; font-weight: 800; color: var(--dark); border-bottom: 1px solid var(--border); }
+.notif__empty { padding: 28px 16px; text-align: center; color: var(--muted); }
+.notif__list { list-style: none; margin: 0; padding: 0; max-height: min(60vh, 420px); overflow-y: auto; }
+.notif__item + .notif__item { border-top: 1px solid var(--border); }
+.notif__item a, .notif__item-static { display: flex; gap: 10px; padding: 12px 16px; color: inherit; }
+.notif__item a:hover { background: var(--surface); }
+.notif__item-ico { flex: none; font-size: 1.1rem; line-height: 1.4; }
+.notif__item-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.notif__item-title { font-weight: 700; color: var(--dark); font-size: 0.9rem; }
+.notif__item-body { color: var(--muted); font-size: 0.82rem; }
+.notif__item-time { color: var(--light); font-size: 0.72rem; }
+
 .main-area { padding: 36px; }
 
 /* ── RESPONSIVE ───────────────────────────
@@ -799,7 +825,18 @@ body.nav-open {
   section { padding: 56px 0; }
   .container, .container--sm { padding: 0 16px; }
   .dash-layout { grid-template-columns: 1fr; }
-  .sidebar { display: none; }
+  /* در موبایل سایدبار پنهان نمی‌شود؛ به یک نوار بالای صفحه با منوی بازشونده تبدیل می‌شود */
+  .sidebar {
+    position: sticky; top: 0; height: auto; z-index: 40;
+    padding: 0; border-left: 0; border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo { display: none; }
+  .sidebar-mobilebar { display: flex; }
+  .sidebar-menu {
+    display: none; padding: 8px 0 12px;
+    max-height: calc(100svh - 60px); overflow-y: auto;
+  }
+  .sidebar-menu--open { display: block; }
   .main-area { padding: 16px 14px calc(92px + env(safe-area-inset-bottom)); }
   .auth-wrap { grid-template-columns: 1fr; }
   .auth-visual { display: none; }

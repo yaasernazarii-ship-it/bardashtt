@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { slugify } from '@/lib/slug';
+import { notifyAll } from '@/lib/notifications';
 import { randomBytes } from 'crypto';
 
 function serialize(b) {
@@ -64,6 +65,10 @@ export async function POST(request) {
       },
       include: { _count: { select: { orders: true } } },
     });
+    if (book.published) {
+      await notifyAll({ title: 'کتاب جدید', body: book.title, href: '/social-responsibility', kind: 'content' });
+    }
+
     return Response.json({ ok: true, book: serialize(book) });
   } catch {
     return Response.json({ ok: false, error: 'درخواست نامعتبر است.' }, { status: 400 });
