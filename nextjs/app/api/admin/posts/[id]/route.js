@@ -34,7 +34,9 @@ export async function PATCH(request, { params }) {
     }
     if (typeof b.body === 'string') {
       const v = b.body.trim().slice(0, 20000);
-      if (!v) return Response.json({ ok: false, error: 'متن مطلب الزامی است.' }, { status: 400 });
+      // برای محتوای رسانه‌ای (عکس/ویدیو/صوت) متن الزامی نیست؛ کافی است رسانه باشد.
+      const hasMedia = Boolean((b.coverImage && String(b.coverImage).trim()) || (b.aparatUrl && String(b.aparatUrl).trim()) || (b.audioUrl && String(b.audioUrl).trim()));
+      if (!v && !hasMedia) return Response.json({ ok: false, error: 'یا متن مطلب را بنویسید یا عکس/ویدیو/صوت اضافه کنید.' }, { status: 400 });
       data.body = v;
     }
     if ('excerpt' in b) data.excerpt = b.excerpt ? String(b.excerpt).trim().slice(0, 300) : null;

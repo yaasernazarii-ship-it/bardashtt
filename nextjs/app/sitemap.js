@@ -20,12 +20,10 @@ const routes = [
   '/news',
   '/online-learning',
   '/social-responsibility',
-  '/podcast',
   '/profile',
   '/register',
   '/verify',
   '/works/output',
-  '/works/cinema',
   '/works/advertising',
   '/works/resume',
 ];

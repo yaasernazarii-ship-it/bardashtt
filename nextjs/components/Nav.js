@@ -15,7 +15,6 @@ const navLinks = [
       { href: '/certificate', label: 'آزمون فارغ‌التحصیلی' },
       { href: '/verify', label: 'استعلام گواهینامه' },
       { href: '/dashboard', label: 'داشبورد هنرجو' },
-      { href: '/podcast', label: 'پادکست' },
     ],
   },
   { href: '/actors', label: 'بازیگران' },
@@ -25,13 +24,7 @@ const navLinks = [
     children: [
       { href: '/works/output', label: 'خروجی خانواده برداشت' },
       { type: 'sep' },
-      {
-        label: 'تولید ما',
-        sub: [
-          { href: '/works/cinema', label: 'تولیدات سینمایی' },
-          { href: '/works/advertising', label: 'تولیدات تبلیغاتی' },
-        ],
-      },
+      { href: '/works/advertising', label: 'تولیدات تبلیغاتی' },
       { type: 'sep' },
       { href: '/works/resume', label: 'پشتوانه علمی و هنری' },
     ],

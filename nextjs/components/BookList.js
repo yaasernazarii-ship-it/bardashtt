@@ -1,4 +1,5 @@
 import { liveBooks } from '@/lib/books';
+import { aparatEmbedUrl } from '@/lib/aparat';
 import BookOrderForm from '@/components/BookOrderForm';
 
 // فهرست کتاب‌های فروشی + فرم ثبت سفارش برای هر کتاب.
@@ -12,6 +13,7 @@ export default async function BookList() {
     <div style={{ display: 'grid', gap: 24 }}>
       {books.map((b) => {
         const paragraphs = (b.description || '').split(/\n{2,}/).map((s) => s.trim()).filter(Boolean);
+        const embed = aparatEmbedUrl(b.aparatUrl);
         return (
           <div key={b.id} className="stack-card book-card">
             <div className="book-card__head">
@@ -30,6 +32,14 @@ export default async function BookList() {
                 ))}
               </div>
             </div>
+            {embed && (
+              <div className="book-card__video">
+                <iframe src={embed} title={b.title} allowFullScreen allow="autoplay; fullscreen" />
+              </div>
+            )}
+            {b.audioUrl && (
+              <audio className="book-card__audio" src={b.audioUrl} controls preload="none" />
+            )}
             <BookOrderForm slug={b.slug} price={b.price} />
           </div>
         );

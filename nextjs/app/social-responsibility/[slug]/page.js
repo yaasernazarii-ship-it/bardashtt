@@ -9,8 +9,11 @@ export const dynamic = 'force-dynamic';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Tehran' });
 
+// زیربخش‌های صفحهٔ مسئولیت اجتماعی (آگاهی‌سازی، پادکست، عکس، ویدئو) همگی صفحهٔ جزئیاتِ مشترک دارند.
+const SR_SECTIONS = ['social-responsibility', 'sr-podcast', 'sr-photo', 'sr-video'];
+
 async function findPost(key) {
-  return prisma.post.findFirst({ where: { section: 'social-responsibility', OR: [{ id: key }, { slug: key }] } });
+  return prisma.post.findFirst({ where: { section: { in: SR_SECTIONS }, OR: [{ id: key }, { slug: key }] } });
 }
 
 export async function generateMetadata({ params }) {

@@ -1442,3 +1442,26 @@ summary:focus-visible {
   .book-card__head { flex-direction: column; align-items: center; text-align: center; }
   .book-card__cover { width: 110px; height: 160px; }
 }
+
+/* پخش‌کننده‌های رسانه‌ای داخل کارت کتاب (ویدیو/صوتِ تلفیقی) */
+.book-card__video {
+  position: relative; width: 100%; aspect-ratio: 16 / 9;
+  border-radius: 10px; overflow: hidden; border: 1px solid var(--border); margin-top: 14px;
+}
+.book-card__video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.book-card__audio { width: 100%; margin-top: 14px; }
+
+/* تب‌های صفحهٔ مسئولیت اجتماعی */
+.sr-tabs {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;
+  border-bottom: 1px solid var(--border); padding-bottom: 14px;
+}
+.sr-tab {
+  cursor: pointer; font: inherit; font-weight: 600; color: var(--muted);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 100px; padding: 9px 18px; transition: all .15s ease;
+}
+.sr-tab:hover { color: var(--dark); border-color: var(--dark); }
+.sr-tab--active {
+  color: var(--white); background: var(--dark); border-color: var(--dark);
+}

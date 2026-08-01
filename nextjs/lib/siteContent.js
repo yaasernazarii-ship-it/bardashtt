@@ -110,15 +110,6 @@ export const CONTENT_GROUPS = [
     ],
   },
   {
-    id: 'podcast',
-    title: 'پادکست',
-    fields: [
-      { key: 'podcast.tag', label: 'برچسب', type: 'text', default: 'صوت' },
-      { key: 'podcast.title', label: 'عنوان', type: 'text', default: 'پادکست' },
-      { key: 'podcast.subtitle', label: 'زیرعنوان', type: 'text', default: 'گفتگوها و آموزش‌های صوتی درباره بازیگری' },
-    ],
-  },
-  {
     id: 'register',
     title: 'ثبت‌نام رایگان',
     fields: [

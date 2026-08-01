@@ -359,9 +359,11 @@ model Book {
   title       String
   slug        String      @unique
   author      String? // نویسنده (مثلاً آقای نظری)
-  description String? // معرفی کتاب
+  description String? // معرفی کتاب (متن)
   price       Int         @default(0) // قیمت به تومان (ادمین تعیین می‌کند)
   coverImage  String? // عکس جلد
+  aparatUrl   String? // ویدیوی معرفی/تیزر کتاب (لینک آپارات) — محتوای تلفیقی
+  audioUrl    String? // نمونهٔ صوتی/معرفی صوتی کتاب (آپلودی یا URL) — محتوای تلفیقی
   published   Boolean     @default(true)
   order       Int         @default(0) // ترتیب نمایش
   createdById String?

@@ -6,7 +6,8 @@ import { randomBytes } from 'crypto';
 function serialize(b) {
   return {
     id: b.id, title: b.title, slug: b.slug, author: b.author, description: b.description,
-    price: b.price, coverImage: b.coverImage, published: b.published, order: b.order,
+    price: b.price, coverImage: b.coverImage, aparatUrl: b.aparatUrl, audioUrl: b.audioUrl,
+    published: b.published, order: b.order,
     orderCount: b._count ? b._count.orders : 0,
     createdAt: b.createdAt.toISOString(),
   };
@@ -55,6 +56,8 @@ export async function POST(request) {
         description: b.description ? String(b.description).trim().slice(0, 5000) : null,
         price,
         coverImage: b.coverImage ? String(b.coverImage).trim().slice(0, 500) : null,
+        aparatUrl: b.aparatUrl ? String(b.aparatUrl).trim().slice(0, 500) : null,
+        audioUrl: b.audioUrl ? String(b.audioUrl).trim().slice(0, 500) : null,
         published: b.published !== false,
         order: Number.isInteger(b.order) ? b.order : 0,
         createdById: user.id,

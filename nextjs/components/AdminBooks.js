@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-const EMPTY = { title: '', author: '', description: '', price: '', coverImage: '', published: true };
+const EMPTY = { title: '', author: '', description: '', price: '', coverImage: '', aparatUrl: '', audioUrl: '', published: true };
 
 const STATUS_LABEL = {
   new: 'جدید',
@@ -27,9 +27,11 @@ export default function AdminBooks() {
   const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingAudio, setUploadingAudio] = useState(false);
   const [error, setError] = useState('');
   const [ordersFor, setOrdersFor] = useState(null);
   const fileRef = useRef(null);
+  const audioRef = useRef(null);
 
   async function load() {
     const res = await fetch('/api/admin/books');
@@ -40,13 +42,14 @@ export default function AdminBooks() {
   useEffect(() => { load(); }, []);
 
   function set(k, v) { setForm((f) => ({ ...f, [k]: v })); }
-  function resetForm() { setForm(EMPTY); setEditingId(null); setError(''); if (fileRef.current) fileRef.current.value = ''; }
+  function resetForm() { setForm(EMPTY); setEditingId(null); setError(''); if (fileRef.current) fileRef.current.value = ''; if (audioRef.current) audioRef.current.value = ''; }
 
   function editBook(b) {
     setEditingId(b.id);
     setForm({
       title: b.title, author: b.author || '', description: b.description || '',
-      price: String(b.price ?? ''), coverImage: b.coverImage || '', published: b.published,
+      price: String(b.price ?? ''), coverImage: b.coverImage || '',
+      aparatUrl: b.aparatUrl || '', audioUrl: b.audioUrl || '', published: b.published,
     });
     setError('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -63,6 +66,19 @@ export default function AdminBooks() {
     setUploading(false);
     if (data.ok) set('coverImage', data.url);
     else setError(data.error || 'آپلود ناموفق بود.');
+  }
+
+  async function uploadAudio(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAudio(true); setError('');
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const data = await res.json();
+    setUploadingAudio(false);
+    if (data.ok) set('audioUrl', data.url);
+    else setError(data.error || 'آپلود صوت ناموفق بود.');
   }
 
   async function save(e) {
@@ -141,13 +157,33 @@ export default function AdminBooks() {
           </div>
         </div>
 
+        <div className="form-group">
+          <label className="form-label">ویدیوی معرفی کتاب (اختیاری)</label>
+          <input className="form-input" dir="ltr" value={form.aparatUrl} onChange={(e) => set('aparatUrl', e.target.value)} placeholder="https://www.aparat.com/v/..." />
+          <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>لینک تیزر/معرفی ویدیویی کتاب در آپارات؛ کنار معرفی کتاب پخش می‌شود.</span>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">نمونهٔ صوتی کتاب (اختیاری)</label>
+          <input ref={audioRef} type="file" accept="audio/*" className="form-input" onChange={uploadAudio} />
+          {uploadingAudio && <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>در حال آپلود صوت…</span>}
+          <input className="form-input" dir="ltr" style={{ marginTop: 8 }} value={form.audioUrl} onChange={(e) => set('audioUrl', e.target.value)} placeholder="یا نشانی فایل صوتی (mp3) را اینجا بچسبانید" />
+          {form.audioUrl && (
+            <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <audio src={form.audioUrl} controls style={{ maxWidth: '100%' }} />
+              <button type="button" className="btn btn--ghost" onClick={() => set('audioUrl', '')}>حذف صوت</button>
+            </div>
+          )}
+          <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>معرفی صوتی یا نمونهٔ خوانش کتاب را آپلود کنید (تا ۴۰ مگابایت) یا نشانی آن را بچسبانید.</span>
+        </div>
+
         <label style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '6px 0 16px' }}>
           <input type="checkbox" checked={form.published} onChange={(e) => set('published', e.target.checked)} />
           <span>روی سایت نمایش داده شود (اگر تیک برداشته شود، پیش‌نویس می‌ماند)</span>
         </label>
 
         <div style={{ display: 'flex', gap: 10 }}>
-          <button className="btn btn--dark" type="submit" disabled={saving || uploading}>
+          <button className="btn btn--dark" type="submit" disabled={saving || uploading || uploadingAudio}>
             {saving ? 'در حال ذخیره…' : editingId ? 'ذخیره تغییرات' : 'افزودن کتاب'}
           </button>
           {editingId && <button type="button" className="btn btn--ghost" onClick={resetForm}>انصراف</button>}

@@ -4,7 +4,8 @@ import { getSessionUser, isManager } from '@/lib/auth';
 function serialize(b) {
   return {
     id: b.id, title: b.title, slug: b.slug, author: b.author, description: b.description,
-    price: b.price, coverImage: b.coverImage, published: b.published, order: b.order,
+    price: b.price, coverImage: b.coverImage, aparatUrl: b.aparatUrl, audioUrl: b.audioUrl,
+    published: b.published, order: b.order,
     orderCount: b._count ? b._count.orders : 0,
     createdAt: b.createdAt.toISOString(),
   };
@@ -33,6 +34,8 @@ export async function PATCH(request, { params }) {
     if ('author' in b) data.author = b.author ? String(b.author).trim().slice(0, 120) : null;
     if ('description' in b) data.description = b.description ? String(b.description).trim().slice(0, 5000) : null;
     if ('coverImage' in b) data.coverImage = b.coverImage ? String(b.coverImage).trim().slice(0, 500) : null;
+    if ('aparatUrl' in b) data.aparatUrl = b.aparatUrl ? String(b.aparatUrl).trim().slice(0, 500) : null;
+    if ('audioUrl' in b) data.audioUrl = b.audioUrl ? String(b.audioUrl).trim().slice(0, 500) : null;
     if ('price' in b) {
       const price = parseInt(b.price, 10);
       if (Number.isNaN(price) || price < 0) return Response.json({ ok: false, error: 'قیمت نامعتبر است.' }, { status: 400 });
