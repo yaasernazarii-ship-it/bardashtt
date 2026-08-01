@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
 import PageSlider from '@/components/PageSlider';
-import { loadContent } from '@/lib/siteContent';
+import { loadContent, splitLines } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'درباره ما — آموزشگاه رایگان بازیگری',
@@ -97,19 +97,19 @@ export default async function AboutPage() {
           <div className="story-grid">
             <div className="story-img" style={{ backgroundImage: `url(${t('about.story.image')})` }}>
               <div className="story-year-badge">
-                <span>تأسیس</span>
-                <strong>۱۳۹۷</strong>
+                <span>{t('about.story.foundedLabel')}</span>
+                <strong>{t('about.story.foundedYear')}</strong>
               </div>
               <div className="story-logo-badge">
                 <img src="/bardasht-logo.png" alt="خانه برداشت" loading="lazy" decoding="async" />
               </div>
             </div>
             <div>
-              <span className="tag tag--gold">داستان ما</span>
+              <span className="tag tag--gold">{t('about.story.eyebrow')}</span>
               <h2 className="heading" style={{ marginTop: 16 }}>{t('about.story.heading')}</h2>
               <div className="line" />
               <p className="body-lg" style={{ marginBottom: 20 }}>
-                خانواده برداشت با یک باور ساده اما انقلابی شکل گرفت:<br />
+                {t('about.story.intro')}<br />
                 <strong>{t('about.story.lead')}</strong>
               </p>
               <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 16 }}>
@@ -130,7 +130,7 @@ export default async function AboutPage() {
       <section style={{ background: 'var(--bg)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 40, maxWidth: 780, marginInline: 'auto' }}>
-            <span className="tag tag--gold">آموزشگاه خانواده برداشت</span>
+            <span className="tag tag--gold">{t('about.intro.eyebrow')}</span>
             <h2 className="heading" style={{ marginTop: 14 }}>{t('about.intro.heading')}</h2>
             <div className="line line--center" />
             <p style={{ color: 'var(--muted)', lineHeight: 2, marginTop: 18 }}>
@@ -141,26 +141,23 @@ export default async function AboutPage() {
           <div className="about-cards">
             <div className="about-card">
               <div className="about-card__ico">🎬</div>
-              <h3>چرا خانواده برداشت؟</h3>
-              <p>
-                ما معتقدیم سینما یعنی «زندگی». اینجا آموزش بازیگری و فیلم‌سازی صرفاً محدود به تئوری‌های کتابی نیست؛ بلکه متمرکز بر <b>«متد پنج سؤال طلایی»</b> و انتقال تجربه‌ی عملی است که یاسر نظری در بیش از ۸۰ پروژه‌ی سینمایی کسب کرده است. هدف ما این است که هنرجو در پایان دوره تنها یک بازیگر نباشد، بلکه یک آرتیستِ صاحب‌سبک و تحلیلگر رفتار باشد.
-              </p>
+              <h3>{t('about.card1.title')}</h3>
+              <p>{t('about.card1.body')}</p>
             </div>
             <div className="about-card">
               <div className="about-card__ico">🛡️</div>
-              <h3>اعتبار و مجوزها</h3>
-              <p>
-                تعهد ما به آموزش اصولی با پشتوانه‌ی قانونیِ کامل همراه است. آموزشگاه ما تحت عنوان <b>«آموزشگاه آزاد سینمایی تک‌برداشت»</b> دارای مجوزهای رسمی زیر است:
-              </p>
+              <h3>{t('about.card2.title')}</h3>
+              <p>{t('about.card2.body')}</p>
               <ul className="resume-list" style={{ marginTop: 14 }}>
-                <li><span className="li-ico">◆</span><span>پروانه تأسیس آموزشگاه آزاد سینمایی — سازمان آموزش فنی و حرفه‌ای کشور</span></li>
-                <li><span className="li-ico">◆</span><span>پروانه‌های فعالیت در حوزه‌ی کارگردانی، فیلم‌نامه‌نویسی و مشاوره‌ی کسب‌وکار فرهنگی — وزارت فرهنگ و ارشاد اسلامی</span></li>
+                {splitLines(t('about.card2.items')).map((it) => (
+                  <li key={it}><span className="li-ico">◆</span><span>{it}</span></li>
+                ))}
               </ul>
             </div>
           </div>
 
           <p style={{ textAlign: 'center', color: 'var(--muted)', lineHeight: 2, marginTop: 32, maxWidth: 780, marginInline: 'auto' }}>
-            این مجوزها گواه آن است که شما در فضایی کاملاً استاندارد، قانونی و معتبر آموزش می‌بینید. ما در «خانواده برداشت» پلی هستیم میان استعدادهای نهفته‌ی شما و سینمای حرفه‌ای ایران؛ جایی که قرار است با هم، آینده‌ای روشن برای سینمای این سرزمین بسازیم.
+            {t('about.intro.closing')}
           </p>
         </div>
       </section>
@@ -169,7 +166,7 @@ export default async function AboutPage() {
       <section style={{ background: 'var(--dark)', padding: '56px 0' }}>
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24, textAlign: 'center' }}>
-            {[['۱۳۹۷','سال تأسیس'],['۲','شعبه فعال'],['۱۰۰٪','رایگان'],['۵','مسیر آموزشی']].map(([n,l]) => (
+            {[[t('about.stat1.num'),t('about.stat1.label')],[t('about.stat2.num'),t('about.stat2.label')],[t('about.stat3.num'),t('about.stat3.label')],[t('about.stat4.num'),t('about.stat4.label')]].map(([n,l]) => (
               <div key={l} style={{ padding: '32px 16px', borderLeft: '1px solid rgba(255,255,255,.07)' }}>
                 <div style={{ fontSize: 'clamp(2rem,4vw,3rem)', fontWeight: 900, color: 'var(--gold)', lineHeight: 1, marginBottom: 8 }}>{n}</div>
                 <p style={{ fontSize: '.78rem', color: 'rgba(255,255,255,.4)', letterSpacing: '.04em' }}>{l}</p>
@@ -183,10 +180,10 @@ export default async function AboutPage() {
       <section style={{ background: 'var(--bg)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <span className="tag tag--dark">بنیان‌گذار</span>
-            <h2 className="heading" style={{ marginTop: 14 }}>یاسر نظری</h2>
+            <span className="tag tag--dark">{t('about.founder.eyebrow')}</span>
+            <h2 className="heading" style={{ marginTop: 14 }}>{t('about.founder.heading')}</h2>
             <div className="line line--center" />
-            <p style={{ color: 'var(--gold)', fontWeight: 700, marginTop: 10 }}>سینماگر، نویسنده و تحلیلگر رفتار</p>
+            <p style={{ color: 'var(--gold)', fontWeight: 700, marginTop: 10 }}>{t('about.founder.subtitle')}</p>
           </div>
           <div className="founder-card" style={{ alignItems: 'flex-start' }}>
             <div className="founder-avatar"><img src={t('about.founder.image')} alt="یاسر نظری، بنیان‌گذار خانواده برداشت" loading="lazy" decoding="async" /></div>
@@ -194,11 +191,9 @@ export default async function AboutPage() {
               <div className="founder-name">{t('about.founder.name')}</div>
               <div className="founder-title">{t('about.founder.title')}</div>
               <div className="founder-tags">
-                <span className="tag tag--dark">کارگردان سینما</span>
-                <span className="tag tag--dark">تهیه‌کننده</span>
-                <span className="tag tag--gold">دکتری فیلم‌سازی</span>
-                <span className="tag tag--gold">ارشد آکسفورد</span>
-                <span className="tag tag--gold">برنده جایزه زاگرب</span>
+                {splitLines(t('about.founder.tags')).map((tg, i) => (
+                  <span key={tg} className={`tag ${i < 2 ? 'tag--dark' : 'tag--gold'}`}>{tg}</span>
+                ))}
               </div>
               <p className="founder-bio" style={{ marginBottom: 14 }}>
                 {t('about.founder.bio1')}
@@ -218,65 +213,67 @@ export default async function AboutPage() {
       <section style={{ background: 'var(--white)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <span className="tag tag--gold">رزومه حرفه‌ای</span>
-            <h2 className="heading" style={{ marginTop: 14 }}>سوابق و افتخارات یاسر نظری</h2>
+            <span className="tag tag--gold">{t('about.resume.eyebrow')}</span>
+            <h2 className="heading" style={{ marginTop: 14 }}>{t('about.resume.heading')}</h2>
             <div className="line line--center" />
           </div>
 
           <div className="resume-grid">
             <div className="resume-block">
-              <h3><span className="rico">🎓</span> تحصیلات</h3>
+              <h3><span className="rico">🎓</span> {t('about.edu.heading')}</h3>
               <ul className="resume-list">
-                <li><span className="li-ico">◆</span><span><b>مدرک درجه یک هنری</b> (معادل دکتری فیلم‌سازی) — کالج ابن‌سینا، گرجستان</span></li>
-                <li><span className="li-ico">◆</span><span><b>کارشناسی ارشد فیلم‌سازی</b> — دانشگاه آکسفورد، انگلستان</span></li>
+                {splitLines(t('about.edu.items')).map((it) => (
+                  <li key={it}><span className="li-ico">◆</span><span>{it}</span></li>
+                ))}
               </ul>
               <div className="edu-certs">
                 <a className="edu-cert" href={t('about.edu1.image')} target="_blank" rel="noopener noreferrer">
                   <img src={t('about.edu1.image')} alt="گواهی کالج بین‌المللی ابن‌سینا — گرجستان" loading="lazy" />
-                  <span className="edu-cert__cap">کالج ابن‌سینا · گرجستان</span>
+                  <span className="edu-cert__cap">{t('about.edu1.cap')}</span>
                 </a>
                 <a className="edu-cert" href={t('about.edu2.image')} target="_blank" rel="noopener noreferrer">
                   <img src={t('about.edu2.image')} alt="گواهی آکادمی آکسفورد" loading="lazy" />
-                  <span className="edu-cert__cap">آکسفورد · انگلستان</span>
+                  <span className="edu-cert__cap">{t('about.edu2.cap')}</span>
                 </a>
               </div>
             </div>
 
             <div className="resume-block">
-              <h3><span className="rico">🏆</span> افتخارات</h3>
+              <h3><span className="rico">🏆</span> {t('about.honors.heading')}</h3>
               <ul className="resume-list">
-                <li><span className="li-ico">◆</span><span><b>برنده جایزه بهترین کارگردان</b> — جشنواره زاگرب، کرواسی</span></li>
+                {splitLines(t('about.honors.items')).map((it) => (
+                  <li key={it}><span className="li-ico">◆</span><span>{it}</span></li>
+                ))}
               </ul>
             </div>
 
             <div className="resume-block resume-block--wide">
-              <h3><span className="rico">📜</span> مجوزهای رسمی</h3>
+              <h3><span className="rico">📜</span> {t('about.licenses.heading')}</h3>
               <ul className="resume-list">
-                <li><span className="li-ico">◆</span><span>پروانه فعالیت <b>کارگردانی و فیلم‌نامه‌نویسی</b> — وزارت فرهنگ و ارشاد اسلامی</span></li>
-                <li><span className="li-ico">◆</span><span>پروانه فعالیت <b>مشاوره فرهنگی و هنری کسب‌وکار</b> — وزارت فرهنگ و ارشاد اسلامی</span></li>
-                <li><span className="li-ico">◆</span><span>پروانه تأسیس <b>آموزشگاه آزاد سینمایی «تک برداشت»</b> — سازمان فنی و حرفه‌ای کشور</span></li>
+                {splitLines(t('about.licenses.items')).map((it) => (
+                  <li key={it}><span className="li-ico">◆</span><span>{it}</span></li>
+                ))}
               </ul>
             </div>
           </div>
 
           <div style={{ marginTop: 36 }}>
-            <h3 style={{ textAlign: 'center', fontSize: '1.05rem', fontWeight: 800, color: 'var(--dark)', marginBottom: 22 }}>حوزه تخصصی و مهارت‌ها</h3>
+            <h3 style={{ textAlign: 'center', fontSize: '1.05rem', fontWeight: 800, color: 'var(--dark)', marginBottom: 22 }}>{t('about.skills.heading')}</h3>
             <div className="skills-groups">
               <div className="skills-group">
-                <span className="skills-group__label">هنری</span>
+                <span className="skills-group__label">{t('about.skills.g1.label')}</span>
                 <div className="skills-chips">
-                  <span className="skill-chip"><span className="sk-ico">🎬</span>کارگردانی سینما</span>
-                  <span className="skill-chip"><span className="sk-ico">✍️</span>فیلم‌نامه‌نویسی</span>
-                  <span className="skill-chip"><span className="sk-ico">🎭</span>مربیگری بازیگری</span>
+                  {splitLines(t('about.skills.g1.items')).map((it) => (
+                    <span key={it} className="skill-chip">{it}</span>
+                  ))}
                 </div>
               </div>
               <div className="skills-group">
-                <span className="skills-group__label">تحلیلی و مدیریتی</span>
+                <span className="skills-group__label">{t('about.skills.g2.label')}</span>
                 <div className="skills-chips">
-                  <span className="skill-chip"><span className="sk-ico">🧠</span>تحلیل رفتار</span>
-                  <span className="skill-chip"><span className="sk-ico">🎤</span>فن بیان و سخنوری</span>
-                  <span className="skill-chip"><span className="sk-ico">💼</span>مشاوره کسب‌وکار فرهنگی</span>
-                  <span className="skill-chip"><span className="sk-ico">📋</span>مدیریت تولید و برنامه‌ریزی</span>
+                  {splitLines(t('about.skills.g2.items')).map((it) => (
+                    <span key={it} className="skill-chip">{it}</span>
+                  ))}
                 </div>
               </div>
             </div>
@@ -288,13 +285,13 @@ export default async function AboutPage() {
       <section style={{ background: 'var(--white)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <span className="tag tag--gold">چرا ما؟</span>
-            <h2 className="heading" style={{ marginTop: 14 }}>دلایل انتخاب خانواده برداشت</h2>
+            <span className="tag tag--gold">{t('about.creds.eyebrow')}</span>
+            <h2 className="heading" style={{ marginTop: 14 }}>{t('about.creds.heading')}</h2>
           </div>
           <div className="cred-grid">
-            <div className="cred-card"><div className="cico">🏆</div><h3>جایزه بین‌المللی زاگرب</h3><p>برنده جایزه بهترین کارگردانی از جشنواره معتبر بین‌المللی زاگرب کرواسی</p></div>
-            <div className="cred-card"><div className="cico">🎓</div><h3>مجوز رسمی آموزشی</h3><p>دارای مجوز رسمی از ادارات آموزشی ذی‌صلاح — آموزشی معتبر و قانونی</p></div>
-            <div className="cred-card"><div className="cico">✅</div><h3>۱۰۰٪ رایگان</h3><p>اولین و تنها آموزشگاه بازیگری کاملاً رایگان در ایران — بدون هیچ هزینه‌ای</p></div>
+            <div className="cred-card"><div className="cico">🏆</div><h3>{t('about.cred1.title')}</h3><p>{t('about.cred1.body')}</p></div>
+            <div className="cred-card"><div className="cico">🎓</div><h3>{t('about.cred2.title')}</h3><p>{t('about.cred2.body')}</p></div>
+            <div className="cred-card"><div className="cico">✅</div><h3>{t('about.cred3.title')}</h3><p>{t('about.cred3.body')}</p></div>
           </div>
         </div>
       </section>
@@ -303,13 +300,13 @@ export default async function AboutPage() {
       <section style={{ background: 'var(--bg)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <span className="tag tag--dark">ارزش‌های ما</span>
-            <h2 className="heading" style={{ marginTop: 14 }}>چه چیزی ما را متفاوت می‌کند</h2>
+            <span className="tag tag--dark">{t('about.values.eyebrow')}</span>
+            <h2 className="heading" style={{ marginTop: 14 }}>{t('about.values.heading')}</h2>
           </div>
           <div className="values-grid">
-            <div className="value-item"><div className="vnum">۰۱</div><h3>دسترسی آزاد</h3><p>هنر و آموزش بازیگری برای همه. هیچ مانع مالی در مسیر استعداد وجود ندارد.</p></div>
-            <div className="value-item"><div className="vnum">۰۲</div><h3>آموزش حرفه‌ای</h3><p>تکنیک‌های اثبات‌شده بازیگری با اساتید باتجربه و دانش‌آموخته خارج از کشور.</p></div>
-            <div className="value-item"><div className="vnum">۰۳</div><h3>تجربه واقعی</h3><p>اردوها، آفیش‌ها و حضور در پروژه‌های واقعی سینمایی در کنار آموزش نظری.</p></div>
+            <div className="value-item"><div className="vnum">۰۱</div><h3>{t('about.value1.title')}</h3><p>{t('about.value1.body')}</p></div>
+            <div className="value-item"><div className="vnum">۰۲</div><h3>{t('about.value2.title')}</h3><p>{t('about.value2.body')}</p></div>
+            <div className="value-item"><div className="vnum">۰۳</div><h3>{t('about.value3.title')}</h3><p>{t('about.value3.body')}</p></div>
           </div>
         </div>
       </section>
@@ -318,8 +315,8 @@ export default async function AboutPage() {
       <section style={{ background: 'var(--dark)', padding: '36px 0' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <span className="tag tag--gold">تماس با ما</span>
-            <h2 className="heading" style={{ color: '#fff', marginTop: 10, fontSize: '1.6rem' }}>در تماسیم</h2>
+            <span className="tag tag--gold">{t('about.contact.eyebrow')}</span>
+            <h2 className="heading" style={{ color: '#fff', marginTop: 10, fontSize: '1.6rem' }}>{t('about.contact.heading')}</h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, maxWidth: 720, margin: '0 auto' }}>
             {[

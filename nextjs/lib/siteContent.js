@@ -39,6 +39,78 @@ export const CONTENT_GROUPS = [
       { key: 'about.founder.bio1', label: 'بنیان‌گذار — بیو ۱', type: 'textarea', default: 'یاسر نظری، کارگردان سینما و نویسنده کتاب «پنج متد طلایی»، فعالیت هنری خود را با رویکردی عمیق، فلسفی و نمادین پیگیری می‌کند. او معتقد است سینما فراتر از یک سرگرمی، ابزاری برای واکاوی پیچیدگی‌های رفتار انسانی است.' },
       { key: 'about.founder.bio2', label: 'بنیان‌گذار — بیو ۲', type: 'textarea', default: 'تخصص و دانش او حاصل سال‌ها تجربه عملی در بیش از ۸۰ پروژه سینمایی، تلویزیونی و تبلیغاتی در مقام کارگردان، تهیه‌کننده و مدیر تولید است. او با تکیه بر تحصیلات آکادمیک خود — شامل مدرک درجه یک هنری (معادل دکتری فیلم‌سازی) از کالج ابن‌سینا گرجستان و کارشناسی ارشد فیلم‌سازی از دانشگاه آکسفورد انگلستان — و همچنین کسب افتخارات بین‌المللی نظیر جایزه بهترین کارگردانی از جشنواره زاگرب کرواسی، نگاهی استاندارد و جهانی به هنر سینما دارد.' },
       { key: 'about.founder.bio3', label: 'بنیان‌گذار — بیو ۳', type: 'textarea', default: 'وی علاوه بر فعالیت‌های هنری، با دریافت مجوزهای رسمی از وزارت فرهنگ و ارشاد اسلامی و سازمان فنی و حرفه‌ای کشور، بنیان‌گذار «آموزشگاه خانواده برداشت» است؛ مجموعه‌ای که امروز با همراهی بیش از ۲۰۰ هزار هنرجو و علاقه‌مند، به یکی از پرمخاطب‌ترین قطب‌های آموزشی بازیگری در کشور تبدیل شده است. او با تلفیق هنر، تحلیل رفتار و مهارت‌های کسب‌وکار، بستری فراهم کرده تا هنرجویان نه‌تنها تکنیک بازیگری، بلکه مهارت‌های زیستن و حضور در فضای حرفه‌ای سینما را بیاموزند.' },
+
+      // بخش داستان
+      { key: 'about.story.eyebrow', label: 'داستان — برچسب', type: 'text', default: 'داستان ما' },
+      { key: 'about.story.intro', label: 'داستان — جملهٔ آغازین', type: 'text', default: 'خانواده برداشت با یک باور ساده اما انقلابی شکل گرفت:' },
+      { key: 'about.story.foundedLabel', label: 'داستان — برچسب سال تأسیس', type: 'text', default: 'تأسیس' },
+      { key: 'about.story.foundedYear', label: 'داستان — سال تأسیس', type: 'text', default: '۱۳۹۷' },
+
+      // بخش معرفی و کارت‌ها
+      { key: 'about.intro.eyebrow', label: 'معرفی — برچسب', type: 'text', default: 'آموزشگاه خانواده برداشت' },
+      { key: 'about.card1.title', label: 'کارت ۱ — عنوان', type: 'text', default: 'چرا خانواده برداشت؟' },
+      { key: 'about.card1.body', label: 'کارت ۱ — متن', type: 'textarea', default: 'ما معتقدیم سینما یعنی «زندگی». اینجا آموزش بازیگری و فیلم‌سازی صرفاً محدود به تئوری‌های کتابی نیست؛ بلکه متمرکز بر «متد پنج سؤال طلایی» و انتقال تجربه‌ی عملی است که یاسر نظری در بیش از ۸۰ پروژه‌ی سینمایی کسب کرده است. هدف ما این است که هنرجو در پایان دوره تنها یک بازیگر نباشد، بلکه یک آرتیستِ صاحب‌سبک و تحلیلگر رفتار باشد.' },
+      { key: 'about.card2.title', label: 'کارت ۲ — عنوان', type: 'text', default: 'اعتبار و مجوزها' },
+      { key: 'about.card2.body', label: 'کارت ۲ — متن', type: 'textarea', default: 'تعهد ما به آموزش اصولی با پشتوانه‌ی قانونیِ کامل همراه است. آموزشگاه ما تحت عنوان «آموزشگاه آزاد سینمایی تک‌برداشت» دارای مجوزهای رسمی زیر است:' },
+      { key: 'about.card2.items', label: 'کارت ۲ — فهرست مجوزها (هر مورد یک خط)', type: 'list', default: 'پروانه تأسیس آموزشگاه آزاد سینمایی — سازمان آموزش فنی و حرفه‌ای کشور\nپروانه‌های فعالیت در حوزه‌ی کارگردانی، فیلم‌نامه‌نویسی و مشاوره‌ی کسب‌وکار فرهنگی — وزارت فرهنگ و ارشاد اسلامی' },
+      { key: 'about.intro.closing', label: 'معرفی — جمع‌بندی', type: 'textarea', default: 'این مجوزها گواه آن است که شما در فضایی کاملاً استاندارد، قانونی و معتبر آموزش می‌بینید. ما در «خانواده برداشت» پلی هستیم میان استعدادهای نهفته‌ی شما و سینمای حرفه‌ای ایران؛ جایی که قرار است با هم، آینده‌ای روشن برای سینمای این سرزمین بسازیم.' },
+
+      // آمار
+      { key: 'about.stat1.num', label: 'آمار ۱ — عدد', type: 'text', default: '۱۳۹۷' },
+      { key: 'about.stat1.label', label: 'آمار ۱ — برچسب', type: 'text', default: 'سال تأسیس' },
+      { key: 'about.stat2.num', label: 'آمار ۲ — عدد', type: 'text', default: '۲' },
+      { key: 'about.stat2.label', label: 'آمار ۲ — برچسب', type: 'text', default: 'شعبه فعال' },
+      { key: 'about.stat3.num', label: 'آمار ۳ — عدد', type: 'text', default: '۱۰۰٪' },
+      { key: 'about.stat3.label', label: 'آمار ۳ — برچسب', type: 'text', default: 'رایگان' },
+      { key: 'about.stat4.num', label: 'آمار ۴ — عدد', type: 'text', default: '۵' },
+      { key: 'about.stat4.label', label: 'آمار ۴ — برچسب', type: 'text', default: 'مسیر آموزشی' },
+
+      // بنیان‌گذار (بخش دوم)
+      { key: 'about.founder.eyebrow', label: 'بنیان‌گذار — برچسب', type: 'text', default: 'بنیان‌گذار' },
+      { key: 'about.founder.heading', label: 'بنیان‌گذار — عنوان بخش', type: 'text', default: 'یاسر نظری' },
+      { key: 'about.founder.subtitle', label: 'بنیان‌گذار — زیرعنوان بخش', type: 'text', default: 'سینماگر، نویسنده و تحلیلگر رفتار' },
+      { key: 'about.founder.tags', label: 'بنیان‌گذار — برچسب‌ها (هر مورد یک خط)', type: 'list', default: 'کارگردان سینما\nتهیه‌کننده\nدکتری فیلم‌سازی\nارشد آکسفورد\nبرنده جایزه زاگرب' },
+
+      // رزومه
+      { key: 'about.resume.eyebrow', label: 'رزومه — برچسب', type: 'text', default: 'رزومه حرفه‌ای' },
+      { key: 'about.resume.heading', label: 'رزومه — عنوان', type: 'text', default: 'سوابق و افتخارات یاسر نظری' },
+      { key: 'about.edu.heading', label: 'رزومه — عنوان تحصیلات', type: 'text', default: 'تحصیلات' },
+      { key: 'about.edu.items', label: 'رزومه — فهرست تحصیلات (هر مورد یک خط)', type: 'list', default: 'مدرک درجه یک هنری (معادل دکتری فیلم‌سازی) — کالج ابن‌سینا، گرجستان\nکارشناسی ارشد فیلم‌سازی — دانشگاه آکسفورد، انگلستان' },
+      { key: 'about.edu1.cap', label: 'رزومه — عنوان گواهی ۱', type: 'text', default: 'کالج ابن‌سینا · گرجستان' },
+      { key: 'about.edu2.cap', label: 'رزومه — عنوان گواهی ۲', type: 'text', default: 'آکسفورد · انگلستان' },
+      { key: 'about.honors.heading', label: 'رزومه — عنوان افتخارات', type: 'text', default: 'افتخارات' },
+      { key: 'about.honors.items', label: 'رزومه — فهرست افتخارات (هر مورد یک خط)', type: 'list', default: 'برنده جایزه بهترین کارگردان — جشنواره زاگرب، کرواسی' },
+      { key: 'about.licenses.heading', label: 'رزومه — عنوان مجوزها', type: 'text', default: 'مجوزهای رسمی' },
+      { key: 'about.licenses.items', label: 'رزومه — فهرست مجوزها (هر مورد یک خط)', type: 'list', default: 'پروانه فعالیت کارگردانی و فیلم‌نامه‌نویسی — وزارت فرهنگ و ارشاد اسلامی\nپروانه فعالیت مشاوره فرهنگی و هنری کسب‌وکار — وزارت فرهنگ و ارشاد اسلامی\nپروانه تأسیس آموزشگاه آزاد سینمایی «تک برداشت» — سازمان فنی و حرفه‌ای کشور' },
+      { key: 'about.skills.heading', label: 'رزومه — عنوان مهارت‌ها', type: 'text', default: 'حوزه تخصصی و مهارت‌ها' },
+      { key: 'about.skills.g1.label', label: 'مهارت‌ها — عنوان گروه ۱', type: 'text', default: 'هنری' },
+      { key: 'about.skills.g1.items', label: 'مهارت‌ها — گروه ۱ (هر مورد یک خط)', type: 'list', default: '🎬 کارگردانی سینما\n✍️ فیلم‌نامه‌نویسی\n🎭 مربیگری بازیگری' },
+      { key: 'about.skills.g2.label', label: 'مهارت‌ها — عنوان گروه ۲', type: 'text', default: 'تحلیلی و مدیریتی' },
+      { key: 'about.skills.g2.items', label: 'مهارت‌ها — گروه ۲ (هر مورد یک خط)', type: 'list', default: '🧠 تحلیل رفتار\n🎤 فن بیان و سخنوری\n💼 مشاوره کسب‌وکار فرهنگی\n📋 مدیریت تولید و برنامه‌ریزی' },
+
+      // چرا ما؟
+      { key: 'about.creds.eyebrow', label: 'چرا ما؟ — برچسب', type: 'text', default: 'چرا ما؟' },
+      { key: 'about.creds.heading', label: 'چرا ما؟ — عنوان', type: 'text', default: 'دلایل انتخاب خانواده برداشت' },
+      { key: 'about.cred1.title', label: 'چرا ما؟ — کارت ۱ عنوان', type: 'text', default: 'جایزه بین‌المللی زاگرب' },
+      { key: 'about.cred1.body', label: 'چرا ما؟ — کارت ۱ متن', type: 'textarea', default: 'برنده جایزه بهترین کارگردانی از جشنواره معتبر بین‌المللی زاگرب کرواسی' },
+      { key: 'about.cred2.title', label: 'چرا ما؟ — کارت ۲ عنوان', type: 'text', default: 'مجوز رسمی آموزشی' },
+      { key: 'about.cred2.body', label: 'چرا ما؟ — کارت ۲ متن', type: 'textarea', default: 'دارای مجوز رسمی از ادارات آموزشی ذی‌صلاح — آموزشی معتبر و قانونی' },
+      { key: 'about.cred3.title', label: 'چرا ما؟ — کارت ۳ عنوان', type: 'text', default: '۱۰۰٪ رایگان' },
+      { key: 'about.cred3.body', label: 'چرا ما؟ — کارت ۳ متن', type: 'textarea', default: 'اولین و تنها آموزشگاه بازیگری کاملاً رایگان در ایران — بدون هیچ هزینه‌ای' },
+
+      // ارزش‌ها
+      { key: 'about.values.eyebrow', label: 'ارزش‌ها — برچسب', type: 'text', default: 'ارزش‌های ما' },
+      { key: 'about.values.heading', label: 'ارزش‌ها — عنوان', type: 'text', default: 'چه چیزی ما را متفاوت می‌کند' },
+      { key: 'about.value1.title', label: 'ارزش ۱ — عنوان', type: 'text', default: 'دسترسی آزاد' },
+      { key: 'about.value1.body', label: 'ارزش ۱ — متن', type: 'textarea', default: 'هنر و آموزش بازیگری برای همه. هیچ مانع مالی در مسیر استعداد وجود ندارد.' },
+      { key: 'about.value2.title', label: 'ارزش ۲ — عنوان', type: 'text', default: 'آموزش حرفه‌ای' },
+      { key: 'about.value2.body', label: 'ارزش ۲ — متن', type: 'textarea', default: 'تکنیک‌های اثبات‌شده بازیگری با اساتید باتجربه و دانش‌آموخته خارج از کشور.' },
+      { key: 'about.value3.title', label: 'ارزش ۳ — عنوان', type: 'text', default: 'تجربه واقعی' },
+      { key: 'about.value3.body', label: 'ارزش ۳ — متن', type: 'textarea', default: 'اردوها، آفیش‌ها و حضور در پروژه‌های واقعی سینمایی در کنار آموزش نظری.' },
+
+      // تماس (پایین صفحه)
+      { key: 'about.contact.eyebrow', label: 'تماس — برچسب', type: 'text', default: 'تماس با ما' },
+      { key: 'about.contact.heading', label: 'تماس — عنوان', type: 'text', default: 'در تماسیم' },
     ],
   },
   {
