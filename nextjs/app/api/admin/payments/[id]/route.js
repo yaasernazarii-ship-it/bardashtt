@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { notifyPayment } from '@/lib/paymentNotify';
+import { grantCourseAccess } from '@/lib/onlineCourses';
 
 export async function PATCH(request, { params }) {
   const user = await getSessionUser();
@@ -24,6 +25,10 @@ export async function PATCH(request, { params }) {
         where: { id },
         data: { status: 'paid', method: 'manual', paidAt: new Date() },
       });
+      // اگر پرداختِ خریدِ یک دورهٔ آنلاین باشد، با paid شدن دسترسیِ دوره خودکار داده می‌شود.
+      if (updated.courseId) {
+        await grantCourseAccess(updated.userId, updated.courseId, { source: 'payment', grantedById: user.id });
+      }
       // گزارش آنی به بله
       await notifyPayment(updated, current.user);
       return Response.json({ ok: true, payment: { ...updated, paidAt: updated.paidAt?.toISOString() || null } });

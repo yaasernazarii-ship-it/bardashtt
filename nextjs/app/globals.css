@@ -1401,3 +1401,27 @@ summary:focus-visible {
   .pay-card__amount { font-size: 1.2rem; }
   .pay-card__actions .btn { flex: 1 1 auto; }
 }
+
+/* ── COURSE · فروش دورهٔ آنلاین ─────────── */
+.course-lesson {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+}
+.course-lesson__title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.05rem; color: var(--dark); margin: 0 0 12px;
+}
+.course-lesson__num {
+  flex: none; width: 30px; height: 30px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--dark); color: #fff;
+  font-size: 0.85rem; font-weight: 700;
+}
+.course-locked {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 26px 22px; text-align: center;
+}
+.course-locked__badge {
+  display: inline-block; font-weight: 700; color: var(--dark);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 100px; padding: 10px 20px; margin-bottom: 6px;
+}

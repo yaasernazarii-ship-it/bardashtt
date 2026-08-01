@@ -1,5 +1,6 @@
 import SimplePage from '@/components/SimplePage';
 import SectionPosts from '@/components/SectionPosts';
+import CourseList from '@/components/CourseList';
 import { loadContent } from '@/lib/siteContent';
 
 export const metadata = {
@@ -34,6 +35,10 @@ export default async function OnlineLearningPage() {
           </div>
         ))}
       </div>
+
+      <h2 className="subheading" style={{ margin: '32px 0 16px' }}>دوره‌های آنلاین</h2>
+      <CourseList />
+
       <SectionPosts section="course-video" variant="media" heading="ویدیوهای دورهٔ آنلاین" />
     </SimplePage>
   );

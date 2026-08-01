@@ -34,6 +34,7 @@ model User {
   enrollments  Enrollment[]
   attendances  Attendance[]
   payments     Payment[]
+  courseAccesses CourseAccess[] // دوره‌های آنلاینی که این کاربر خریده/دسترسی دارد
 
   @@index([classGroupId])
 }
@@ -285,6 +286,7 @@ model Payment {
   title       String // بابت/دلیل پرداخت (مثلاً «شهریهٔ دورهٔ تکمیلی» یا «هزینهٔ بیمه و پلاتو»)
   courseKey   String? // اگر مربوط به یکی از ۵ دوره باشد (۰۱ تا ۰۵)؛ برای پرداخت‌های جدا خالی است
   courseTitle String? // عنوان دورهٔ مرتبط (در صورت وجود)
+  courseId    String? // اگر پرداختِ خریدِ یک دورهٔ آنلاین (Course) باشد؛ با paid شدن، دسترسی خودکار داده می‌شود
   amount      Int // مبلغ به تومان (متغیر؛ ادمین هنگام ساخت وارد می‌کند)
   status      String    @default("pending") // pending | paid | canceled
   method      String? // روش پرداخت: online | manual (بعد از اتصال درگاه پر می‌شود)
@@ -295,4 +297,56 @@ model Payment {
 
   @@index([userId, status])
   @@index([status])
+  @@index([courseId])
+}
+
+// دورهٔ آنلاینِ فروشی: یک تیزر رایگان (teaserUrl) دارد که همه می‌بینند،
+// و مجموعه‌ای ویدیوی محافظت‌شده (CourseLesson) که فقط کاربرِ دارای دسترسی (CourseAccess) می‌بیند.
+model Course {
+  id          String         @id @default(cuid())
+  title       String
+  slug        String         @unique
+  description String? // توضیح/سرفصل دوره
+  price       Int            @default(0) // قیمت به تومان
+  coverImage  String? // عکس کاور دوره
+  teaserUrl   String? // تیزرِ رایگان (کد امبد/لینک) که برای همه نمایش داده می‌شود
+  published   Boolean        @default(true)
+  order       Int            @default(0) // ترتیب نمایش
+  createdById String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  lessons     CourseLesson[]
+  accesses    CourseAccess[]
+
+  @@index([published, order])
+}
+
+// یک ویدیوی آموزشیِ داخلِ دوره؛ فقط برای خریدار قابل مشاهده است.
+model CourseLesson {
+  id        String   @id @default(cuid())
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title     String
+  videoUrl  String // کد امبد/لینک ویدیو (آپارات یا سرویس محدودسازی دامنه مثل ویدپروتکت/نگاوید)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId, order])
+}
+
+// دسترسیِ یک کاربر به یک دوره (خریداری‌شده). وجودِ رکورد یعنی دسترسیِ فعال.
+model CourseAccess {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  source      String   @default("manual") // manual (اعطای دستیِ ادمین) | gateway (پرداخت آنلاین) | payment (پرداختِ دستیِ تأییدشده)
+  grantedById String? // ادمینی که دسترسی داد (برای اعطای دستی)
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
 }
