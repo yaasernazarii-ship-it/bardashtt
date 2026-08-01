@@ -8,7 +8,7 @@ const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long
 const dateTimeFmt = new Intl.DateTimeFormat('fa-IR', {
   year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tehran',
 });
-const EMPTY = { title: '', section: 'news', category: '', excerpt: '', body: '', coverImage: '', aparatUrl: '', published: true, publishAt: '' };
+const EMPTY = { title: '', section: 'news', category: '', excerpt: '', body: '', coverImage: '', aparatUrl: '', audioUrl: '', published: true, publishAt: '' };
 
 // تبدیل زمان ذخیره‌شده (ISO/UTC) به مقدار ورودی datetime-local در ساعت محلی مرورگر.
 function isoToLocalInput(iso) {
@@ -34,8 +34,10 @@ export default function AdminPosts() {
   const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingAudio, setUploadingAudio] = useState(false);
   const [error, setError] = useState('');
   const fileRef = useRef(null);
+  const audioRef = useRef(null);
 
   async function load() {
     const res = await fetch('/api/admin/posts');
@@ -47,13 +49,13 @@ export default function AdminPosts() {
 
   function set(k, v) { setForm((f) => ({ ...f, [k]: v })); }
 
-  function resetForm() { setForm(EMPTY); setEditingId(null); setError(''); if (fileRef.current) fileRef.current.value = ''; }
+  function resetForm() { setForm(EMPTY); setEditingId(null); setError(''); if (fileRef.current) fileRef.current.value = ''; if (audioRef.current) audioRef.current.value = ''; }
 
   function editPost(p) {
     setEditingId(p.id);
     setForm({
       title: p.title, section: p.section || 'news', category: p.category || '', excerpt: p.excerpt || '', body: p.body,
-      coverImage: p.coverImage || '', aparatUrl: p.aparatUrl || '', published: p.published,
+      coverImage: p.coverImage || '', aparatUrl: p.aparatUrl || '', audioUrl: p.audioUrl || '', published: p.published,
       publishAt: isoToLocalInput(p.publishAt),
     });
     setError('');
@@ -73,12 +75,25 @@ export default function AdminPosts() {
     else setError(data.error || 'آپلود ناموفق بود.');
   }
 
+  async function uploadAudio(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAudio(true); setError('');
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const data = await res.json();
+    setUploadingAudio(false);
+    if (data.ok) set('audioUrl', data.url);
+    else setError(data.error || 'آپلود صوت ناموفق بود.');
+  }
+
   async function save(e) {
     e.preventDefault();
-    const hasMedia = Boolean(form.coverImage.trim() || form.aparatUrl.trim());
+    const hasMedia = Boolean(form.coverImage.trim() || form.aparatUrl.trim() || form.audioUrl.trim());
     if (!form.title.trim()) { setError('عنوان الزامی است.'); return; }
-    if (form.section === 'blog' && !form.category) { setError('دستهٔ وبلاگ را انتخاب کنید.'); return; }
-    if (!form.body.trim() && !hasMedia) { setError('یا متن مطلب را بنویسید یا عکس/ویدیو اضافه کنید.'); return; }
+    if (form.section === 'blog' && !form.category) { setError('دستهٔ مقاله را انتخاب کنید.'); return; }
+    if (!form.body.trim() && !hasMedia) { setError('یا متن مطلب را بنویسید یا عکس/ویدیو/صوت اضافه کنید.'); return; }
     setSaving(true); setError('');
     const url = editingId ? `/api/admin/posts/${editingId}` : '/api/admin/posts';
     const method = editingId ? 'PATCH' : 'POST';
@@ -131,7 +146,7 @@ export default function AdminPosts() {
 
         {form.section === 'blog' && (
           <div className="form-group">
-            <label className="form-label">دستهٔ وبلاگ *</label>
+            <label className="form-label">دستهٔ مقاله *</label>
             <select className="form-input" value={form.category} onChange={(e) => set('category', e.target.value)}>
               <option value="">— انتخاب کنید —</option>
               {BLOG_CATEGORIES.map((c) => (
@@ -175,6 +190,20 @@ export default function AdminPosts() {
             <input className="form-input" dir="ltr" value={form.aparatUrl} onChange={(e) => set('aparatUrl', e.target.value)} placeholder="https://www.aparat.com/v/..." />
             <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>لینک تماشای ویدیو در آپارات را کپی کنید؛ ویدیو داخل مطلب پخش می‌شود.</span>
           </div>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">فایل صوتی (اختیاری)</label>
+          <input ref={audioRef} type="file" accept="audio/*" className="form-input" onChange={uploadAudio} />
+          {uploadingAudio && <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>در حال آپلود صوت…</span>}
+          <input className="form-input" dir="ltr" style={{ marginTop: 8 }} value={form.audioUrl} onChange={(e) => set('audioUrl', e.target.value)} placeholder="یا نشانی فایل صوتی (mp3) را اینجا بچسبانید" />
+          {form.audioUrl && (
+            <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <audio src={form.audioUrl} controls style={{ maxWidth: '100%' }} />
+              <button type="button" className="btn btn--ghost" onClick={() => set('audioUrl', '')}>حذف صوت</button>
+            </div>
+          )}
+          <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>فایل صوتی را آپلود کنید (تا ۴۰ مگابایت) یا نشانی آن را بچسبانید؛ پخش‌کننده داخل مطلب نمایش داده می‌شود.</span>
         </div>
 
         <div className="form-group">

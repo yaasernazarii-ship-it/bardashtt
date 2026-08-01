@@ -19,6 +19,7 @@ const routes = [
   '/insurance',
   '/news',
   '/online-learning',
+  '/social-responsibility',
   '/podcast',
   '/profile',
   '/register',

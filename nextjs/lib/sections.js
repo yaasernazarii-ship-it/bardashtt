@@ -2,7 +2,8 @@
 // این فایل هیچ وابستگی سروری (prisma) ندارد تا در کامپوننت‌های کلاینت هم قابل استفاده باشد.
 export const SECTIONS = [
   { value: 'news', label: 'اخبار و مطالب', kind: 'article', path: '/news' },
-  { value: 'blog', label: 'وبلاگ', kind: 'article', path: '/blog' },
+  { value: 'blog', label: 'مقاله‌ها', kind: 'article', path: '/blog' },
+  { value: 'social-responsibility', label: 'مسئولیت اجتماعی', kind: 'article', path: '/social-responsibility' },
   { value: 'works-cinema', label: 'آثار ← تولیدات سینمایی', kind: 'media', path: '/works/cinema' },
   { value: 'works-advertising', label: 'آثار ← تولیدات تبلیغاتی', kind: 'media', path: '/works/advertising' },
   { value: 'works-output', label: 'آثار ← خروجی خانواده برداشت', kind: 'media', path: '/works/output' },

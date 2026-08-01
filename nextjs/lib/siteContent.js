@@ -102,10 +102,10 @@ export const CONTENT_GROUPS = [
   },
   {
     id: 'blog',
-    title: 'وبلاگ',
+    title: 'مقاله‌ها',
     fields: [
       { key: 'blog.tag', label: 'برچسب', type: 'text', default: 'مطالب آموزشی' },
-      { key: 'blog.title', label: 'عنوان', type: 'text', default: 'وبلاگ' },
+      { key: 'blog.title', label: 'عنوان', type: 'text', default: 'مقاله‌ها' },
       { key: 'blog.subtitle', label: 'زیرعنوان', type: 'text', default: 'مطالب آموزشی درباره بازیگری و سینما' },
     ],
   },

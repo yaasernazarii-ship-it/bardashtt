@@ -5,7 +5,7 @@ import { loadContent } from '@/lib/siteContent';
 import { BLOG_CATEGORIES } from '@/lib/blogCategories';
 
 export const metadata = {
-  title: 'وبلاگ',
+  title: 'مقاله‌ها',
   description: 'مطالب آموزشی و تحلیلی درباره بازیگری و سینما.',
   alternates: { canonical: 'https://www.bardashtt.com/blog' },
 };

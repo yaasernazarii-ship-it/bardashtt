@@ -238,6 +238,7 @@ model Post {
   body        String // متن اصلی (پاراگراف‌ها با خط جدید)
   coverImage  String? // نشانی عکس کاور (آپلودی یا URL)
   aparatUrl   String? // لینک ویدیوی آپارات
+  audioUrl    String? // نشانی فایل صوتی (آپلودی یا URL) — برای مطالبِ صوتی
   published   Boolean   @default(true)
   publishAt   DateTime? // زمان انتشار زمان‌بندی‌شده؛ خالی یعنی فوری
   createdById String?
@@ -349,4 +350,45 @@ model CourseAccess {
   @@unique([userId, courseId])
   @@index([userId])
   @@index([courseId])
+}
+
+// کتابِ فروشی در صفحهٔ «مسئولیت اجتماعی». مبلغ را ادمین تعیین می‌کند.
+// خرید به‌صورت «ثبت سفارش» است: هرکس فرم را پر می‌کند و ادمین سفارش‌ها را پیگیری می‌کند.
+model Book {
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  author      String? // نویسنده (مثلاً آقای نظری)
+  description String? // معرفی کتاب
+  price       Int         @default(0) // قیمت به تومان (ادمین تعیین می‌کند)
+  coverImage  String? // عکس جلد
+  published   Boolean     @default(true)
+  order       Int         @default(0) // ترتیب نمایش
+  createdById String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orders      BookOrder[]
+
+  @@index([published, order])
+}
+
+// سفارشِ خریدِ یک کتاب. چون درگاه هنوز وصل نیست، سفارش ثبت و توسط ادمین پیگیری می‌شود.
+model BookOrder {
+  id        String   @id @default(cuid())
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  userId    String? // اگر کاربرِ واردشده سفارش داده باشد
+  name      String // نام سفارش‌دهنده
+  phone     String // شماره تماس
+  address   String? // نشانی پستی
+  quantity  Int      @default(1) // تعداد
+  note      String? // توضیح سفارش‌دهنده
+  status    String   @default("new") // new | contacted | paid | shipped | canceled
+  adminNote String? // یادداشت ادمین
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([bookId])
+  @@index([status])
+  @@index([phone])
 }

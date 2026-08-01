@@ -83,6 +83,9 @@ export default async function PostPage({ params }) {
                 <iframe src={embed} title={post.title} allowFullScreen allow="autoplay; fullscreen" />
               </div>
             )}
+            {post.audioUrl && (
+              <audio src={post.audioUrl} controls preload="none" style={{ width: '100%', margin: '8px 0 20px' }} />
+            )}
             {paragraphs.map((para, i) => (
               <p key={i} className="post-article__p">{para}</p>
             ))}

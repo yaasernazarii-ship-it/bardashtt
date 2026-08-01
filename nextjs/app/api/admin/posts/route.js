@@ -8,7 +8,7 @@ import { randomBytes } from 'crypto';
 function serialize(p) {
   return {
     id: p.id, title: p.title, slug: p.slug, section: p.section, category: p.category, excerpt: p.excerpt, body: p.body,
-    coverImage: p.coverImage, aparatUrl: p.aparatUrl, published: p.published,
+    coverImage: p.coverImage, aparatUrl: p.aparatUrl, audioUrl: p.audioUrl, published: p.published,
     publishAt: p.publishAt ? p.publishAt.toISOString() : null,
     createdAt: p.createdAt.toISOString(),
   };
@@ -50,10 +50,10 @@ export async function POST(request) {
     const b = await request.json();
     const title = String(b.title || '').trim().slice(0, 200);
     const body = String(b.body || '').trim().slice(0, 20000);
-    const hasMedia = Boolean((b.coverImage && String(b.coverImage).trim()) || (b.aparatUrl && String(b.aparatUrl).trim()));
+    const hasMedia = Boolean((b.coverImage && String(b.coverImage).trim()) || (b.aparatUrl && String(b.aparatUrl).trim()) || (b.audioUrl && String(b.audioUrl).trim()));
     if (!title) return Response.json({ ok: false, error: 'عنوان الزامی است.' }, { status: 400 });
-    // برای مطالب متنی (اخبار/وبلاگ) متن الزامی است؛ برای محتوای رسانه‌ای (عکس/ویدیو) کافی است عکس یا ویدیو باشد.
-    if (!body && !hasMedia) return Response.json({ ok: false, error: 'یا متن مطلب را بنویسید یا عکس/ویدیو اضافه کنید.' }, { status: 400 });
+    // برای مطالب متنی (اخبار/مقاله) متن الزامی است؛ برای محتوای رسانه‌ای (عکس/ویدیو/صوت) کافی است رسانه باشد.
+    if (!body && !hasMedia) return Response.json({ ok: false, error: 'یا متن مطلب را بنویسید یا عکس/ویدیو/صوت اضافه کنید.' }, { status: 400 });
 
     const section = SECTION_VALUES.includes(b.section) ? b.section : 'news';
     const category = section === 'blog' && BLOG_CATEGORY_VALUES.includes(b.category) ? b.category : null;
@@ -67,6 +67,7 @@ export async function POST(request) {
         body,
         coverImage: b.coverImage ? String(b.coverImage).trim().slice(0, 500) : null,
         aparatUrl: b.aparatUrl ? String(b.aparatUrl).trim().slice(0, 500) : null,
+        audioUrl: b.audioUrl ? String(b.audioUrl).trim().slice(0, 500) : null,
         published: b.published !== false,
         publishAt: parsePublishAt(b.publishAt),
         createdById: user.id,

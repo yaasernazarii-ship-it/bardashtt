@@ -24,7 +24,7 @@ export const metadata = {
 const articleLd = articleJsonLd({ title: TITLE, description: DESCRIPTION, url: URL, datePublished: PUBLISHED });
 const breadcrumbLd = breadcrumbJsonLd([
   { name: 'خانه', url: SITE_URL },
-  { name: 'وبلاگ', url: `${SITE_URL}/blog` },
+  { name: 'مقاله‌ها', url: `${SITE_URL}/blog` },
   { name: TITLE },
 ]);
 
@@ -39,7 +39,7 @@ export default function BlogPostPage() {
           <h1>آموزش بازیگری رایگان؛ از کجا شروع کنیم؟</h1>
           <p>راهنمای کامل ورود به دنیای بازیگری سینما</p>
           <div className="breadcrumb">
-            <Link href="/">خانه</Link> › <Link href="/blog">وبلاگ</Link> › آموزش بازیگری رایگان؛ از کجا شروع کنیم؟
+            <Link href="/">خانه</Link> › <Link href="/blog">مقاله‌ها</Link> › آموزش بازیگری رایگان؛ از کجا شروع کنیم؟
           </div>
         </div>
       </div>
@@ -129,7 +129,7 @@ export default function BlogPostPage() {
             </p>
           </article>
           <div style={{ textAlign: 'center', marginTop: 28 }}>
-            <Link href="/blog" className="btn btn--ghost">← بازگشت به وبلاگ</Link>
+            <Link href="/blog" className="btn btn--ghost">← بازگشت به مقاله‌ها</Link>
           </div>
         </div>
       </section>

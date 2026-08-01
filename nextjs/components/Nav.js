@@ -37,7 +37,8 @@ const navLinks = [
     ],
   },
   { href: '/news', label: 'اخبار' },
-  { href: '/blog', label: 'وبلاگ' },
+  { href: '/blog', label: 'مقاله‌ها' },
+  { href: '/social-responsibility', label: 'مسئولیت اجتماعی' },
 ];
 
 export default function Nav({ onOpenChat }) {

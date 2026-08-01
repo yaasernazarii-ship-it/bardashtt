@@ -1425,3 +1425,20 @@ summary:focus-visible {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 100px; padding: 10px 20px; margin-bottom: 6px;
 }
+
+/* کارت کتابِ فروشی در صفحهٔ مسئولیت اجتماعی */
+.book-card__head { display: flex; gap: 18px; align-items: flex-start; }
+.book-card__cover {
+  flex: none; width: 130px; height: 190px; object-fit: cover;
+  border-radius: 10px; border: 1px solid var(--border);
+}
+.book-card__info { flex: 1 1 auto; min-width: 0; }
+.book-card__price {
+  display: inline-block; font-weight: 700; color: var(--dark);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 100px; padding: 6px 16px; margin: 4px 0;
+}
+@media (max-width: 560px) {
+  .book-card__head { flex-direction: column; align-items: center; text-align: center; }
+  .book-card__cover { width: 110px; height: 160px; }
+}

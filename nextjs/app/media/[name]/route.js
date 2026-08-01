@@ -9,6 +9,12 @@ const CONTENT_TYPE = {
   png: 'image/png',
   webp: 'image/webp',
   gif: 'image/gif',
+  mp3: 'audio/mpeg',
+  m4a: 'audio/mp4',
+  aac: 'audio/aac',
+  ogg: 'audio/ogg',
+  wav: 'audio/wav',
+  weba: 'audio/webm',
 };
 
 export async function GET(request, { params }) {

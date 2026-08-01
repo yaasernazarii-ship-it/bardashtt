@@ -12,8 +12,8 @@ export async function generateMetadata({ params }) {
   const category = BLOG_CATEGORIES.find((c) => c.value === slug);
   if (!category) return { title: 'دسته یافت نشد' };
   const url = `${SITE_URL}/blog/category/${category.value}`;
-  const title = `${category.label} | وبلاگ خانواده برداشت`;
-  const description = `مطالب آموزشی و تحلیلی دربارهٔ ${category.label} — وبلاگ خانواده برداشت.`;
+  const title = `${category.label} | مقاله‌های خانواده برداشت`;
+  const description = `مطالب آموزشی و تحلیلی دربارهٔ ${category.label} — مقاله‌های خانواده برداشت.`;
   return {
     title,
     description,
@@ -31,7 +31,7 @@ export default async function BlogCategoryPage({ params }) {
   const url = `${SITE_URL}/blog/category/${category.value}`;
   const breadcrumbLd = breadcrumbJsonLd([
     { name: 'خانه', url: SITE_URL },
-    { name: 'وبلاگ', url: `${SITE_URL}/blog` },
+    { name: 'مقاله‌ها', url: `${SITE_URL}/blog` },
     { name: category.label, url },
   ]);
 
@@ -40,11 +40,11 @@ export default async function BlogCategoryPage({ params }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(breadcrumbLd)} />
       <div className="page-header">
         <div className="page-header__inner">
-          <div className="page-header__tag">وبلاگ</div>
+          <div className="page-header__tag">مقاله‌ها</div>
           <h1>{category.label}</h1>
           <p>مطالب آموزشی و تحلیلی دربارهٔ {category.label}</p>
           <div className="breadcrumb">
-            <Link href="/">خانه</Link> › <Link href="/blog">وبلاگ</Link> › {category.label}
+            <Link href="/">خانه</Link> › <Link href="/blog">مقاله‌ها</Link> › {category.label}
           </div>
         </div>
       </div>
@@ -69,7 +69,7 @@ export default async function BlogCategoryPage({ params }) {
             empty={<p style={{ color: 'var(--muted)' }}>هنوز مطلبی در دستهٔ «{category.label}» منتشر نشده است.</p>}
           />
           <div style={{ textAlign: 'center', marginTop: 28 }}>
-            <Link href="/blog" className="btn btn--ghost">← بازگشت به همهٔ وبلاگ</Link>
+            <Link href="/blog" className="btn btn--ghost">← بازگشت به همهٔ مقاله‌ها</Link>
           </div>
         </div>
       </section>

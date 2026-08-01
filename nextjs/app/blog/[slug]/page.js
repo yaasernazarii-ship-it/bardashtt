@@ -51,7 +51,7 @@ export default async function BlogPostPage({ params }) {
   });
   const breadcrumbLd = breadcrumbJsonLd([
     { name: 'خانه', url: SITE_URL },
-    { name: 'وبلاگ', url: `${SITE_URL}/blog` },
+    { name: 'مقاله‌ها', url: `${SITE_URL}/blog` },
     { name: post.title },
   ]);
 
@@ -61,10 +61,10 @@ export default async function BlogPostPage({ params }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(breadcrumbLd)} />
       <div className="page-header">
         <div className="page-header__inner">
-          <div className="page-header__tag">وبلاگ</div>
+          <div className="page-header__tag">مقاله‌ها</div>
           <h1>{post.title}</h1>
           <p>{dateFmt.format(new Date(post.publishAt || post.createdAt))}</p>
-          <div className="breadcrumb"><Link href="/">خانه</Link> › <Link href="/blog">وبلاگ</Link> › {post.title}</div>
+          <div className="breadcrumb"><Link href="/">خانه</Link> › <Link href="/blog">مقاله‌ها</Link> › {post.title}</div>
         </div>
       </div>
       <section style={{ background: 'var(--bg)' }}>
@@ -79,12 +79,15 @@ export default async function BlogPostPage({ params }) {
                 <iframe src={embed} title={post.title} allowFullScreen allow="autoplay; fullscreen" />
               </div>
             )}
+            {post.audioUrl && (
+              <audio src={post.audioUrl} controls preload="none" style={{ width: '100%', margin: '8px 0 20px' }} />
+            )}
             {paragraphs.map((para, i) => (
               <p key={i} className="post-article__p">{para}</p>
             ))}
           </article>
           <div style={{ textAlign: 'center', marginTop: 28 }}>
-            <Link href="/blog" className="btn btn--ghost">← بازگشت به وبلاگ</Link>
+            <Link href="/blog" className="btn btn--ghost">← بازگشت به مقاله‌ها</Link>
           </div>
         </div>
       </section>
