@@ -41,6 +41,16 @@ export default function RootLayout({ children }) {
     <html lang="fa" dir="rtl" className={vazirmatn.className}>
       <head>
         <script
+          dangerouslySetInnerHTML={{
+            __html:
+              '(function(){if(typeof Node!=="function"||!Node.prototype)return;' +
+              'var r=Node.prototype.removeChild;Node.prototype.removeChild=function(c){' +
+              'if(c&&c.parentNode!==this){return c;}return r.apply(this,arguments);};' +
+              'var i=Node.prototype.insertBefore;Node.prototype.insertBefore=function(n,ref){' +
+              'if(ref&&ref.parentNode!==this){return n;}return i.apply(this,arguments);};})();',
+          }}
+        />
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
