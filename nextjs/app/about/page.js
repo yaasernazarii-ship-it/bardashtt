@@ -79,14 +79,16 @@ export default async function AboutPage() {
         @media(max-width:640px){ .cred-grid{grid-template-columns:1fr;} }
       `}</style>
 
-      <PageSlider
-        title={t('about.slider.title')}
-        count={3}
-        images={heroImages}
-      />
+      <div id="about-slider">
+        <PageSlider
+          title={t('about.slider.title')}
+          count={3}
+          images={heroImages}
+        />
+      </div>
 
       {/* معرفی آموزشگاه */}
-      <section style={{ background: 'var(--bg)' }}>
+      <section id="about-intro" style={{ background: 'var(--bg)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 40, maxWidth: 780, marginInline: 'auto' }}>
             <span className="tag tag--gold">{t('about.intro.eyebrow')}</span>
@@ -122,7 +124,7 @@ export default async function AboutPage() {
       </section>
 
       {/* بنیان‌گذار */}
-      <section style={{ background: 'var(--bg)' }}>
+      <section id="about-founder" style={{ background: 'var(--bg)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <span className="tag tag--dark">{t('about.founder.eyebrow')}</span>
@@ -155,7 +157,7 @@ export default async function AboutPage() {
       </section>
 
       {/* سوابق و افتخارات حرفه‌ای */}
-      <section style={{ background: 'var(--white)' }}>
+      <section id="about-resume" style={{ background: 'var(--white)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <span className="tag tag--gold">{t('about.resume.eyebrow')}</span>
@@ -227,7 +229,7 @@ export default async function AboutPage() {
       </section>
 
       {/* افتخارات */}
-      <section style={{ background: 'var(--white)' }}>
+      <section id="about-creds" style={{ background: 'var(--white)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <span className="tag tag--gold">{t('about.creds.eyebrow')}</span>
@@ -242,7 +244,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ارزش‌ها */}
-      <section style={{ background: 'var(--bg)' }}>
+      <section id="about-values" style={{ background: 'var(--bg)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <span className="tag tag--dark">{t('about.values.eyebrow')}</span>
@@ -257,7 +259,7 @@ export default async function AboutPage() {
       </section>
 
       {/* تماس */}
-      <section style={{ background: 'var(--dark)', padding: '36px 0' }}>
+      <section id="about-contact" style={{ background: 'var(--dark)', padding: '36px 0' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
             <span className="tag tag--gold">{t('about.contact.eyebrow')}</span>

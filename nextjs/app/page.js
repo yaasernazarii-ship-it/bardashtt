@@ -19,7 +19,7 @@ export default async function HomePage() {
   return (
     <PageLayout>
       {/* Hero */}
-      <section className="home-hero">
+      <section id="hero" className="home-hero">
         <HomeHeroBg images={heroImages} />
         <div className="container home-hero__inner home-hero__inner--center">
           <div className="home-hero__eyebrow">
@@ -40,7 +40,7 @@ export default async function HomePage() {
       </div>
 
       {/* داستان ما */}
-      <section style={{ background: 'var(--white)' }}>
+      <section id="story" style={{ background: 'var(--white)' }}>
         <div className="container">
           <div className="story-text">
             <span className="tag tag--gold">{t('about.story.eyebrow')}</span>
@@ -64,7 +64,7 @@ export default async function HomePage() {
       </section>
 
       {/* آمار */}
-      <section style={{ background: 'var(--dark)', padding: '36px 0' }}>
+      <section id="stats" style={{ background: 'var(--dark)', padding: '36px 0' }}>
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, textAlign: 'center' }}>
             {[[t('about.stat1.num'),t('about.stat1.label')],[t('about.stat2.num'),t('about.stat2.label')],[t('about.stat3.num'),t('about.stat3.label')],[t('about.stat4.num'),t('about.stat4.label')]].map(([n,l]) => (
@@ -78,7 +78,7 @@ export default async function HomePage() {
       </section>
 
       {/* تماس */}
-      <div className="contact-row">
+      <div id="contact" className="contact-row">
         <div className="contact-cell">
           <div className="ico">📞</div>
           <div className="lbl">تماس مستقیم</div>

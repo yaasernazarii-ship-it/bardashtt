@@ -8,6 +8,13 @@ import { prisma } from '@/lib/prisma';
 // برای افزودن متن جدید کافی است فیلد را اینجا اضافه و در صفحه با t('key') بخوانید.
 export const CONTENT_GROUPS = [
   {
+    id: 'siteBrand',
+    title: 'برند و لوگوی سایت (نوار بالای همهٔ صفحات)',
+    fields: [
+      { key: 'site.logo', label: 'لوگوی نوار بالای سایت (کنار «خانه»)', type: 'image', default: '/imgg.png' },
+    ],
+  },
+  {
     id: 'home',
     title: 'صفحهٔ اصلی',
     fields: [

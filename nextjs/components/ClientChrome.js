@@ -6,7 +6,7 @@ import Footer from './Footer';
 import SupportChat from './SupportChat';
 import MobileBottomNav from './MobileBottomNav';
 
-export default function ClientChrome({ children }) {
+export default function ClientChrome({ children, logo }) {
   const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function ClientChrome({ children }) {
 
   return (
     <>
-      <Nav onOpenChat={() => setChatOpen(true)} />
+      <Nav onOpenChat={() => setChatOpen(true)} logo={logo} />
       <main>{children}</main>
       <Footer />
       <MobileBottomNav />

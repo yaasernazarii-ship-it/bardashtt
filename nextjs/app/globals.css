@@ -5,6 +5,9 @@
 @import './home.css';
 @import './courses/courses.css';
 
+/* لینک‌های بخش‌ها (anchor #id): فاصله از بالا تا زیر نوار ثابت پنهان نشوند */
+:target { scroll-margin-top: 96px; }
+
 :root {
   --bg:        #FFFFFF;
   --surface:   #F7FBFB;

@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import NotificationBell from './NotificationBell';
 
@@ -35,7 +34,7 @@ const navLinks = [
   { href: '/social-responsibility', label: 'مسئولیت اجتماعی' },
 ];
 
-export default function Nav({ onOpenChat }) {
+export default function Nav({ onOpenChat, logo }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [openIndex, setOpenIndex] = useState(null);
@@ -91,7 +90,7 @@ export default function Nav({ onOpenChat }) {
       <nav className="nav" aria-label="ناوبری اصلی">
         <div className="nav__inner">
           <Link href="/" className="nav__logo">
-            <Image src="/imgg.png" alt="خانواده برداشت" width={90} height={30} style={{ height: 30, width: 'auto' }} />
+            <img src={logo || '/imgg.png'} alt="خانواده برداشت" width={90} height={30} style={{ height: 30, width: 'auto' }} />
           </Link>
           <ul className="nav__links" ref={linksRef}>
             {navLinks.map((item, i) => (

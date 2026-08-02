@@ -70,6 +70,7 @@ export default function DashboardSidebar({ active, role, isAdmin = false, isMana
             <li><Link className={active === 'courses-admin' ? 'active' : undefined} href="/dashboard/admin/courses" onClick={close}>🎓 فروش دوره</Link></li>
             <li><Link className={active === 'books-admin' ? 'active' : undefined} href="/dashboard/admin/books" onClick={close}>📚 فروش کتاب</Link></li>
             <li><Link className={active === 'content' ? 'active' : undefined} href="/dashboard/admin/content" onClick={close}>📄 متن صفحات</Link></li>
+            <li><Link className={active === 'links' ? 'active' : undefined} href="/dashboard/admin/links" onClick={close}>🔗 لینک صفحات</Link></li>
             <li><Link className={active === 'admin' ? 'active' : undefined} href="/dashboard/admin" onClick={close}>⚙️ کاربران</Link></li>
           </>
         )}
