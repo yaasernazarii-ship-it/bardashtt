@@ -36,11 +36,11 @@ export default async function HomePage() {
       </section>
 
       {/* شعبه‌ها */}
-      <section style={{ background: 'var(--white)' }}>
+      <section style={{ background: 'linear-gradient(135deg, #1B1B1B 0%, #202020 100%)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <span className="tag tag--dark">شعبه‌ها</span>
-            <h2 className="heading" style={{ marginTop: 14 }}>{t('home.branch.heading')}</h2>
+            <span className="tag tag--gold">شعبه‌ها</span>
+            <h2 className="heading" style={{ marginTop: 14, color: '#fff' }}>{t('home.branch.heading')}</h2>
           </div>
           <div className="branch-row">
             <div className="branch-card">
