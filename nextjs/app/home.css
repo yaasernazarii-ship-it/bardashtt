@@ -45,21 +45,10 @@
   margin-bottom: 18px;
 }
 .home-hero__eyebrow span { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 0 6px rgba(255,215,0,.14); }
-.home-hero h1 {
-  font-size: clamp(2.25rem, 5vw, 4.65rem);
-  line-height: 1.16; letter-spacing: -.035em;
-  color: #fff; font-weight: 950; margin-bottom: 18px;
-}
 .home-hero__slogan {
-  font-size: clamp(2rem, 5.4vw, 4.3rem);
-  line-height: 1.22; letter-spacing: -.03em;
-  color: #fff; font-weight: 950; margin-bottom: 34px;
-}
-.home-hero__slogan span {
-  display: block; margin-top: 10px;
-  font-size: clamp(1.15rem, 2.6vw, 2rem); font-weight: 800;
-  background: linear-gradient(100deg, var(--gold) 0%, #FFF0A6 55%, var(--gold) 100%);
-  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  font-size: clamp(1.3rem, 2.6vw, 2.1rem);
+  line-height: 1.5; letter-spacing: -.01em;
+  color: rgba(255,255,255,.62); font-weight: 400; margin-bottom: 28px;
 }
 .home-hero p {
   color: rgba(255,255,255,.74);
@@ -268,7 +257,6 @@
   .home-hero { padding: 30px 0 calc(92px + env(safe-area-inset-bottom)); align-items: flex-start; }
   .home-hero__inner { grid-template-columns: 1fr; gap: 24px; }
   .home-hero__content { max-width: none; }
-  .home-hero h1 { font-size: clamp(1.9rem, 9vw, 2.8rem); line-height: 1.22; }
   .home-hero p { font-size: .95rem; line-height: 1.9; margin-bottom: 22px; }
   .home-hero__eyebrow { font-size: .75rem; line-height: 1.6; white-space: normal; }
   .home-hero__actions { flex-direction: column; gap: 10px; margin-bottom: 22px; }

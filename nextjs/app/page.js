@@ -23,7 +23,6 @@ export default async function HomePage() {
           </div>
           <h1 className="home-hero__slogan">
             {t('home.hero.title')}
-            <span>{t('home.hero.subtitle')}</span>
           </h1>
           <div className="home-hero__actions home-hero__actions--center">
             <Link href="/courses" className="btn btn--gold btn--lg">{t('home.hero.ctaPrimary')}</Link>
