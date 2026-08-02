@@ -87,7 +87,7 @@ export default function CoursesExplorer({
             <div className="payment-box">
               <h3>{payTitle}</h3>
               <p>{payText}</p>
-              <Link href="/audition" className="btn btn--dark btn--full">{payButton}</Link>
+              <Link href="/audition" className="btn btn--gold btn--full">{payButton}</Link>
             </div>
           </div>
         </div>
