@@ -13,6 +13,7 @@ export default function AdminUsers() {
   const [savingId, setSavingId] = useState(null);
   const [query, setQuery] = useState('');
   const [panelId, setPanelId] = useState(null);
+  const [openId, setOpenId] = useState('');
 
   async function load() {
     setLoading(true);
@@ -82,94 +83,80 @@ export default function AdminUsers() {
           onChange={(e) => setQuery(e.target.value)} style={{ maxWidth: 360 }} />
       </div>
 
-      <div className="table-wrap">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>نام</th>
-              <th>موبایل</th>
-              <th>نام کاربری</th>
-              <th>رمز عبور</th>
-              <th>عضویت</th>
-              <th>نقش</th>
-              <th>وضعیت</th>
-              <th>تحصیل</th>
-              <th>عملیات</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((u) => (
-              <tr key={u.id} style={u.active === false ? { opacity: 0.55 } : undefined}>
-                <td>
-                  <button type="button" className="user-name-link" onClick={() => setPanelId(u.id)}
-                    title="مشاهدهٔ کاملِ پنلِ این کاربر">{u.displayName || '—'}</button>
-                </td>
-                <td dir="ltr" style={{ textAlign: 'right' }}>{u.phone}</td>
-                <td dir="ltr" style={{ textAlign: 'right' }}>{u.username || '—'}</td>
-                <td dir="ltr" style={{ textAlign: 'right', fontFamily: 'monospace' }}>{u.passwordPlain || '—'}</td>
-                <td>{dateFmt.format(new Date(u.createdAt))}</td>
-                <td>
-                  {u.id === currentUserId ? (
-                    <span className="role-tag">{ROLE_LABEL[u.role] || u.role} (شما)</span>
-                  ) : (
-                    <select
-                      className="form-input role-select"
-                      value={u.role}
-                      disabled={savingId === u.id}
-                      onChange={(e) => changeRole(u.id, e.target.value)}
-                    >
-                      <option value="member">عضو</option>
-                      <option value="student">هنرجو</option>
-                      <option value="filmmaker">فیلمساز</option>
-                      <option value="editor">ادیتور</option>
-                      <option value="admin">ادمین</option>
-                    </select>
-                  )}
-                </td>
-                <td>
-                  <span style={{
-                    background: u.active === false ? '#FEE2E2' : '#DCFCE7',
-                    color: u.active === false ? '#B91C1C' : '#166534',
-                    borderRadius: 999, padding: '3px 10px', fontSize: '.78rem', fontWeight: 700,
-                  }}>{u.active === false ? 'غیرفعال' : 'فعال'}</span>
-                </td>
-                <td>
-                  {u.role !== 'student' ? (
-                    <span style={{ color: 'var(--muted)', fontSize: '.8rem' }}>—</span>
-                  ) : (
-                    <span style={{
-                      background: u.graduated ? '#E0E7FF' : '#FEF3C7',
-                      color: u.graduated ? '#3730A3' : '#92400E',
-                      borderRadius: 999, padding: '3px 10px', fontSize: '.78rem', fontWeight: 700,
-                    }}>{u.graduated ? 'فارغ‌التحصیل' : 'در حال تحصیل'}</span>
-                  )}
-                </td>
-                <td>
-                  {u.id === currentUserId ? (
-                    <span style={{ color: 'var(--muted)', fontSize: '.8rem' }}>—</span>
-                  ) : (
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      {u.username && (
-                        <button type="button" className="btn btn--sm btn--outline" disabled={savingId === u.id} onClick={() => resetPassword(u)}>رمز جدید</button>
-                      )}
-                      {u.role === 'student' && (
-                        <button type="button" className={`btn btn--sm ${u.graduated ? 'btn--dark' : 'btn--outline'}`}
-                          disabled={savingId === u.id} onClick={() => toggleGraduated(u)}>
-                          {u.graduated ? 'بازگرداندن به تحصیل' : 'فارغ‌التحصیل'}
-                        </button>
-                      )}
-                      <button type="button" className={`btn btn--sm ${u.active === false ? 'btn--dark' : 'btn--danger'}`}
-                        disabled={savingId === u.id} onClick={() => toggleActive(u)}>
-                        {u.active === false ? 'فعال‌سازی' : 'غیرفعال'}
-                      </button>
+      {filtered.length === 0 ? (
+        <p style={{ color: 'var(--muted)' }}>کاربری یافت نشد.</p>
+      ) : (
+        <div className="su-list">
+          {filtered.map((u) => {
+            const open = openId === u.id;
+            const isSelf = u.id === currentUserId;
+            return (
+              <div key={u.id} className="su-item" style={u.active === false ? { opacity: 0.7 } : undefined}>
+                <button type="button" className="su-head" aria-expanded={open}
+                  onClick={() => setOpenId(open ? '' : u.id)}>
+                  <span className="su-head__name">{u.displayName || u.username || u.phone}</span>
+                  <span className="su-tags">
+                    <span className="su-tag su-tag--muted">{ROLE_LABEL[u.role] || u.role}{isSelf ? ' (شما)' : ''}</span>
+                    <span className={`su-tag ${u.active === false ? 'su-tag--off' : 'su-tag--ok'}`}>{u.active === false ? 'غیرفعال' : 'فعال'}</span>
+                    {u.role === 'student' && (
+                      <span className={`su-tag ${u.graduated ? 'su-tag--grad' : 'su-tag--enrolled'}`}>{u.graduated ? 'فارغ‌التحصیل' : 'در حال تحصیل'}</span>
+                    )}
+                  </span>
+                  <svg className={`su-chev ${open ? 'is-open' : ''}`} width="16" height="16" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+
+                {open && (
+                  <div className="su-body">
+                    <div style={{ color: 'var(--muted)', fontSize: '.88rem', lineHeight: 2 }}>
+                      <div>موبایل: <span dir="ltr">{u.phone}</span></div>
+                      <div>نام کاربری: <b dir="ltr">{u.username || '—'}</b></div>
+                      <div>رمز عبور: <b dir="ltr" style={{ fontFamily: 'monospace' }}>{u.passwordPlain || '—'}</b></div>
+                      <div>تاریخ عضویت: {dateFmt.format(new Date(u.createdAt))}</div>
                     </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginTop: 12, borderTop: '1px solid var(--border)', paddingTop: 12 }}>
+                      <button type="button" className="btn btn--sm btn--dark" onClick={() => setPanelId(u.id)}>مشاهدهٔ پنل کامل</button>
+                      {isSelf ? (
+                        <span style={{ color: 'var(--muted)', fontSize: '.82rem' }}>نقش و وضعیتِ حساب خودتان از این‌جا قابل تغییر نیست.</span>
+                      ) : (
+                        <>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.82rem', color: 'var(--muted)' }}>
+                            نقش:
+                            <select className="form-input role-select" value={u.role} disabled={savingId === u.id}
+                              onChange={(e) => changeRole(u.id, e.target.value)}>
+                              <option value="member">عضو</option>
+                              <option value="student">هنرجو</option>
+                              <option value="filmmaker">فیلمساز</option>
+                              <option value="editor">ادیتور</option>
+                              <option value="admin">ادمین</option>
+                            </select>
+                          </label>
+                          {u.username && (
+                            <button type="button" className="btn btn--sm btn--outline" disabled={savingId === u.id} onClick={() => resetPassword(u)}>رمز جدید</button>
+                          )}
+                          {u.role === 'student' && (
+                            <button type="button" className={`btn btn--sm ${u.graduated ? 'btn--dark' : 'btn--outline'}`}
+                              disabled={savingId === u.id} onClick={() => toggleGraduated(u)}>
+                              {u.graduated ? 'بازگرداندن به تحصیل' : 'فارغ‌التحصیل'}
+                            </button>
+                          )}
+                          <button type="button" className={`btn btn--sm ${u.active === false ? 'btn--dark' : 'btn--danger'}`}
+                            disabled={savingId === u.id} onClick={() => toggleActive(u)}>
+                            {u.active === false ? 'فعال‌سازی' : 'غیرفعال'}
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {panelId && <UserPanel userId={panelId} onClose={() => setPanelId(null)} />}
     </div>

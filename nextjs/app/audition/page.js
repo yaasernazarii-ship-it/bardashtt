@@ -3,7 +3,7 @@ import { useState } from 'react';
 import PageLayout from '@/components/PageLayout';
 import { COURSES, QUESTIONS, VIDEO_FORM_URL, isValidNationalId } from '@/lib/enrollmentData';
 
-const STEPS = ['دوره و مشخصات', 'تست آنلاین', 'نتیجه هوش مصنوعی', 'ارسال ویدیو', 'پایان'];
+const STEPS = ['دوره و مشخصات', 'تست آنلاین', 'تحلیل خانواده برداشت', 'ارسال ویدیو', 'پایان'];
 
 export default function AuditionPage() {
   const [step, setStep] = useState(0);
@@ -69,7 +69,7 @@ export default function AuditionPage() {
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
             <span className="tag tag--gold">ثبت‌نام دوره‌ها</span>
             <h1 className="heading" style={{ marginTop: 12 }}>ثبت‌نام در دوره‌های بازیگری</h1>
-            <p style={{ color: 'var(--muted)' }}>تست آنلاین، تحلیل هوش مصنوعی، ارسال ویدیو و تأیید نهایی</p>
+            <p style={{ color: 'var(--muted)' }}>تست آنلاین، تحلیل خانواده برداشت، ارسال ویدیو و تأیید نهایی</p>
           </div>
 
           <ol className="enroll-steps">
@@ -120,7 +120,7 @@ export default function AuditionPage() {
                 ))}
                 <div className="enroll-actions">
                   <button className="btn btn--outline" onClick={() => setStep(0)}>بازگشت</button>
-                  <button className="btn btn--dark" disabled={!allAnswered || busy} onClick={runAnalysis}>{busy ? 'در حال تحلیل…' : 'تحلیل هوش مصنوعی'}</button>
+                  <button className="btn btn--dark" disabled={!allAnswered || busy} onClick={runAnalysis}>{busy ? 'در حال تحلیل…' : 'تحلیل خانواده برداشت'}</button>
                 </div>
               </>
             )}
@@ -131,6 +131,7 @@ export default function AuditionPage() {
                 <div className="enroll-result__label">تیپ بازیگری شما</div>
                 <h2 className="enroll-result__type">{analysis.actorType}</h2>
                 <p className="enroll-result__text">{analysis.analysis}</p>
+                <p className="enroll-result__cheer">سوپراستارِ آیندهٔ سینمای ایران، امیدوارم به‌زودی عکست را روی بیلبوردهای شهر ببینم.</p>
                 <div className="enroll-actions">
                   <button className="btn btn--outline" onClick={() => setStep(1)}>بازگشت به تست</button>
                   <button className="btn btn--gold" onClick={() => setStep(3)}>ادامه: ارسال ویدیو</button>

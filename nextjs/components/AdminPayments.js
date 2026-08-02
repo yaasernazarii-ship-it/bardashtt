@@ -34,6 +34,7 @@ export default function AdminPayments() {
   const [saving, setSaving] = useState(false);
   const [studentQuery, setStudentQuery] = useState('');
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [openPayId, setOpenPayId] = useState('');
   const [filter, setFilter] = useState('all');
 
   async function load() {
@@ -255,38 +256,48 @@ export default function AdminPayments() {
         </div>
       ) : (
         <div className="pay-list">
-          {visiblePayments.map((p) => (
-            <div key={p.id} className={`pay-card pay-card--${p.status}`}>
-              <div className="pay-card__top">
-                <div className="pay-card__main">
-                  <div className="pay-card__title">
-                    {p.user?.displayName || p.user?.phone}
-                    {p.user?.username && <span style={{ color: 'var(--muted)', fontWeight: 400 }}> · {p.user.username}</span>}
+          {visiblePayments.map((p) => {
+            const open = openPayId === p.id;
+            return (
+              <div key={p.id} className={`pay-card pay-card--${p.status}`}>
+                <button type="button" className="pay-card__top" aria-expanded={open}
+                  onClick={() => setOpenPayId(open ? '' : p.id)}>
+                  <div className="pay-card__main">
+                    <div className="pay-card__title">
+                      {p.user?.displayName || p.user?.phone}
+                      {p.user?.username && <span style={{ color: 'var(--muted)', fontWeight: 400 }}> · {p.user.username}</span>}
+                    </div>
+                    <div className="pay-card__sub">
+                      {p.title}
+                      <span className="dot">·</span>{p.courseTitle ? `دورهٔ ${p.courseTitle}` : 'پرداخت جدا'}
+                      <span className="dot">·</span>{dateFmt.format(new Date(p.createdAt))}
+                    </div>
                   </div>
-                  <div className="pay-card__sub">
-                    {p.title}
-                    <span className="dot">·</span>{p.courseTitle ? `دورهٔ ${p.courseTitle}` : 'پرداخت جدا'}
-                    <span className="dot">·</span>{dateFmt.format(new Date(p.createdAt))}
+                  <div className="pay-card__amount">{money(p.amount)}<span>تومان</span></div>
+                  <StatusBadge status={p.status} />
+                  <svg className={`su-chev ${open ? 'is-open' : ''}`} width="16" height="16" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+                {open && (
+                  <div className="pay-card__actions">
+                    <button type="button" className="btn btn--sm btn--outline" onClick={() => copyLink(p.id)}>کپی لینک پرداخت</button>
+                    {p.status === 'pending' && (
+                      <>
+                        <button type="button" className="btn btn--sm btn--dark" onClick={() => act(p.id, 'markPaid')}>ثبت پرداختِ دستی</button>
+                        <button type="button" className="btn btn--sm btn--outline" onClick={() => act(p.id, 'cancel')}>لغو</button>
+                      </>
+                    )}
+                    {p.status === 'canceled' && (
+                      <button type="button" className="btn btn--sm btn--outline" onClick={() => act(p.id, 'reopen')}>بازگردانی</button>
+                    )}
+                    <button type="button" className="btn btn--sm btn--danger" onClick={() => remove(p.id)}>حذف</button>
                   </div>
-                </div>
-                <div className="pay-card__amount">{money(p.amount)}<span>تومان</span></div>
-                <StatusBadge status={p.status} />
-              </div>
-              <div className="pay-card__actions">
-                <button type="button" className="btn btn--sm btn--outline" onClick={() => copyLink(p.id)}>کپی لینک پرداخت</button>
-                {p.status === 'pending' && (
-                  <>
-                    <button type="button" className="btn btn--sm btn--dark" onClick={() => act(p.id, 'markPaid')}>ثبت پرداختِ دستی</button>
-                    <button type="button" className="btn btn--sm btn--outline" onClick={() => act(p.id, 'cancel')}>لغو</button>
-                  </>
                 )}
-                {p.status === 'canceled' && (
-                  <button type="button" className="btn btn--sm btn--outline" onClick={() => act(p.id, 'reopen')}>بازگردانی</button>
-                )}
-                <button type="button" className="btn btn--sm btn--danger" onClick={() => remove(p.id)}>حذف</button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

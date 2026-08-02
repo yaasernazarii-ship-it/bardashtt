@@ -1327,6 +1327,10 @@ summary:focus-visible {
 .enroll-result__label { color: var(--muted); font-weight: 700; }
 .enroll-result__type { color: var(--dark); font-size: 1.8rem; margin: 8px 0 12px; }
 .enroll-result__text { color: var(--muted); line-height: 1.9; max-width: 520px; margin: 0 auto 22px; }
+.enroll-result__cheer {
+  color: var(--gold); font-weight: 700; font-size: 1.02rem; line-height: 1.9;
+  max-width: 520px; margin: -6px auto 22px;
+}
 
 /* لیست ادمین */
 .enroll-admin-list { display: grid; gap: 14px; }
@@ -1446,7 +1450,7 @@ summary:focus-visible {
 .pay-card {
   position: relative; overflow: hidden;
   background: #fff; border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 18px 22px;
+  border-radius: var(--radius); padding: 0;
   box-shadow: var(--shadow-sm); transition: var(--transition);
 }
 .pay-card::before {
@@ -1459,14 +1463,19 @@ summary:focus-visible {
 .pay-card--canceled::before { background: #E5E5E5; }
 .pay-card--canceled { opacity: 0.72; }
 
-.pay-card__top { display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+.pay-card__top {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap; width: 100%;
+  font: inherit; text-align: start; cursor: pointer;
+  background: none; border: 0; padding: 12px 16px;
+}
+.pay-card__top:hover { background: var(--surface); }
 .pay-card__main { flex: 1 1 220px; min-width: 0; }
-.pay-card__title { font-weight: 800; color: var(--dark); font-size: 1rem; line-height: 1.5; }
-.pay-card__sub { font-size: 0.84rem; color: var(--muted); margin-top: 3px; }
+.pay-card__title { font-weight: 700; color: var(--dark); font-size: 0.95rem; line-height: 1.5; }
+.pay-card__sub { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
 .pay-card__sub .dot { opacity: 0.5; margin: 0 6px; }
 
 .pay-card__amount {
-  font-weight: 800; color: var(--dark); font-size: 1.35rem; white-space: nowrap;
+  font-weight: 700; color: var(--dark); font-size: 1.1rem; white-space: nowrap;
   font-variant-numeric: tabular-nums; letter-spacing: 0.01em;
 }
 .pay-card__amount span { font-size: 0.82rem; font-weight: 600; color: var(--muted); margin-inline-start: 3px; }
@@ -1484,7 +1493,10 @@ summary:focus-visible {
 .pay-badge--canceled { background: #FEF2F2; color: #DC2626; border-color: #FECACA; }
 .pay-badge--canceled .pay-badge__dot { background: #DC2626; }
 
-.pay-card__actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; justify-content: flex-end; }
+.pay-card__actions {
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;
+  padding: 12px 16px; border-top: 1px solid var(--border); background: var(--surface);
+}
 .pay-card__actions--full { justify-content: stretch; }
 
 .pay-empty {
@@ -1563,6 +1575,14 @@ summary:focus-visible {
 .su-tag--pending  { background: #FFF7ED; color: #92400E; }
 .su-tag--approved { background: #F0FDF4; color: #15803D; }
 .su-tag--rejected { background: #FEF2F2; color: #DC2626; }
+.su-tag--ok       { background: #F0FDF4; color: #15803D; }
+.su-tag--off      { background: #FEF2F2; color: #DC2626; }
+.su-tag--muted    { background: var(--surface); color: var(--muted); }
+.su-tag--grad     { background: #E0E7FF; color: #3730A3; }
+.su-tag--enrolled { background: #FEF3C7; color: #92400E; }
+/* چند نشان کنار هم؛ خودِ گروه به سمت انتها هل داده می‌شود، نه تک‌تکِ نشان‌ها */
+.su-tags { display: flex; align-items: center; gap: 6px; margin-inline-start: auto; flex-wrap: wrap; justify-content: flex-end; }
+.su-tags .su-tag { margin-inline-start: 0; }
 .su-chev { color: var(--muted); flex: none; transition: transform .18s ease; }
 .su-chev.is-open { transform: rotate(180deg); }
 .su-body { padding: 4px 14px 14px; border-top: 1px solid var(--border); }

@@ -68,7 +68,7 @@ export async function buildEnrollmentPdf(enrollment) {
 
   if (enrollment.aiAnalysis) {
     doc.y += 4;
-    line(doc, 'تحلیل هوش مصنوعی:', { size: 12, bold: true, gap: 2 });
+    line(doc, 'تحلیل خانواده برداشت:', { size: 12, bold: true, gap: 2 });
     line(doc, enrollment.aiAnalysis, { size: 11, color: '#333', gap: 6 });
   }
 
