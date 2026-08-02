@@ -36,6 +36,9 @@ export default function AdminPosts() {
   const [uploading, setUploading] = useState(false);
   const [uploadingAudio, setUploadingAudio] = useState(false);
   const [error, setError] = useState('');
+  const [importUrl, setImportUrl] = useState('');
+  const [importing, setImporting] = useState(false);
+  const [importMsg, setImportMsg] = useState('');
   const fileRef = useRef(null);
   const audioRef = useRef(null);
 
@@ -49,7 +52,34 @@ export default function AdminPosts() {
 
   function set(k, v) { setForm((f) => ({ ...f, [k]: v })); }
 
-  function resetForm() { setForm(EMPTY); setEditingId(null); setError(''); if (fileRef.current) fileRef.current.value = ''; if (audioRef.current) audioRef.current.value = ''; }
+  function resetForm() { setForm(EMPTY); setEditingId(null); setError(''); setImportUrl(''); setImportMsg(''); if (fileRef.current) fileRef.current.value = ''; if (audioRef.current) audioRef.current.value = ''; }
+
+  // دریافت محتوای مطلب از روی لینک یک سایت دیگر و پرکردن خودکار فرم.
+  async function importFromUrl() {
+    const u = importUrl.trim();
+    if (!u) { setImportMsg('ابتدا لینک مطلب را وارد کنید.'); return; }
+    setImporting(true); setImportMsg(''); setError('');
+    try {
+      const res = await fetch('/api/admin/posts/import', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: u }),
+      });
+      const data = await res.json();
+      if (!data.ok) { setImportMsg(data.error || 'دریافت محتوا ممکن نشد.'); return; }
+      setForm((f) => ({
+        ...f,
+        title: data.title || f.title,
+        excerpt: data.excerpt || f.excerpt,
+        body: data.body || f.body,
+        coverImage: data.coverImage || f.coverImage,
+      }));
+      const parts = [data.title && 'عنوان', data.body && 'متن', data.excerpt && 'خلاصه', data.coverImage && 'عکس کاور'].filter(Boolean);
+      setImportMsg(`محتوا دریافت شد (${parts.join('، ')}). قبل از انتشار بازبینی و در صورت نیاز ویرایش کنید.`);
+    } catch {
+      setImportMsg('دریافت محتوا ممکن نشد؛ کمی بعد دوباره امتحان کنید.');
+    } finally {
+      setImporting(false);
+    }
+  }
 
   function editPost(p) {
     setEditingId(p.id);
@@ -133,6 +163,21 @@ export default function AdminPosts() {
           {editingId ? 'ویرایش مطلب' : 'افزودن مطلب جدید'}
         </h2>
         {error && <div className="alert alert--error" style={{ marginBottom: 12 }}>{error}</div>}
+
+        <div className="import-box">
+          <label className="form-label">دریافت خودکار از لینک یک سایت دیگر (اختیاری)</label>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <input className="form-input" dir="ltr" style={{ flex: 1, minWidth: 220 }} value={importUrl}
+              onChange={(e) => setImportUrl(e.target.value)} placeholder="https://example.com/news/article-title" />
+            <button type="button" className="btn btn--outline" disabled={importing} onClick={importFromUrl}>
+              {importing ? 'در حال دریافت…' : 'دریافت محتوا'}
+            </button>
+          </div>
+          {importMsg && <p style={{ color: 'var(--muted)', fontSize: '0.82rem', marginTop: 6 }}>{importMsg}</p>}
+          <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>
+            لینک خبر یا مطلب را از هر سایتی بچسبانید؛ عنوان، خلاصه، متن و عکس کاور به‌صورت خودکار در فرم زیر پر می‌شود تا بازبینی و منتشر کنید.
+          </span>
+        </div>
 
         <div className="form-group">
           <label className="form-label">بخش مقصد *</label>

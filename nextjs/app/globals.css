@@ -1593,6 +1593,12 @@ summary:focus-visible {
 .su-creds__title { font-weight: 800; margin-bottom: 4px; }
 .su-creds__note { margin: 6px 0 0; font-size: 0.76rem; color: #166534; line-height: 1.7; }
 
+.import-box {
+  background: var(--blue-soft); border: 1px solid rgba(27,27,27,.08);
+  border-radius: 16px; padding: 16px; margin-bottom: 20px;
+}
+.import-box .form-label { display: block; margin-bottom: 8px; }
+
 @media (max-width: 640px) {
   .pay-card__amount { font-size: 1.2rem; }
   .pay-card__actions .btn { flex: 1 1 auto; }
