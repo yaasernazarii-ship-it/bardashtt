@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
-import { loadContent } from '@/lib/siteContent';
+import HomeHeroBg from '@/components/HomeHeroBg';
+import { loadContent, splitLines } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'خانواده برداشت | اولین آموزشگاه رایگان بازیگری سینما در ایران',
@@ -12,19 +13,14 @@ export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const t = await loadContent();
+  // اسلایدهای هدر از فیلد چند‌عکسی خوانده می‌شوند؛ اگر خالی بود، به عکس پس‌زمینهٔ تکی برمی‌گردیم.
+  const heroSlides = splitLines(t('home.hero.slides'));
+  const heroImages = heroSlides.length ? heroSlides : [t('home.hero.bgImage')].filter(Boolean);
   return (
     <PageLayout>
       {/* Hero */}
       <section className="home-hero">
-        <div
-          className="home-hero__bg"
-          style={{
-            backgroundImage:
-              `linear-gradient(180deg, rgba(15,13,10,.55) 0%, rgba(15,13,10,.72) 55%, rgba(15,13,10,.94) 100%), ` +
-              `radial-gradient(circle at 18% 18%, rgba(255,215,0,.16) 0%, transparent 32%), ` +
-              `url(${t('home.hero.bgImage')})`,
-          }}
-        />
+        <HomeHeroBg images={heroImages} />
         <div className="container home-hero__inner home-hero__inner--center">
           <div className="home-hero__eyebrow">
             <span /> {t('home.hero.eyebrow')}

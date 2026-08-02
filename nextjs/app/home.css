@@ -14,10 +14,19 @@
 }
 .home-hero__bg {
   position: absolute; inset: 0;
-  /* عکس پس‌زمینه به‌صورت inline از پنل تعیین می‌شود (home.hero.bgImage) */
-  background-size: cover, cover, contain;
-  background-position: center, center, center;
-  background-repeat: no-repeat, no-repeat, no-repeat;
+  /* عکس‌ها به‌صورت لایه‌های .home-hero__slide از پنل تعیین می‌شوند (home.hero.slides / home.hero.bgImage) */
+}
+.home-hero__slide {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+  opacity: 0; transition: opacity 1.4s ease;
+}
+.home-hero__slide.active { opacity: 1; }
+.home-hero__scrim {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(180deg, rgba(15,13,10,.55) 0%, rgba(15,13,10,.72) 55%, rgba(15,13,10,.94) 100%),
+    radial-gradient(circle at 18% 18%, rgba(255,215,0,.16) 0%, transparent 32%);
 }
 .home-hero__bg::before {
   content: ''; position: absolute; inset: 0;
