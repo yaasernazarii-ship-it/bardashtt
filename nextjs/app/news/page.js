@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import SimplePage from '@/components/SimplePage';
 import { livePosts } from '@/lib/content';
+import { loadContent } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'اخبار و مطالب',
@@ -12,13 +13,13 @@ export const dynamic = 'force-dynamic';
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
 
 export default async function NewsPage() {
-  const posts = await livePosts('news');
+  const [posts, t] = await Promise.all([livePosts('news'), loadContent()]);
 
   return (
-    <SimplePage title="اخبار و مطالب" subtitle="آخرین اخبار، مطالب و ویدیوهای خانواده برداشت" tag="مطالب">
+    <SimplePage title={t('news.title')} subtitle={t('news.subtitle')} tag={t('news.tag')}>
       {posts.length === 0 ? (
         <div style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 40, textAlign: 'center' }}>
-          <p style={{ color: 'var(--muted)' }}>هنوز مطلبی منتشر نشده است.</p>
+          <p style={{ color: 'var(--muted)' }}>{t('news.empty')}</p>
         </div>
       ) : (
         <div className="post-list">

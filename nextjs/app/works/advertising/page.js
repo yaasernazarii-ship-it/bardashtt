@@ -1,5 +1,6 @@
 import SimplePage from '@/components/SimplePage';
 import SectionPosts from '@/components/SectionPosts';
+import { loadContent } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'تولیدات تبلیغاتی',
@@ -9,10 +10,11 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default function WorksAdvertisingPage() {
+export default async function WorksAdvertisingPage() {
+  const t = await loadContent();
   return (
-    <SimplePage title="تولیدات تبلیغاتی" subtitle="پروژه‌های تبلیغاتی و ویدیویی" tag="تبلیغات">
-      <p className="body-lg">در این بخش تولیدات تبلیغاتی و پروژه‌های ویدیویی خانواده برداشت معرفی می‌شود.</p>
+    <SimplePage title={t('works.adv.title')} subtitle={t('works.adv.subtitle')} tag={t('works.adv.tag')}>
+      <p className="body-lg">{t('works.adv.intro')}</p>
       <SectionPosts section="works-advertising" variant="media" />
     </SimplePage>
   );

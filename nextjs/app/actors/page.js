@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isFilmmakerOrManager } from '@/lib/auth';
 import SimplePage from '@/components/SimplePage';
+import { loadContent } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'بانک بازیگران',
@@ -18,17 +19,20 @@ export default async function ActorsPage() {
   // بانک بازیگران فقط ویژه‌ی فیلم‌سازان و ادمین/ادیتور است؛ هنرجو و عضو عادی دسترسی ندارند.
   if (!isFilmmakerOrManager(user)) redirect('/dashboard');
 
-  const actors = await prisma.actorResume.findMany({
-    where: { isPublic: true },
-    orderBy: { updatedAt: 'desc' },
-    select: { id: true, fullName: true, headline: true, city: true, photoUrl: true, gender: true },
-  });
+  const [actors, t] = await Promise.all([
+    prisma.actorResume.findMany({
+      where: { isPublic: true },
+      orderBy: { updatedAt: 'desc' },
+      select: { id: true, fullName: true, headline: true, city: true, photoUrl: true, gender: true },
+    }),
+    loadContent(),
+  ]);
 
   return (
-    <SimplePage title="بانک بازیگران" subtitle="رزومه بازیگران خانواده برداشت؛ ویژه فیلم‌سازان و کارگردانان" tag="بازیگران" cta={false}>
+    <SimplePage title={t('actors.title')} subtitle={t('actors.subtitle')} tag={t('actors.tag')} cta={false}>
       {actors.length === 0 ? (
         <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 40, textAlign: 'center' }}>
-          <p style={{ color: 'var(--muted)' }}>هنوز رزومه‌ای برای نمایش عمومی ثبت نشده است.</p>
+          <p style={{ color: 'var(--muted)' }}>{t('actors.empty')}</p>
         </div>
       ) : (
         <div className="responsive-grid-3">

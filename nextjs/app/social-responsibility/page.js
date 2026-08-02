@@ -2,6 +2,7 @@ import SimplePage from '@/components/SimplePage';
 import SectionPosts from '@/components/SectionPosts';
 import BookList from '@/components/BookList';
 import SRTabs from '@/components/SRTabs';
+import { loadContent } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'مسئولیت اجتماعی',
@@ -13,7 +14,8 @@ export const dynamic = 'force-dynamic';
 
 const emptyMsg = (txt) => <p style={{ color: 'var(--muted)' }}>{txt}</p>;
 
-export default function SocialResponsibilityPage() {
+export default async function SocialResponsibilityPage() {
+  const t = await loadContent();
   const tabs = [
     {
       key: 'book',
@@ -72,9 +74,9 @@ export default function SocialResponsibilityPage() {
 
   return (
     <SimplePage
-      title="مسئولیت اجتماعی"
-      subtitle="فعالیت‌های فرهنگی و اجتماعی خانواده برداشت"
-      tag="خانواده برداشت"
+      title={t('sr.title')}
+      subtitle={t('sr.subtitle')}
+      tag={t('sr.tag')}
     >
       <SRTabs tabs={tabs} />
     </SimplePage>

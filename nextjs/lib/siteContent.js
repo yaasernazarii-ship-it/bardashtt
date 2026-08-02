@@ -11,6 +11,7 @@ export const CONTENT_GROUPS = [
     title: 'صفحهٔ اصلی',
     fields: [
       { key: 'home.hero.logo', label: 'لوگوی بالای صفحهٔ اصلی', type: 'image', default: '/bardasht-logo.png' },
+      { key: 'home.hero.bgImage', label: 'عکس پس‌زمینهٔ هدر صفحهٔ اصلی', type: 'image', default: '/hero-cinema-bg.png' },
       { key: 'home.hero.eyebrow', label: 'برچسب بالای عنوان', type: 'text', default: 'اولین آموزشگاه رایگان بازیگری سینما در ایران' },
       { key: 'home.hero.title', label: 'عنوان اصلی (شعار)', type: 'text', default: 'شاید این بار قصه زندگی تو باشد' },
       { key: 'home.hero.subtitle', label: 'زیرعنوان شعار', type: 'text', default: 'آموزش حرفه‌ای، رایگان و قابل‌اعتماد' },
@@ -138,8 +139,21 @@ export const CONTENT_GROUPS = [
       { key: 'faq.tag', label: 'برچسب بالای عنوان', type: 'text', default: 'راهنمای هنرجویان' },
       { key: 'faq.title', label: 'عنوان', type: 'text', default: 'سوالات متداول' },
       { key: 'faq.subtitle', label: 'زیرعنوان', type: 'text', default: 'پاسخ سوال‌های رایج درباره ثبت‌نام، دوره‌ها، گواهینامه و روند آموزشی خانواده برداشت.' },
+      { key: 'faq.side.tag', label: 'برچسب کادر پشتیبانی', type: 'text', default: 'پشتیبانی مستقیم' },
       { key: 'faq.side.heading', label: 'عنوان کادر پشتیبانی', type: 'text', default: 'اگر پاسخ را پیدا نکردید' },
       { key: 'faq.side.text', label: 'متن کادر پشتیبانی', type: 'textarea', default: 'اگر سوال شما در این بخش نیست، تیم پشتیبانی خانواده برداشت آماده پاسخ‌گویی مستقیم به شماست.' },
+      { key: 'faq.side.f1.title', label: 'کادر پشتیبانی — گام ۱ عنوان', type: 'text', default: 'دوره‌ها را ببینید' },
+      { key: 'faq.side.f1.text', label: 'کادر پشتیبانی — گام ۱ متن', type: 'text', default: 'اگر آماده ورود به مسیر آموزشی هستید، از صفحهٔ دوره‌ها ثبت‌نام را آغاز کنید.' },
+      { key: 'faq.side.f2.title', label: 'کادر پشتیبانی — گام ۲ عنوان', type: 'text', default: 'با پشتیبانی تماس بگیرید' },
+      { key: 'faq.side.f2.text', label: 'کادر پشتیبانی — گام ۲ متن', type: 'text', default: 'برای سؤال‌های اختصاصی، ارتباط مستقیم سریع‌ترین راه است.' },
+
+      // گروه‌های سؤالات متداول — هر خط یک مورد به شکل «سؤال | پاسخ»
+      { key: 'faq.g1.title', label: 'گروه ۱ — عنوان', type: 'text', default: 'ثبت‌نام و پذیرش' },
+      { key: 'faq.g1.items', label: 'گروه ۱ — سؤال‌ها (هر خط: سؤال | پاسخ)', type: 'list', default: 'آیا آموزشگاه واقعاً رایگان است؟ | بله. آموزش دوره‌ها رایگان است و تنها هزینه‌های اجرایی مانند اجاره لوکیشن، پلاتو یا موارد اعلام‌شده پیش از شروع دوره توسط هنرجو پرداخت می‌شود.\nچگونه ثبت‌نام کنم؟ | از طریق فرم ثبت‌نام سایت یا ارسال عدد ۱ به دایرکت اینستاگرام. پس از ثبت‌نام، اطلاعات شما بررسی و در صورت تکمیل بودن، کارشناسان با شما تماس خواهند گرفت.\nچه مدت بعد از ثبت‌نام با من تماس می‌گیرید؟ | معمولاً در اولین فرصت و بر اساس زمان ثبت‌نام و ظرفیت دوره‌ها، کارشناسان با شما تماس می‌گیرند.\nآیا بدون هیچ سابقه بازیگری هم می‌توانم شرکت کنم؟ | بله. دوره‌های مقدماتی برای افرادی طراحی شده‌اند که هیچ تجربه قبلی در بازیگری ندارند.\nآیا محدودیت سنی برای ثبت‌نام وجود دارد؟ | خیر. افراد در رده‌های سنی مختلف می‌توانند در دوره‌های متناسب با شرایط خود شرکت کنند.' },
+      { key: 'faq.g2.title', label: 'گروه ۲ — عنوان', type: 'text', default: 'دوره‌ها و برگزاری' },
+      { key: 'faq.g2.items', label: 'گروه ۲ — سؤال‌ها (هر خط: سؤال | پاسخ)', type: 'list', default: 'کلاس‌ها در چه شهرهایی برگزار می‌شوند؟ | در حال حاضر دوره‌ها در دو شعبهٔ فعال، تهران و مازندران برگزار می‌شوند. اطلاعات زمان و محل هر دوره هنگام ثبت‌نام اعلام خواهد شد.\nآیا بعد از پایان دوره مدرک دریافت می‌کنم؟ | اطلاعات مربوط به گواهی پایان دوره و شرایط دریافت آن در زمان ثبت‌نام توسط کارشناسان توضیح داده می‌شود.\nآیا پس از پایان دوره امکان معرفی به پروژه‌های بازیگری وجود دارد؟ | هنرجویان مستعد پس از گذراندن دوره‌ها و بر اساس ارزیابی، ممکن است برای فعالیت‌ها و پروژه‌های مرتبط معرفی شوند. این موضوع به عملکرد هنرجو بستگی دارد و تضمینی نیست.' },
+      { key: 'faq.g3.title', label: 'گروه ۳ — عنوان', type: 'text', default: 'پشتیبانی و ارتباط' },
+      { key: 'faq.g3.items', label: 'گروه ۳ — سؤال‌ها (هر خط: سؤال | پاسخ)', type: 'list', default: 'اگر بعد از ثبت‌نام پاسخی دریافت نکردم چه کار کنم؟ | در صورت گذشت چند روز بدون دریافت تماس، از طریق چت آنلاین سایت، دایرکت اینستاگرام یا شماره پشتیبانی با ما در ارتباط باشید.\nسؤال من در این صفحه نیست، چه کار کنم؟ | از طریق چت آنلاین سایت، تماس تلفنی یا دایرکت اینستاگرام با پشتیبانی در ارتباط باشید. کارشناسان ما در سریع‌ترین زمان ممکن پاسخگوی شما خواهند بود.' },
     ],
   },
   {
@@ -245,6 +259,66 @@ export const CONTENT_GROUPS = [
       { key: 'course.c5.icon', label: 'دورهٔ ۵ — آیکن (اموجی)', type: 'text', default: '🎬' },
       { key: 'course.c5.desc', label: 'دورهٔ ۵ — توضیح', type: 'textarea', default: 'تجربه‌ی کامل ساخت و بازی در فیلم، از ایده تا اجرا.' },
       { key: 'course.c5.items', label: 'دورهٔ ۵ — سرفصل‌ها (هر مورد یک خط)', type: 'list', default: 'ساخت و بازی در فیلم' },
+    ],
+  },
+  {
+    id: 'news',
+    title: 'صفحهٔ اخبار و مطالب',
+    fields: [
+      { key: 'news.tag', label: 'برچسب', type: 'text', default: 'مطالب' },
+      { key: 'news.title', label: 'عنوان', type: 'text', default: 'اخبار و مطالب' },
+      { key: 'news.subtitle', label: 'زیرعنوان', type: 'text', default: 'آخرین اخبار، مطالب و ویدیوهای خانواده برداشت' },
+      { key: 'news.empty', label: 'متن حالت خالی', type: 'text', default: 'هنوز مطلبی منتشر نشده است.' },
+    ],
+  },
+  {
+    id: 'actors',
+    title: 'صفحهٔ بانک بازیگران',
+    fields: [
+      { key: 'actors.tag', label: 'برچسب', type: 'text', default: 'بازیگران' },
+      { key: 'actors.title', label: 'عنوان', type: 'text', default: 'بانک بازیگران' },
+      { key: 'actors.subtitle', label: 'زیرعنوان', type: 'text', default: 'رزومه بازیگران خانواده برداشت؛ ویژه فیلم‌سازان و کارگردانان' },
+      { key: 'actors.empty', label: 'متن حالت خالی', type: 'text', default: 'هنوز رزومه‌ای برای نمایش عمومی ثبت نشده است.' },
+    ],
+  },
+  {
+    id: 'socialResponsibility',
+    title: 'صفحهٔ مسئولیت اجتماعی',
+    fields: [
+      { key: 'sr.tag', label: 'برچسب', type: 'text', default: 'خانواده برداشت' },
+      { key: 'sr.title', label: 'عنوان', type: 'text', default: 'مسئولیت اجتماعی' },
+      { key: 'sr.subtitle', label: 'زیرعنوان', type: 'text', default: 'فعالیت‌های فرهنگی و اجتماعی خانواده برداشت' },
+    ],
+  },
+  {
+    id: 'works',
+    title: 'صفحه‌های آثار و تولیدات',
+    fields: [
+      // تولیدات تبلیغاتی
+      { key: 'works.adv.tag', label: 'تبلیغات — برچسب', type: 'text', default: 'تبلیغات' },
+      { key: 'works.adv.title', label: 'تبلیغات — عنوان', type: 'text', default: 'تولیدات تبلیغاتی' },
+      { key: 'works.adv.subtitle', label: 'تبلیغات — زیرعنوان', type: 'text', default: 'پروژه‌های تبلیغاتی و ویدیویی' },
+      { key: 'works.adv.intro', label: 'تبلیغات — متن معرفی', type: 'textarea', default: 'در این بخش تولیدات تبلیغاتی و پروژه‌های ویدیویی خانواده برداشت معرفی می‌شود.' },
+      // خروجی خانواده برداشت
+      { key: 'works.output.tag', label: 'خروجی — برچسب', type: 'text', default: 'آثار' },
+      { key: 'works.output.title', label: 'خروجی — عنوان', type: 'text', default: 'خروجی خانواده برداشت' },
+      { key: 'works.output.subtitle', label: 'خروجی — زیرعنوان', type: 'text', default: 'نتایج آموزشی و هنری هنرجویان' },
+      { key: 'works.output.intro', label: 'خروجی — متن معرفی', type: 'textarea', default: 'در این بخش خروجی‌های آموزشی، تمرین‌ها و آثار هنرجویان خانواده برداشت معرفی می‌شود.' },
+      // پشتوانه علمی و هنری
+      { key: 'works.resume.tag', label: 'پشتوانه — برچسب', type: 'text', default: 'رزومه' },
+      { key: 'works.resume.title', label: 'پشتوانه — عنوان', type: 'text', default: 'پشتوانه علمی و هنری' },
+      { key: 'works.resume.subtitle', label: 'پشتوانه — زیرعنوان', type: 'text', default: 'رزومه، افتخارات و تجربه‌های آموزشی' },
+      { key: 'works.resume.intro', label: 'پشتوانه — متن معرفی', type: 'textarea', default: 'پشتوانه علمی، آموزشی و هنری خانواده برداشت و تیم آموزشی در این بخش ارائه می‌شود.' },
+    ],
+  },
+  {
+    id: 'common',
+    title: 'کادر دعوت به اقدام (مشترک صفحات)',
+    fields: [
+      { key: 'common.cta.heading', label: 'عنوان', type: 'text', default: 'برای شروع آماده‌اید؟' },
+      { key: 'common.cta.text', label: 'متن', type: 'textarea', default: 'دوره‌های خانواده برداشت رایگان است. برای دیدن دوره‌ها و شروع ثبت‌نام، به صفحهٔ دوره‌ها بروید.' },
+      { key: 'common.cta.primary', label: 'دکمهٔ اصلی', type: 'text', default: 'مشاهده دوره‌ها' },
+      { key: 'common.cta.secondary', label: 'دکمهٔ تماس', type: 'text', default: 'تماس مستقیم' },
     ],
   },
   {

@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
+import { loadContent } from '@/lib/siteContent';
 
-export default function SimplePage({ title, subtitle, tag = 'خانواده برداشت', children, cta = true, narrow = false }) {
+export default async function SimplePage({ title, subtitle, tag = 'خانواده برداشت', children, cta = true, narrow = false }) {
+  const t = await loadContent();
   return (
     <PageLayout>
       <div className="page-header">
@@ -17,11 +19,11 @@ export default function SimplePage({ title, subtitle, tag = 'خانواده بر
           {children}
           {cta && (
             <div className="cta-card">
-              <h3>برای شروع آماده‌اید؟</h3>
-              <p>دوره‌های خانواده برداشت رایگان است. برای دیدن دوره‌ها و شروع ثبت‌نام، به صفحهٔ دوره‌ها بروید.</p>
+              <h3>{t('common.cta.heading')}</h3>
+              <p>{t('common.cta.text')}</p>
               <div className="cta-card__actions">
-                <Link href="/courses" className="btn btn--gold">مشاهده دوره‌ها</Link>
-                <a href="tel:02191090934" className="btn btn--hero-secondary">تماس مستقیم</a>
+                <Link href="/courses" className="btn btn--gold">{t('common.cta.primary')}</Link>
+                <a href={`tel:${t('contact.phone')}`} className="btn btn--hero-secondary">{t('common.cta.secondary')}</a>
               </div>
             </div>
           )}

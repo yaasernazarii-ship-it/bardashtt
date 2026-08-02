@@ -1,5 +1,6 @@
 import SimplePage from '@/components/SimplePage';
 import SectionPosts from '@/components/SectionPosts';
+import { loadContent } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'خروجی خانواده برداشت',
@@ -9,10 +10,11 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default function WorksOutputPage() {
+export default async function WorksOutputPage() {
+  const t = await loadContent();
   return (
-    <SimplePage title="خروجی خانواده برداشت" subtitle="نتایج آموزشی و هنری هنرجویان" tag="آثار">
-      <p className="body-lg">در این بخش خروجی‌های آموزشی، تمرین‌ها و آثار هنرجویان خانواده برداشت معرفی می‌شود.</p>
+    <SimplePage title={t('works.output.title')} subtitle={t('works.output.subtitle')} tag={t('works.output.tag')}>
+      <p className="body-lg">{t('works.output.intro')}</p>
       <SectionPosts section="works-output" variant="media" />
     </SimplePage>
   );

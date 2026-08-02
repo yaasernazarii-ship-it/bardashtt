@@ -14,10 +14,7 @@
 }
 .home-hero__bg {
   position: absolute; inset: 0;
-  background-image:
-    linear-gradient(180deg, rgba(15,13,10,.55) 0%, rgba(15,13,10,.72) 55%, rgba(15,13,10,.94) 100%),
-    radial-gradient(circle at 18% 18%, rgba(255,215,0,.16) 0%, transparent 32%),
-    url('/hero-cinema-bg.png');
+  /* عکس پس‌زمینه به‌صورت inline از پنل تعیین می‌شود (home.hero.bgImage) */
   background-size: cover, cover, contain;
   background-position: center, center, center;
   background-repeat: no-repeat, no-repeat, no-repeat;
