@@ -16,14 +16,6 @@ export default async function AboutPage() {
   return (
     <PageLayout>
       <style>{`
-        .story-grid { display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center; }
-        .story-img { aspect-ratio:4/5;border-radius:var(--radius-lg);overflow:hidden;position:relative;background:linear-gradient(145deg,#1a1208 0%,#2a1f0d 45%,#0d0a05 100%);background-size:cover;background-position:center; }
-        .story-img::after { content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55) 0%,transparent 55%); }
-        .story-logo-badge { position:absolute;bottom:20px;right:20px;z-index:2;background:rgba(255,255,255,.94);border-radius:14px;padding:10px;width:78px;height:78px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.3); }
-        .story-logo-badge img { width:100%;height:100%;object-fit:contain; }
-        .story-year-badge { position:absolute;top:20px;left:20px;z-index:2;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px 16px; }
-        .story-year-badge span { display:block;font-size:.68rem;font-weight:600;color:rgba(255,255,255,.6);margin-bottom:2px; }
-        .story-year-badge strong { font-size:1.1rem;font-weight:900;color:#fff; }
         .founder-card { background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:52px 48px;display:grid;grid-template-columns:160px 1fr;gap:48px;align-items:center;max-width:860px;margin:0 auto; }
         .founder-avatar { width:160px;height:160px;border-radius:50%;overflow:hidden;flex-shrink:0;background:linear-gradient(145deg,#1a1208,#2a1f0d);display:flex;align-items:center;justify-content:center;font-size:3.5rem;border:3px solid var(--gold); }
         .founder-avatar img { width:100%;height:100%;object-fit:cover;object-position:center top;display:block; }
@@ -71,8 +63,6 @@ export default async function AboutPage() {
         .value-item h3 { font-size:1.05rem;font-weight:800;color:var(--dark);margin-bottom:10px; }
         .value-item p { font-size:.85rem;color:var(--muted);line-height:1.75; }
         @media(max-width:900px){
-          .story-grid{grid-template-columns:1fr;gap:40px;}
-          .story-img{aspect-ratio:16/9;}
           .founder-card{grid-template-columns:1fr;text-align:center;padding:36px 24px;}
           .founder-avatar{margin:0 auto;}
           .founder-tags{justify-content:center;}
@@ -90,41 +80,6 @@ export default async function AboutPage() {
         count={3}
         images={[t('about.slide1.image'), t('about.slide2.image'), t('about.slide3.image')]}
       />
-
-      {/* داستان */}
-      <section style={{ background: 'var(--white)' }}>
-        <div className="container">
-          <div className="story-grid">
-            <div className="story-img" style={{ backgroundImage: `url(${t('about.story.image')})` }}>
-              <div className="story-year-badge">
-                <span>{t('about.story.foundedLabel')}</span>
-                <strong>{t('about.story.foundedYear')}</strong>
-              </div>
-              <div className="story-logo-badge">
-                <img src="/bardasht-logo.png" alt="خانه برداشت" loading="lazy" decoding="async" />
-              </div>
-            </div>
-            <div>
-              <span className="tag tag--gold">{t('about.story.eyebrow')}</span>
-              <h2 className="heading" style={{ marginTop: 16 }}>{t('about.story.heading')}</h2>
-              <div className="line" />
-              <p className="body-lg" style={{ marginBottom: 20 }}>
-                {t('about.story.intro')}<br />
-                <strong>{t('about.story.lead')}</strong>
-              </p>
-              <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 16 }}>
-                {t('about.story.p1')}
-              </p>
-              <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 16 }}>
-                {t('about.story.p2')}
-              </p>
-              <p style={{ color: 'var(--muted)', lineHeight: 1.9 }}>
-                {t('about.story.p3')}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* معرفی آموزشگاه */}
       <section style={{ background: 'var(--bg)' }}>
@@ -159,20 +114,6 @@ export default async function AboutPage() {
           <p style={{ textAlign: 'center', color: 'var(--muted)', lineHeight: 2, marginTop: 32, maxWidth: 780, marginInline: 'auto' }}>
             {t('about.intro.closing')}
           </p>
-        </div>
-      </section>
-
-      {/* آمار */}
-      <section style={{ background: 'var(--dark)', padding: '56px 0' }}>
-        <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24, textAlign: 'center' }}>
-            {[[t('about.stat1.num'),t('about.stat1.label')],[t('about.stat2.num'),t('about.stat2.label')],[t('about.stat3.num'),t('about.stat3.label')],[t('about.stat4.num'),t('about.stat4.label')]].map(([n,l]) => (
-              <div key={l} style={{ padding: '32px 16px', borderLeft: '1px solid rgba(255,255,255,.07)' }}>
-                <div style={{ fontSize: 'clamp(2rem,4vw,3rem)', fontWeight: 900, color: 'var(--gold)', lineHeight: 1, marginBottom: 8 }}>{n}</div>
-                <p style={{ fontSize: '.78rem', color: 'rgba(255,255,255,.4)', letterSpacing: '.04em' }}>{l}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 

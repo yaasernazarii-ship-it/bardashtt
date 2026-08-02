@@ -31,26 +31,51 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* شعبه‌ها */}
-      <section style={{ background: 'linear-gradient(135deg, #1B1B1B 0%, #202020 100%)' }}>
+      {/* داستان ما */}
+      <section style={{ background: 'var(--white)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <span className="tag tag--gold">شعبه‌ها</span>
-            <h2 className="heading" style={{ marginTop: 14, color: '#fff' }}>{t('home.branch.heading')}</h2>
+          <div className="story-grid">
+            <div className="story-img" style={{ backgroundImage: `url(${t('about.story.image')})` }}>
+              <div className="story-year-badge">
+                <span>{t('about.story.foundedLabel')}</span>
+                <strong>{t('about.story.foundedYear')}</strong>
+              </div>
+              <div className="story-logo-badge">
+                <img src="/bardasht-logo.png" alt="خانه برداشت" loading="lazy" decoding="async" />
+              </div>
+            </div>
+            <div>
+              <span className="tag tag--gold">{t('about.story.eyebrow')}</span>
+              <h2 className="heading" style={{ marginTop: 16 }}>{t('about.story.heading')}</h2>
+              <div className="line" />
+              <p className="body-lg" style={{ marginBottom: 20 }}>
+                {t('about.story.intro')}<br />
+                <strong>{t('about.story.lead')}</strong>
+              </p>
+              <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 16 }}>
+                {t('about.story.p1')}
+              </p>
+              <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 16 }}>
+                {t('about.story.p2')}
+              </p>
+              <p style={{ color: 'var(--muted)', lineHeight: 1.9 }}>
+                {t('about.story.p3')}
+              </p>
+            </div>
           </div>
-          <div className="branch-row">
-            <div className="branch-card">
-              <div className="bnum">۰۱</div>
-              <h3>{t('home.branch1.title')}</h3>
-              <p>{t('home.branch1.desc')}</p>
-              <div className="active-dot">فعال</div>
-            </div>
-            <div className="branch-card">
-              <div className="bnum">۰۲</div>
-              <h3>{t('home.branch2.title')}</h3>
-              <p>{t('home.branch2.desc')}</p>
-              <div className="active-dot">فعال</div>
-            </div>
+        </div>
+      </section>
+
+      {/* آمار */}
+      <section style={{ background: 'var(--dark)', padding: '56px 0' }}>
+        <div className="container">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24, textAlign: 'center' }}>
+            {[[t('about.stat1.num'),t('about.stat1.label')],[t('about.stat2.num'),t('about.stat2.label')],[t('about.stat3.num'),t('about.stat3.label')],[t('about.stat4.num'),t('about.stat4.label')]].map(([n,l]) => (
+              <div key={l} style={{ padding: '32px 16px', borderLeft: '1px solid rgba(255,255,255,.07)' }}>
+                <div style={{ fontSize: 'clamp(2rem,4vw,3rem)', fontWeight: 900, color: 'var(--gold)', lineHeight: 1, marginBottom: 8 }}>{n}</div>
+                <p style={{ fontSize: '.78rem', color: 'rgba(255,255,255,.4)', letterSpacing: '.04em' }}>{l}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
