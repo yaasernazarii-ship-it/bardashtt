@@ -308,6 +308,8 @@ model Payment {
   status      String    @default("pending") // pending | paid | canceled
   method      String? // روش پرداخت: online | manual (بعد از اتصال درگاه پر می‌شود)
   paidAt      DateTime? // زمان پرداخت موفق
+  gatewayTrackId String? // شناسهٔ تراکنشِ زیبال (trackId) — هنگام شروعِ پرداخت پر می‌شود
+  gatewayRefId   String? // شمارهٔ پیگیری/مرجعِ درگاه پس از verify موفق
   createdById String? // ادمین/ادیتوری که این پرداخت را ساخته
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -315,6 +317,7 @@ model Payment {
   @@index([userId, status])
   @@index([status])
   @@index([courseId])
+  @@index([gatewayTrackId])
 }
 
 // دورهٔ آنلاینِ فروشی: یک تیزر رایگان (teaserUrl) دارد که همه می‌بینند،
@@ -401,6 +404,11 @@ model BookOrder {
   address   String? // نشانی پستی
   quantity  Int      @default(1) // تعداد
   note      String? // توضیح سفارش‌دهنده
+  amount    Int? // مبلغ کلِ سفارش به تومان (قیمت × تعداد) در لحظهٔ ثبت
+  method    String? // روش پرداخت: online | manual
+  paidAt    DateTime? // زمان پرداخت موفق آنلاین
+  gatewayTrackId String? // شناسهٔ تراکنشِ زیبال (trackId)
+  gatewayRefId   String? // شمارهٔ پیگیری/مرجعِ درگاه پس از verify موفق
   status    String   @default("new") // new | contacted | paid | shipped | canceled
   adminNote String? // یادداشت ادمین
   createdAt DateTime @default(now())
@@ -409,4 +417,5 @@ model BookOrder {
   @@index([bookId])
   @@index([status])
   @@index([phone])
+  @@index([gatewayTrackId])
 }

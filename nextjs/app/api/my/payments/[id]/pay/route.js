@@ -1,9 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser } from '@/lib/auth';
+import { zibalRequest, isZibalConfigured } from '@/lib/zibal';
 
-// شروعِ پرداختِ آنلاین توسط هنرجو.
-// این نقطه، محلِ اتصالِ درگاه (زیبال/زرین‌پال با اسنپ‌پی و دیجی‌پی) در فاز بعد است.
-// فعلاً درگاه متصل نیست؛ زیرساخت آماده است و فقط باید ساختِ تراکنش و redirect اینجا اضافه شود.
+// شروعِ پرداختِ آنلاین توسط هنرجو (هم خریدِ دورهٔ آنلاین و هم شهریه/پرداخت‌های دستیِ ادمین).
+// تراکنش در زیبال ساخته و آدرسِ درگاه برای انتقال کاربر برگردانده می‌شود.
 export async function POST(request, { params }) {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
@@ -20,10 +20,30 @@ export async function POST(request, { params }) {
     return Response.json({ ok: false, error: 'این پرداخت لغو شده است.' }, { status: 400 });
   }
 
-  // TODO(فاز ۲): ساختِ تراکنش در درگاه و برگرداندنِ redirectUrl.
-  return Response.json({
-    ok: false,
-    pendingGateway: true,
-    error: 'درگاه پرداخت آنلاین هنوز متصل نشده است و به‌زودی فعال می‌شود. لطفاً برای هماهنگیِ پرداخت با پشتیبانی در تماس باشید.',
+  if (!isZibalConfigured()) {
+    return Response.json({
+      ok: false,
+      pendingGateway: true,
+      error: 'درگاه پرداخت آنلاین هنوز فعال نشده است. لطفاً کمی بعد دوباره تلاش کنید یا با پشتیبانی هماهنگ کنید.',
+    });
+  }
+
+  const owner = await prisma.user.findUnique({ where: { id: user.id }, select: { phone: true } });
+  const r = await zibalRequest({
+    amountToman: payment.amount,
+    orderId: payment.id,
+    description: payment.title,
+    mobile: owner?.phone,
   });
+  if (!r.ok) {
+    return Response.json({ ok: false, error: r.error || 'اتصال به درگاه پرداخت ناموفق بود.' }, { status: 502 });
+  }
+
+  // trackId را روی فاکتور ذخیره می‌کنیم تا در callback همین رکورد پیدا شود.
+  await prisma.payment.update({
+    where: { id: payment.id },
+    data: { gatewayTrackId: r.trackId, method: 'online' },
+  });
+
+  return Response.json({ ok: true, redirectUrl: r.startUrl });
 }

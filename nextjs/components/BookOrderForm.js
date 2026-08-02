@@ -18,8 +18,10 @@ export default function BookOrderForm({ slug, price }) {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form),
     });
     const data = await res.json();
+    if (!data.ok) { setBusy(false); setError(data.error || 'خطا در ثبت سفارش.'); return; }
+    // اگر پرداخت آنلاین فعال باشد، به درگاه منتقل می‌شویم.
+    if (data.redirectUrl) { window.location.href = data.redirectUrl; return; }
     setBusy(false);
-    if (!data.ok) { setError(data.error || 'خطا در ثبت سفارش.'); return; }
     setDone(data.message || 'سفارش شما ثبت شد.');
     setForm({ name: '', phone: '', address: '', quantity: 1, note: '' });
   }
@@ -48,8 +50,8 @@ export default function BookOrderForm({ slug, price }) {
           <input className="form-input" type="number" min="1" max="100" value={form.quantity} onChange={(e) => set('quantity', e.target.value)} />
         </div>
         <div className="form-group">
-          <label className="form-label">نشانی پستی (اختیاری)</label>
-          <input className="form-input" value={form.address} onChange={(e) => set('address', e.target.value)} placeholder="برای ارسال کتاب" />
+          <label className="form-label">نشانی پستی *</label>
+          <input className="form-input" value={form.address} onChange={(e) => set('address', e.target.value)} placeholder="نشانی کامل برای ارسال کتاب" />
         </div>
       </div>
       <div className="form-group">
@@ -57,10 +59,12 @@ export default function BookOrderForm({ slug, price }) {
         <textarea className="form-input" rows={2} value={form.note} onChange={(e) => set('note', e.target.value)} placeholder="اگر توضیحی دارید بنویسید." />
       </div>
       <button className="btn btn--dark" type="submit" disabled={busy}>
-        {busy ? 'در حال ثبت…' : price > 0 ? `ثبت سفارش (${price.toLocaleString('fa-IR')} تومان)` : 'ثبت سفارش'}
+        {busy ? 'در حال اتصال…' : price > 0 ? `پرداخت و ثبت سفارش (${(price * (Number(form.quantity) || 1)).toLocaleString('fa-IR')} تومان)` : 'ثبت سفارش'}
       </button>
       <p style={{ color: 'var(--muted)', fontSize: '0.82rem', marginTop: 10 }}>
-        پس از ثبت سفارش، همکاران ما برای هماهنگی پرداخت و ارسال با شما تماس می‌گیرند.
+        {price > 0
+          ? 'پس از پرداخت آنلاین، سفارش شما ثبت و کتاب به نشانیِ واردشده ارسال می‌شود.'
+          : 'پس از ثبت سفارش، همکاران ما برای هماهنگی پرداخت و ارسال با شما تماس می‌گیرند.'}
       </p>
     </form>
   );

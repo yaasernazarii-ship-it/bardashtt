@@ -24,6 +24,19 @@ export default function BuyCourseButton({ slug, price, loggedIn, nextPath }) {
       const data = await res.json();
       if (!data.ok) { setMsg(data.error || 'خطا در ثبت درخواست.'); setLoading(false); return; }
       if (data.alreadyOwned) { router.refresh(); return; }
+
+      // فاکتور ساخته شد؛ بلافاصله پرداخت آنلاین را شروع می‌کنیم و به درگاه می‌رویم.
+      if (data.paymentId) {
+        const payRes = await fetch(`/api/my/payments/${data.paymentId}/pay`, { method: 'POST' });
+        const payData = await payRes.json();
+        if (payData.ok && payData.redirectUrl) { window.location.href = payData.redirectUrl; return; }
+        // درگاه هنوز فعال نیست یا خطا داد؛ فاکتور در «پرداخت‌های من» باقی می‌ماند.
+        setDone(true);
+        setMsg(payData.error || data.message || 'درخواست خرید ثبت شد.');
+        setLoading(false);
+        return;
+      }
+
       setDone(true);
       setMsg(data.message || 'درخواست خرید ثبت شد.');
     } catch {
