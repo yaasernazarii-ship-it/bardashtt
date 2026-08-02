@@ -12,7 +12,7 @@ export const CONTENT_GROUPS = [
     fields: [
       { key: 'home.hero.logo', label: 'لوگوی بالای صفحهٔ اصلی', type: 'image', default: '/bardasht-logo.png' },
       { key: 'home.hero.eyebrow', label: 'برچسب بالای عنوان', type: 'text', default: 'اولین آموزشگاه رایگان بازیگری سینما در ایران' },
-      { key: 'home.hero.title', label: 'عنوان اصلی (شعار)', type: 'text', default: 'استعداد بازیگری‌ات را جدی بگیر' },
+      { key: 'home.hero.title', label: 'عنوان اصلی (شعار)', type: 'text', default: 'شاید این بار قصه زندگی تو باشد' },
       { key: 'home.hero.subtitle', label: 'زیرعنوان شعار', type: 'text', default: 'آموزش حرفه‌ای، رایگان و قابل‌اعتماد' },
       { key: 'home.hero.ctaPrimary', label: 'دکمهٔ اصلی', type: 'text', default: 'مشاهده دوره‌ها' },
       { key: 'home.hero.ctaSecondary', label: 'دکمهٔ دوم', type: 'text', default: 'درباره ما' },

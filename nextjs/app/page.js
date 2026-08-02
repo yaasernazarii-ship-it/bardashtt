@@ -18,9 +18,6 @@ export default async function HomePage() {
       <section className="home-hero">
         <div className="home-hero__bg" />
         <div className="container home-hero__inner home-hero__inner--center">
-          <div className="home-hero__logo">
-            <img src={t('home.hero.logo')} alt="خانه برداشت" />
-          </div>
           <div className="home-hero__eyebrow">
             <span /> {t('home.hero.eyebrow')}
           </div>
