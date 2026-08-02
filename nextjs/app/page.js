@@ -24,12 +24,16 @@ export default async function HomePage() {
           <h1 className="home-hero__slogan">
             {t('home.hero.title')}
           </h1>
-          <div className="home-hero__actions home-hero__actions--center">
-            <Link href="/courses" className="btn btn--gold btn--lg">{t('home.hero.ctaPrimary')}</Link>
-            <Link href="/about" className="btn btn--hero-secondary btn--lg">{t('home.hero.ctaSecondary')}</Link>
-          </div>
         </div>
       </section>
+
+      {/* دکمه‌های اقدام — زیر عکس، تا روی عکس را نپوشانند */}
+      <div className="home-hero-actions">
+        <div className="container home-hero-actions__inner">
+          <Link href="/courses" className="btn btn--gold btn--sm">{t('home.hero.ctaPrimary')}</Link>
+          <Link href="/about" className="btn btn--hero-secondary btn--sm">{t('home.hero.ctaSecondary')}</Link>
+        </div>
+      </div>
 
       {/* داستان ما */}
       <section style={{ background: 'var(--white)' }}>
