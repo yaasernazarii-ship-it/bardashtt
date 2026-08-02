@@ -14,9 +14,9 @@ export default async function AdminSupportPage() {
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
       <DashboardSidebar active="support" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} />
       <main className="main-area">
-        <div style={{ marginBottom: 28 }}>
-          <h1 className="heading">پشتیبانی آنلاین</h1>
-          <p style={{ color: 'var(--muted)' }}>پیام‌های بازدیدکنندگان سایت را ببینید و به‌صورت زنده پاسخ دهید.</p>
+        <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
+          <h1 className="dash-head__title">پشتیبانی آنلاین</h1>
+          <p className="dash-head__sub">پیام‌های بازدیدکنندگان سایت را ببینید و به‌صورت زنده پاسخ دهید.</p>
         </div>
         <AdminSupport />
       </main>

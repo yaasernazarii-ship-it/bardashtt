@@ -13,9 +13,9 @@ export default async function AssistantPage() {
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
       <DashboardSidebar active="assistant" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} graduated={user.graduated} />
       <main className="main-area">
-        <div style={{ marginBottom: 24 }}>
-          <h1 className="heading">دستیار هوشمند کتاب</h1>
-          <p style={{ color: 'var(--muted)' }}>پرسش‌های خود را بر اساس کتاب «متد پنج سوال طلایی» اثر یاسر نظری بپرسید.</p>
+        <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
+          <h1 className="dash-head__title">دستیار هوشمند کتاب</h1>
+          <p className="dash-head__sub">پرسش‌های خود را بر اساس کتاب «متد پنج سوال طلایی» اثر یاسر نظری بپرسید.</p>
         </div>
         <AssistantChat />
       </main>

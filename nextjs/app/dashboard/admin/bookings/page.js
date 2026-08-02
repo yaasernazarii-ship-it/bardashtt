@@ -14,9 +14,9 @@ export default async function AdminBookingsPage() {
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
       <DashboardSidebar active="bookings" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} />
       <main className="main-area">
-        <div style={{ marginBottom: 28 }}>
-          <h1 className="heading">درخواست‌های ست تایم بازیگران</h1>
-          <p style={{ color: 'var(--muted)' }}>فیلم‌سازانی که از رزومهٔ بازیگران درخواست همکاری داده‌اند اینجا نمایش داده می‌شوند. می‌توانید تماس بگیرید و وضعیت هر درخواست را مدیریت کنید.</p>
+        <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
+          <h1 className="dash-head__title">درخواست‌های ست تایم بازیگران</h1>
+          <p className="dash-head__sub">فیلم‌سازانی که از رزومهٔ بازیگران درخواست همکاری داده‌اند اینجا نمایش داده می‌شوند. می‌توانید تماس بگیرید و وضعیت هر درخواست را مدیریت کنید.</p>
         </div>
         <AdminBookings />
       </main>

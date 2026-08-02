@@ -67,6 +67,16 @@ export default function AdminSignups() {
     else setError(data.error || 'عملیات انجام نشد.');
   }
 
+  async function remove(id) {
+    if (!window.confirm('این درخواست برای همیشه حذف شود؟')) return;
+    setBusyId(id); setError('');
+    const res = await fetch(`/api/admin/signups/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    setBusyId('');
+    if (data.ok) load();
+    else setError(data.error || 'حذف انجام نشد.');
+  }
+
   if (loading) return <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p>;
 
   return (
@@ -142,6 +152,13 @@ export default function AdminSignups() {
                   </button>
                   <button className="btn btn--ghost" disabled={busyId === r.id} onClick={() => reject(r.id)}>رد درخواست</button>
                 </div>
+              </div>
+            )}
+
+            {r.status !== 'pending' && (
+              <div style={{ marginTop: 12, borderTop: '1px solid var(--border)', paddingTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
+                <button type="button" className="btn btn--sm btn--danger" disabled={busyId === r.id}
+                  onClick={() => remove(r.id)}>{busyId === r.id ? 'در حال حذف…' : 'حذف درخواست'}</button>
               </div>
             )}
           </div>

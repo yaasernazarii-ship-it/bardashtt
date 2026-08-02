@@ -16,9 +16,9 @@ export default async function MyEnrollmentPage() {
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
       <DashboardSidebar active="enrollment" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} graduated={user.graduated} />
       <main className="main-area">
-        <div style={{ marginBottom: 28 }}>
-          <h1 className="heading">ثبت‌نام و روند آموزش من</h1>
-          <p style={{ color: 'var(--muted)' }}>وضعیت درخواست ثبت‌نام و مراحل پیش رو را اینجا دنبال کنید.</p>
+        <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
+          <h1 className="dash-head__title">ثبت‌نام و روند آموزش من</h1>
+          <p className="dash-head__sub">وضعیت درخواست ثبت‌نام و مراحل پیش رو را اینجا دنبال کنید.</p>
         </div>
         <MyEnrollments />
 

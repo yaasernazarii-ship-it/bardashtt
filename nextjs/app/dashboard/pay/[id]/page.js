@@ -15,9 +15,9 @@ export default async function PayInvoicePage({ params }) {
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
       <DashboardSidebar active="enrollment" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} graduated={user.graduated} />
       <main className="main-area">
-        <div style={{ marginBottom: 28 }}>
-          <h1 className="heading">پرداخت شهریه</h1>
-          <p style={{ color: 'var(--muted)' }}>جزئیات پرداخت را ببینید و مبلغ را به‌صورت آنلاین بپردازید.</p>
+        <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
+          <h1 className="dash-head__title">پرداخت شهریه</h1>
+          <p className="dash-head__sub">جزئیات پرداخت را ببینید و مبلغ را به‌صورت آنلاین بپردازید.</p>
         </div>
         <div style={{ maxWidth: 560 }}>
           <MyPayments onlyId={id} />

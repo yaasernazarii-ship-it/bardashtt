@@ -14,9 +14,9 @@ export default async function AdminEnrollmentsPage() {
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
       <DashboardSidebar active="enrollments" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} />
       <main className="main-area">
-        <div style={{ marginBottom: 28 }}>
-          <h1 className="heading">بررسی درخواست‌های ثبت‌نام</h1>
-          <p style={{ color: 'var(--muted)' }}>ویدیوی هنرجویان را ببینید و در صورت تأیید، حساب کاربری آن‌ها به‌صورت خودکار ساخته می‌شود.</p>
+        <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
+          <h1 className="dash-head__title">بررسی درخواست‌های ثبت‌نام</h1>
+          <p className="dash-head__sub">ویدیوی هنرجویان را ببینید و در صورت تأیید، حساب کاربری آن‌ها به‌صورت خودکار ساخته می‌شود.</p>
         </div>
         <AdminEnrollments />
       </main>

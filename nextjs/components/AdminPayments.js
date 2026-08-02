@@ -22,7 +22,7 @@ function StatusBadge({ status }) {
   );
 }
 
-const emptyForm = { userId: '', courseKey: '', title: '', amount: '', promote: false };
+const emptyForm = { userIds: [], courseKey: '', title: '', amount: '', promote: false };
 
 export default function AdminPayments() {
   const [payments, setPayments] = useState([]);
@@ -45,10 +45,14 @@ export default function AdminPayments() {
   }
   useEffect(() => { load(); }, []);
 
-  const selectedStudent = useMemo(() => students.find((s) => s.id === form.userId) || null, [students, form.userId]);
+  // وقتی فقط یک هنرجو انتخاب شده، دورهٔ بعدیِ پیشنهادی را نشان بده.
+  const soleStudent = useMemo(
+    () => (form.userIds.length === 1 ? students.find((s) => s.id === form.userIds[0]) || null : null),
+    [students, form.userIds]
+  );
   const suggestedNext = useMemo(
-    () => (selectedStudent ? nextCourseAfterTitle(selectedStudent.courseTitle) : null),
-    [selectedStudent]
+    () => (soleStudent ? nextCourseAfterTitle(soleStudent.courseTitle) : null),
+    [soleStudent]
   );
 
   const filteredStudents = useMemo(() => {
@@ -56,6 +60,25 @@ export default function AdminPayments() {
     if (!q) return students;
     return students.filter((s) => [s.displayName, s.username, s.phone].some((v) => (v || '').toLowerCase().includes(q)));
   }, [students, studentQuery]);
+
+  function toggleStudent(id) {
+    setForm((f) => ({
+      ...f,
+      userIds: f.userIds.includes(id) ? f.userIds.filter((x) => x !== id) : [...f.userIds, id],
+    }));
+  }
+
+  // انتخاب/لغوِ همهٔ هنرجویانِ نتیجهٔ جستجوی فعلی.
+  const allFilteredSelected = filteredStudents.length > 0 && filteredStudents.every((s) => form.userIds.includes(s.id));
+  function toggleAllFiltered() {
+    const ids = filteredStudents.map((s) => s.id);
+    setForm((f) => ({
+      ...f,
+      userIds: allFilteredSelected
+        ? f.userIds.filter((x) => !ids.includes(x))
+        : [...new Set([...f.userIds, ...ids])],
+    }));
+  }
 
   function pickCourse(key) {
     const course = COURSE_PATH.find((c) => c.key === key);
@@ -71,7 +94,7 @@ export default function AdminPayments() {
   async function submit(e) {
     e.preventDefault();
     setError(''); setMsg('');
-    if (!form.userId) { setError('ابتدا هنرجو را انتخاب کنید.'); return; }
+    if (form.userIds.length === 0) { setError('حداقل یک هنرجو را انتخاب کنید.'); return; }
     if (!form.title.trim()) { setError('بابتِ پرداخت (دلیل) را بنویسید.'); return; }
     setSaving(true);
     const res = await fetch('/api/admin/payments', {
@@ -80,7 +103,7 @@ export default function AdminPayments() {
     const d = await res.json();
     setSaving(false);
     if (!d.ok) { setError(d.error || 'خطا.'); return; }
-    setMsg('پرداخت ثبت شد و در پنل هنرجو نمایش داده می‌شود ✅');
+    setMsg(`پرداخت برای ${money(d.count || form.userIds.length)} هنرجو ثبت شد و در پنلشان نمایش داده می‌شود ✅`);
     setForm(emptyForm); setStudentQuery('');
     load();
   }
@@ -127,17 +150,34 @@ export default function AdminPayments() {
 
         <div className="cal-form-grid">
           <div className="form-group">
-            <label className="form-label">هنرجو *</label>
+            <label className="form-label">
+              هنرجو *{form.userIds.length > 0 && <span style={{ color: 'var(--muted)', fontWeight: 400 }}> — {money(form.userIds.length)} نفر انتخاب شده</span>}
+            </label>
             <input className="form-input" placeholder="جستجوی نام/موبایل هنرجو…" value={studentQuery}
               onChange={(e) => setStudentQuery(e.target.value)} style={{ marginBottom: 8 }} />
-            <select className="form-input" value={form.userId} onChange={(e) => setForm({ ...form, userId: e.target.value })}>
-              <option value="">— انتخاب هنرجو —</option>
-              {filteredStudents.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.displayName || s.phone}{s.username ? ` (${s.username})` : ''}{s.courseTitle ? ` — دورهٔ فعلی: ${s.courseTitle}` : ''}
-                </option>
-              ))}
-            </select>
+            <div className="pay-picker">
+              <label className="pay-picker__all">
+                <input type="checkbox" checked={allFilteredSelected} onChange={toggleAllFiltered}
+                  disabled={filteredStudents.length === 0} />
+                انتخاب همه{studentQuery.trim() ? ' (نتیجهٔ جستجو)' : ''}
+              </label>
+              <div className="pay-picker__list">
+                {filteredStudents.length === 0 ? (
+                  <p className="pay-picker__empty">هنرجویی یافت نشد.</p>
+                ) : (
+                  filteredStudents.map((s) => (
+                    <label key={s.id} className={`pay-picker__row ${form.userIds.includes(s.id) ? 'is-checked' : ''}`}>
+                      <input type="checkbox" checked={form.userIds.includes(s.id)} onChange={() => toggleStudent(s.id)} />
+                      <span className="pay-picker__name">
+                        {s.displayName || s.phone}
+                        {s.username && <span className="pay-picker__meta"> · {s.username}</span>}
+                      </span>
+                      {s.courseTitle && <span className="pay-picker__course">دورهٔ {s.courseTitle}</span>}
+                    </label>
+                  ))
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="form-group">

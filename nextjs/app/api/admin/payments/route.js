@@ -38,41 +38,48 @@ export async function POST(request) {
 
   try {
     const b = await request.json();
-    const userId = String(b.userId || '').trim();
+    // پشتیبانی از انتخابِ چند هنرجو (userIds) و نیز حالتِ تکیِ قدیمی (userId).
+    const rawIds = Array.isArray(b.userIds) ? b.userIds : (b.userId ? [b.userId] : []);
+    const userIds = [...new Set(rawIds.map((x) => String(x || '').trim()).filter(Boolean))];
     const title = String(b.title || '').trim().slice(0, 160);
     const amount = parseInt(b.amount, 10);
 
-    if (!userId) return Response.json({ ok: false, error: 'هنرجو را انتخاب کنید.' }, { status: 400 });
+    if (userIds.length === 0) return Response.json({ ok: false, error: 'حداقل یک هنرجو را انتخاب کنید.' }, { status: 400 });
     if (!title) return Response.json({ ok: false, error: 'بابتِ پرداخت (دلیل) را بنویسید.' }, { status: 400 });
     if (Number.isNaN(amount) || amount < 1000 || amount > 1_000_000_000) {
       return Response.json({ ok: false, error: 'مبلغ نامعتبر است (به تومان وارد کنید).' }, { status: 400 });
     }
 
-    const target = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, role: true } });
-    if (!target || target.role !== 'student') {
+    // فقط هنرجویانِ معتبر را نگه می‌داریم.
+    const targets = await prisma.user.findMany({
+      where: { id: { in: userIds }, role: 'student' },
+      select: { id: true },
+    });
+    if (targets.length === 0) {
       return Response.json({ ok: false, error: 'هنرجوی معتبری انتخاب نشده است.' }, { status: 400 });
     }
 
     // اگر به یکی از ۵ دوره وصل باشد؛ در غیر این صورت پرداختِ جدا (افیش/متفرقه).
     const course = b.courseKey ? courseByKey(String(b.courseKey)) : null;
 
-    const payment = await prisma.payment.create({
+    // یک فاکتور برای هر هنرجوی انتخاب‌شده، به‌صورت یک‌جا.
+    const ops = targets.map((t) => prisma.payment.create({
       data: {
-        userId,
+        userId: t.id,
         title,
         amount,
         courseKey: course ? course.key : null,
         courseTitle: course ? course.title : null,
         createdById: user.id,
       },
-    });
-
-    // ارتقای هنرجو: دورهٔ فعلیِ او را به این دوره به‌روزرسانی می‌کنیم (فقط وقتی به دوره وصل و ارتقا خواسته شده باشد).
+    }));
+    // ارتقای هنرجویانِ انتخاب‌شده به همین دوره (فقط وقتی به دوره وصل و ارتقا خواسته شده باشد).
     if (course && b.promote) {
-      await prisma.user.update({ where: { id: userId }, data: { courseTitle: course.title } });
+      ops.push(...targets.map((t) => prisma.user.update({ where: { id: t.id }, data: { courseTitle: course.title } })));
     }
+    await prisma.$transaction(ops);
 
-    return Response.json({ ok: true, payment: serialize(payment) });
+    return Response.json({ ok: true, count: targets.length });
   } catch {
     return Response.json({ ok: false, error: 'درخواست نامعتبر است.' }, { status: 400 });
   }

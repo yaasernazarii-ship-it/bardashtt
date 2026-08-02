@@ -10,25 +10,28 @@ function FilmmakerDashboard({ user }) {
   const name = user.displayName || 'فیلمساز گرامی';
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 32 }}>
-        <div><h1 className="heading">داشبورد فیلمساز</h1><p style={{ color: 'var(--muted)' }}>خوش آمدید {name}؛ از اینجا به بانک بازیگران خانواده برداشت دسترسی دارید.</p></div>
+      <div className="dash-head">
+        <div>
+          <h1 className="dash-head__title">داشبورد فیلمساز</h1>
+          <p className="dash-head__sub">خوش آمدید {name}؛ از اینجا به بانک بازیگران خانواده برداشت دسترسی دارید.</p>
+        </div>
         <LogoutButton />
       </div>
-      <Link href="/actors" style={{ display: 'block', background: 'var(--dark)', borderRadius: 'var(--radius)', padding: 32, color: '#fff', marginBottom: 18 }}>
-        <div style={{ color: 'rgba(255,255,255,.45)', fontSize: '.75rem', fontWeight: 700 }}>ویژه‌ی فیلم‌سازان</div>
-        <h2 style={{ fontSize: '1.6rem', margin: '10px 0' }}>🎭 بانک بازیگران</h2>
-        <p style={{ color: 'var(--gold-lt)', margin: 0 }}>مشاهده رزومه‌ها و ثبت درخواست ست تایم →</p>
+      <Link href="/actors" className="dash-hero" style={{ marginBottom: 14 }}>
+        <div className="dash-hero__label">ویژه‌ی فیلم‌سازان</div>
+        <h2 className="dash-hero__title">🎭 بانک بازیگران</h2>
+        <p className="dash-hero__cta">مشاهده رزومه‌ها و ثبت درخواست ست تایم →</p>
       </Link>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 18 }}>
-        <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 24 }}>
-          <h3 style={{ color: 'var(--dark)', marginBottom: 8 }}>حساب کاربری</h3>
-          <p style={{ color: 'var(--muted)' }}>شماره موبایل: <span dir="ltr">{user.phone}</span></p>
-          <Link href="/dashboard/profile" style={{ color: 'var(--dark)', fontWeight: 700 }}>تکمیل پروفایل →</Link>
+      <div className="dash-cards">
+        <div className="dash-card">
+          <h3 className="dash-card__title">حساب کاربری</h3>
+          <p className="dash-card__text">شماره موبایل: <span dir="ltr">{user.phone}</span></p>
+          <Link href="/dashboard/profile" className="dash-card__link">تکمیل پروفایل →</Link>
         </div>
-        <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 24 }}>
-          <h3 style={{ color: 'var(--dark)', marginBottom: 8 }}>دوره‌های خانواده برداشت</h3>
-          <p style={{ color: 'var(--muted)' }}>معرفی دوره‌ها و کارگاه‌های آموزشی را ببینید.</p>
-          <Link href="/courses" style={{ color: 'var(--dark)', fontWeight: 700 }}>مشاهده دوره‌ها →</Link>
+        <div className="dash-card">
+          <h3 className="dash-card__title">دوره‌های خانواده برداشت</h3>
+          <p className="dash-card__text">معرفی دوره‌ها و کارگاه‌های آموزشی را ببینید.</p>
+          <Link href="/courses" className="dash-card__link">مشاهده دوره‌ها →</Link>
         </div>
       </div>
     </>
@@ -49,15 +52,26 @@ export default async function DashboardPage() {
           <FilmmakerDashboard user={user} />
         ) : (
           <>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap', marginBottom: 32 }}>
-              <div><h1 className="heading">داشبورد هنرجو</h1><p style={{ color: 'var(--muted)' }}>خوش آمدید {name}؛ وضعیت آموزشی شما اینجاست.</p></div>
+            <div className="dash-head">
+              <div>
+                <h1 className="dash-head__title">داشبورد هنرجو</h1>
+                <p className="dash-head__sub">خوش آمدید {name}؛ وضعیت آموزشی شما اینجاست.</p>
+              </div>
               <LogoutButton />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 18 }}>
+            <div className="dash-cards" style={{ gridTemplateColumns: user.graduated ? undefined : '2fr 1fr' }}>
               {!user.graduated && (
-                <Link href="/dashboard/calendar" style={{ background: 'var(--dark)', borderRadius: 'var(--radius)', padding: 24, color: '#fff' }}><div style={{ color: 'rgba(255,255,255,.45)', fontSize: '.75rem', fontWeight: 700 }}>تقویم کلاس</div><h2 style={{ fontSize: '1.5rem', margin: '8px 0' }}>برنامه کلاس‌های شما</h2><p style={{ color: 'var(--gold-lt)' }}>مشاهده تقویم →</p></Link>
+                <Link href="/dashboard/calendar" className="dash-hero">
+                  <div className="dash-hero__label">تقویم کلاس</div>
+                  <h2 className="dash-hero__title">برنامه کلاس‌های شما</h2>
+                  <p className="dash-hero__cta">مشاهده تقویم →</p>
+                </Link>
               )}
-              <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 24 }}><h3 style={{ color: 'var(--dark)' }}>حساب کاربری</h3><p style={{ color: 'var(--muted)' }}>شماره موبایل: <span dir="ltr">{user.phone}</span></p><Link href="/dashboard/profile" style={{ color: 'var(--dark)', fontWeight: 700 }}>تکمیل پروفایل →</Link></div>
+              <div className="dash-card">
+                <h3 className="dash-card__title">حساب کاربری</h3>
+                <p className="dash-card__text">شماره موبایل: <span dir="ltr">{user.phone}</span></p>
+                <Link href="/dashboard/profile" className="dash-card__link">تکمیل پروفایل →</Link>
+              </div>
             </div>
           </>
         )}

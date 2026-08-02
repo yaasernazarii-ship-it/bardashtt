@@ -14,9 +14,9 @@ export default async function AdminPostsPage() {
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
       <DashboardSidebar active="posts" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} />
       <main className="main-area">
-        <div style={{ marginBottom: 28 }}>
-          <h1 className="heading">مدیریت و انتشار محتوا</h1>
-          <p style={{ color: 'var(--muted)' }}>محتوا (متن، عکس، ویدیوی آپارات یا فایل صوتی) بسازید، بخش مقصد آن را انتخاب کنید و در صورت نیاز تاریخ و ساعت انتشار تعیین کنید تا دقیقاً همان لحظه خودکار روی سایت منتشر شود. بخش‌ها: اخبار، مقاله‌ها، مسئولیت اجتماعی، آثار (و زیرمجموعه‌ها)، گالری و ویدیوهای فروش دورهٔ آنلاین.</p>
+        <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
+          <h1 className="dash-head__title">مدیریت و انتشار محتوا</h1>
+          <p className="dash-head__sub">محتوا (متن، عکس، ویدیوی آپارات یا فایل صوتی) بسازید، بخش مقصد آن را انتخاب کنید و در صورت نیاز تاریخ و ساعت انتشار تعیین کنید تا دقیقاً همان لحظه خودکار روی سایت منتشر شود. بخش‌ها: اخبار، مقاله‌ها، مسئولیت اجتماعی، آثار (و زیرمجموعه‌ها)، گالری و ویدیوهای فروش دورهٔ آنلاین.</p>
         </div>
         <AdminPosts />
       </main>

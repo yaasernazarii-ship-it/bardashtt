@@ -14,9 +14,9 @@ export default async function AdminBooksPage() {
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
       <DashboardSidebar active="books-admin" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} />
       <main className="main-area">
-        <div style={{ marginBottom: 28 }}>
-          <h1 className="heading">فروش کتاب</h1>
-          <p style={{ color: 'var(--muted)' }}>
+        <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
+          <h1 className="dash-head__title">فروش کتاب</h1>
+          <p className="dash-head__sub">
             کتاب اضافه کنید، مبلغ فروش را خودتان تعیین کنید و عکس جلد و معرفی را وارد کنید. کتاب‌ها در صفحهٔ «مسئولیت اجتماعی» نمایش داده می‌شوند و بازدیدکنندگان می‌توانند سفارش ثبت کنند. سفارش‌های هر کتاب را از همین‌جا ببینید و وضعیت‌شان را مدیریت کنید.
           </p>
         </div>

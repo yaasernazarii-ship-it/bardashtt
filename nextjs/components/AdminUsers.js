@@ -100,7 +100,10 @@ export default function AdminUsers() {
           <tbody>
             {filtered.map((u) => (
               <tr key={u.id} style={u.active === false ? { opacity: 0.55 } : undefined}>
-                <td>{u.displayName || '—'}</td>
+                <td>
+                  <button type="button" className="user-name-link" onClick={() => setPanelId(u.id)}
+                    title="مشاهدهٔ کاملِ پنلِ این کاربر">{u.displayName || '—'}</button>
+                </td>
                 <td dir="ltr" style={{ textAlign: 'right' }}>{u.phone}</td>
                 <td dir="ltr" style={{ textAlign: 'right' }}>{u.username || '—'}</td>
                 <td dir="ltr" style={{ textAlign: 'right', fontFamily: 'monospace' }}>{u.passwordPlain || '—'}</td>
@@ -146,7 +149,6 @@ export default function AdminUsers() {
                     <span style={{ color: 'var(--muted)', fontSize: '.8rem' }}>—</span>
                   ) : (
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      <button type="button" className="btn btn--sm btn--outline" onClick={() => setPanelId(u.id)}>مشاهده پنل</button>
                       {u.username && (
                         <button type="button" className="btn btn--sm btn--outline" disabled={savingId === u.id} onClick={() => resetPassword(u)}>رمز جدید</button>
                       )}

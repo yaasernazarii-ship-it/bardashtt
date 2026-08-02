@@ -15,9 +15,9 @@ export default async function AdminClassesPage() {
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
       <DashboardSidebar active="classes" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} />
       <main className="main-area">
-        <div style={{ marginBottom: 28 }}>
-          <h1 className="heading">کلاس‌ها و تقویم هنرجویان</h1>
-          <p style={{ color: 'var(--muted)' }}>
+        <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
+          <h1 className="dash-head__title">کلاس‌ها و تقویم هنرجویان</h1>
+          <p className="dash-head__sub">
             کلاس‌های هر شعبه را بسازید، هنرجویان را به کلاس‌ها اختصاص دهید و برای هر جلسه تاریخ، چارت درسی، ابزار و تمرین تعیین کنید.
           </p>
         </div>

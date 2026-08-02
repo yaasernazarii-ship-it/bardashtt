@@ -14,9 +14,9 @@ export default async function AdminPage() {
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
       <DashboardSidebar active="admin" role={user.role} isAdmin isManager={isManager(user)} />
       <main className="main-area">
-        <div style={{ marginBottom: 28 }}>
-          <h1 className="heading">مدیریت کاربران</h1>
-          <p style={{ color: 'var(--muted)' }}>نقش کاربران را تعیین کنید. ادمین دسترسی کامل و ادیتور دسترسی مدیریت محتوا و تقویم دارد.</p>
+        <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
+          <h1 className="dash-head__title">مدیریت کاربران</h1>
+          <p className="dash-head__sub">نقش کاربران را تعیین کنید. ادمین دسترسی کامل و ادیتور دسترسی مدیریت محتوا و تقویم دارد.</p>
         </div>
         <AdminUsers />
       </main>

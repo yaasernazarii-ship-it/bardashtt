@@ -13,9 +13,9 @@ export default async function ProfilePage() {
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
       <DashboardSidebar active="profile" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} graduated={user.graduated} />
       <main className="main-area">
-        <div style={{ marginBottom: 28 }}>
-          <h1 className="heading">پروفایل من</h1>
-          <p style={{ color: 'var(--muted)' }}>اطلاعات حساب کاربری خود را تکمیل و ویرایش کنید.</p>
+        <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
+          <h1 className="dash-head__title">پروفایل من</h1>
+          <p className="dash-head__sub">اطلاعات حساب کاربری خود را تکمیل و ویرایش کنید.</p>
         </div>
         <ProfileForm role={user.role} initial={{ phone: user.phone, contactPhone: user.contactPhone, displayName: user.displayName, city: user.city, birthYear: user.birthYear }} />
       </main>

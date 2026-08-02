@@ -764,6 +764,43 @@ body.nav-open {
 .notif__item-time { color: var(--light); font-size: 0.72rem; }
 
 .main-area { padding: 36px; }
+.main-area--narrow { max-width: 1080px; }
+
+/* ── DASHBOARD · سرصفحه و کارت‌های جمع‌وجور ─────
+   داشبورد نباید به بزرگیِ صفحه‌های تبلیغاتیِ سایت باشد؛
+   عنوان‌ها کوچک‌تر و کم‌وزن‌تر و کارت‌ها فشرده‌ترند. */
+.dash-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 16px; flex-wrap: wrap; margin-bottom: 22px;
+  padding-bottom: 16px; border-bottom: 1px solid var(--border);
+}
+.dash-head__title { font-size: 1.35rem; font-weight: 700; line-height: 1.35; color: var(--dark); margin: 0; }
+.dash-head__sub { color: var(--muted); font-size: 0.9rem; margin: 4px 0 0; }
+
+.dash-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.dash-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 18px;
+}
+.dash-card__title { font-size: 1rem; font-weight: 700; color: var(--dark); margin: 0 0 6px; }
+.dash-card__text { color: var(--muted); font-size: 0.88rem; margin: 0 0 12px; }
+.dash-card__link { color: var(--dark); font-weight: 700; font-size: 0.9rem; }
+.dash-card__link:hover { color: var(--gold); }
+
+.dash-hero {
+  display: block; background: var(--dark); color: #fff;
+  border-radius: var(--radius-sm); padding: 20px 22px; text-decoration: none;
+  transition: var(--transition);
+}
+.dash-hero:hover { transform: translateY(-2px); }
+.dash-hero__label { color: rgba(255,255,255,.5); font-size: 0.72rem; font-weight: 700; }
+.dash-hero__title { font-size: 1.25rem; font-weight: 700; margin: 8px 0 6px; }
+.dash-hero__cta { color: var(--gold-lt); font-size: 0.9rem; margin: 0; }
+
+@media (max-width: 767px) {
+  .dash-head__title { font-size: 1.2rem; }
+  .dash-cards { grid-template-columns: 1fr; }
+}
 
 /* ── RESPONSIVE ───────────────────────────
    mobile: <=767px · tablet: 768-1023px · desktop: >=1024px
@@ -1467,6 +1504,37 @@ summary:focus-visible {
 }
 .pay-toggle:hover { border-color: var(--gold); }
 .pay-toggle input { margin-top: 3px; accent-color: var(--dark); flex: none; }
+
+/* انتخابِ چندتاییِ هنرجو برای پرداختِ گروهی */
+.pay-picker { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--white); overflow: hidden; }
+.pay-picker__all {
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  padding: 10px 12px; font-size: 0.82rem; font-weight: 600; color: var(--dark);
+  background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.pay-picker__all input { accent-color: var(--dark); }
+.pay-picker__list { max-height: 220px; overflow-y: auto; }
+.pay-picker__empty { margin: 0; padding: 18px 12px; text-align: center; color: var(--muted); font-size: 0.85rem; }
+.pay-picker__row {
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  padding: 8px 12px; font-size: 0.85rem; color: var(--body);
+  border-bottom: 1px solid var(--border); transition: var(--transition);
+}
+.pay-picker__row:last-child { border-bottom: 0; }
+.pay-picker__row:hover { background: var(--surface); }
+.pay-picker__row.is-checked { background: color-mix(in srgb, var(--gold) 12%, var(--white)); }
+.pay-picker__row input { accent-color: var(--dark); flex: none; }
+.pay-picker__name { font-weight: 600; color: var(--dark); }
+.pay-picker__meta { font-weight: 400; color: var(--muted); }
+.pay-picker__course { margin-inline-start: auto; font-size: 0.75rem; color: var(--muted); }
+
+/* نامِ کاربر در جدولِ کاربران؛ با کلیک، پنلِ کامل باز می‌شود */
+.user-name-link {
+  font: inherit; font-weight: 700; color: var(--dark); cursor: pointer;
+  background: none; border: 0; padding: 0; text-align: start;
+  border-bottom: 1px dashed var(--border); transition: var(--transition);
+}
+.user-name-link:hover { color: var(--gold); border-bottom-color: var(--gold); }
 
 @media (max-width: 640px) {
   .pay-card__amount { font-size: 1.2rem; }
