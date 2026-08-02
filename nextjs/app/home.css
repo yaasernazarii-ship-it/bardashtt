@@ -15,9 +15,9 @@
     linear-gradient(180deg, rgba(15,13,10,.55) 0%, rgba(15,13,10,.72) 55%, rgba(15,13,10,.94) 100%),
     radial-gradient(circle at 18% 18%, rgba(255,215,0,.16) 0%, transparent 32%),
     url('/hero-cinema-bg.png');
-  background-size: cover;
-  background-position: center 30%;
-  background-repeat: no-repeat;
+  background-size: cover, cover, contain;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
 }
 .home-hero__bg::before {
   content: ''; position: absolute; inset: 0;
