@@ -1505,8 +1505,17 @@ summary:focus-visible {
 .pay-toggle:hover { border-color: var(--gold); }
 .pay-toggle input { margin-top: 3px; accent-color: var(--dark); flex: none; }
 
-/* انتخابِ چندتاییِ هنرجو برای پرداختِ گروهی */
+/* انتخابِ چندتاییِ هنرجو برای پرداختِ گروهی (کشویی) */
 .pay-picker { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--white); overflow: hidden; }
+.pay-picker__toggle {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%;
+  font: inherit; font-size: 0.9rem; font-weight: 600; color: var(--dark); cursor: pointer;
+  background: var(--white); border: 0; padding: 11px 14px; text-align: start;
+}
+.pay-picker__toggle:hover { background: var(--surface); }
+.pay-picker__chev { color: var(--muted); transition: transform .18s ease; flex: none; }
+.pay-picker__chev.is-open { transform: rotate(180deg); }
+.pay-picker__panel { border-top: 1px solid var(--border); }
 .pay-picker__all {
   display: flex; align-items: center; gap: 8px; cursor: pointer;
   padding: 10px 12px; font-size: 0.82rem; font-weight: 600; color: var(--dark);
@@ -1535,6 +1544,34 @@ summary:focus-visible {
   border-bottom: 1px dashed var(--border); transition: var(--transition);
 }
 .user-name-link:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* تأیید حساب‌ها به‌صورت کشویی؛ فقط نام دیده می‌شود و با کلیک باز می‌شود */
+.su-list { display: grid; gap: 8px; }
+.su-item { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--white); overflow: hidden; }
+.su-item--pending { border-inline-start: 3px solid var(--gold); }
+.su-head {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  font: inherit; cursor: pointer; background: var(--white); border: 0;
+  padding: 12px 14px; text-align: start;
+}
+.su-head:hover { background: var(--surface); }
+.su-head__name { font-weight: 700; color: var(--dark); font-size: 0.95rem; }
+.su-tag {
+  margin-inline-start: auto; font-size: 0.72rem; font-weight: 700;
+  padding: 3px 10px; border-radius: 100px; white-space: nowrap;
+}
+.su-tag--pending  { background: #FFF7ED; color: #92400E; }
+.su-tag--approved { background: #F0FDF4; color: #15803D; }
+.su-tag--rejected { background: #FEF2F2; color: #DC2626; }
+.su-chev { color: var(--muted); flex: none; transition: transform .18s ease; }
+.su-chev.is-open { transform: rotate(180deg); }
+.su-body { padding: 4px 14px 14px; border-top: 1px solid var(--border); }
+.su-creds {
+  margin-top: 12px; padding: 12px 14px; border-radius: var(--radius-sm);
+  background: #F0FDF4; border: 1px solid #BBF7D0; color: #15803D; font-size: 0.9rem; line-height: 2;
+}
+.su-creds__title { font-weight: 800; margin-bottom: 4px; }
+.su-creds__note { margin: 6px 0 0; font-size: 0.76rem; color: #166534; line-height: 1.7; }
 
 @media (max-width: 640px) {
   .pay-card__amount { font-size: 1.2rem; }

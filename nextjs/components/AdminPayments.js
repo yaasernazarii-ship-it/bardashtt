@@ -33,6 +33,7 @@ export default function AdminPayments() {
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
   const [studentQuery, setStudentQuery] = useState('');
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [filter, setFilter] = useState('all');
 
   async function load() {
@@ -153,30 +154,44 @@ export default function AdminPayments() {
             <label className="form-label">
               هنرجو *{form.userIds.length > 0 && <span style={{ color: 'var(--muted)', fontWeight: 400 }}> — {money(form.userIds.length)} نفر انتخاب شده</span>}
             </label>
-            <input className="form-input" placeholder="جستجوی نام/موبایل هنرجو…" value={studentQuery}
-              onChange={(e) => setStudentQuery(e.target.value)} style={{ marginBottom: 8 }} />
             <div className="pay-picker">
-              <label className="pay-picker__all">
-                <input type="checkbox" checked={allFilteredSelected} onChange={toggleAllFiltered}
-                  disabled={filteredStudents.length === 0} />
-                انتخاب همه{studentQuery.trim() ? ' (نتیجهٔ جستجو)' : ''}
-              </label>
-              <div className="pay-picker__list">
-                {filteredStudents.length === 0 ? (
-                  <p className="pay-picker__empty">هنرجویی یافت نشد.</p>
-                ) : (
-                  filteredStudents.map((s) => (
-                    <label key={s.id} className={`pay-picker__row ${form.userIds.includes(s.id) ? 'is-checked' : ''}`}>
-                      <input type="checkbox" checked={form.userIds.includes(s.id)} onChange={() => toggleStudent(s.id)} />
-                      <span className="pay-picker__name">
-                        {s.displayName || s.phone}
-                        {s.username && <span className="pay-picker__meta"> · {s.username}</span>}
-                      </span>
-                      {s.courseTitle && <span className="pay-picker__course">دورهٔ {s.courseTitle}</span>}
-                    </label>
-                  ))
-                )}
-              </div>
+              <button type="button" className="pay-picker__toggle" onClick={() => setPickerOpen((v) => !v)}
+                aria-expanded={pickerOpen}>
+                <span>
+                  {form.userIds.length > 0 ? `${money(form.userIds.length)} هنرجو انتخاب شده` : 'انتخاب هنرجو…'}
+                </span>
+                <svg className={`pay-picker__chev ${pickerOpen ? 'is-open' : ''}`} width="16" height="16" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              {pickerOpen && (
+                <div className="pay-picker__panel">
+                  <input className="form-input" placeholder="جستجوی نام/موبایل هنرجو…" value={studentQuery}
+                    onChange={(e) => setStudentQuery(e.target.value)} style={{ margin: '10px 10px 8px', width: 'auto', display: 'block' }} />
+                  <label className="pay-picker__all">
+                    <input type="checkbox" checked={allFilteredSelected} onChange={toggleAllFiltered}
+                      disabled={filteredStudents.length === 0} />
+                    انتخاب همه{studentQuery.trim() ? ' (نتیجهٔ جستجو)' : ''}
+                  </label>
+                  <div className="pay-picker__list">
+                    {filteredStudents.length === 0 ? (
+                      <p className="pay-picker__empty">هنرجویی یافت نشد.</p>
+                    ) : (
+                      filteredStudents.map((s) => (
+                        <label key={s.id} className={`pay-picker__row ${form.userIds.includes(s.id) ? 'is-checked' : ''}`}>
+                          <input type="checkbox" checked={form.userIds.includes(s.id)} onChange={() => toggleStudent(s.id)} />
+                          <span className="pay-picker__name">
+                            {s.displayName || s.phone}
+                            {s.username && <span className="pay-picker__meta"> · {s.username}</span>}
+                          </span>
+                          {s.courseTitle && <span className="pay-picker__course">دورهٔ {s.courseTitle}</span>}
+                        </label>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

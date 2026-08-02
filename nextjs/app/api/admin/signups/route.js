@@ -10,6 +10,13 @@ export async function GET() {
     orderBy: [{ status: 'asc' }, { createdAt: 'desc' }],
   });
 
+  // نام کاربری و رمزِ صادرشده را از حسابِ ساخته‌شده می‌آوریم تا در همان بخش ماندگار بماند.
+  const accountIds = [...new Set(rows.map((r) => r.userId).filter(Boolean))];
+  const accounts = accountIds.length
+    ? await prisma.user.findMany({ where: { id: { in: accountIds } }, select: { id: true, username: true, passwordPlain: true } })
+    : [];
+  const byId = Object.fromEntries(accounts.map((a) => [a.id, a]));
+
   return Response.json({
     ok: true,
     requests: rows.map((r) => ({
@@ -24,7 +31,8 @@ export async function GET() {
       idCardImage: r.idCardImage,
       goal: r.goal,
       status: r.status,
-      username: r.username,
+      username: r.username || (r.userId ? byId[r.userId]?.username : null) || null,
+      password: r.userId ? (byId[r.userId]?.passwordPlain || null) : null,
       adminNote: r.adminNote,
       createdAt: r.createdAt.toISOString(),
     })),
