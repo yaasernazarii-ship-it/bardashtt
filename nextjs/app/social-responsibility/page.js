@@ -2,7 +2,7 @@ import SimplePage from '@/components/SimplePage';
 import SectionPosts from '@/components/SectionPosts';
 import BookList from '@/components/BookList';
 import SRTabs from '@/components/SRTabs';
-import { loadContent } from '@/lib/siteContent';
+import { loadContent, splitLines } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'مسئولیت اجتماعی',
@@ -77,6 +77,7 @@ export default async function SocialResponsibilityPage() {
       title={t('sr.title')}
       subtitle={t('sr.subtitle')}
       tag={t('sr.tag')}
+      slides={splitLines(t('sr.slides'))}
     >
       <SRTabs tabs={tabs} />
     </SimplePage>

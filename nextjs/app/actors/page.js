@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isFilmmakerOrManager } from '@/lib/auth';
 import SimplePage from '@/components/SimplePage';
-import { loadContent } from '@/lib/siteContent';
+import { loadContent, splitLines } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'بانک بازیگران',
@@ -29,7 +29,7 @@ export default async function ActorsPage() {
   ]);
 
   return (
-    <SimplePage title={t('actors.title')} subtitle={t('actors.subtitle')} tag={t('actors.tag')} cta={false}>
+    <SimplePage title={t('actors.title')} subtitle={t('actors.subtitle')} tag={t('actors.tag')} cta={false} slides={splitLines(t('actors.slides'))}>
       {actors.length === 0 ? (
         <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 40, textAlign: 'center' }}>
           <p style={{ color: 'var(--muted)' }}>{t('actors.empty')}</p>

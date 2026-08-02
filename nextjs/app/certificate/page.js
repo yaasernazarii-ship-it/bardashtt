@@ -1,5 +1,5 @@
 import SimplePage from '@/components/SimplePage';
-import { loadContent } from '@/lib/siteContent';
+import { loadContent, splitLines } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'آزمون فارغ‌التحصیلی',
@@ -9,23 +9,26 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic';
 
-const steps = [
-  ['ارزیابی حضور و تمرین', 'بررسی استمرار، مشارکت و اجرای تمرین‌های دوره'],
-  ['آزمون عملی', 'اجرای صحنه، بیان، بدن و تحلیل نقش مقابل تیم آموزشی'],
-  ['جمع‌بندی نهایی', 'ثبت نتیجه، دریافت بازخورد و صدور گواهینامه برای افراد پذیرفته‌شده'],
-];
+// هر مورد به شکل «عنوان | توضیح» ذخیره می‌شود؛ اگر جداکننده نبود، کل خط عنوان است.
+function parsePairs(value) {
+  return splitLines(value).map((line) => {
+    const [title, ...rest] = line.split('|');
+    return [title.trim(), rest.join('|').trim()];
+  });
+}
 
 export default async function CertificatePage() {
   const t = await loadContent();
+  const steps = parsePairs(t('certificate.steps'));
   return (
-    <SimplePage title={t('certificate.title')} subtitle={t('certificate.subtitle')} tag={t('certificate.tag')}>
+    <SimplePage title={t('certificate.title')} subtitle={t('certificate.subtitle')} tag={t('certificate.tag')} slides={splitLines(t('certificate.slides'))}>
       <div className="split-layout">
         <div className="stack-card">
           <h2 className="subheading" style={{ marginBottom: 12 }}>{t('certificate.heading')}</h2>
           <p className="body-lg">{t('certificate.body')}</p>
         </div>
         <div className="stack-card stack-card--dark">
-          <span className="tag tag--gold">نتیجه نهایی</span>
+          <span className="tag tag--gold">{t('certificate.resultTag')}</span>
           <p style={{ marginTop: 14, lineHeight: 1.9 }}>{t('certificate.result')}</p>
         </div>
       </div>

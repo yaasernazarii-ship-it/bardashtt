@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import SimplePage from '@/components/SimplePage';
 import { livePosts } from '@/lib/content';
-import { loadContent } from '@/lib/siteContent';
+import { loadContent, splitLines } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'اخبار و مطالب',
@@ -16,7 +16,7 @@ export default async function NewsPage() {
   const [posts, t] = await Promise.all([livePosts('news'), loadContent()]);
 
   return (
-    <SimplePage title={t('news.title')} subtitle={t('news.subtitle')} tag={t('news.tag')}>
+    <SimplePage title={t('news.title')} subtitle={t('news.subtitle')} tag={t('news.tag')} slides={splitLines(t('news.slides'))}>
       {posts.length === 0 ? (
         <div style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 40, textAlign: 'center' }}>
           <p style={{ color: 'var(--muted)' }}>{t('news.empty')}</p>

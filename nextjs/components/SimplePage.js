@@ -1,11 +1,16 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
+import PageSlider from '@/components/PageSlider';
 import { loadContent } from '@/lib/siteContent';
 
-export default async function SimplePage({ title, subtitle, tag = 'خانواده برداشت', children, cta = true, narrow = false }) {
+export default async function SimplePage({ title, subtitle, tag = 'خانواده برداشت', children, cta = true, narrow = false, slides = [] }) {
   const t = await loadContent();
+  const heroSlides = (slides || []).filter(Boolean);
   return (
     <PageLayout>
+      {heroSlides.length > 0 && (
+        <PageSlider title={title} images={heroSlides} />
+      )}
       <div className="page-header">
         <div className="page-header__inner">
           <div className="page-header__tag">{tag}</div>

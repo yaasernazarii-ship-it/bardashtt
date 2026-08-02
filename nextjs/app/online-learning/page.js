@@ -1,7 +1,7 @@
 import SimplePage from '@/components/SimplePage';
 import SectionPosts from '@/components/SectionPosts';
 import CourseList from '@/components/CourseList';
-import { loadContent } from '@/lib/siteContent';
+import { loadContent, splitLines } from '@/lib/siteContent';
 
 export const metadata = {
   title: 'یادگیری آنلاین',
@@ -11,17 +11,19 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic';
 
-const lessons = [
-  ['تمرین بیان', 'تمرین‌های روزانه برای وضوح صدا، ریتم و کنترل نفس'],
-  ['تمرین بدن', 'آمادگی بدنی، حضور صحنه و هماهنگی حرکت'],
-  ['تحلیل متن', 'خواندن درست دیالوگ، شناخت کنش و ساخت شخصیت'],
-  ['تمرین مقابل دوربین', 'آشنایی با قاب، نگاه، سکوت و بازی مینیمال'],
-];
+// هر مورد به شکل «عنوان | توضیح» ذخیره می‌شود؛ اگر جداکننده نبود، کل خط عنوان است.
+function parsePairs(value) {
+  return splitLines(value).map((line) => {
+    const [title, ...rest] = line.split('|');
+    return [title.trim(), rest.join('|').trim()];
+  });
+}
 
 export default async function OnlineLearningPage() {
   const t = await loadContent();
+  const lessons = parsePairs(t('online.lessons'));
   return (
-    <SimplePage title={t('online.title')} subtitle={t('online.subtitle')} tag={t('online.tag')}>
+    <SimplePage title={t('online.title')} subtitle={t('online.subtitle')} tag={t('online.tag')} slides={splitLines(t('online.slides'))}>
       <div className="stack-card" style={{ marginBottom: 22 }}>
         <h2 className="subheading" style={{ marginBottom: 12 }}>{t('online.heading')}</h2>
         <p className="body-lg">{t('online.body')}</p>
@@ -36,10 +38,10 @@ export default async function OnlineLearningPage() {
         ))}
       </div>
 
-      <h2 className="subheading" style={{ margin: '32px 0 16px' }}>دوره‌های آنلاین</h2>
+      <h2 className="subheading" style={{ margin: '32px 0 16px' }}>{t('online.courses.heading')}</h2>
       <CourseList />
 
-      <SectionPosts section="course-video" variant="media" heading="ویدیوهای دورهٔ آنلاین" />
+      <SectionPosts section="course-video" variant="media" heading={t('online.videos.heading')} />
     </SimplePage>
   );
 }

@@ -1,5 +1,6 @@
 import PageLayout from '@/components/PageLayout';
 import CoursesExplorer from '@/components/CoursesExplorer';
+import PageSlider from '@/components/PageSlider';
 import { loadContent, splitLines } from '@/lib/siteContent';
 
 // شماره و رنگِ گرادیانِ هر دوره ثابت‌اند؛ متن و سرفصل‌ها از پنل می‌آیند.
@@ -34,8 +35,10 @@ export default async function CoursesPage() {
       items: splitLines(t(`course.c${n}.items`)),
     };
   });
+  const courseSlides = splitLines(t('courses.slides'));
   return (
     <PageLayout>
+      {courseSlides.length > 0 && <PageSlider title={t('courses.title')} images={courseSlides} />}
       <CoursesExplorer
         heading={t('courses.title')}
         subheading={t('courses.subtitle')}

@@ -130,6 +130,7 @@ export const CONTENT_GROUPS = [
     fields: [
       { key: 'courses.title', label: 'عنوان', type: 'text', default: 'مسیر آموزشی خانواده برداشت' },
       { key: 'courses.subtitle', label: 'زیرعنوان', type: 'text', default: '۵ مرحله برای تبدیل علاقه به مهارت حرفه‌ای' },
+      { key: 'courses.slides', label: 'اسلایدشوی بالای صفحه (افزودن/حذف/جابه‌جایی عکس؛ خالی = بدون اسلایدشو)', type: 'images', default: '' },
     ],
   },
   {
@@ -139,6 +140,7 @@ export const CONTENT_GROUPS = [
       { key: 'gallery.tag', label: 'برچسب', type: 'text', default: 'تصاویر' },
       { key: 'gallery.title', label: 'عنوان', type: 'text', default: 'گالری' },
       { key: 'gallery.subtitle', label: 'زیرعنوان', type: 'text', default: 'لحظه‌هایی از کلاس‌ها، اردوها و فعالیت‌های ما' },
+      { key: 'gallery.slides', label: 'اسلایدشوی بالای صفحه (افزودن/حذف/جابه‌جایی عکس؛ خالی = بدون اسلایدشو)', type: 'images', default: '' },
     ],
   },
   {
@@ -174,7 +176,10 @@ export const CONTENT_GROUPS = [
       { key: 'certificate.subtitle', label: 'زیرعنوان', type: 'text', default: 'ارزیابی نهایی و دریافت گواهینامه' },
       { key: 'certificate.heading', label: 'عنوان متن اصلی', type: 'text', default: 'مسیر دریافت گواهینامه' },
       { key: 'certificate.body', label: 'متن اصلی', type: 'textarea', default: 'پس از گذراندن مراحل آموزشی، هنرجو وارد ارزیابی نهایی می‌شود. این ارزیابی فقط یک امتحان تئوری نیست؛ عملکرد واقعی هنرجو در تمرین، اجرا و حضور گروهی بررسی می‌شود.' },
+      { key: 'certificate.resultTag', label: 'برچسب کادر نتیجه', type: 'text', default: 'نتیجه نهایی' },
       { key: 'certificate.result', label: 'متن کادر نتیجهٔ نهایی', type: 'textarea', default: 'هنرجویان موفق، گواهینامه رسمی مسیر آموزشی خود را دریافت می‌کنند و برای مراحل بعدی معرفی و آماده‌سازی می‌شوند.' },
+      { key: 'certificate.steps', label: 'مراحل (هر خط: عنوان | توضیح)', type: 'list', default: 'ارزیابی حضور و تمرین | بررسی استمرار، مشارکت و اجرای تمرین‌های دوره\nآزمون عملی | اجرای صحنه، بیان، بدن و تحلیل نقش مقابل تیم آموزشی\nجمع‌بندی نهایی | ثبت نتیجه، دریافت بازخورد و صدور گواهینامه برای افراد پذیرفته‌شده' },
+      { key: 'certificate.slides', label: 'اسلایدشوی بالای صفحه (افزودن/حذف/جابه‌جایی عکس؛ خالی = بدون اسلایدشو)', type: 'images', default: '' },
     ],
   },
   {
@@ -186,6 +191,8 @@ export const CONTENT_GROUPS = [
       { key: 'insurance.subtitle', label: 'زیرعنوان', type: 'text', default: 'پوشش بیمه‌ای در دوره‌ها و اردوها' },
       { key: 'insurance.heading', label: 'عنوان متن اصلی', type: 'text', default: 'امنیت و آرامش هنرجو برای ما جدی است' },
       { key: 'insurance.body', label: 'متن اصلی', type: 'textarea', default: 'خانواده برداشت برای هنرجویان در برنامه‌های آموزشی، کلاس‌ها و اردوها پوشش بیمه‌ای و فرآیندهای مراقبتی در نظر می‌گیرد تا مسیر آموزش با اطمینان بیشتری طی شود.' },
+      { key: 'insurance.items', label: 'کارت‌ها (هر خط: عنوان | توضیح)', type: 'list', default: 'کلاس‌ها | پوشش و ثبت اطلاعات هنرجویان برای حضور منظم در برنامه‌ها\nاردوها | توجه ویژه به ایمنی در برنامه‌های آموزشی کوتاه‌مدت و چندروزه\nپشتیبانی | اطلاع‌رسانی و همراهی تیم اجرایی در طول فعالیت‌های حضوری' },
+      { key: 'insurance.slides', label: 'اسلایدشوی بالای صفحه (افزودن/حذف/جابه‌جایی عکس؛ خالی = بدون اسلایدشو)', type: 'images', default: '' },
     ],
   },
   {
@@ -197,6 +204,10 @@ export const CONTENT_GROUPS = [
       { key: 'online.subtitle', label: 'زیرعنوان', type: 'text', default: 'منابع آموزشی برای تمرین در خانه' },
       { key: 'online.heading', label: 'عنوان متن اصلی', type: 'text', default: 'تمرین‌های مکمل برای رشد مستمر' },
       { key: 'online.body', label: 'متن اصلی', type: 'textarea', default: 'در این بخش آموزش‌های آنلاین، تمرین‌های بیان، بدن و تحلیل متن برای هنرجویان منتشر می‌شود تا مسیر آموزش فقط به کلاس محدود نماند.' },
+      { key: 'online.lessons', label: 'کارت‌های تمرین (هر خط: عنوان | توضیح)', type: 'list', default: 'تمرین بیان | تمرین‌های روزانه برای وضوح صدا، ریتم و کنترل نفس\nتمرین بدن | آمادگی بدنی، حضور صحنه و هماهنگی حرکت\nتحلیل متن | خواندن درست دیالوگ، شناخت کنش و ساخت شخصیت\nتمرین مقابل دوربین | آشنایی با قاب، نگاه، سکوت و بازی مینیمال' },
+      { key: 'online.courses.heading', label: 'عنوان بخش دوره‌های آنلاین', type: 'text', default: 'دوره‌های آنلاین' },
+      { key: 'online.videos.heading', label: 'عنوان بخش ویدیوها', type: 'text', default: 'ویدیوهای دورهٔ آنلاین' },
+      { key: 'online.slides', label: 'اسلایدشوی بالای صفحه (افزودن/حذف/جابه‌جایی عکس؛ خالی = بدون اسلایدشو)', type: 'images', default: '' },
     ],
   },
   {
@@ -206,6 +217,7 @@ export const CONTENT_GROUPS = [
       { key: 'blog.tag', label: 'برچسب', type: 'text', default: 'مطالب آموزشی' },
       { key: 'blog.title', label: 'عنوان', type: 'text', default: 'مقاله‌ها' },
       { key: 'blog.subtitle', label: 'زیرعنوان', type: 'text', default: 'مطالب آموزشی درباره بازیگری و سینما' },
+      { key: 'blog.slides', label: 'اسلایدشوی بالای صفحه (افزودن/حذف/جابه‌جایی عکس؛ خالی = بدون اسلایدشو)', type: 'images', default: '' },
     ],
   },
   {
@@ -278,6 +290,7 @@ export const CONTENT_GROUPS = [
       { key: 'news.title', label: 'عنوان', type: 'text', default: 'اخبار و مطالب' },
       { key: 'news.subtitle', label: 'زیرعنوان', type: 'text', default: 'آخرین اخبار، مطالب و ویدیوهای خانواده برداشت' },
       { key: 'news.empty', label: 'متن حالت خالی', type: 'text', default: 'هنوز مطلبی منتشر نشده است.' },
+      { key: 'news.slides', label: 'اسلایدشوی بالای صفحه (افزودن/حذف/جابه‌جایی عکس؛ خالی = بدون اسلایدشو)', type: 'images', default: '' },
     ],
   },
   {
@@ -288,6 +301,7 @@ export const CONTENT_GROUPS = [
       { key: 'actors.title', label: 'عنوان', type: 'text', default: 'بانک بازیگران' },
       { key: 'actors.subtitle', label: 'زیرعنوان', type: 'text', default: 'رزومه بازیگران خانواده برداشت؛ ویژه فیلم‌سازان و کارگردانان' },
       { key: 'actors.empty', label: 'متن حالت خالی', type: 'text', default: 'هنوز رزومه‌ای برای نمایش عمومی ثبت نشده است.' },
+      { key: 'actors.slides', label: 'اسلایدشوی بالای صفحه (افزودن/حذف/جابه‌جایی عکس؛ خالی = بدون اسلایدشو)', type: 'images', default: '' },
     ],
   },
   {
@@ -297,6 +311,7 @@ export const CONTENT_GROUPS = [
       { key: 'sr.tag', label: 'برچسب', type: 'text', default: 'خانواده برداشت' },
       { key: 'sr.title', label: 'عنوان', type: 'text', default: 'مسئولیت اجتماعی' },
       { key: 'sr.subtitle', label: 'زیرعنوان', type: 'text', default: 'فعالیت‌های فرهنگی و اجتماعی خانواده برداشت' },
+      { key: 'sr.slides', label: 'اسلایدشوی بالای صفحه (افزودن/حذف/جابه‌جایی عکس؛ خالی = بدون اسلایدشو)', type: 'images', default: '' },
     ],
   },
   {
@@ -308,16 +323,19 @@ export const CONTENT_GROUPS = [
       { key: 'works.adv.title', label: 'تبلیغات — عنوان', type: 'text', default: 'تولیدات تبلیغاتی' },
       { key: 'works.adv.subtitle', label: 'تبلیغات — زیرعنوان', type: 'text', default: 'پروژه‌های تبلیغاتی و ویدیویی' },
       { key: 'works.adv.intro', label: 'تبلیغات — متن معرفی', type: 'textarea', default: 'در این بخش تولیدات تبلیغاتی و پروژه‌های ویدیویی خانواده برداشت معرفی می‌شود.' },
+      { key: 'works.adv.slides', label: 'تبلیغات — اسلایدشوی بالای صفحه (خالی = بدون اسلایدشو)', type: 'images', default: '' },
       // خروجی خانواده برداشت
       { key: 'works.output.tag', label: 'خروجی — برچسب', type: 'text', default: 'آثار' },
       { key: 'works.output.title', label: 'خروجی — عنوان', type: 'text', default: 'خروجی خانواده برداشت' },
       { key: 'works.output.subtitle', label: 'خروجی — زیرعنوان', type: 'text', default: 'نتایج آموزشی و هنری هنرجویان' },
       { key: 'works.output.intro', label: 'خروجی — متن معرفی', type: 'textarea', default: 'در این بخش خروجی‌های آموزشی، تمرین‌ها و آثار هنرجویان خانواده برداشت معرفی می‌شود.' },
+      { key: 'works.output.slides', label: 'خروجی — اسلایدشوی بالای صفحه (خالی = بدون اسلایدشو)', type: 'images', default: '' },
       // پشتوانه علمی و هنری
       { key: 'works.resume.tag', label: 'پشتوانه — برچسب', type: 'text', default: 'رزومه' },
       { key: 'works.resume.title', label: 'پشتوانه — عنوان', type: 'text', default: 'پشتوانه علمی و هنری' },
       { key: 'works.resume.subtitle', label: 'پشتوانه — زیرعنوان', type: 'text', default: 'رزومه، افتخارات و تجربه‌های آموزشی' },
       { key: 'works.resume.intro', label: 'پشتوانه — متن معرفی', type: 'textarea', default: 'پشتوانه علمی، آموزشی و هنری خانواده برداشت و تیم آموزشی در این بخش ارائه می‌شود.' },
+      { key: 'works.resume.slides', label: 'پشتوانه — اسلایدشوی بالای صفحه (خالی = بدون اسلایدشو)', type: 'images', default: '' },
     ],
   },
   {

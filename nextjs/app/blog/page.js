@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import SimplePage from '@/components/SimplePage';
 import SectionPosts from '@/components/SectionPosts';
-import { loadContent } from '@/lib/siteContent';
+import { loadContent, splitLines } from '@/lib/siteContent';
 import { BLOG_CATEGORIES } from '@/lib/blogCategories';
 
 export const metadata = {
@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 export default async function BlogPage() {
   const t = await loadContent();
   return (
-    <SimplePage title={t('blog.title')} subtitle={t('blog.subtitle')} tag={t('blog.tag')}>
+    <SimplePage title={t('blog.title')} subtitle={t('blog.subtitle')} tag={t('blog.tag')} slides={splitLines(t('blog.slides'))}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
         {BLOG_CATEGORIES.map((c) => (
           <Link key={c.value} href={`/blog/category/${c.value}`} className="pay-chip">{c.label}</Link>
