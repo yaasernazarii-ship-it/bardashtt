@@ -43,6 +43,24 @@ export default function AdminSiteContent() {
     else setError(data.error || 'آپلود ناموفق بود.');
   }
 
+  // آپلود عکس و افزودن آن به انتهای فهرست عکس‌های یک فیلد چند‌عکسی (اسلایدشو).
+  async function uploadImageAppend(key, file) {
+    if (!file) return;
+    setUploadingKey(key); setError('');
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const data = await res.json();
+    setUploadingKey('');
+    if (data.ok) {
+      setValues((prev) => {
+        const cur = String(prev[key] ?? '').split('\n').map((s) => s.trim()).filter(Boolean);
+        return { ...prev, [key]: [...cur, data.url].join('\n') };
+      });
+      setOkMsg('');
+    } else setError(data.error || 'آپلود ناموفق بود.');
+  }
+
   async function save(e) {
     e.preventDefault();
     setSaving(true); setError(''); setOkMsg('');
@@ -102,6 +120,13 @@ export default function AdminSiteContent() {
                     onChange={(e) => set(f.key, e.target.value)}
                   />
                 </div>
+              ) : f.type === 'images' ? (
+                <ImagesField
+                  value={values[f.key] ?? ''}
+                  uploading={uploadingKey === f.key}
+                  onUpload={(file) => uploadImageAppend(f.key, file)}
+                  onChange={(v) => set(f.key, v)}
+                />
               ) : f.type === 'textarea' || f.type === 'list' ? (
                 <textarea
                   className="form-input"
@@ -127,5 +152,67 @@ export default function AdminSiteContent() {
         </button>
       </div>
     </form>
+  );
+}
+
+// فیلد چند‌عکسی (اسلایدشو): افزودن با آپلود یا نشانی، حذف و جابه‌جایی ترتیب عکس‌ها.
+function ImagesField({ value, uploading, onUpload, onChange }) {
+  const [url, setUrl] = useState('');
+  const list = String(value ?? '').split('\n').map((s) => s.trim()).filter(Boolean);
+
+  function update(next) { onChange(next.join('\n')); }
+  function removeAt(i) { update(list.filter((_, j) => j !== i)); }
+  function move(i, dir) {
+    const j = i + dir;
+    if (j < 0 || j >= list.length) return;
+    const next = [...list];
+    [next[i], next[j]] = [next[j], next[i]];
+    update(next);
+  }
+  function addUrl() {
+    const u = url.trim();
+    if (!u) return;
+    update([...list, u]);
+    setUrl('');
+  }
+
+  return (
+    <div>
+      {list.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
+          {list.map((src, i) => (
+            <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'center', border: '1px solid var(--border)', borderRadius: 10, padding: 8, background: 'var(--surface)' }}>
+              <span style={{ fontSize: '.8rem', fontWeight: 700, color: 'var(--muted)', width: 20, textAlign: 'center', flexShrink: 0 }}>{i + 1}</span>
+              <img src={src} alt="" style={{ width: 84, height: 56, objectFit: 'cover', borderRadius: 6, flexShrink: 0, border: '1px solid var(--border)' }} />
+              <span style={{ flex: 1, minWidth: 0, fontSize: '.75rem', direction: 'ltr', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--muted)' }}>{src}</span>
+              <button type="button" className="btn btn--sm" onClick={() => move(i, -1)} disabled={i === 0} aria-label="جابه‌جایی به بالا">↑</button>
+              <button type="button" className="btn btn--sm" onClick={() => move(i, 1)} disabled={i === list.length - 1} aria-label="جابه‌جایی به پایین">↓</button>
+              <button type="button" className="btn btn--sm" onClick={() => removeAt(i)} aria-label="حذف عکس">حذف</button>
+            </div>
+          ))}
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+        <label className="btn btn--dark" style={{ cursor: 'pointer', margin: 0 }}>
+          {uploading ? 'در حال آپلود…' : '➕ افزودن عکس'}
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            disabled={uploading}
+            onChange={(e) => onUpload(e.target.files?.[0])}
+          />
+        </label>
+        <input
+          className="form-input"
+          style={{ flex: 1, minWidth: 180, direction: 'ltr', fontSize: '.82rem' }}
+          placeholder="یا نشانی عکس را اینجا بگذارید"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addUrl(); } }}
+        />
+        <button type="button" className="btn" onClick={addUrl}>افزودن نشانی</button>
+      </div>
+    </div>
   );
 }

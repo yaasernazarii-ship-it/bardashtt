@@ -1,8 +1,9 @@
 import { prisma } from '@/lib/prisma';
 
 // رجیستری متن‌های قابل‌ویرایش صفحات.
-// هر فیلد: key یکتا، label فارسی، type ('text' | 'textarea' | 'image' | 'list')، و مقدار پیش‌فرض.
+// هر فیلد: key یکتا، label فارسی، type ('text' | 'textarea' | 'image' | 'images' | 'list')، و مقدار پیش‌فرض.
 //  - image: مقدار یک نشانی تصویر است؛ در پنل با دکمهٔ آپلود قابل‌تغییر است.
+//  - images: چند عکس (اسلایدشو/گالری)؛ هر عکس در یک خط ذخیره می‌شود. در پنل می‌توان عکس افزود/حذف/جابه‌جا کرد و در صفحه با splitLines() به آرایه تبدیل می‌شود.
 //  - list: چند مورد، هر مورد در یک خط؛ در صفحه با splitLines() به آرایه تبدیل می‌شود.
 // برای افزودن متن جدید کافی است فیلد را اینجا اضافه و در صفحه با t('key') بخوانید.
 export const CONTENT_GROUPS = [
@@ -325,9 +326,7 @@ export const CONTENT_GROUPS = [
     id: 'aboutMedia',
     title: 'عکس‌ها و اسلایدشوی صفحهٔ «دربارهٔ ما»',
     fields: [
-      { key: 'about.slide1.image', label: 'اسلاید ۱ (بالای صفحه)', type: 'image', default: '' },
-      { key: 'about.slide2.image', label: 'اسلاید ۲ (بالای صفحه)', type: 'image', default: '' },
-      { key: 'about.slide3.image', label: 'اسلاید ۳ (بالای صفحه)', type: 'image', default: '' },
+      { key: 'about.slides', label: 'اسلایدهای بالای صفحه (هرچند عکس که بخواهی — افزودن/حذف/جابه‌جایی)', type: 'images', default: '' },
       { key: 'about.slider.title', label: 'متن روی اسلایدشو', type: 'text', default: 'خانواده برداشت · درباره ما' },
       { key: 'about.founder.image', label: 'عکس بنیان‌گذار', type: 'image', default: '/founder-yaser.jpg' },
       { key: 'about.edu1.image', label: 'گواهی تحصیلی ۱', type: 'image', default: '/edu-avicenna.jpg' },

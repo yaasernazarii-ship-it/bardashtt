@@ -13,6 +13,10 @@ export const dynamic = 'force-dynamic';
 
 export default async function AboutPage() {
   const t = await loadContent();
+  // اسلایدهای بالای صفحه از فیلد چند‌عکسی جدید خوانده می‌شوند؛ اگر خالی بود، به اسلایدهای قدیمی برمی‌گردیم.
+  const aboutSlides = splitLines(t('about.slides'));
+  const legacySlides = [t('about.slide1.image'), t('about.slide2.image'), t('about.slide3.image')].filter(Boolean);
+  const heroImages = aboutSlides.length ? aboutSlides : legacySlides;
   return (
     <PageLayout>
       <style>{`
@@ -78,7 +82,7 @@ export default async function AboutPage() {
       <PageSlider
         title={t('about.slider.title')}
         count={3}
-        images={[t('about.slide1.image'), t('about.slide2.image'), t('about.slide3.image')]}
+        images={heroImages}
       />
 
       {/* معرفی آموزشگاه */}
