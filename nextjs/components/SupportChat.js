@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import Icon from './Icon';
 
 const STORAGE_KEY = 'bardasht_support_chat';
 
@@ -105,12 +106,12 @@ export default function SupportChat({ isOpen, onClose }) {
   return (
     <div className={`support-chat-box${isOpen ? ' open' : ''}`}>
       <div className="support-chat-head">
-        <div className="av">🎬</div>
+        <div className="av"><Icon name="clapperboard" size={20} /></div>
         <div>
           <h4>پشتیبانی خانواده برداشت</h4>
           <p>● آنلاین</p>
         </div>
-        <button className="close-btn" onClick={onClose}>✕</button>
+        <button className="close-btn" onClick={onClose} aria-label="بستن"><Icon name="close" size={20} /></button>
       </div>
 
       {step === 'name' ? (
@@ -138,7 +139,7 @@ export default function SupportChat({ isOpen, onClose }) {
             <input ref={inputRef} type="text" placeholder="پیام بنویسید..." value={inputVal}
               onChange={e => setInputVal(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && sendMsg()} />
-            <button onClick={sendMsg} disabled={sending}>↑</button>
+            <button onClick={sendMsg} disabled={sending} aria-label="ارسال"><Icon name="arrowUp" size={20} /></button>
           </div>
           <div className="support-phone-note">پاسخ پشتیبانی همین‌جا به‌صورت زنده نمایش داده می‌شود</div>
         </>

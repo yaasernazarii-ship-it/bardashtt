@@ -252,7 +252,7 @@
 .contact-cell { padding: 44px 28px; text-align: center; border-left: 1px solid rgba(255,255,255,.06); transition: background .2s; }
 .contact-cell:last-child { border-left: none; }
 .contact-cell:hover { background: rgba(255,255,255,.03); }
-.contact-cell .ico { font-size: 1.8rem; margin-bottom: 12px; }
+.contact-cell .ico { margin-bottom: 12px; color: var(--gold); display: inline-flex; }
 .contact-cell .lbl { font-size: .7rem; font-weight: 700; color: rgba(255,255,255,.3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
 .contact-cell a { font-size: 1rem; font-weight: 700; color: #fff; transition: color .2s; }
 .contact-cell a:hover { color: var(--gold-lt); }

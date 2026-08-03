@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import NotificationBell from './NotificationBell';
+import Icon from './Icon';
 
 const navLinks = [
   { href: '/', label: 'خانه' },
@@ -148,17 +149,17 @@ export default function Nav({ onOpenChat, logo }) {
                 <span className="nav__caret" aria-hidden="true" />
               </button>
               <ul className="hdr-support-drop">
-                <li><Link href="/faq" onClick={() => setSupportOpen(false)}><span className="drop-icon">📋</span>سوالات متداول</Link></li>
+                <li><Link href="/faq" onClick={() => setSupportOpen(false)}><span className="drop-icon"><Icon name="clipboard" size={18} /></span>سوالات متداول</Link></li>
                 <li className="drop-sep" />
                 <li>
                   <button type="button" onClick={() => { onOpenChat?.(); setSupportOpen(false); }}>
-                    <span className="drop-icon">💬</span>
+                    <span className="drop-icon"><Icon name="chat" size={18} /></span>
                     <span>پشتیبانی آنلاین<span className="drop-phone">گفت‌وگوی زنده با تیم ما</span></span>
                     <span className="drop-online-dot" />
                   </button>
                 </li>
                 <li className="drop-sep" />
-                <li><a href="tel:02191090934"><span className="drop-icon">📞</span><span>تماس با ما<span className="drop-phone">021-91090934</span></span></a></li>
+                <li><a href="tel:02191090934"><span className="drop-icon"><Icon name="phone" size={18} /></span><span>تماس با ما<span className="drop-phone">021-91090934</span></span></a></li>
               </ul>
             </div>
             {user ? (
@@ -179,7 +180,7 @@ export default function Nav({ onOpenChat, logo }) {
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
           >
-            {menuOpen ? '✕' : '☰'}
+            <Icon name={menuOpen ? 'close' : 'menu'} size={24} />
           </button>
         </div>
       </nav>
@@ -193,7 +194,7 @@ export default function Nav({ onOpenChat, logo }) {
             <strong>منوی سایت</strong>
             <span>خانواده برداشت</span>
           </div>
-          <button type="button" onClick={() => setMenuOpen(false)} aria-label="بستن منو">✕</button>
+          <button type="button" onClick={() => setMenuOpen(false)} aria-label="بستن منو"><Icon name="close" size={22} /></button>
         </div>
         <div className="mobile-drawer__links">
           {navLinks.map((item, i) => (

@@ -2,22 +2,38 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import Icon from './Icon';
 
 const STUDENT_ITEMS = [
-  { key: 'dashboard', href: '/dashboard', label: '🏠 داشبورد' },
-  { key: 'schedule', href: '/dashboard/schedule', label: '📅 برنامه و تقویم من' },
-  { key: 'enrollment', href: '/dashboard/enrollment', label: '🎓 ثبت‌نام من' },
-  { key: 'resume', href: '/dashboard/resume', label: '🎭 رزومه بازیگری' },
-  { key: 'profile', href: '/dashboard/profile', label: '👤 پروفایل' },
-  { key: 'courses', href: '/courses', label: '🎬 دوره‌ها' },
+  { key: 'dashboard', href: '/dashboard', icon: 'home', label: 'داشبورد' },
+  { key: 'schedule', href: '/dashboard/schedule', icon: 'calendar', label: 'برنامه و تقویم من' },
+  { key: 'enrollment', href: '/dashboard/enrollment', icon: 'graduationCap', label: 'ثبت‌نام من' },
+  { key: 'resume', href: '/dashboard/resume', icon: 'fileText', label: 'رزومه بازیگری' },
+  { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل' },
+  { key: 'courses', href: '/courses', icon: 'clapperboard', label: 'دوره‌ها' },
 ];
 
 // منوی اختصاصیِ فیلمساز: به‌جای برنامه/ثبت‌نام/دستیار/رزومهٔ هنرجویی، فقط دسترسی‌های مربوط به خودش را می‌بیند.
 const FILMMAKER_ITEMS = [
-  { key: 'dashboard', href: '/dashboard', label: '🏠 داشبورد' },
-  { key: 'actors', href: '/actors', label: '🎭 بانک بازیگران' },
-  { key: 'profile', href: '/dashboard/profile', label: '👤 پروفایل' },
-  { key: 'courses', href: '/courses', label: '🎬 دوره‌ها' },
+  { key: 'dashboard', href: '/dashboard', icon: 'home', label: 'داشبورد' },
+  { key: 'actors', href: '/actors', icon: 'user', label: 'بانک بازیگران' },
+  { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل' },
+  { key: 'courses', href: '/courses', icon: 'clapperboard', label: 'دوره‌ها' },
+];
+
+const MANAGER_ITEMS = [
+  { key: 'enrollments', href: '/dashboard/admin/enrollments', icon: 'clipboard', label: 'بررسی ثبت‌نام‌ها' },
+  { key: 'signups', href: '/dashboard/admin/signups', icon: 'check', label: 'تأیید حساب‌ها' },
+  { key: 'classes', href: '/dashboard/admin/classes', icon: 'calendar', label: 'کلاس‌ها و تقویم' },
+  { key: 'payments', href: '/dashboard/admin/payments', icon: 'creditCard', label: 'پرداخت‌ها و شهریه' },
+  { key: 'bookings', href: '/dashboard/admin/bookings', icon: 'clapperboard', label: 'درخواست‌های ست تایم' },
+  { key: 'support', href: '/dashboard/admin/support', icon: 'chat', label: 'پشتیبانی آنلاین' },
+  { key: 'posts', href: '/dashboard/admin/posts', icon: 'edit', label: 'محتوا و انتشار' },
+  { key: 'courses-admin', href: '/dashboard/admin/courses', icon: 'graduationCap', label: 'فروش دوره' },
+  { key: 'books-admin', href: '/dashboard/admin/books', icon: 'book', label: 'فروش کتاب' },
+  { key: 'content', href: '/dashboard/admin/content', icon: 'fileText', label: 'متن صفحات' },
+  { key: 'links', href: '/dashboard/admin/links', icon: 'link', label: 'لینک صفحات' },
+  { key: 'admin', href: '/dashboard/admin', icon: 'settings', label: 'کاربران' },
 ];
 
 function itemsForRole(role, graduated) {
@@ -44,7 +60,7 @@ export default function DashboardSidebar({ active, role, isAdmin = false, isMana
           aria-controls="dash-menu"
           onClick={() => setOpen((o) => !o)}
         >
-          <span className="sidebar-toggle__ico">{open ? '✕' : '☰'}</span>
+          <span className="sidebar-toggle__ico"><Icon name={open ? 'close' : 'menu'} size={20} /></span>
           <span>منو</span>
         </button>
       </div>
@@ -54,24 +70,21 @@ export default function DashboardSidebar({ active, role, isAdmin = false, isMana
       <ul id="dash-menu" className={`sidebar-menu${open ? ' sidebar-menu--open' : ''}`}>
         {visibleItems.map((it) => (
           <li key={it.key}>
-            <Link className={active === it.key ? 'active' : undefined} href={it.href} onClick={close}>{it.label}</Link>
+            <Link className={active === it.key ? 'active' : undefined} href={it.href} onClick={close}>
+              <Icon name={it.icon} size={18} className="sidebar-menu__ico" />{it.label}
+            </Link>
           </li>
         ))}
         {showManager && (
           <>
             <li className="sep">مدیریت</li>
-            <li><Link className={active === 'enrollments' ? 'active' : undefined} href="/dashboard/admin/enrollments" onClick={close}>📋 بررسی ثبت‌نام‌ها</Link></li>
-            <li><Link className={active === 'signups' ? 'active' : undefined} href="/dashboard/admin/signups" onClick={close}>✅ تأیید حساب‌ها</Link></li>
-            <li><Link className={active === 'classes' ? 'active' : undefined} href="/dashboard/admin/classes" onClick={close}>📅 کلاس‌ها و تقویم</Link></li>
-            <li><Link className={active === 'payments' ? 'active' : undefined} href="/dashboard/admin/payments" onClick={close}>💳 پرداخت‌ها و شهریه</Link></li>
-            <li><Link className={active === 'bookings' ? 'active' : undefined} href="/dashboard/admin/bookings" onClick={close}>🎬 درخواست‌های ست تایم</Link></li>
-            <li><Link className={active === 'support' ? 'active' : undefined} href="/dashboard/admin/support" onClick={close}>💬 پشتیبانی آنلاین</Link></li>
-            <li><Link className={active === 'posts' ? 'active' : undefined} href="/dashboard/admin/posts" onClick={close}>📝 محتوا و انتشار</Link></li>
-            <li><Link className={active === 'courses-admin' ? 'active' : undefined} href="/dashboard/admin/courses" onClick={close}>🎓 فروش دوره</Link></li>
-            <li><Link className={active === 'books-admin' ? 'active' : undefined} href="/dashboard/admin/books" onClick={close}>📚 فروش کتاب</Link></li>
-            <li><Link className={active === 'content' ? 'active' : undefined} href="/dashboard/admin/content" onClick={close}>📄 متن صفحات</Link></li>
-            <li><Link className={active === 'links' ? 'active' : undefined} href="/dashboard/admin/links" onClick={close}>🔗 لینک صفحات</Link></li>
-            <li><Link className={active === 'admin' ? 'active' : undefined} href="/dashboard/admin" onClick={close}>⚙️ کاربران</Link></li>
+            {MANAGER_ITEMS.map((it) => (
+              <li key={it.key}>
+                <Link className={active === it.key ? 'active' : undefined} href={it.href} onClick={close}>
+                  <Icon name={it.icon} size={18} className="sidebar-menu__ico" />{it.label}
+                </Link>
+              </li>
+            ))}
           </>
         )}
         <li className="sep">سایت</li>

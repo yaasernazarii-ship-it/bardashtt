@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import Icon from './Icon';
 
 export default function SiteHeader({ onOpenChat }) {
   const [open, setOpen] = useState(false);
@@ -29,17 +30,17 @@ export default function SiteHeader({ onOpenChat }) {
             پشتیبانی
           </button>
           <ul className="hdr-support-drop">
-            <li><Link href="/faq"><span className="drop-icon">📋</span>سوالات متداول</Link></li>
+            <li><Link href="/faq"><span className="drop-icon"><Icon name="clipboard" size={18} /></span>سوالات متداول</Link></li>
             <li className="drop-sep" />
             <li>
               <button onClick={() => { onOpenChat?.(); setOpen(false); }}>
-                <span className="drop-icon">💬</span>
+                <span className="drop-icon"><Icon name="chat" size={18} /></span>
                 <span>چت آنلاین<span className="drop-phone">پاسخ سریع از تیم ما</span></span>
                 <span className="drop-online-dot" />
               </button>
             </li>
             <li className="drop-sep" />
-            <li><a href="tel:02191090934"><span className="drop-icon">📞</span><span>تماس با ما<span className="drop-phone">02191090934</span></span></a></li>
+            <li><a href="tel:02191090934"><span className="drop-icon"><Icon name="phone" size={18} /></span><span>تماس با ما<span className="drop-phone">02191090934</span></span></a></li>
           </ul>
         </div>
       </div>

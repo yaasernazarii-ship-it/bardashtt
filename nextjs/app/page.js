@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
 import HomeHeroBg from '@/components/HomeHeroBg';
+import Icon from '@/components/Icon';
 import { loadContent, splitLines } from '@/lib/siteContent';
 
 export const metadata = {
@@ -80,17 +81,17 @@ export default async function HomePage() {
       {/* تماس */}
       <div id="contact" className="contact-row">
         <div className="contact-cell">
-          <div className="ico">📞</div>
+          <div className="ico"><Icon name="phone" size={26} /></div>
           <div className="lbl">تماس مستقیم</div>
           <a href={`tel:${t('contact.phone')}`}>{t('contact.phone')}</a>
         </div>
         <div className="contact-cell">
-          <div className="ico">📸</div>
+          <div className="ico"><Icon name="instagram" size={26} /></div>
           <div className="lbl">اینستاگرام</div>
           <a href={t('contact.instagramUrl')} target="_blank" rel="noopener noreferrer">{t('contact.instagram')}</a>
         </div>
         <div className="contact-cell">
-          <div className="ico">💬</div>
+          <div className="ico"><Icon name="chat" size={26} /></div>
           <div className="lbl">کانال بله</div>
           <a href={t('contact.baleUrl')} target="_blank" rel="noopener noreferrer">{t('contact.bale')}</a>
         </div>

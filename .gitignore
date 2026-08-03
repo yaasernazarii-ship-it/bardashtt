@@ -9,12 +9,16 @@ node_modules/
 
 # Build output
 .next/
+.next.bak*/
 out/
 build/
 dist/
 *.egg-info/
 __pycache__/
 *.pyc
+
+# فایل‌هایی که کاربران در زمان اجرا آپلود می‌کنند (توسط app/media/[name] سرو می‌شوند)
+nextjs/uploads/
 
 # IDE
 .idea/
