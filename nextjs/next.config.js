@@ -40,9 +40,15 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // صفحهٔ ثبت‌نام نباید در مرورگر یا پروکسی‌های میانی کش شود؛ در غیر این صورت
-        // بازدیدکننده می‌تواند مدت‌ها بعد از انتشار اصلاح، هنوز نسخهٔ قدیمی را ببیند.
+        // صفحه‌های ثبت‌نام و ورود نباید در مرورگر یا پروکسی‌های میانی کش شوند؛ در غیر
+        // این صورت بازدیدکننده می‌تواند مدت‌ها بعد از انتشار اصلاح، هنوز نسخهٔ قدیمی را ببیند.
         source: '/audition',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, must-revalidate' },
+        ],
+      },
+      {
+        source: '/auth',
         headers: [
           { key: 'Cache-Control', value: 'no-store, must-revalidate' },
         ],
