@@ -144,6 +144,9 @@ export default function AuditionForm() {
               <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 16 }}>
                 یک ویدیوی کوتاه از خودتان (معرفی و یک اجرای کوتاه) از طریق فرم زیر ارسال کنید. حتماً همان <b>کد ملی</b> را که در کادر زیر وارد می‌کنید، در فرم ارسال ویدیو هم بنویسید تا ویدیوی شما به‌صورت خودکار به این درخواست وصل شود.
               </p>
+              <p className="alert" style={{ background: 'rgba(212,175,55,0.12)', color: 'var(--gold)', fontWeight: 600, marginBottom: 12 }}>
+                پس از آپلود ویدئو، جهت وارد کردن کد ملی به سایت برگردید.
+              </p>
               <a className="btn btn--gold btn--full" href={VIDEO_FORM_URL} target="_blank" rel="noopener noreferrer" style={{ marginBottom: 16 }}>باز کردن فرم ارسال ویدیو ↗</a>
               <label className="enroll-confirm">
                 <input type="checkbox" checked={videoConfirmed} onChange={(e) => setVideoConfirmed(e.target.checked)} />
