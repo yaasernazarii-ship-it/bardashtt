@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { decodeSlug } from '@/lib/slug';
 
 export { SECTIONS, SECTION_VALUES, sectionLabel } from '@/lib/sections';
 
@@ -24,7 +25,7 @@ export async function livePostBySlug(slug, section) {
   const now = new Date();
   return prisma.post.findFirst({
     where: {
-      slug,
+      slug: decodeSlug(slug),
       ...(section ? { section } : {}),
       published: true,
       OR: [{ publishAt: null }, { publishAt: { lte: now } }],

@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser } from '@/lib/auth';
+import { decodeSlug } from '@/lib/slug';
 
 // شروعِ خریدِ دوره توسط کاربرِ واردشده.
 // چون درگاهِ پرداختِ آنلاین هنوز وصل نیست، این نقطه یک «فاکتورِ در انتظار پرداخت» می‌سازد
@@ -11,7 +12,7 @@ export async function POST(request, { params }) {
 
   const { slug } = await params;
   const course = await prisma.course.findFirst({
-    where: { slug, published: true },
+    where: { slug: decodeSlug(slug), published: true },
     select: { id: true, title: true, price: true },
   });
   if (!course) return Response.json({ ok: false, error: 'دوره یافت نشد.' }, { status: 404 });

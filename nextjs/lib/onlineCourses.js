@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { decodeSlug } from '@/lib/slug';
 
 // دوره‌های منتشرشده برای نمایش در صفحهٔ فروش (بدون ویدیوهای محافظت‌شده).
 export async function liveCourses() {
@@ -13,7 +14,7 @@ export async function liveCourses() {
 // (و صدازننده باید خودش دسترسیِ کاربر را بررسی کند پیش از ارسال به کلاینت).
 export async function courseBySlug(slug, { withLessons = false } = {}) {
   return prisma.course.findFirst({
-    where: { slug, published: true },
+    where: { slug: decodeSlug(slug), published: true },
     include: {
       _count: { select: { lessons: true } },
       ...(withLessons ? { lessons: { orderBy: { order: 'asc' } } } : {}),

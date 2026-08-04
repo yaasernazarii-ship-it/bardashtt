@@ -3,13 +3,15 @@ import { notFound } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import { prisma } from '@/lib/prisma';
 import { aparatEmbedUrl } from '@/lib/aparat';
+import { decodeSlug } from '@/lib/slug';
 import { SITE_URL, DEFAULT_IMAGE, articleJsonLd, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Tehran' });
 
-async function findPost(key) {
+async function findPost(rawKey) {
+  const key = decodeSlug(rawKey);
   return prisma.post.findFirst({ where: { OR: [{ id: key }, { slug: key }] } });
 }
 

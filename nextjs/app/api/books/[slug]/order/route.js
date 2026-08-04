@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, normalizePhone } from '@/lib/auth';
 import { zibalRequest, isZibalConfigured } from '@/lib/zibal';
+import { decodeSlug } from '@/lib/slug';
 
 // ثبت سفارش کتاب (کتابِ چاپی با ارسال پستی). برای همه باز است؛ اگر کاربر وارد باشد به سفارش وصل می‌شود.
 // اگر کتاب قیمت داشته باشد و درگاه فعال باشد، کاربر مستقیم به درگاه پرداخت منتقل می‌شود.
@@ -8,7 +9,7 @@ export async function POST(request, { params }) {
   const { slug } = await params;
   try {
     const book = await prisma.book.findFirst({
-      where: { slug, published: true },
+      where: { slug: decodeSlug(slug), published: true },
       select: { id: true, title: true, price: true },
     });
     if (!book) return Response.json({ ok: false, error: 'کتاب یافت نشد.' }, { status: 404 });
