@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { zibalVerify, siteUrl } from '@/lib/zibal';
 import { grantCourseAccess } from '@/lib/onlineCourses';
 import { notifyPayment } from '@/lib/paymentNotify';
+import { sendPurchaseSms } from '@/lib/purchaseSms';
 import { sendMessage, isBaleConfigured } from '@/lib/bale';
 
 export const dynamic = 'force-dynamic';
@@ -20,7 +21,12 @@ export async function GET(request) {
 
   // رکوردِ مرتبط را بر اساس trackId پیدا کن (اول فاکتورهای پرداخت، سپس سفارش کتاب).
   const payment = await prisma.payment.findFirst({ where: { gatewayTrackId: trackId } });
-  const order = payment ? null : await prisma.bookOrder.findFirst({ where: { gatewayTrackId: trackId } });
+  const order = payment
+    ? null
+    : await prisma.bookOrder.findFirst({
+        where: { gatewayTrackId: trackId },
+        include: { book: { select: { title: true } } },
+      });
   if (!payment && !order) return back('failed');
 
   // اگر کاربر پرداخت را لغو کرد یا ناموفق بود.
@@ -48,6 +54,15 @@ export async function GET(request) {
         select: { displayName: true, phone: true },
       });
       await notifyPayment(updated, student);
+      // پیامک تأیید خرید برای خودِ خریدار
+      await sendPurchaseSms({
+        kind: 'course',
+        phone: student?.phone,
+        name: student?.displayName,
+        title: updated.courseTitle || updated.title,
+        amount: updated.amount,
+        refId: v.refNumber,
+      });
     }
     return back('success', v.refNumber);
   }
@@ -69,6 +84,16 @@ export async function GET(request) {
     } catch {
       /* اطلاع‌رسانی نباید مسیر پرداخت را مختل کند */
     }
+    // پیامک تأیید خرید برای خودِ خریدار
+    await sendPurchaseSms({
+      kind: 'book',
+      phone: order.phone,
+      name: order.name,
+      title: order.book?.title,
+      amount: order.amount,
+      quantity: order.quantity,
+      refId: v.refNumber,
+    });
   }
   return back('success', v.refNumber);
 }

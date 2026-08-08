@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { notifyPayment } from '@/lib/paymentNotify';
+import { sendPurchaseSms } from '@/lib/purchaseSms';
 import { grantCourseAccess } from '@/lib/onlineCourses';
 
 export async function PATCH(request, { params }) {
@@ -31,6 +32,14 @@ export async function PATCH(request, { params }) {
       }
       // گزارش آنی به بله
       await notifyPayment(updated, current.user);
+      // پیامک تأیید خرید برای خودِ خریدار
+      await sendPurchaseSms({
+        kind: 'course',
+        phone: current.user?.phone,
+        name: current.user?.displayName,
+        title: updated.courseTitle || updated.title,
+        amount: updated.amount,
+      });
       return Response.json({ ok: true, payment: { ...updated, paidAt: updated.paidAt?.toISOString() || null } });
     }
 

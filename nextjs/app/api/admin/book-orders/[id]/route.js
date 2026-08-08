@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
+import { sendPurchaseSms } from '@/lib/purchaseSms';
 
 const STATUSES = ['new', 'contacted', 'paid', 'shipped', 'canceled'];
 
@@ -33,7 +34,27 @@ export async function PATCH(request, { params }) {
     }
     if ('adminNote' in b) data.adminNote = b.adminNote ? String(b.adminNote).trim().slice(0, 1000) : null;
 
-    const order = await prisma.bookOrder.update({ where: { id }, data });
+    const before = await prisma.bookOrder.findUnique({ where: { id }, select: { status: true } });
+    if (!before) return Response.json({ ok: false, error: 'سفارش یافت نشد.' }, { status: 400 });
+
+    const order = await prisma.bookOrder.update({
+      where: { id },
+      data,
+      include: { book: { select: { title: true } } },
+    });
+
+    // فقط در لحظهٔ «پرداخت‌شده شدن» پیامک برود؛ تغییرِ دوبارهٔ وضعیت پیامک تکراری نفرستد.
+    if (data.status === 'paid' && before.status !== 'paid') {
+      await sendPurchaseSms({
+        kind: 'book',
+        phone: order.phone,
+        name: order.name,
+        title: order.book?.title,
+        amount: order.amount,
+        quantity: order.quantity,
+      });
+    }
+
     return Response.json({ ok: true, order: serialize(order) });
   } catch {
     return Response.json({ ok: false, error: 'سفارش یافت نشد یا درخواست نامعتبر است.' }, { status: 400 });
