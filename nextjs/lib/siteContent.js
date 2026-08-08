@@ -349,6 +349,20 @@ export const CONTENT_GROUPS = [
     ],
   },
   {
+    id: 'bookPromo',
+    title: 'پنجرهٔ پیشنهاد کتاب هنگام ورود به سایت',
+    fields: [
+      { key: 'bookPromo.enabled', label: 'نمایش پنجره (برای خاموش‌کردن بنویسید: خاموش)', type: 'text', default: 'روشن' },
+      { key: 'bookPromo.badge', label: 'برچسب بالای پنجره', type: 'text', default: '📚 پیشنهاد ویژه' },
+      { key: 'bookPromo.heading', label: 'عنوان پنجره', type: 'text', default: 'کتابی که برای تو نوشته‌ایم' },
+      { key: 'bookPromo.text', label: 'متن کوتاه زیر عنوان', type: 'textarea', default: 'قبل از شروع گشت‌وگذار در سایت، نگاهی به کتاب خانواده برداشت بینداز.' },
+      { key: 'bookPromo.cta', label: 'متن دکمهٔ اصلی', type: 'text', default: 'معرفی و خرید کتاب' },
+      { key: 'bookPromo.dismiss', label: 'متن دکمهٔ بستن', type: 'text', default: 'بعداً' },
+      { key: 'bookPromo.delay', label: 'چند ثانیه بعد از ورود نمایش داده شود', type: 'text', default: '4' },
+      { key: 'bookPromo.repeatDays', label: 'بعد از بستن، تا چند روز دیگر نشان داده نشود', type: 'text', default: '7' },
+    ],
+  },
+  {
     id: 'aboutMedia',
     title: 'عکس‌ها و اسلایدشوی صفحهٔ «دربارهٔ ما»',
     fields: [

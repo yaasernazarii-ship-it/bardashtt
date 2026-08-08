@@ -1674,3 +1674,54 @@ summary:focus-visible {
 .sr-tab--active {
   color: var(--white); background: var(--dark); border-color: var(--dark);
 }
+
+/* پنجرهٔ پیشنهاد کتاب هنگام ورود به سایت */
+.promo-backdrop {
+  position: fixed; inset: 0; z-index: 2000;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  background: rgba(0,0,0,.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  animation: promo-fade .25s ease;
+}
+.promo-card {
+  position: relative; width: min(620px, 100%); max-height: 88vh; overflow-y: auto;
+  background: var(--white); border-radius: var(--radius-lg);
+  box-shadow: 0 24px 70px rgba(0,0,0,.28);
+  animation: promo-rise .28s cubic-bezier(.2,.8,.3,1);
+}
+.promo-close {
+  position: absolute; top: 10px; inset-inline-end: 12px; z-index: 1;
+  width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--border); background: var(--white); color: var(--muted);
+  font-size: 1.4rem; line-height: 1; display: flex; align-items: center; justify-content: center;
+}
+.promo-close:hover { color: var(--dark); border-color: var(--dark); }
+.promo-body { display: flex; gap: 20px; padding: 26px; align-items: flex-start; }
+.promo-cover {
+  width: 150px; flex-shrink: 0; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); object-fit: cover;
+}
+.promo-info { flex: 1; min-width: 0; }
+.promo-badge {
+  display: inline-block; font-size: 0.78rem; font-weight: 700; color: var(--dark);
+  background: var(--gold-lt); border-radius: 100px; padding: 4px 12px; margin-bottom: 10px;
+}
+.promo-heading { font-size: 1.25rem; font-weight: 800; margin: 0 0 6px; }
+.promo-book-title { font-size: 1.02rem; font-weight: 700; margin: 0 0 2px; }
+.promo-author { color: var(--muted); font-size: 0.85rem; margin: 0 0 8px; }
+.promo-text { color: var(--muted); font-size: 0.92rem; line-height: 1.9; margin: 0 0 8px; }
+.promo-text--sm { font-size: 0.85rem; }
+.promo-price { font-weight: 800; margin: 10px 0 16px; }
+.promo-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+@keyframes promo-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes promo-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 560px) {
+  .promo-body { flex-direction: column; align-items: center; text-align: center; padding: 22px 18px; }
+  .promo-cover { width: 130px; }
+  .promo-actions { justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-backdrop, .promo-card { animation: none; }
+}

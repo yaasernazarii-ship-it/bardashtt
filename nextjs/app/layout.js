@@ -1,5 +1,6 @@
 import { Vazirmatn } from 'next/font/google';
 import './globals.css';
+import BookPromo from '@/components/BookPromo';
 
 const vazirmatn = Vazirmatn({
   subsets: ['arabic'],
@@ -54,7 +55,10 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <BookPromo />
+      </body>
     </html>
   );
 }
