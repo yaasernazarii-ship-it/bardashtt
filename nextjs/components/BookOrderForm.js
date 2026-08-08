@@ -2,9 +2,16 @@
 
 import { useState } from 'react';
 
+// ارقام فارسی/عربی را به لاتین تبدیل می‌کند تا کد پستی با هر کیبوردی درست وارد شود.
+function toLatinDigits(input) {
+  return String(input || '')
+    .replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 1776))
+    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 1632));
+}
+
 // فرمِ ثبتِ سفارشِ یک کتاب. برای همه باز است (نیازی به ورود نیست).
 export default function BookOrderForm({ slug, price }) {
-  const [form, setForm] = useState({ name: '', phone: '', address: '', quantity: 1, note: '' });
+  const [form, setForm] = useState({ name: '', phone: '', address: '', postalCode: '', quantity: 1, note: '' });
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState('');
   const [error, setError] = useState('');
@@ -23,7 +30,7 @@ export default function BookOrderForm({ slug, price }) {
     if (data.redirectUrl) { window.location.href = data.redirectUrl; return; }
     setBusy(false);
     setDone(data.message || 'سفارش شما ثبت شد.');
-    setForm({ name: '', phone: '', address: '', quantity: 1, note: '' });
+    setForm({ name: '', phone: '', address: '', postalCode: '', quantity: 1, note: '' });
   }
 
   if (done) {
@@ -50,14 +57,35 @@ export default function BookOrderForm({ slug, price }) {
           <input className="form-input" type="number" min="1" max="100" value={form.quantity} onChange={(e) => set('quantity', e.target.value)} />
         </div>
         <div className="form-group">
-          <label className="form-label">نشانی پستی *</label>
-          <input className="form-input" value={form.address} onChange={(e) => set('address', e.target.value)} placeholder="نشانی کامل برای ارسال کتاب" />
+          <label className="form-label">کد پستی ۱۰ رقمی *</label>
+          <input
+            className="form-input"
+            dir="ltr"
+            inputMode="numeric"
+            maxLength={10}
+            value={form.postalCode}
+            onChange={(e) => set('postalCode', toLatinDigits(e.target.value).replace(/[^\d]/g, '').slice(0, 10))}
+            placeholder="مثال: 1234567890"
+          />
         </div>
+      </div>
+      <div className="form-group">
+        <label className="form-label">نشانی کامل پستی *</label>
+        <textarea
+          className="form-input"
+          rows={3}
+          value={form.address}
+          onChange={(e) => set('address', e.target.value)}
+          placeholder="استان، شهر، خیابان اصلی، خیابان فرعی، کوچه، پلاک و واحد — هرچه کامل‌تر، ارسال مطمئن‌تر."
+        />
       </div>
       <div className="form-group">
         <label className="form-label">توضیح (اختیاری)</label>
         <textarea className="form-input" rows={2} value={form.note} onChange={(e) => set('note', e.target.value)} placeholder="اگر توضیحی دارید بنویسید." />
       </div>
+      <p style={{ color: 'var(--muted)', fontSize: '0.82rem', margin: '0 0 10px' }}>
+        📦 هزینهٔ ارسال پستی بر عهدهٔ خریدار است و هنگام تحویل مرسوله پرداخت می‌شود.
+      </p>
       <button className="btn btn--dark" type="submit" disabled={busy}>
         {busy ? 'در حال اتصال…' : price > 0 ? `پرداخت و ثبت سفارش (${(price * (Number(form.quantity) || 1)).toLocaleString('fa-IR')} تومان)` : 'ثبت سفارش'}
       </button>

@@ -275,6 +275,7 @@ function BookOrdersPanel({ bookId, onCountChange }) {
                 <span className={`enroll-badge ${STATUS_CLASS[o.status]}`} style={{ marginInlineStart: 'auto' }}>{STATUS_LABEL[o.status]}</span>
               </div>
               {o.address && <div style={{ fontSize: '0.85rem', marginTop: 6 }}>📮 {o.address}</div>}
+              {o.postalCode && <div style={{ fontSize: '0.85rem', marginTop: 4 }}>🏷️ کد پستی: <span dir="ltr">{o.postalCode}</span></div>}
               {o.note && <div style={{ fontSize: '0.85rem', marginTop: 4, color: 'var(--muted)' }}>💬 {o.note}</div>}
               <div style={{ fontSize: '0.75rem', color: 'var(--light)', marginTop: 6 }}>{dateFmt.format(new Date(o.createdAt))}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>

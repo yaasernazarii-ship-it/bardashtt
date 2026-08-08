@@ -403,6 +403,7 @@ model BookOrder {
   name      String // نام سفارش‌دهنده
   phone     String // شماره تماس
   address   String? // نشانی پستی
+  postalCode String? // کد پستی ۱۰ رقمی گیرنده
   quantity  Int      @default(1) // تعداد
   note      String? // توضیح سفارش‌دهنده
   amount    Int? // مبلغ کلِ سفارش به تومان (قیمت × تعداد) در لحظهٔ ثبت

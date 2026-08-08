@@ -6,7 +6,7 @@ const STATUSES = ['new', 'contacted', 'paid', 'shipped', 'canceled'];
 
 function serialize(o) {
   return {
-    id: o.id, bookId: o.bookId, name: o.name, phone: o.phone, address: o.address,
+    id: o.id, bookId: o.bookId, name: o.name, phone: o.phone, address: o.address, postalCode: o.postalCode,
     quantity: o.quantity, note: o.note, status: o.status, adminNote: o.adminNote,
     createdAt: o.createdAt.toISOString(),
   };
