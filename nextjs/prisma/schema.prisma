@@ -238,6 +238,7 @@ model Post {
   excerpt     String? // خلاصهٔ کوتاه برای فهرست
   body        String // متن اصلی (پاراگراف‌ها با خط جدید)
   coverImage  String? // نشانی عکس کاور (آپلودی یا URL)
+  sourceUrl   String? // لینک مطلب در سایت منبع؛ اگر پر باشد کارت مطلب مستقیم به همان سایت باز می‌شود
   aparatUrl   String? // لینک ویدیوی آپارات
   audioUrl    String? // نشانی فایل صوتی (آپلودی یا URL) — برای مطالبِ صوتی
   published   Boolean   @default(true)

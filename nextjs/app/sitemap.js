@@ -63,10 +63,11 @@ export default async function sitemap() {
     priority: route === '' ? 1 : 0.75,
   }));
 
+  // مطلبی که فقط لینک به سایت منبع است صفحهٔ داخلیِ قابل‌ایندکس ندارد و وارد نقشهٔ سایت نمی‌شود.
   const dynamicEntries = [
-    ...blogPosts.map((p) => ({ path: `/blog/${p.slug}`, lastModified: p.updatedAt })),
-    ...newsPosts.map((p) => ({ path: `/news/${p.slug}`, lastModified: p.updatedAt })),
-    ...srPosts.map((p) => ({ path: `/social-responsibility/${p.slug}`, lastModified: p.updatedAt })),
+    ...blogPosts.filter((p) => !p.sourceUrl).map((p) => ({ path: `/blog/${p.slug}`, lastModified: p.updatedAt })),
+    ...newsPosts.filter((p) => !p.sourceUrl).map((p) => ({ path: `/news/${p.slug}`, lastModified: p.updatedAt })),
+    ...srPosts.filter((p) => !p.sourceUrl).map((p) => ({ path: `/social-responsibility/${p.slug}`, lastModified: p.updatedAt })),
     ...courses.map((c) => ({ path: `/online-learning/${c.slug}`, lastModified: c.updatedAt })),
   ].map((e) => ({
     url: `${baseUrl}${e.path}`,

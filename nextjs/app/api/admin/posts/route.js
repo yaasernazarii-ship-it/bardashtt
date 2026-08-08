@@ -9,10 +9,16 @@ import { randomBytes } from 'crypto';
 function serialize(p) {
   return {
     id: p.id, title: p.title, slug: p.slug, section: p.section, category: p.category, excerpt: p.excerpt, body: p.body,
-    coverImage: p.coverImage, aparatUrl: p.aparatUrl, audioUrl: p.audioUrl, published: p.published,
+    coverImage: p.coverImage, sourceUrl: p.sourceUrl, aparatUrl: p.aparatUrl, audioUrl: p.audioUrl, published: p.published,
     publishAt: p.publishAt ? p.publishAt.toISOString() : null,
     createdAt: p.createdAt.toISOString(),
   };
+}
+
+// فقط نشانی کاملِ http/https پذیرفته می‌شود تا لینک خروجیِ کارت مطلب امن بماند.
+function externalUrl(value) {
+  const v = String(value || '').trim().slice(0, 500);
+  return /^https?:\/\//i.test(v) ? v : null;
 }
 
 // تبدیل ورودیِ زمان انتشار به Date معتبر یا null (خالی = فوری).
@@ -67,6 +73,7 @@ export async function POST(request) {
         excerpt: b.excerpt ? String(b.excerpt).trim().slice(0, 300) : null,
         body,
         coverImage: b.coverImage ? String(b.coverImage).trim().slice(0, 500) : null,
+        sourceUrl: externalUrl(b.sourceUrl),
         aparatUrl: b.aparatUrl ? String(b.aparatUrl).trim().slice(0, 500) : null,
         audioUrl: b.audioUrl ? String(b.audioUrl).trim().slice(0, 500) : null,
         published: b.published !== false,
@@ -79,7 +86,8 @@ export async function POST(request) {
     if (live) {
       const meta = SECTIONS.find((s) => s.value === post.section);
       const label = meta ? meta.label.replace(/\s*←\s*/g, ' - ') : 'سایت';
-      const href = meta ? (meta.kind === 'article' ? `${meta.path}/${post.slug}` : meta.path) : null;
+      // مطلبی که از سایت دیگری برداشته شده، اعلانش هم مستقیم به همان سایت می‌برد.
+      const href = post.sourceUrl || (meta ? (meta.kind === 'article' ? `${meta.path}/${post.slug}` : meta.path) : null);
       await notifyAll({ title: `مطلب جدید در ${label}`, body: post.title, href, kind: 'content' });
     }
 

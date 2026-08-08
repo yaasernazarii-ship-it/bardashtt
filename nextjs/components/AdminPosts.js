@@ -8,7 +8,7 @@ const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long
 const dateTimeFmt = new Intl.DateTimeFormat('fa-IR', {
   year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tehran',
 });
-const EMPTY = { title: '', section: 'news', category: '', excerpt: '', body: '', coverImage: '', aparatUrl: '', audioUrl: '', published: true, publishAt: '' };
+const EMPTY = { title: '', section: 'news', category: '', excerpt: '', body: '', coverImage: '', sourceUrl: '', aparatUrl: '', audioUrl: '', published: true, publishAt: '' };
 
 // تبدیل زمان ذخیره‌شده (ISO/UTC) به مقدار ورودی datetime-local در ساعت محلی مرورگر.
 function isoToLocalInput(iso) {
@@ -71,9 +71,11 @@ export default function AdminPosts() {
         excerpt: data.excerpt || f.excerpt,
         body: data.body || f.body,
         coverImage: data.coverImage || f.coverImage,
+        sourceUrl: data.sourceUrl || u,
       }));
       const parts = [data.title && 'عنوان', data.body && 'متن', data.excerpt && 'خلاصه', data.coverImage && 'عکس کاور'].filter(Boolean);
-      setImportMsg(`محتوا دریافت شد (${parts.join('، ')}). قبل از انتشار بازبینی و در صورت نیاز ویرایش کنید.`);
+      const coverNote = data.coverImage ? '' : ' سایت مبدأ عکس کاور نداشت؛ در بخش «عکس کاور» دستی انتخاب کنید.';
+      setImportMsg(`محتوا دریافت شد (${parts.join('، ')}). لینک منبع هم ثبت شد، پس کارت این مطلب مستقیم به سایت مبدأ می‌رود.${coverNote}`);
     } catch {
       setImportMsg('دریافت محتوا ممکن نشد؛ کمی بعد دوباره امتحان کنید.');
     } finally {
@@ -85,7 +87,7 @@ export default function AdminPosts() {
     setEditingId(p.id);
     setForm({
       title: p.title, section: p.section || 'news', category: p.category || '', excerpt: p.excerpt || '', body: p.body,
-      coverImage: p.coverImage || '', aparatUrl: p.aparatUrl || '', audioUrl: p.audioUrl || '', published: p.published,
+      coverImage: p.coverImage || '', sourceUrl: p.sourceUrl || '', aparatUrl: p.aparatUrl || '', audioUrl: p.audioUrl || '', published: p.published,
       publishAt: isoToLocalInput(p.publishAt),
     });
     setError('');
@@ -175,7 +177,7 @@ export default function AdminPosts() {
           </div>
           {importMsg && <p style={{ color: 'var(--muted)', fontSize: '0.82rem', marginTop: 6 }}>{importMsg}</p>}
           <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>
-            لینک خبر یا مطلب را از هر سایتی بچسبانید؛ عنوان، خلاصه، متن و عکس کاور به‌صورت خودکار در فرم زیر پر می‌شود تا بازبینی و منتشر کنید.
+            لینک خبر یا مطلب را از هر سایتی بچسبانید؛ عنوان، خلاصه، متن و عکس کاور به‌صورت خودکار در فرم زیر پر می‌شود. لینک منبع هم ثبت می‌شود تا کلیک روی مطلب مستقیم به همان سایت برود.
           </span>
         </div>
 
@@ -238,6 +240,14 @@ export default function AdminPosts() {
         </div>
 
         <div className="form-group">
+          <label className="form-label">لینک مطلب در سایت منبع (اختیاری)</label>
+          <input className="form-input" dir="ltr" value={form.sourceUrl} onChange={(e) => set('sourceUrl', e.target.value)} placeholder="https://example.com/news/article-title" />
+          <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>
+            اگر پر باشد، با کلیک روی این مطلب کاربر مستقیم به همان سایت منبع (در تبِ جدید) می‌رود و صفحهٔ داخلی سایت ما باز نمی‌شود. با «دریافت خودکار از لینک» خودبه‌خود پر می‌شود؛ برای بازگرداندن به حالت عادی خالی‌اش کنید.
+          </span>
+        </div>
+
+        <div className="form-group">
           <label className="form-label">فایل صوتی (اختیاری)</label>
           <input ref={audioRef} type="file" accept="audio/*" className="form-input" onChange={uploadAudio} />
           {uploadingAudio && <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>در حال آپلود صوت…</span>}
@@ -295,6 +305,7 @@ export default function AdminPosts() {
                 {p.category && <span>🏷️ {blogCategoryLabel(p.category)}</span>}
                 <span>{dateFmt.format(new Date(p.createdAt))}</span>
                 {p.aparatUrl && <span>🎬 ویدیوی آپارات</span>}
+                {p.sourceUrl && <span>🔗 لینک به سایت منبع</span>}
               </div>
               <div className="enroll-actions" style={{ marginTop: 10, gap: 8 }}>
                 <button className="btn btn--dark" onClick={() => editPost(p)}>ویرایش</button>

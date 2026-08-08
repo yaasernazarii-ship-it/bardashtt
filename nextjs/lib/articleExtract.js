@@ -68,6 +68,32 @@ function blockToParagraphs(chunk) {
   return paras;
 }
 
+// اگر صفحه og:image نداشته باشد، بزرگ‌ترین عکسِ محتوایی را از متن مطلب برمی‌داریم.
+// آیکون، لوگو، اسپینر و عکس‌های base64 کنار گذاشته می‌شوند.
+function firstArticleImage(html, base) {
+  const scope = html.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)
+    || html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/i)
+    || html.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i);
+  const chunk = stripNoise(scope ? scope[1] : html);
+  const imgRe = /<img\b[^>]*>/gi;
+  let m;
+  while ((m = imgRe.exec(chunk)) !== null) {
+    const tag = m[0];
+    const src = (tag.match(/\b(?:data-src|data-original|data-lazy-src|src)\s*=\s*["']([^"']+)["']/i) || [])[1];
+    if (!src) continue;
+    const url = decodeEntities(src.trim());
+    if (/^data:/i.test(url) || /\.svg(\?|$)/i.test(url)) continue;
+    // نام تزئینی فقط وقتی باعث ردشدن می‌شود که یک بخشِ کاملِ مسیر باشد، تا مسیرهایی مثل uploads/ قربانی نشوند.
+    const path = url.split('?')[0].toLowerCase();
+    if (/(^|[/_-])(logos?|icons?|avatars?|sprites?|spacers?|placeholders?|loading|banners?|ads?)([/_.-]|$)/.test(path)) continue;
+    const width = Number((tag.match(/\bwidth\s*=\s*["']?(\d+)/i) || [])[1] || 0);
+    const height = Number((tag.match(/\bheight\s*=\s*["']?(\d+)/i) || [])[1] || 0);
+    if ((width && width < 200) || (height && height < 120)) continue;
+    return absoluteUrl(url, base);
+  }
+  return '';
+}
+
 // استخراج متن اصلی مطلب: اول <article>، سپس نامزدهای رایج، در نهایت کل <body>.
 function extractBody(html) {
   const candidates = [];
@@ -132,7 +158,7 @@ export async function extractArticle(rawUrl) {
   const excerpt = metaContent(html, ['og:description', 'twitter:description', 'description']).slice(0, 300);
 
   const rawImage = metaContent(html, ['og:image', 'og:image:url', 'twitter:image', 'twitter:image:src']);
-  const coverImage = rawImage ? absoluteUrl(rawImage, finalUrl) : '';
+  const coverImage = rawImage ? absoluteUrl(rawImage, finalUrl) : firstArticleImage(html, finalUrl);
 
   const body = extractBody(html);
 

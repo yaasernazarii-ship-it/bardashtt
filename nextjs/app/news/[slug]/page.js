@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import { prisma } from '@/lib/prisma';
 import { aparatEmbedUrl } from '@/lib/aparat';
@@ -24,7 +24,9 @@ export async function generateMetadata({ params }) {
   return {
     title: post.title,
     description: post.excerpt || undefined,
-    alternates: { canonical: url },
+    // برای مطلبِ برداشته‌شده، نسخهٔ اصلی در سایت منبع است.
+    alternates: { canonical: post.sourceUrl || url },
+    robots: post.sourceUrl ? { index: false, follow: true } : undefined,
     openGraph: {
       type: 'article',
       title: post.title,
@@ -41,6 +43,9 @@ export default async function PostPage({ params }) {
   const { slug } = await params;
   const post = await findPost(slug);
   if (!post || !post.published) notFound();
+  // خبری که از سایت دیگری برداشته شده هیچ‌وقت داخل سایت ما باز نمی‌شود؛
+  // حتی ورود مستقیم به این نشانی هم به سایت منبع فرستاده می‌شود.
+  if (post.sourceUrl) redirect(post.sourceUrl);
 
   const embed = aparatEmbedUrl(post.aparatUrl);
   const paragraphs = post.body.split(/\n{2,}/).map((s) => s.trim()).filter(Boolean);

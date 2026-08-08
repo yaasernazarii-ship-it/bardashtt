@@ -6,10 +6,16 @@ import { BLOG_CATEGORY_VALUES } from '@/lib/blogCategories';
 function serialize(p) {
   return {
     id: p.id, title: p.title, slug: p.slug, section: p.section, category: p.category, excerpt: p.excerpt, body: p.body,
-    coverImage: p.coverImage, aparatUrl: p.aparatUrl, audioUrl: p.audioUrl, published: p.published,
+    coverImage: p.coverImage, sourceUrl: p.sourceUrl, aparatUrl: p.aparatUrl, audioUrl: p.audioUrl, published: p.published,
     publishAt: p.publishAt ? p.publishAt.toISOString() : null,
     createdAt: p.createdAt.toISOString(),
   };
+}
+
+// فقط نشانی کاملِ http/https پذیرفته می‌شود تا لینک خروجیِ کارت مطلب امن بماند.
+function externalUrl(value) {
+  const v = String(value || '').trim().slice(0, 500);
+  return /^https?:\/\//i.test(v) ? v : null;
 }
 
 async function guard() {
@@ -41,6 +47,7 @@ export async function PATCH(request, { params }) {
     }
     if ('excerpt' in b) data.excerpt = b.excerpt ? String(b.excerpt).trim().slice(0, 300) : null;
     if ('coverImage' in b) data.coverImage = b.coverImage ? String(b.coverImage).trim().slice(0, 500) : null;
+    if ('sourceUrl' in b) data.sourceUrl = externalUrl(b.sourceUrl);
     if ('aparatUrl' in b) data.aparatUrl = b.aparatUrl ? String(b.aparatUrl).trim().slice(0, 500) : null;
     if ('audioUrl' in b) data.audioUrl = b.audioUrl ? String(b.audioUrl).trim().slice(0, 500) : null;
     if ('published' in b) data.published = Boolean(b.published);
