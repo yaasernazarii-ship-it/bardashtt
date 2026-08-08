@@ -1,14 +1,14 @@
 import { prisma } from '@/lib/prisma';
-import { normalizePhone, createSession } from '@/lib/auth';
+import { normalizePhone, createSession, toLatinDigits } from '@/lib/auth';
 
-// بازیابی ورود با کد پیامکی، فقط برای حساب‌های از قبل‌تأییدشده.
-// این مسیر عمداً هیچ حسابی نمی‌سازد (بدون upsert)؛ اگر شماره به یک حسابِ فعالِ تأییدشده
-// تعلق نداشته باشد، حتی با کد درست هم واردی انجام نمی‌شود.
+// ورود با کد پیامکی، فقط برای حساب‌های از قبل ساخته‌شده.
+// این مسیر عمداً هیچ حسابی نمی‌سازد (بدون upsert)؛ اگر شماره به یک حسابِ فعال
+// تعلق نداشته باشد، حتی با کد درست هم ورودی انجام نمی‌شود.
 export async function POST(request) {
   try {
     const body = await request.json();
     const phone = normalizePhone(body.phone);
-    const code = String(body.code || '').replace(/[^\d]/g, '');
+    const code = toLatinDigits(body.code).replace(/[^\d]/g, '');
 
     if (!phone || !code) {
       return Response.json({ ok: false, error: 'شماره یا کد نامعتبر است.' }, { status: 400 });
@@ -25,9 +25,9 @@ export async function POST(request) {
     // کد را همین‌جا مصرف می‌کنیم تا قابل استفاده‌ی مجدد نباشد، حتی اگر در ادامه ورود رد شود.
     await prisma.otpCode.update({ where: { id: otp.id }, data: { used: true } });
 
-    // فقط حسابِ موجود، فعال و تأییدشده وارد می‌شود؛ هیچ حسابی ساخته نمی‌شود.
+    // فقط حسابِ موجود و فعال وارد می‌شود؛ هیچ حسابی ساخته نمی‌شود.
     const user = await prisma.user.findUnique({ where: { phone } });
-    if (!user || user.active === false || !user.passwordHash) {
+    if (!user || user.active === false) {
       return Response.json(
         { ok: false, error: 'حسابی برای این شماره یافت نشد. ابتدا حساب شما باید ساخته و تأیید شود.' },
         { status: 403 },

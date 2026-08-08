@@ -9,6 +9,7 @@ export default function ProfileForm({ initial, role }) {
     contactPhone: initial.contactPhone || '',
     city: initial.city || '',
     birthYear: initial.birthYear || '',
+    gender: initial.gender || '',
   });
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -47,6 +48,15 @@ export default function ProfileForm({ initial, role }) {
       <div className="form-group">
         <label className="form-label">نام و نام خانوادگی</label>
         <input className="form-input" value={form.displayName} onChange={(e) => update('displayName', e.target.value)} autoComplete="name" />
+      </div>
+      <div className="form-group">
+        <label className="form-label">جنسیت</label>
+        <select className="form-input" value={form.gender} onChange={(e) => update('gender', e.target.value)}>
+          <option value="">انتخاب نشده</option>
+          <option value="male">آقا</option>
+          <option value="female">خانم</option>
+        </select>
+        <p className="form-hint">روی گواهی‌نامهٔ پایان دوره به‌صورت «آقای …» یا «خانم …» درج می‌شود.</p>
       </div>
       {isFilmmaker && (
         <div className="form-group">

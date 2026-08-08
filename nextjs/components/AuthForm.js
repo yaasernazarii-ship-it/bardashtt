@@ -126,7 +126,7 @@ export default function AuthForm() {
           <p className="form-hint" style={{ textAlign: 'center', marginTop: 16 }}>
             <button type="button" onClick={() => switchMode('recover')}
               style={{ background: 'none', border: 'none', color: 'var(--dark)', fontWeight: 800, cursor: 'pointer', font: 'inherit' }}>
-              رمز عبور را فراموش کرده‌اید؟ ورود با کد پیامکی
+              ورود با شماره موبایل و کد پیامکی
             </button>
           </p>
         </>
@@ -135,8 +135,8 @@ export default function AuthForm() {
       {mode === 'recover' && (
         <>
           <div className="form-shell__head">
-            <h2>بازیابی ورود با کد پیامکی</h2>
-            <p>اگر رمز خود را فراموش کرده‌اید، با شماره موبایلِ ثبت‌شده در حسابِ تأییدشده، کد تأیید دریافت کنید و وارد شوید.</p>
+            <h2>ورود با کد پیامکی</h2>
+            <p>شماره موبایلِ ثبت‌شده در حسابتان را وارد کنید تا کد تأیید برایتان پیامک شود.</p>
           </div>
 
           {recoverStep === 'phone' ? (

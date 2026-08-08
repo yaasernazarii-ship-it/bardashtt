@@ -24,8 +24,17 @@ export function cookieDomainForHost(host) {
   return undefined;
 }
 
+// ارقام فارسی (۰-۹) و عربی (٠-٩) را به ارقام لاتین تبدیل می‌کند.
+// بدون این تبدیل، شماره‌ای که با کیبورد فارسی تایپ شود کاملاً حذف می‌شد و «شماره نامعتبر» می‌گرفت.
+export function toLatinDigits(input) {
+  return String(input || '').replace(/[۰-۹٠-٩]/g, (ch) => {
+    const code = ch.charCodeAt(0);
+    return String(code >= 0x06f0 ? code - 0x06f0 : code - 0x0660);
+  });
+}
+
 export function normalizePhone(input) {
-  const digits = String(input || '').replace(/[^\d]/g, '');
+  const digits = toLatinDigits(input).replace(/[^\d]/g, '');
   if (/^09\d{9}$/.test(digits)) return digits;
   if (/^9\d{9}$/.test(digits)) return '0' + digits;
   if (/^989\d{9}$/.test(digits)) return '0' + digits.slice(2);

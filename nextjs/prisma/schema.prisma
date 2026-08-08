@@ -14,6 +14,7 @@ model User {
   city         String?
   birthYear    Int?
   role         String       @default("member") // member | student | filmmaker | editor | admin
+  gender       String? // male | female — مبنای درج «آقای/خانم» روی گواهی‌نامه
   contactPhone String? // شماره تماس تکمیلی که کاربر (به‌ویژه فیلمساز) در پروفایل پر می‌کند
   username     String?      @unique
   passwordHash String?
@@ -36,6 +37,8 @@ model User {
   attendances  Attendance[]
   payments     Payment[]
   courseAccesses CourseAccess[] // دوره‌های آنلاینی که این کاربر خریده/دسترسی دارد
+  examAttempts ExamAttempt[] // تلاش‌های آزمون فارغ‌التحصیلی
+  certificates Certificate[] // گواهی‌نامه‌های صادرشده
 
   @@index([classGroupId])
 }
@@ -122,6 +125,67 @@ model BookingRequest {
 
   @@index([status])
   @@index([actorId])
+}
+
+// بانک سوالات آزمون فارغ‌التحصیلی. هر آزمون، سوالاتش را به‌صورت تصادفی از سوالاتِ فعال برمی‌دارد،
+// پس بانک می‌تواند بسیار بزرگ‌تر از تعداد سوالِ هر آزمون باشد.
+model ExamQuestion {
+  id          String   @id @default(cuid())
+  text        String // متن سوال
+  options     Json // آرایه‌ی گزینه‌ها (۴ گزینه)
+  correct     Int // اندیس گزینهٔ درست، از ۰
+  topic       String? // سرفصل/موضوع سوال
+  active      Boolean  @default(true) // سوالِ غیرفعال در آزمون‌های جدید نمی‌آید
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([active])
+  @@index([topic])
+}
+
+// یک بار شرکت هنرجو در آزمون. سوالات در لحظهٔ شروع قفل می‌شوند تا رفرش صفحه سوال‌ها را عوض نکند.
+model ExamAttempt {
+  id          String       @id @default(cuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionIds Json // ترتیب ثابت سوالاتِ همین تلاش
+  answers     Json         @default("{}") // { questionId: اندیس گزینهٔ انتخابی }
+  total       Int // تعداد سوالات این آزمون
+  score       Int? // تعداد پاسخ درست (پس از تصحیح)
+  percent     Int? // درصد نمره
+  passed      Boolean      @default(false)
+  startedAt   DateTime     @default(now())
+  expiresAt   DateTime // پایان مهلت پاسخ‌گویی
+  submittedAt DateTime? // خالی یعنی آزمون هنوز باز است
+  certificate Certificate?
+
+  @@index([userId, startedAt])
+  @@index([submittedAt])
+}
+
+// گواهی‌نامهٔ پایان دوره. اطلاعات در لحظهٔ صدور کپی می‌شود تا تغییرات بعدیِ پروفایل،
+// گواهیِ صادرشده و استعلام‌شده را عوض نکند.
+model Certificate {
+  id          String       @id @default(cuid())
+  serial      String       @unique // کد استعلام، مثل TB-1404-0001
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attemptId   String?      @unique
+  attempt     ExamAttempt? @relation(fields: [attemptId], references: [id])
+  fullName    String
+  gender      String? // male | female — برای «آقای/خانم»
+  nationalId  String?
+  courseTitle String?
+  branch      String?
+  percent     Int?
+  revoked     Boolean      @default(false) // ابطال توسط مدیر؛ در استعلام «باطل» نشان داده می‌شود
+  issuedById  String?
+  issuedAt    DateTime     @default(now())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([userId])
 }
 
 model OtpCode {
