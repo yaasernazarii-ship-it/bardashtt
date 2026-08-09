@@ -1804,3 +1804,117 @@ summary:focus-visible {
 }
 .pay-result__ico--success { color: #16A34A; background: rgba(22,163,74,.1); }
 .pay-result__ico--error   { color: #DC2626; background: rgba(220,38,38,.1); }
+
+/* ═══ اسلایدشوِ بالای صفحه‌های داخلی (دوره‌ها، درباره ما، گالری و …) ═══
+   عکس‌ها معمولاً افقی و ۱۶:۹ آپلود می‌شوند. قاب هم بر همان اساس ارتفاع
+   می‌گیرد (۵۶.۲۵٪ عرض) تا روی گوشی دقیقاً اندازهٔ عکس باشد و چیزی بریده نشود.
+   روی نمایشگرهای بزرگ ارتفاع به ۷۰vh محدود می‌شود و فضای کناری با نسخهٔ
+   محوِ همان عکس پر می‌شود؛ پس عکس هیچ‌وقت بریده یا کشیده نمی‌شود. */
+.pslider {
+  position: relative;
+  width: 100%;
+  height: clamp(190px, 56.25vw, 70vh);
+  overflow: hidden;
+  background: #0a0a0a;
+}
+.pslider__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+.pslider__slide.is-active { opacity: 1; }
+
+/* پس‌زمینهٔ محو — فقط فضای خالیِ دو طرف را پر می‌کند */
+.pslider__fill {
+  position: absolute;
+  inset: -4%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(26px) brightness(.5) saturate(1.15);
+  transform: scale(1.06);
+}
+.pslider__fill--flat { inset: 0; filter: none; transform: none; }
+
+/* خودِ عکس — کامل و با نسبت اصلی */
+.pslider__img {
+  position: absolute;
+  inset: 0;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.pslider__title {
+  position: absolute;
+  bottom: 52px;
+  right: 0;
+  left: 0;
+  text-align: center;
+  z-index: 9;
+  pointer-events: none;
+}
+.pslider__title span {
+  display: inline-block;
+  font-size: clamp(1rem, 2.2vw, 1.4rem);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: .04em;
+  text-shadow: 0 2px 16px rgba(0,0,0,.7);
+}
+
+.pslider__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.12);
+  border: 1.5px solid rgba(255,255,255,.25);
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+}
+.pslider__nav--prev { right: 20px; }
+.pslider__nav--next { left: 20px; }
+
+.pslider__dots {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+.pslider__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.35);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all .3s;
+}
+.pslider__dot.is-active { width: 26px; border-radius: 4px; background: var(--gold); }
+
+/* گوشی: قاب کوتاه‌تر می‌شود، پس دکمه‌ها و عنوان هم جمع‌وجورتر */
+@media (max-width: 640px) {
+  .pslider__nav { width: 36px; height: 36px; font-size: 1.05rem; }
+  .pslider__nav--prev { right: 10px; }
+  .pslider__nav--next { left: 10px; }
+  .pslider__title { bottom: 34px; }
+  .pslider__dots { bottom: 12px; }
+  .pslider__fill { filter: blur(18px) brightness(.5) saturate(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pslider__slide { transition: none; }
+}

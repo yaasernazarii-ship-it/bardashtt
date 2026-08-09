@@ -24,29 +24,36 @@ export default function PageSlider({ title, count = 3, images = [] }) {
   }, [idx, go]);
 
   return (
-    <div style={{ position: 'relative', height: 'clamp(240px,55vh,720px)', overflow: 'hidden', background: '#0a0a0a' }}>
+    <div className="pslider">
       {slides.map((s, i) => (
-        <div key={i} style={{
-          position: 'absolute', inset: 0,
-          ...(usingImages
-            ? { backgroundImage: `url(${s})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-            : { background: s }),
-          opacity: i === idx ? 1 : 0,
-          transition: 'opacity 1.4s ease',
-        }} />
+        <div key={i} className={`pslider__slide${i === idx ? ' is-active' : ''}`}>
+          {usingImages ? (
+            <>
+              {/* پرکنندهٔ محو برای وقتی نسبتِ عکس با قاب یکی نیست */}
+              <div className="pslider__fill" style={{ backgroundImage: `url(${s})` }} />
+              {/* خودِ عکس: همیشه کامل، بدون بریدگی و بدون کشیدگی */}
+              <div className="pslider__img" style={{ backgroundImage: `url(${s})` }} />
+            </>
+          ) : (
+            <div className="pslider__fill pslider__fill--flat" style={{ background: s }} />
+          )}
+        </div>
       ))}
       {title && (
-        <div style={{ position: 'absolute', bottom: 52, right: 0, left: 0, textAlign: 'center', zIndex: 9, pointerEvents: 'none' }}>
-          <span style={{ display: 'inline-block', fontSize: 'clamp(1rem,2.2vw,1.4rem)', fontWeight: 900, color: '#fff', letterSpacing: '.04em', textShadow: '0 2px 16px rgba(0,0,0,.7)' }}>
-            {title}
-          </span>
+        <div className="pslider__title">
+          <span>{title}</span>
         </div>
       )}
-      <button onClick={() => go(idx - 1)} aria-label="قبلی" style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', right: 20, zIndex: 10, width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,.12)', border: '1.5px solid rgba(255,255,255,.25)', color: '#fff', fontSize: '1.3rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(6px)' }}>›</button>
-      <button onClick={() => go(idx + 1)} aria-label="بعدی" style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: 20, zIndex: 10, width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,.12)', border: '1.5px solid rgba(255,255,255,.25)', color: '#fff', fontSize: '1.3rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(6px)' }}>‹</button>
-      <div style={{ position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 8, zIndex: 10 }}>
+      <button className="pslider__nav pslider__nav--prev" onClick={() => go(idx - 1)} aria-label="قبلی">&#8250;</button>
+      <button className="pslider__nav pslider__nav--next" onClick={() => go(idx + 1)} aria-label="بعدی">&#8249;</button>
+      <div className="pslider__dots">
         {slides.map((_, i) => (
-          <button key={i} onClick={() => go(i)} aria-label={`اسلاید ${i + 1}`} style={{ width: i === idx ? 26 : 8, height: 8, borderRadius: i === idx ? 4 : '50%', background: i === idx ? 'var(--gold)' : 'rgba(255,255,255,.35)', border: 'none', cursor: 'pointer', padding: 0, transition: 'all .3s' }} />
+          <button
+            key={i}
+            className={`pslider__dot${i === idx ? ' is-active' : ''}`}
+            onClick={() => go(i)}
+            aria-label={`اسلاید ${i + 1}`}
+          />
         ))}
       </div>
     </div>
