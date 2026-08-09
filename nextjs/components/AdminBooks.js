@@ -19,6 +19,11 @@ const STATUS_CLASS = {
   canceled: 'badge-rejected',
 };
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
+const dateTimeFmt = new Intl.DateTimeFormat('fa-IR', {
+  year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
+});
+const money = (n) => Number(n || 0).toLocaleString('fa-IR');
+const isPaid = (o) => o.status === 'paid' || o.status === 'shipped';
 
 export default function AdminBooks() {
   const [books, setBooks] = useState([]);
@@ -214,6 +219,13 @@ export default function AdminBooks() {
                 <span>💰 {b.price > 0 ? `${b.price.toLocaleString('fa-IR')} تومان` : 'رایگان'}</span>
                 {b.author && <span>✍️ {b.author}</span>}
                 <span>🧾 {b.orderCount.toLocaleString('fa-IR')} سفارش</span>
+                <span style={{ color: b.paidCount > 0 ? '#137a4a' : undefined }}>
+                  ✅ {money(b.paidCount)} پرداخت‌شده
+                  {b.paidQuantity > 0 ? ` (${money(b.paidQuantity)} نسخه)` : ''}
+                </span>
+                <span style={{ color: b.paidAmount > 0 ? '#137a4a' : undefined, fontWeight: b.paidAmount > 0 ? 700 : undefined }}>
+                  💵 {money(b.paidAmount)} تومان دریافت‌شده
+                </span>
               </div>
               <div className="enroll-actions" style={{ marginTop: 10, gap: 8 }}>
                 <button className="btn btn--dark" onClick={() => editBook(b)}>ویرایش</button>
@@ -223,7 +235,7 @@ export default function AdminBooks() {
                 <button className="btn btn--ghost" onClick={() => togglePublish(b)}>{b.published ? 'پنهان کردن' : 'انتشار'}</button>
                 <button className="btn btn--danger" onClick={() => remove(b.id)}>حذف</button>
               </div>
-              {ordersFor === b.id && <BookOrdersPanel bookId={b.id} onCountChange={(n) => setBooks((prev) => prev.map((x) => (x.id === b.id ? { ...x, orderCount: n } : x)))} />}
+              {ordersFor === b.id && <BookOrdersPanel bookId={b.id} onChanged={load} />}
             </div>
           ))}
         </div>
@@ -232,14 +244,14 @@ export default function AdminBooks() {
   );
 }
 
-// پنلِ سفارش‌های یک کتاب: تغییر وضعیت و حذف.
-function BookOrdersPanel({ bookId, onCountChange }) {
+// پنلِ سفارش‌های یک کتاب: وضعیت پرداخت، تغییر وضعیت و حذف.
+function BookOrdersPanel({ bookId, onChanged }) {
   const [rows, setRows] = useState(null);
 
   async function load() {
     const res = await fetch(`/api/admin/books/${bookId}/orders`);
     const data = await res.json();
-    if (data.ok) { setRows(data.orders); onCountChange?.(data.orders.length); }
+    if (data.ok) setRows(data.orders);
   }
   useEffect(() => { load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [bookId]);
 
@@ -248,15 +260,18 @@ function BookOrdersPanel({ bookId, onCountChange }) {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }),
     });
     const data = await res.json();
-    if (data.ok) setRows((prev) => prev.map((o) => (o.id === id ? data.order : o)));
+    if (data.ok) { setRows((prev) => prev.map((o) => (o.id === id ? data.order : o))); onChanged?.(); }
   }
 
   async function remove(id) {
     if (!window.confirm('این سفارش حذف شود؟')) return;
     const res = await fetch(`/api/admin/book-orders/${id}`, { method: 'DELETE' });
     const data = await res.json();
-    if (data.ok) { setRows((prev) => prev.filter((o) => o.id !== id)); onCountChange?.((rows?.length || 1) - 1); }
+    if (data.ok) { setRows((prev) => prev.filter((o) => o.id !== id)); onChanged?.(); }
   }
+
+  const paidRows = (rows || []).filter(isPaid);
+  const paidSum = paidRows.reduce((s, o) => s + Number(o.amount || 0), 0);
 
   return (
     <div style={{ marginTop: 12, padding: 14, background: 'var(--surface)', borderRadius: 10 }}>
@@ -266,6 +281,11 @@ function BookOrdersPanel({ bookId, onCountChange }) {
         <span style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>هنوز سفارشی ثبت نشده است.</span>
       ) : (
         <div style={{ display: 'grid', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', fontSize: '0.85rem', paddingBottom: 8, borderBottom: '1px solid var(--border)' }}>
+            <span>مجموع سفارش‌ها: <strong>{money(rows.length)}</strong></span>
+            <span style={{ color: '#137a4a' }}>پرداخت‌شده: <strong>{money(paidRows.length)}</strong></span>
+            <span style={{ color: '#137a4a' }}>مبلغ دریافتی: <strong>{money(paidSum)} تومان</strong></span>
+          </div>
           {rows.map((o) => (
             <div key={o.id} style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 10 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -274,6 +294,27 @@ function BookOrdersPanel({ bookId, onCountChange }) {
                 <span style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>× {o.quantity.toLocaleString('fa-IR')}</span>
                 <span className={`enroll-badge ${STATUS_CLASS[o.status]}`} style={{ marginInlineStart: 'auto' }}>{STATUS_LABEL[o.status]}</span>
               </div>
+
+              {/* وضعیت مالی: چقدر، کِی، با چه روشی و با چه کد پیگیری‌ای */}
+              {isPaid(o) ? (
+                <div style={{ marginTop: 8, padding: '8px 10px', borderRadius: 8, background: '#eaf7f0', border: '1px solid #bfe5d0', fontSize: '0.85rem', lineHeight: 1.9 }}>
+                  <div style={{ fontWeight: 700, color: '#137a4a' }}>
+                    💵 مبلغ پرداخت‌شده: {o.amount ? `${money(o.amount)} تومان` : 'ثبت‌نشده (سفارش قدیمی)'}
+                    <span style={{ fontWeight: 400, marginInlineStart: 8 }}>
+                      ({o.method === 'online' ? 'پرداخت آنلاین از درگاه' : 'ثبت دستی توسط مدیریت'})
+                    </span>
+                  </div>
+                  {o.paidAt && <div>🕒 زمان پرداخت: {dateTimeFmt.format(new Date(o.paidAt))}</div>}
+                  {o.gatewayRefId && <div>🔖 کد پیگیری بانکی: <span dir="ltr">{o.gatewayRefId}</span></div>}
+                  {o.gatewayTrackId && <div style={{ color: 'var(--muted)' }}>شناسهٔ تراکنش درگاه: <span dir="ltr">{o.gatewayTrackId}</span></div>}
+                  {o.userId && <div style={{ color: 'var(--muted)' }}>👤 خرید از حساب کاربریِ ثبت‌شده در سایت</div>}
+                </div>
+              ) : (
+                <div style={{ marginTop: 8, fontSize: '0.85rem', color: 'var(--muted)' }}>
+                  ⏳ هنوز پرداخت نشده{o.amount ? ` — مبلغ سفارش: ${money(o.amount)} تومان` : ''}
+                </div>
+              )}
+
               {o.address && <div style={{ fontSize: '0.85rem', marginTop: 6 }}>📮 {o.address}</div>}
               {o.postalCode && <div style={{ fontSize: '0.85rem', marginTop: 4 }}>🏷️ کد پستی: <span dir="ltr">{o.postalCode}</span></div>}
               {o.note && <div style={{ fontSize: '0.85rem', marginTop: 4, color: 'var(--muted)' }}>💬 {o.note}</div>}

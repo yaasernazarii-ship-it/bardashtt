@@ -9,6 +9,7 @@ const STUDENT_ITEMS = [
   { key: 'schedule', href: '/dashboard/schedule', icon: 'calendar', label: 'برنامه و تقویم من' },
   { key: 'enrollment', href: '/dashboard/enrollment', icon: 'graduationCap', label: 'ثبت‌نام من' },
   { key: 'exam', href: '/dashboard/exam', icon: 'check', label: 'آزمون و گواهی‌نامه' },
+  { key: 'orders', href: '/dashboard/orders', icon: 'book', label: 'سفارش‌های من' },
   { key: 'resume', href: '/dashboard/resume', icon: 'fileText', label: 'رزومه بازیگری' },
   { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل' },
   { key: 'courses', href: '/courses', icon: 'clapperboard', label: 'دوره‌ها' },
@@ -18,6 +19,7 @@ const STUDENT_ITEMS = [
 const FILMMAKER_ITEMS = [
   { key: 'dashboard', href: '/dashboard', icon: 'home', label: 'داشبورد' },
   { key: 'actors', href: '/actors', icon: 'user', label: 'بانک بازیگران' },
+  { key: 'orders', href: '/dashboard/orders', icon: 'book', label: 'سفارش‌های من' },
   { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل' },
   { key: 'courses', href: '/courses', icon: 'clapperboard', label: 'دوره‌ها' },
 ];

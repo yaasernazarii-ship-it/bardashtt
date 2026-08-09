@@ -1,14 +1,26 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 
-function serialize(b) {
+function serialize(b, stats) {
   return {
     id: b.id, title: b.title, slug: b.slug, author: b.author, description: b.description,
     price: b.price, coverImage: b.coverImage, aparatUrl: b.aparatUrl, audioUrl: b.audioUrl,
     published: b.published, order: b.order,
     orderCount: b._count ? b._count.orders : 0,
+    paidCount: stats?._count?._all || 0,
+    paidQuantity: stats?._sum?.quantity || 0,
+    paidAmount: stats?._sum?.amount || 0,
     createdAt: b.createdAt.toISOString(),
   };
+}
+
+// آمار فروشِ پرداخت‌شدهٔ یک کتاب تا کارتِ ادمین بعد از ویرایش هم عدد درست نشان دهد.
+async function soldStats(bookId) {
+  return prisma.bookOrder.aggregate({
+    where: { bookId, status: { in: ['paid', 'shipped'] } },
+    _count: { _all: true },
+    _sum: { amount: true, quantity: true },
+  });
 }
 
 async function guard() {
@@ -48,7 +60,7 @@ export async function PATCH(request, { params }) {
       where: { id }, data,
       include: { _count: { select: { orders: true } } },
     });
-    return Response.json({ ok: true, book: serialize(book) });
+    return Response.json({ ok: true, book: serialize(book, await soldStats(book.id)) });
   } catch {
     return Response.json({ ok: false, error: 'کتاب یافت نشد یا درخواست نامعتبر است.' }, { status: 400 });
   }

@@ -4,12 +4,16 @@ import { slugify } from '@/lib/slug';
 import { notifyAll } from '@/lib/notifications';
 import { randomBytes } from 'crypto';
 
-function serialize(b) {
+function serialize(b, stats) {
   return {
     id: b.id, title: b.title, slug: b.slug, author: b.author, description: b.description,
     price: b.price, coverImage: b.coverImage, aparatUrl: b.aparatUrl, audioUrl: b.audioUrl,
     published: b.published, order: b.order,
     orderCount: b._count ? b._count.orders : 0,
+    // آمار فروشِ واقعی (فقط سفارش‌های پرداخت‌شده/ارسال‌شده)
+    paidCount: stats?.paidCount || 0,
+    paidQuantity: stats?.paidQuantity || 0,
+    paidAmount: stats?.paidAmount || 0,
     createdAt: b.createdAt.toISOString(),
   };
 }
@@ -34,7 +38,21 @@ export async function GET() {
     orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
     include: { _count: { select: { orders: true } } },
   });
-  return Response.json({ ok: true, books: books.map(serialize) });
+
+  // جمعِ فروشِ پرداخت‌شدهٔ هر کتاب در یک کوئری.
+  const sold = await prisma.bookOrder.groupBy({
+    by: ['bookId'],
+    where: { status: { in: ['paid', 'shipped'] } },
+    _count: { _all: true },
+    _sum: { amount: true, quantity: true },
+  });
+  const stats = new Map(sold.map((s) => [s.bookId, {
+    paidCount: s._count._all,
+    paidQuantity: s._sum.quantity || 0,
+    paidAmount: s._sum.amount || 0,
+  }]));
+
+  return Response.json({ ok: true, books: books.map((b) => serialize(b, stats.get(b.id))) });
 }
 
 export async function POST(request) {

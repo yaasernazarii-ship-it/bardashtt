@@ -8,6 +8,10 @@ function serialize(o) {
   return {
     id: o.id, bookId: o.bookId, name: o.name, phone: o.phone, address: o.address, postalCode: o.postalCode,
     quantity: o.quantity, note: o.note, status: o.status, adminNote: o.adminNote,
+    amount: o.amount, method: o.method,
+    paidAt: o.paidAt ? o.paidAt.toISOString() : null,
+    gatewayTrackId: o.gatewayTrackId, gatewayRefId: o.gatewayRefId,
+    userId: o.userId,
     createdAt: o.createdAt.toISOString(),
   };
 }
@@ -34,8 +38,18 @@ export async function PATCH(request, { params }) {
     }
     if ('adminNote' in b) data.adminNote = b.adminNote ? String(b.adminNote).trim().slice(0, 1000) : null;
 
-    const before = await prisma.bookOrder.findUnique({ where: { id }, select: { status: true } });
+    const before = await prisma.bookOrder.findUnique({
+      where: { id },
+      select: { status: true, paidAt: true, gatewayRefId: true },
+    });
     if (!before) return Response.json({ ok: false, error: 'سفارش یافت نشد.' }, { status: 400 });
+
+    // وقتی ادمین دستی «پرداخت‌شده» می‌کند، زمان و روشِ پرداخت هم ثبت شود تا رکورد مبهم نماند.
+    // اگر کد پیگیریِ درگاه دارد یعنی آنلاین تأیید شده و دست نمی‌خورد.
+    if (data.status === 'paid' && before.status !== 'paid') {
+      if (!before.paidAt) data.paidAt = new Date();
+      if (!before.gatewayRefId) data.method = 'manual';
+    }
 
     const order = await prisma.bookOrder.update({
       where: { id },

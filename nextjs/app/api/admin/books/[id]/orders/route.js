@@ -5,6 +5,11 @@ function serialize(o) {
   return {
     id: o.id, bookId: o.bookId, name: o.name, phone: o.phone, address: o.address, postalCode: o.postalCode,
     quantity: o.quantity, note: o.note, status: o.status, adminNote: o.adminNote,
+    // اطلاعات مالی: بدونِ این‌ها معلوم نیست چقدر و کِی و با چه کد پیگیری‌ای پرداخت شده.
+    amount: o.amount, method: o.method,
+    paidAt: o.paidAt ? o.paidAt.toISOString() : null,
+    gatewayTrackId: o.gatewayTrackId, gatewayRefId: o.gatewayRefId,
+    userId: o.userId,
     createdAt: o.createdAt.toISOString(),
   };
 }
