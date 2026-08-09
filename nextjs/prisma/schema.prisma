@@ -16,6 +16,7 @@ model User {
   role         String       @default("member") // member | student | filmmaker | editor | admin
   gender       String? // male | female — مبنای درج «آقای/خانم» روی گواهی‌نامه
   contactPhone String? // شماره تماس تکمیلی که کاربر (به‌ویژه فیلمساز) در پروفایل پر می‌کند
+  photoUrl     String? // عکس پرسنلی ۳×۴ که خود کاربر در پروفایلش آپلود می‌کند
   username     String?      @unique
   passwordHash String?
   passwordPlain String? // رمز عبورِ صادرشده توسط مدیر، برای ارسال مجدد در صورت فراموشی

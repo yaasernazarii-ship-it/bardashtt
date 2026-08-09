@@ -1,6 +1,76 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+// آپلود عکس ۳×۴ کاربر؛ فایل روی سرور به نسبت ۳×۴ برش و به WebP فشرده می‌شود.
+function PhotoPicker({ initialUrl }) {
+  const router = useRouter();
+  const [url, setUrl] = useState(initialUrl || '');
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState(null);
+  const fileRef = useRef(null);
+
+  async function pick(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBusy(true); setMsg(null);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/my/photo', { method: 'POST', body: fd });
+      const d = await res.json();
+      if (!d.ok) { setMsg({ type: 'error', text: d.error || 'آپلود ناموفق بود.' }); return; }
+      setUrl(d.url);
+      setMsg({ type: 'success', text: 'عکس شما ثبت شد.' });
+      router.refresh();
+    } catch {
+      setMsg({ type: 'error', text: 'ارتباط با سرور برقرار نشد.' });
+    } finally {
+      setBusy(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
+
+  async function remove() {
+    setBusy(true); setMsg(null);
+    try {
+      const res = await fetch('/api/my/photo', { method: 'DELETE' });
+      const d = await res.json();
+      if (!d.ok) { setMsg({ type: 'error', text: d.error || 'حذف نشد.' }); return; }
+      setUrl('');
+      setMsg({ type: 'success', text: 'عکس حذف شد.' });
+      router.refresh();
+    } catch {
+      setMsg({ type: 'error', text: 'ارتباط با سرور برقرار نشد.' });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="form-group">
+      <label className="form-label">عکس پرسنلی ۳×۴</label>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flexWrap: 'wrap' }}>
+        <div className="user-photo user-photo--lg">
+          {url
+            // eslint-disable-next-line @next/next/no-img-element
+            ? <img src={url} alt="عکس من" />
+            : <span className="user-photo__empty">بدون عکس</span>}
+        </div>
+        <div style={{ flex: 1, minWidth: 210 }}>
+          <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="form-input" onChange={pick} disabled={busy} />
+          <p className="form-hint">عکس واضح و رو‌به‌رو با پس‌زمینهٔ ساده؛ jpg، png یا webp تا ۶ مگابایت. عکس خودکار به نسبت ۳×۴ برش داده می‌شود.</p>
+          {busy && <span style={{ color: 'var(--muted)', fontSize: '.8rem' }}>در حال پردازش…</span>}
+          {url && !busy && (
+            <button type="button" className="btn btn--sm btn--outline" onClick={remove}>حذف عکس</button>
+          )}
+        </div>
+      </div>
+      {msg && <div className={`alert alert--${msg.type}`} style={{ marginTop: 10 }}>{msg.text}</div>}
+    </div>
+  );
+}
 
 export default function ProfileForm({ initial, role }) {
   const isFilmmaker = role === 'filmmaker';
@@ -41,6 +111,7 @@ export default function ProfileForm({ initial, role }) {
   return (
     <form className="form-shell" onSubmit={save} style={{ maxWidth: 520 }}>
       {msg && <div className={`alert alert--${msg.type}`}>{msg.text}</div>}
+      <PhotoPicker initialUrl={initial.photoUrl} />
       <div className="form-group">
         <label className="form-label">شماره موبایل</label>
         <input className="form-input" dir="ltr" value={initial.phone} disabled />

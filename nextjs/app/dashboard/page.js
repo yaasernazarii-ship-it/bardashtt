@@ -6,14 +6,34 @@ import DashboardSidebar from '@/components/DashboardSidebar';
 
 export const metadata = { title: 'داشبورد هنرجو' };
 
+// عکس ۳×۴ کاربر در سرصفحهٔ پنل؛ اگر عکسی ثبت نشده باشد دعوت به آپلود نمایش داده می‌شود.
+function UserPhoto({ user }) {
+  if (!user.photoUrl) {
+    return (
+      <Link href="/dashboard/profile" className="user-photo user-photo--empty-link" title="افزودن عکس ۳×۴">
+        <span className="user-photo__empty">افزودن<br />عکس ۳×۴</span>
+      </Link>
+    );
+  }
+  return (
+    <div className="user-photo">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={user.photoUrl} alt={user.displayName || 'عکس کاربر'} />
+    </div>
+  );
+}
+
 function FilmmakerDashboard({ user }) {
   const name = user.displayName || 'فیلمساز گرامی';
   return (
     <>
       <div className="dash-head">
-        <div>
-          <h1 className="dash-head__title">داشبورد فیلمساز</h1>
-          <p className="dash-head__sub">خوش آمدید {name}؛ از اینجا به بانک بازیگران خانواده برداشت دسترسی دارید.</p>
+        <div className="dash-head__id">
+          <UserPhoto user={user} />
+          <div>
+            <h1 className="dash-head__title">داشبورد فیلمساز</h1>
+            <p className="dash-head__sub">خوش آمدید {name}؛ از اینجا به بانک بازیگران خانواده برداشت دسترسی دارید.</p>
+          </div>
         </div>
         <LogoutButton />
       </div>
@@ -53,9 +73,12 @@ export default async function DashboardPage() {
         ) : (
           <>
             <div className="dash-head">
-              <div>
-                <h1 className="dash-head__title">داشبورد هنرجو</h1>
-                <p className="dash-head__sub">خوش آمدید {name}؛ وضعیت آموزشی شما اینجاست.</p>
+              <div className="dash-head__id">
+                <UserPhoto user={user} />
+                <div>
+                  <h1 className="dash-head__title">داشبورد هنرجو</h1>
+                  <p className="dash-head__sub">خوش آمدید {name}؛ وضعیت آموزشی شما اینجاست.</p>
+                </div>
               </div>
               <LogoutButton />
             </div>
