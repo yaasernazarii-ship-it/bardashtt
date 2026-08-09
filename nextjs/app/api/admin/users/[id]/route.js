@@ -28,6 +28,7 @@ export async function GET(request, { params }) {
     select: {
       id: true, phone: true, displayName: true, city: true, role: true, username: true,
       passwordPlain: true, active: true, branch: true, graduated: true, courseTitle: true, nationalId: true, createdAt: true,
+      photoUrl: true,
       progressOverride: true,
       resume: true,
       enrollments: { orderBy: { createdAt: 'desc' } },

@@ -800,6 +800,9 @@ body.nav-open {
 .user-photo__empty { color: var(--light); font-size: 0.68rem; text-align: center; line-height: 1.6; }
 .user-photo--empty-link { border-style: dashed; text-decoration: none; transition: var(--transition); }
 .user-photo--empty-link:hover { border-color: var(--gold); }
+/* بندانگشتیِ عکس ۳×۴ در فهرست‌های پنل مدیریت */
+.user-photo--xs { border-radius: 6px; background: var(--white); }
+.user-photo--xs .user-photo__ph { color: var(--light); }
 
 .dash-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
 .dash-card {

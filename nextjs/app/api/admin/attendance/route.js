@@ -15,7 +15,7 @@ export async function GET(request) {
 
   const session = await prisma.classSession.findUnique({
     where: { id: sessionId },
-    include: { group: { include: { members: { select: { id: true, displayName: true, phone: true, username: true } } } } },
+    include: { group: { include: { members: { select: { id: true, displayName: true, phone: true, username: true, photoUrl: true } } } } },
   });
   if (!session) return Response.json({ ok: false, error: 'جلسه یافت نشد.' }, { status: 404 });
 

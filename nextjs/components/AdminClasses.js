@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import ShamsiCalendar from '@/components/ShamsiCalendar';
+import UserPhotoThumb from '@/components/UserPhotoThumb';
 
 const BRANCHES = ['تهران', 'ساری'];
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { weekday: 'long', month: 'long', day: 'numeric' });
@@ -368,6 +369,7 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
                       return (
                         <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '.85rem', padding: '6px 8px', borderRadius: 8, background: 'var(--surface)', cursor: 'pointer' }}>
                           <input type="checkbox" checked={memberIds.includes(s.id)} onChange={() => toggleMember(s.id)} />
+                          <UserPhotoThumb src={s.photoUrl} name={s.displayName || s.phone} size={26} />
                           <span>{s.displayName || s.phone}{s.username ? ` (${s.username})` : ''}</span>
                           {inOther && <span style={{ marginRight: 'auto', fontSize: '.68rem', color: '#B45309' }}>در کلاس دیگر</span>}
                         </label>
@@ -524,6 +526,7 @@ function SessionAttendance({ sessionId, onChanged }) {
         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 6, maxHeight: 260, overflowY: 'auto' }}>
           {members.map((m) => (
             <li key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#fff', borderRadius: 8, padding: '6px 10px', border: '1px solid var(--border)' }}>
+              <UserPhotoThumb src={m.photoUrl} name={m.displayName || m.phone} size={28} />
               <span style={{ flex: 1, fontSize: '.85rem' }}>{m.displayName || m.phone}{m.username && <span style={{ color: 'var(--muted)' }}> · {m.username}</span>}</span>
               <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '.8rem', cursor: 'pointer' }}>
                 <input type="radio" name={`att-${m.id}`} checked={m.status === 'present'} onChange={() => setStatus(m.id, 'present')} />
@@ -577,6 +580,7 @@ function ProgressOverrides({ members, students, onChanged }) {
       <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 6 }}>
         {members.map((m) => (
           <li key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--surface)', borderRadius: 8, padding: '6px 10px' }}>
+            <UserPhotoThumb src={m.photoUrl} name={m.displayName || m.phone} size={28} />
             <span style={{ flex: 1, fontSize: '.85rem' }}>{m.displayName || m.phone}</span>
             <input type="number" min={0} max={100} className="form-input" style={{ maxWidth: 90 }} placeholder="خودکار"
               value={values[m.id]} onChange={(e) => setValues({ ...values, [m.id]: e.target.value })} />

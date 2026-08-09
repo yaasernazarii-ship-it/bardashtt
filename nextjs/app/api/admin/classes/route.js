@@ -12,7 +12,7 @@ export async function GET() {
   const groups = await prisma.classGroup.findMany({
     orderBy: [{ branch: 'asc' }, { createdAt: 'asc' }],
     include: {
-      members: { select: { id: true, displayName: true, phone: true, username: true } },
+      members: { select: { id: true, displayName: true, phone: true, username: true, photoUrl: true } },
       _count: { select: { sessions: true } },
     },
   });
@@ -20,7 +20,7 @@ export async function GET() {
   // فارغ‌التحصیل‌ها در انتخاب اسامیِ تقویم نمی‌آیند.
   const students = await prisma.user.findMany({
     where: { role: 'student', graduated: false },
-    select: { id: true, displayName: true, phone: true, username: true, branch: true, classGroupId: true, progressOverride: true },
+    select: { id: true, displayName: true, phone: true, username: true, branch: true, classGroupId: true, progressOverride: true, photoUrl: true },
     orderBy: { createdAt: 'desc' },
   });
 

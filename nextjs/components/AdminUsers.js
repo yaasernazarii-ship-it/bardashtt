@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Icon from './Icon';
+import UserPhotoThumb from './UserPhotoThumb';
 
 const ROLE_LABEL = { member: 'عضو', student: 'هنرجو', filmmaker: 'فیلمساز', editor: 'ادیتور', admin: 'ادمین' };
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -95,6 +96,7 @@ export default function AdminUsers() {
               <div key={u.id} className="su-item" style={u.active === false ? { opacity: 0.7 } : undefined}>
                 <button type="button" className="su-head" aria-expanded={open}
                   onClick={() => setOpenId(open ? '' : u.id)}>
+                  <UserPhotoThumb src={u.photoUrl} name={u.displayName || u.username || u.phone} />
                   <span className="su-head__name">{u.displayName || u.username || u.phone}</span>
                   <span className="su-tags">
                     <span className="su-tag su-tag--muted">{ROLE_LABEL[u.role] || u.role}{isSelf ? ' (شما)' : ''}</span>
@@ -237,7 +239,9 @@ function UserPanel({ userId, onClose }) {
         {loading ? <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p> : error ? <div className="alert alert--error">{error}</div> : (
           <div style={{ display: 'grid', gap: 18 }}>
             {/* هویت */}
-            <div style={{ background: 'var(--surface)', borderRadius: 12, padding: 14, lineHeight: 2 }}>
+            <div style={{ background: 'var(--surface)', borderRadius: 12, padding: 14, lineHeight: 2, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+              <UserPhotoThumb src={u.photoUrl} name={u.displayName} size={66} />
+              <div>
               <div><b>{u.displayName || '—'}</b> · {ROLE_LABEL[u.role] || u.role} {u.active === false && <span style={{ color: '#B91C1C' }}>(غیرفعال)</span>}</div>
               <div style={{ fontSize: '.88rem', color: 'var(--muted)' }}>
                 موبایل: <span dir="ltr">{u.phone}</span>
@@ -246,6 +250,7 @@ function UserPanel({ userId, onClose }) {
               </div>
               {u.branch && <div style={{ fontSize: '.88rem', color: 'var(--muted)' }}>شعبه: {u.branch}{u.courseTitle ? ` · دوره: ${u.courseTitle}` : ''}</div>}
               {u.nationalId && <div style={{ fontSize: '.88rem', color: 'var(--muted)' }}>کد ملی: <span dir="ltr">{u.nationalId}</span></div>}
+              </div>
             </div>
 
             {/* رزومه و بارگذاری‌ها */}
