@@ -1,0 +1,4550 @@
+{
+  "schema_version": 1,
+  "tool_version": "1.1.0",
+  "created_at": "2026-08-09T01:50:37.688323+00:00",
+  "input": "/project/outputs/assets/book.pdf",
+  "output": "/project/outputs/assets/book-ocr.txt",
+  "mode": "auto",
+  "language": "fas+eng",
+  "ocr_strategy": {
+    "base_psm_modes": [
+      3,
+      6
+    ],
+    "hires_psm_modes": [
+      3,
+      11
+    ],
+    "hires_fallback_dpi": 400
+  },
+  "dpi": 300,
+  "workers": 1,
+  "render_review_requested": false,
+  "duration_seconds": 11.121,
+  "page_count": 224,
+  "source_counts": {
+    "native": 223,
+    "ocr": 1
+  },
+  "needs_vision_pages": [
+    2,
+    3,
+    21,
+    30,
+    37,
+    46,
+    73,
+    74,
+    80,
+    100,
+    137,
+    145
+  ],
+  "warnings": [],
+  "pages": [
+    {
+      "page": 1,
+      "source": "native",
+      "metrics": {
+        "characters": 114,
+        "meaningful": 110,
+        "words": 22,
+        "lines": 6,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9649,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 2,
+      "source": "native",
+      "metrics": {
+        "characters": 727,
+        "meaningful": 666,
+        "words": 139,
+        "lines": 30,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9161,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.4667,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [
+        "complex_layout"
+      ],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 3,
+      "source": "ocr",
+      "metrics": {
+        "characters": 768,
+        "meaningful": 671,
+        "words": 143,
+        "lines": 18,
+        "suspicious": 0,
+        "meaningful_ratio": 0.8737,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0,
+        "score": 1.0
+      },
+      "ocr_confidence": 50.87,
+      "ocr_dpi": 300,
+      "review_reasons": [
+        "low_ocr_confidence"
+      ],
+      "review_image": "/project/outputs/assets/book-ocr-ocr-review/page-0003.png",
+      "warning": null
+    },
+    {
+      "page": 4,
+      "source": "native",
+      "metrics": {
+        "characters": 276,
+        "meaningful": 92,
+        "words": 21,
+        "lines": 4,
+        "suspicious": 0,
+        "meaningful_ratio": 0.3333,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.25,
+        "score": 0.8429
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 5,
+      "source": "native",
+      "metrics": {
+        "characters": 886,
+        "meaningful": 857,
+        "words": 266,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9673,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 6,
+      "source": "native",
+      "metrics": {
+        "characters": 1086,
+        "meaningful": 1046,
+        "words": 302,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9632,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 7,
+      "source": "native",
+      "metrics": {
+        "characters": 1055,
+        "meaningful": 1018,
+        "words": 309,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9649,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 8,
+      "source": "native",
+      "metrics": {
+        "characters": 322,
+        "meaningful": 315,
+        "words": 81,
+        "lines": 9,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9783,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1111,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 9,
+      "source": "native",
+      "metrics": {
+        "characters": 758,
+        "meaningful": 714,
+        "words": 235,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.942,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 10,
+      "source": "native",
+      "metrics": {
+        "characters": 1004,
+        "meaningful": 959,
+        "words": 292,
+        "lines": 24,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9552,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0417,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 11,
+      "source": "native",
+      "metrics": {
+        "characters": 1034,
+        "meaningful": 991,
+        "words": 300,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9584,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 12,
+      "source": "native",
+      "metrics": {
+        "characters": 660,
+        "meaningful": 628,
+        "words": 180,
+        "lines": 17,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9515,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0588,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 13,
+      "source": "native",
+      "metrics": {
+        "characters": 879,
+        "meaningful": 854,
+        "words": 251,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9716,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 14,
+      "source": "native",
+      "metrics": {
+        "characters": 789,
+        "meaningful": 760,
+        "words": 234,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9632,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 15,
+      "source": "native",
+      "metrics": {
+        "characters": 677,
+        "meaningful": 653,
+        "words": 189,
+        "lines": 16,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9645,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0625,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 16,
+      "source": "native",
+      "metrics": {
+        "characters": 367,
+        "meaningful": 354,
+        "words": 86,
+        "lines": 11,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9646,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0909,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 17,
+      "source": "native",
+      "metrics": {
+        "characters": 517,
+        "meaningful": 491,
+        "words": 126,
+        "lines": 21,
+        "suspicious": 6,
+        "meaningful_ratio": 0.9497,
+        "suspicious_ratio": 0.0045,
+        "layout_columns_ratio": 0.0476,
+        "score": 0.9643
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 18,
+      "source": "native",
+      "metrics": {
+        "characters": 466,
+        "meaningful": 442,
+        "words": 102,
+        "lines": 21,
+        "suspicious": 6,
+        "meaningful_ratio": 0.9485,
+        "suspicious_ratio": 0.0043,
+        "layout_columns_ratio": 0.0476,
+        "score": 0.9654
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 19,
+      "source": "native",
+      "metrics": {
+        "characters": 548,
+        "meaningful": 533,
+        "words": 150,
+        "lines": 22,
+        "suspicious": 6,
+        "meaningful_ratio": 0.9726,
+        "suspicious_ratio": 0.0042,
+        "layout_columns_ratio": 0.0909,
+        "score": 0.9666
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 20,
+      "source": "native",
+      "metrics": {
+        "characters": 384,
+        "meaningful": 363,
+        "words": 101,
+        "lines": 19,
+        "suspicious": 6,
+        "meaningful_ratio": 0.9453,
+        "suspicious_ratio": 0.0049,
+        "layout_columns_ratio": 0.0526,
+        "score": 0.9605
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 21,
+      "source": "native",
+      "metrics": {
+        "characters": 304,
+        "meaningful": 297,
+        "words": 74,
+        "lines": 11,
+        "suspicious": 0,
+        "meaningful_ratio": 0.977,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.6364,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [
+        "complex_layout"
+      ],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 22,
+      "source": "native",
+      "metrics": {
+        "characters": 258,
+        "meaningful": 239,
+        "words": 55,
+        "lines": 12,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9264,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0833,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 23,
+      "source": "native",
+      "metrics": {
+        "characters": 492,
+        "meaningful": 467,
+        "words": 124,
+        "lines": 18,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9492,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0556,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 24,
+      "source": "native",
+      "metrics": {
+        "characters": 474,
+        "meaningful": 456,
+        "words": 115,
+        "lines": 19,
+        "suspicious": 6,
+        "meaningful_ratio": 0.962,
+        "suspicious_ratio": 0.0048,
+        "layout_columns_ratio": 0.0526,
+        "score": 0.9617
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 25,
+      "source": "native",
+      "metrics": {
+        "characters": 426,
+        "meaningful": 410,
+        "words": 108,
+        "lines": 15,
+        "suspicious": 4,
+        "meaningful_ratio": 0.9624,
+        "suspicious_ratio": 0.004,
+        "layout_columns_ratio": 0.0667,
+        "score": 0.9681
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 26,
+      "source": "native",
+      "metrics": {
+        "characters": 570,
+        "meaningful": 524,
+        "words": 132,
+        "lines": 20,
+        "suspicious": 5,
+        "meaningful_ratio": 0.9193,
+        "suspicious_ratio": 0.0038,
+        "layout_columns_ratio": 0.05,
+        "score": 0.9693
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 27,
+      "source": "native",
+      "metrics": {
+        "characters": 193,
+        "meaningful": 186,
+        "words": 50,
+        "lines": 8,
+        "suspicious": 3,
+        "meaningful_ratio": 0.9637,
+        "suspicious_ratio": 0.0059,
+        "layout_columns_ratio": 0.25,
+        "score": 0.953
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 28,
+      "source": "native",
+      "metrics": {
+        "characters": 627,
+        "meaningful": 589,
+        "words": 158,
+        "lines": 19,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9394,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0526,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 29,
+      "source": "native",
+      "metrics": {
+        "characters": 675,
+        "meaningful": 626,
+        "words": 191,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9274,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 30,
+      "source": "native",
+      "metrics": {
+        "characters": 154,
+        "meaningful": 147,
+        "words": 36,
+        "lines": 8,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9545,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.75,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [
+        "complex_layout"
+      ],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 31,
+      "source": "native",
+      "metrics": {
+        "characters": 597,
+        "meaningful": 554,
+        "words": 166,
+        "lines": 18,
+        "suspicious": 0,
+        "meaningful_ratio": 0.928,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0556,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 32,
+      "source": "native",
+      "metrics": {
+        "characters": 511,
+        "meaningful": 471,
+        "words": 135,
+        "lines": 17,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9217,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0588,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 33,
+      "source": "native",
+      "metrics": {
+        "characters": 409,
+        "meaningful": 382,
+        "words": 97,
+        "lines": 14,
+        "suspicious": 2,
+        "meaningful_ratio": 0.934,
+        "suspicious_ratio": 0.0022,
+        "layout_columns_ratio": 0.0714,
+        "score": 0.9826
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 34,
+      "source": "native",
+      "metrics": {
+        "characters": 426,
+        "meaningful": 401,
+        "words": 108,
+        "lines": 15,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9413,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0667,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 35,
+      "source": "native",
+      "metrics": {
+        "characters": 573,
+        "meaningful": 535,
+        "words": 129,
+        "lines": 19,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9337,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0526,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 36,
+      "source": "native",
+      "metrics": {
+        "characters": 518,
+        "meaningful": 487,
+        "words": 141,
+        "lines": 17,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9402,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0588,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 37,
+      "source": "native",
+      "metrics": {
+        "characters": 410,
+        "meaningful": 408,
+        "words": 93,
+        "lines": 18,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9951,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.5556,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [
+        "complex_layout"
+      ],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 38,
+      "source": "native",
+      "metrics": {
+        "characters": 388,
+        "meaningful": 353,
+        "words": 101,
+        "lines": 14,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9098,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0714,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 39,
+      "source": "native",
+      "metrics": {
+        "characters": 385,
+        "meaningful": 358,
+        "words": 89,
+        "lines": 14,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9299,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0714,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 40,
+      "source": "native",
+      "metrics": {
+        "characters": 299,
+        "meaningful": 272,
+        "words": 74,
+        "lines": 14,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9097,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0714,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 41,
+      "source": "native",
+      "metrics": {
+        "characters": 294,
+        "meaningful": 265,
+        "words": 85,
+        "lines": 13,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9014,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1538,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 42,
+      "source": "native",
+      "metrics": {
+        "characters": 260,
+        "meaningful": 240,
+        "words": 69,
+        "lines": 12,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9231,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0833,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 43,
+      "source": "native",
+      "metrics": {
+        "characters": 292,
+        "meaningful": 270,
+        "words": 70,
+        "lines": 12,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9247,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0833,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 44,
+      "source": "native",
+      "metrics": {
+        "characters": 297,
+        "meaningful": 273,
+        "words": 71,
+        "lines": 12,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9192,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0833,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 45,
+      "source": "native",
+      "metrics": {
+        "characters": 263,
+        "meaningful": 244,
+        "words": 66,
+        "lines": 11,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9278,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1818,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 46,
+      "source": "native",
+      "metrics": {
+        "characters": 433,
+        "meaningful": 411,
+        "words": 97,
+        "lines": 18,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9492,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.6111,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [
+        "complex_layout"
+      ],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 47,
+      "source": "native",
+      "metrics": {
+        "characters": 440,
+        "meaningful": 424,
+        "words": 112,
+        "lines": 15,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9636,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0667,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 48,
+      "source": "native",
+      "metrics": {
+        "characters": 288,
+        "meaningful": 275,
+        "words": 72,
+        "lines": 14,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9549,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0714,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 49,
+      "source": "native",
+      "metrics": {
+        "characters": 786,
+        "meaningful": 755,
+        "words": 201,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9606,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 50,
+      "source": "native",
+      "metrics": {
+        "characters": 451,
+        "meaningful": 428,
+        "words": 105,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.949,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 51,
+      "source": "native",
+      "metrics": {
+        "characters": 670,
+        "meaningful": 628,
+        "words": 183,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9373,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 52,
+      "source": "native",
+      "metrics": {
+        "characters": 127,
+        "meaningful": 118,
+        "words": 36,
+        "lines": 5,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9291,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.2,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 53,
+      "source": "native",
+      "metrics": {
+        "characters": 635,
+        "meaningful": 612,
+        "words": 174,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9638,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 54,
+      "source": "native",
+      "metrics": {
+        "characters": 260,
+        "meaningful": 248,
+        "words": 66,
+        "lines": 11,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9538,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0909,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 55,
+      "source": "native",
+      "metrics": {
+        "characters": 768,
+        "meaningful": 732,
+        "words": 195,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9531,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 56,
+      "source": "native",
+      "metrics": {
+        "characters": 99,
+        "meaningful": 96,
+        "words": 26,
+        "lines": 3,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9697,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.3333,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 57,
+      "source": "native",
+      "metrics": {
+        "characters": 534,
+        "meaningful": 510,
+        "words": 135,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9551,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 58,
+      "source": "native",
+      "metrics": {
+        "characters": 526,
+        "meaningful": 494,
+        "words": 137,
+        "lines": 24,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9392,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0417,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 59,
+      "source": "native",
+      "metrics": {
+        "characters": 677,
+        "meaningful": 642,
+        "words": 170,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9483,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 60,
+      "source": "native",
+      "metrics": {
+        "characters": 733,
+        "meaningful": 689,
+        "words": 195,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.94,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 61,
+      "source": "native",
+      "metrics": {
+        "characters": 684,
+        "meaningful": 643,
+        "words": 177,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9401,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 62,
+      "source": "native",
+      "metrics": {
+        "characters": 637,
+        "meaningful": 604,
+        "words": 158,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9482,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 63,
+      "source": "native",
+      "metrics": {
+        "characters": 662,
+        "meaningful": 627,
+        "words": 170,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9471,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 64,
+      "source": "native",
+      "metrics": {
+        "characters": 655,
+        "meaningful": 614,
+        "words": 158,
+        "lines": 18,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9374,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0556,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 65,
+      "source": "native",
+      "metrics": {
+        "characters": 739,
+        "meaningful": 684,
+        "words": 188,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9256,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 66,
+      "source": "native",
+      "metrics": {
+        "characters": 732,
+        "meaningful": 671,
+        "words": 205,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9167,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 67,
+      "source": "native",
+      "metrics": {
+        "characters": 778,
+        "meaningful": 712,
+        "words": 194,
+        "lines": 25,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9152,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.04,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 68,
+      "source": "native",
+      "metrics": {
+        "characters": 473,
+        "meaningful": 437,
+        "words": 119,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9239,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 69,
+      "source": "native",
+      "metrics": {
+        "characters": 550,
+        "meaningful": 519,
+        "words": 144,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9436,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 70,
+      "source": "native",
+      "metrics": {
+        "characters": 516,
+        "meaningful": 476,
+        "words": 139,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9225,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 71,
+      "source": "native",
+      "metrics": {
+        "characters": 662,
+        "meaningful": 625,
+        "words": 167,
+        "lines": 25,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9441,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.24,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 72,
+      "source": "native",
+      "metrics": {
+        "characters": 409,
+        "meaningful": 386,
+        "words": 106,
+        "lines": 14,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9438,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0714,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 73,
+      "source": "native",
+      "metrics": {
+        "characters": 399,
+        "meaningful": 377,
+        "words": 88,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9449,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.4,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [
+        "complex_layout"
+      ],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 74,
+      "source": "native",
+      "metrics": {
+        "characters": 562,
+        "meaningful": 546,
+        "words": 132,
+        "lines": 29,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9715,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.3448,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [
+        "complex_layout"
+      ],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 75,
+      "source": "native",
+      "metrics": {
+        "characters": 725,
+        "meaningful": 675,
+        "words": 184,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.931,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 76,
+      "source": "native",
+      "metrics": {
+        "characters": 598,
+        "meaningful": 580,
+        "words": 157,
+        "lines": 18,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9699,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0556,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 77,
+      "source": "native",
+      "metrics": {
+        "characters": 545,
+        "meaningful": 519,
+        "words": 138,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9523,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.2381,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 78,
+      "source": "native",
+      "metrics": {
+        "characters": 382,
+        "meaningful": 357,
+        "words": 97,
+        "lines": 12,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9346,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0833,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 79,
+      "source": "native",
+      "metrics": {
+        "characters": 523,
+        "meaningful": 498,
+        "words": 131,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9522,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1739,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 80,
+      "source": "native",
+      "metrics": {
+        "characters": 338,
+        "meaningful": 326,
+        "words": 82,
+        "lines": 12,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9645,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.5,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [
+        "complex_layout"
+      ],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 81,
+      "source": "native",
+      "metrics": {
+        "characters": 757,
+        "meaningful": 715,
+        "words": 208,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9445,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 82,
+      "source": "native",
+      "metrics": {
+        "characters": 631,
+        "meaningful": 599,
+        "words": 169,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9493,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 83,
+      "source": "native",
+      "metrics": {
+        "characters": 479,
+        "meaningful": 459,
+        "words": 116,
+        "lines": 16,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9582,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0625,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 84,
+      "source": "native",
+      "metrics": {
+        "characters": 579,
+        "meaningful": 537,
+        "words": 148,
+        "lines": 19,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9275,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0526,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 85,
+      "source": "native",
+      "metrics": {
+        "characters": 636,
+        "meaningful": 602,
+        "words": 157,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9465,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 86,
+      "source": "native",
+      "metrics": {
+        "characters": 826,
+        "meaningful": 789,
+        "words": 202,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9552,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1739,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 87,
+      "source": "native",
+      "metrics": {
+        "characters": 810,
+        "meaningful": 777,
+        "words": 231,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9593,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 88,
+      "source": "native",
+      "metrics": {
+        "characters": 175,
+        "meaningful": 168,
+        "words": 46,
+        "lines": 7,
+        "suspicious": 0,
+        "meaningful_ratio": 0.96,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1429,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 89,
+      "source": "native",
+      "metrics": {
+        "characters": 918,
+        "meaningful": 886,
+        "words": 269,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9651,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 90,
+      "source": "native",
+      "metrics": {
+        "characters": 969,
+        "meaningful": 944,
+        "words": 290,
+        "lines": 24,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9742,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0417,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 91,
+      "source": "native",
+      "metrics": {
+        "characters": 832,
+        "meaningful": 756,
+        "words": 222,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9087,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 92,
+      "source": "native",
+      "metrics": {
+        "characters": 866,
+        "meaningful": 812,
+        "words": 222,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9376,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 93,
+      "source": "native",
+      "metrics": {
+        "characters": 755,
+        "meaningful": 709,
+        "words": 226,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9391,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 94,
+      "source": "native",
+      "metrics": {
+        "characters": 784,
+        "meaningful": 730,
+        "words": 222,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9311,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 95,
+      "source": "native",
+      "metrics": {
+        "characters": 603,
+        "meaningful": 565,
+        "words": 151,
+        "lines": 18,
+        "suspicious": 0,
+        "meaningful_ratio": 0.937,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1111,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 96,
+      "source": "native",
+      "metrics": {
+        "characters": 735,
+        "meaningful": 705,
+        "words": 186,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9592,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 97,
+      "source": "native",
+      "metrics": {
+        "characters": 855,
+        "meaningful": 800,
+        "words": 238,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9357,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 98,
+      "source": "native",
+      "metrics": {
+        "characters": 737,
+        "meaningful": 692,
+        "words": 191,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9389,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 99,
+      "source": "native",
+      "metrics": {
+        "characters": 608,
+        "meaningful": 579,
+        "words": 145,
+        "lines": 19,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9523,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0526,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 100,
+      "source": "native",
+      "metrics": {
+        "characters": 905,
+        "meaningful": 879,
+        "words": 236,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9713,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.3636,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [
+        "complex_layout"
+      ],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 101,
+      "source": "native",
+      "metrics": {
+        "characters": 931,
+        "meaningful": 896,
+        "words": 286,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9624,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 102,
+      "source": "native",
+      "metrics": {
+        "characters": 303,
+        "meaningful": 291,
+        "words": 77,
+        "lines": 12,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9604,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0833,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 103,
+      "source": "native",
+      "metrics": {
+        "characters": 614,
+        "meaningful": 588,
+        "words": 148,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9577,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 104,
+      "source": "native",
+      "metrics": {
+        "characters": 581,
+        "meaningful": 548,
+        "words": 152,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9432,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0952,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 105,
+      "source": "native",
+      "metrics": {
+        "characters": 693,
+        "meaningful": 664,
+        "words": 176,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9582,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 106,
+      "source": "native",
+      "metrics": {
+        "characters": 441,
+        "meaningful": 417,
+        "words": 101,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9456,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 107,
+      "source": "native",
+      "metrics": {
+        "characters": 296,
+        "meaningful": 273,
+        "words": 68,
+        "lines": 19,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9223,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0526,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 108,
+      "source": "native",
+      "metrics": {
+        "characters": 489,
+        "meaningful": 464,
+        "words": 110,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9489,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 109,
+      "source": "native",
+      "metrics": {
+        "characters": 469,
+        "meaningful": 445,
+        "words": 104,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9488,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 110,
+      "source": "native",
+      "metrics": {
+        "characters": 344,
+        "meaningful": 327,
+        "words": 98,
+        "lines": 10,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9506,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 111,
+      "source": "native",
+      "metrics": {
+        "characters": 784,
+        "meaningful": 755,
+        "words": 238,
+        "lines": 19,
+        "suspicious": 0,
+        "meaningful_ratio": 0.963,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0526,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 112,
+      "source": "native",
+      "metrics": {
+        "characters": 643,
+        "meaningful": 618,
+        "words": 196,
+        "lines": 16,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9611,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0625,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 113,
+      "source": "native",
+      "metrics": {
+        "characters": 894,
+        "meaningful": 850,
+        "words": 284,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9508,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 114,
+      "source": "native",
+      "metrics": {
+        "characters": 931,
+        "meaningful": 894,
+        "words": 273,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9603,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 115,
+      "source": "native",
+      "metrics": {
+        "characters": 861,
+        "meaningful": 821,
+        "words": 263,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9535,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 116,
+      "source": "native",
+      "metrics": {
+        "characters": 933,
+        "meaningful": 890,
+        "words": 284,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9539,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 117,
+      "source": "native",
+      "metrics": {
+        "characters": 891,
+        "meaningful": 839,
+        "words": 270,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9416,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 118,
+      "source": "native",
+      "metrics": {
+        "characters": 758,
+        "meaningful": 717,
+        "words": 199,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9459,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 119,
+      "source": "native",
+      "metrics": {
+        "characters": 863,
+        "meaningful": 822,
+        "words": 247,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9525,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 120,
+      "source": "native",
+      "metrics": {
+        "characters": 790,
+        "meaningful": 751,
+        "words": 202,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9506,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 121,
+      "source": "native",
+      "metrics": {
+        "characters": 925,
+        "meaningful": 873,
+        "words": 263,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9438,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 122,
+      "source": "native",
+      "metrics": {
+        "characters": 360,
+        "meaningful": 335,
+        "words": 111,
+        "lines": 10,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9306,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 123,
+      "source": "native",
+      "metrics": {
+        "characters": 887,
+        "meaningful": 833,
+        "words": 252,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9391,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 124,
+      "source": "native",
+      "metrics": {
+        "characters": 784,
+        "meaningful": 718,
+        "words": 233,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9158,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 125,
+      "source": "native",
+      "metrics": {
+        "characters": 859,
+        "meaningful": 783,
+        "words": 259,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9115,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 126,
+      "source": "native",
+      "metrics": {
+        "characters": 464,
+        "meaningful": 425,
+        "words": 125,
+        "lines": 13,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9159,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0769,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 127,
+      "source": "native",
+      "metrics": {
+        "characters": 745,
+        "meaningful": 698,
+        "words": 199,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9369,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 128,
+      "source": "native",
+      "metrics": {
+        "characters": 813,
+        "meaningful": 763,
+        "words": 226,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9385,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 129,
+      "source": "native",
+      "metrics": {
+        "characters": 723,
+        "meaningful": 660,
+        "words": 175,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9129,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 130,
+      "source": "native",
+      "metrics": {
+        "characters": 643,
+        "meaningful": 586,
+        "words": 190,
+        "lines": 18,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9114,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0556,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 131,
+      "source": "native",
+      "metrics": {
+        "characters": 796,
+        "meaningful": 747,
+        "words": 224,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9384,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 132,
+      "source": "native",
+      "metrics": {
+        "characters": 820,
+        "meaningful": 772,
+        "words": 227,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9415,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 133,
+      "source": "native",
+      "metrics": {
+        "characters": 936,
+        "meaningful": 874,
+        "words": 243,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9338,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 134,
+      "source": "native",
+      "metrics": {
+        "characters": 898,
+        "meaningful": 852,
+        "words": 252,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9488,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 135,
+      "source": "native",
+      "metrics": {
+        "characters": 843,
+        "meaningful": 797,
+        "words": 237,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9454,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 136,
+      "source": "native",
+      "metrics": {
+        "characters": 792,
+        "meaningful": 742,
+        "words": 234,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9369,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 137,
+      "source": "native",
+      "metrics": {
+        "characters": 131,
+        "meaningful": 123,
+        "words": 37,
+        "lines": 6,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9389,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.6667,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [
+        "complex_layout"
+      ],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 138,
+      "source": "native",
+      "metrics": {
+        "characters": 881,
+        "meaningful": 824,
+        "words": 235,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9353,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 139,
+      "source": "native",
+      "metrics": {
+        "characters": 696,
+        "meaningful": 642,
+        "words": 195,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9224,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 140,
+      "source": "native",
+      "metrics": {
+        "characters": 648,
+        "meaningful": 597,
+        "words": 175,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9213,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 141,
+      "source": "native",
+      "metrics": {
+        "characters": 933,
+        "meaningful": 885,
+        "words": 272,
+        "lines": 25,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9486,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.04,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 142,
+      "source": "native",
+      "metrics": {
+        "characters": 810,
+        "meaningful": 777,
+        "words": 252,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9593,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 143,
+      "source": "native",
+      "metrics": {
+        "characters": 570,
+        "meaningful": 548,
+        "words": 146,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9614,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 144,
+      "source": "native",
+      "metrics": {
+        "characters": 816,
+        "meaningful": 779,
+        "words": 236,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9547,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 145,
+      "source": "native",
+      "metrics": {
+        "characters": 557,
+        "meaningful": 527,
+        "words": 148,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9461,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.3,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [
+        "complex_layout"
+      ],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 146,
+      "source": "native",
+      "metrics": {
+        "characters": 666,
+        "meaningful": 636,
+        "words": 192,
+        "lines": 21,
+        "suspicious": 4,
+        "meaningful_ratio": 0.955,
+        "suspicious_ratio": 0.0029,
+        "layout_columns_ratio": 0.1429,
+        "score": 0.9768
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 147,
+      "source": "native",
+      "metrics": {
+        "characters": 593,
+        "meaningful": 547,
+        "words": 148,
+        "lines": 18,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9224,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0556,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 148,
+      "source": "native",
+      "metrics": {
+        "characters": 795,
+        "meaningful": 738,
+        "words": 215,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9283,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 149,
+      "source": "native",
+      "metrics": {
+        "characters": 750,
+        "meaningful": 700,
+        "words": 199,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9333,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 150,
+      "source": "native",
+      "metrics": {
+        "characters": 770,
+        "meaningful": 740,
+        "words": 211,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.961,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 151,
+      "source": "native",
+      "metrics": {
+        "characters": 941,
+        "meaningful": 918,
+        "words": 272,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9756,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 152,
+      "source": "native",
+      "metrics": {
+        "characters": 905,
+        "meaningful": 850,
+        "words": 256,
+        "lines": 23,
+        "suspicious": 1,
+        "meaningful_ratio": 0.9392,
+        "suspicious_ratio": 0.0006,
+        "layout_columns_ratio": 0.0435,
+        "score": 0.9949
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 153,
+      "source": "native",
+      "metrics": {
+        "characters": 795,
+        "meaningful": 737,
+        "words": 199,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.927,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 154,
+      "source": "native",
+      "metrics": {
+        "characters": 825,
+        "meaningful": 777,
+        "words": 231,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9418,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 155,
+      "source": "native",
+      "metrics": {
+        "characters": 809,
+        "meaningful": 758,
+        "words": 230,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.937,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 156,
+      "source": "native",
+      "metrics": {
+        "characters": 688,
+        "meaningful": 646,
+        "words": 189,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.939,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 157,
+      "source": "native",
+      "metrics": {
+        "characters": 638,
+        "meaningful": 609,
+        "words": 166,
+        "lines": 22,
+        "suspicious": 1,
+        "meaningful_ratio": 0.9545,
+        "suspicious_ratio": 0.0007,
+        "layout_columns_ratio": 0.0455,
+        "score": 0.9944
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 158,
+      "source": "native",
+      "metrics": {
+        "characters": 831,
+        "meaningful": 785,
+        "words": 227,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9446,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 159,
+      "source": "native",
+      "metrics": {
+        "characters": 797,
+        "meaningful": 747,
+        "words": 229,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9373,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 160,
+      "source": "native",
+      "metrics": {
+        "characters": 705,
+        "meaningful": 666,
+        "words": 178,
+        "lines": 19,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9447,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0526,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 161,
+      "source": "native",
+      "metrics": {
+        "characters": 941,
+        "meaningful": 907,
+        "words": 282,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9639,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 162,
+      "source": "native",
+      "metrics": {
+        "characters": 605,
+        "meaningful": 582,
+        "words": 188,
+        "lines": 14,
+        "suspicious": 0,
+        "meaningful_ratio": 0.962,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0714,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 163,
+      "source": "native",
+      "metrics": {
+        "characters": 693,
+        "meaningful": 670,
+        "words": 191,
+        "lines": 18,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9668,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0556,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 164,
+      "source": "native",
+      "metrics": {
+        "characters": 875,
+        "meaningful": 844,
+        "words": 256,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9646,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 165,
+      "source": "native",
+      "metrics": {
+        "characters": 781,
+        "meaningful": 745,
+        "words": 235,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9539,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 166,
+      "source": "native",
+      "metrics": {
+        "characters": 840,
+        "meaningful": 813,
+        "words": 236,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9679,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 167,
+      "source": "native",
+      "metrics": {
+        "characters": 801,
+        "meaningful": 766,
+        "words": 232,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9563,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0952,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 168,
+      "source": "native",
+      "metrics": {
+        "characters": 768,
+        "meaningful": 735,
+        "words": 217,
+        "lines": 21,
+        "suspicious": 3,
+        "meaningful_ratio": 0.957,
+        "suspicious_ratio": 0.0021,
+        "layout_columns_ratio": 0.0476,
+        "score": 0.9832
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 169,
+      "source": "native",
+      "metrics": {
+        "characters": 386,
+        "meaningful": 375,
+        "words": 112,
+        "lines": 10,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9715,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 170,
+      "source": "native",
+      "metrics": {
+        "characters": 933,
+        "meaningful": 903,
+        "words": 250,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9678,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 171,
+      "source": "native",
+      "metrics": {
+        "characters": 600,
+        "meaningful": 583,
+        "words": 177,
+        "lines": 16,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9717,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0625,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 172,
+      "source": "native",
+      "metrics": {
+        "characters": 860,
+        "meaningful": 831,
+        "words": 236,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9663,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 173,
+      "source": "native",
+      "metrics": {
+        "characters": 456,
+        "meaningful": 445,
+        "words": 128,
+        "lines": 12,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9759,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0833,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 174,
+      "source": "native",
+      "metrics": {
+        "characters": 944,
+        "meaningful": 915,
+        "words": 267,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9693,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 175,
+      "source": "native",
+      "metrics": {
+        "characters": 889,
+        "meaningful": 863,
+        "words": 250,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9708,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 176,
+      "source": "native",
+      "metrics": {
+        "characters": 209,
+        "meaningful": 203,
+        "words": 55,
+        "lines": 6,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9713,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1667,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 177,
+      "source": "native",
+      "metrics": {
+        "characters": 776,
+        "meaningful": 747,
+        "words": 211,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9626,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 178,
+      "source": "native",
+      "metrics": {
+        "characters": 659,
+        "meaningful": 632,
+        "words": 185,
+        "lines": 20,
+        "suspicious": 5,
+        "meaningful_ratio": 0.959,
+        "suspicious_ratio": 0.0038,
+        "layout_columns_ratio": 0.05,
+        "score": 0.9696
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 179,
+      "source": "native",
+      "metrics": {
+        "characters": 915,
+        "meaningful": 879,
+        "words": 263,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9607,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 180,
+      "source": "native",
+      "metrics": {
+        "characters": 857,
+        "meaningful": 827,
+        "words": 269,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.965,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 181,
+      "source": "native",
+      "metrics": {
+        "characters": 660,
+        "meaningful": 643,
+        "words": 199,
+        "lines": 21,
+        "suspicious": 6,
+        "meaningful_ratio": 0.9742,
+        "suspicious_ratio": 0.0042,
+        "layout_columns_ratio": 0.0476,
+        "score": 0.9661
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 182,
+      "source": "native",
+      "metrics": {
+        "characters": 535,
+        "meaningful": 517,
+        "words": 161,
+        "lines": 13,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9664,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0769,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 183,
+      "source": "native",
+      "metrics": {
+        "characters": 433,
+        "meaningful": 420,
+        "words": 119,
+        "lines": 12,
+        "suspicious": 0,
+        "meaningful_ratio": 0.97,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0833,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 184,
+      "source": "native",
+      "metrics": {
+        "characters": 616,
+        "meaningful": 603,
+        "words": 172,
+        "lines": 15,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9789,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0667,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 185,
+      "source": "native",
+      "metrics": {
+        "characters": 593,
+        "meaningful": 568,
+        "words": 162,
+        "lines": 18,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9578,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0556,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 186,
+      "source": "native",
+      "metrics": {
+        "characters": 659,
+        "meaningful": 638,
+        "words": 183,
+        "lines": 22,
+        "suspicious": 5,
+        "meaningful_ratio": 0.9681,
+        "suspicious_ratio": 0.0035,
+        "layout_columns_ratio": 0.0455,
+        "score": 0.9719
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 187,
+      "source": "native",
+      "metrics": {
+        "characters": 319,
+        "meaningful": 311,
+        "words": 89,
+        "lines": 9,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9749,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1111,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 188,
+      "source": "native",
+      "metrics": {
+        "characters": 713,
+        "meaningful": 688,
+        "words": 213,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9649,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 189,
+      "source": "native",
+      "metrics": {
+        "characters": 507,
+        "meaningful": 484,
+        "words": 154,
+        "lines": 15,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9546,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0667,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 190,
+      "source": "native",
+      "metrics": {
+        "characters": 430,
+        "meaningful": 403,
+        "words": 116,
+        "lines": 12,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9372,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0833,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 191,
+      "source": "native",
+      "metrics": {
+        "characters": 840,
+        "meaningful": 798,
+        "words": 255,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.95,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 192,
+      "source": "native",
+      "metrics": {
+        "characters": 816,
+        "meaningful": 767,
+        "words": 214,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.94,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 193,
+      "source": "native",
+      "metrics": {
+        "characters": 333,
+        "meaningful": 307,
+        "words": 104,
+        "lines": 10,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9219,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 194,
+      "source": "native",
+      "metrics": {
+        "characters": 681,
+        "meaningful": 642,
+        "words": 186,
+        "lines": 16,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9427,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0625,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 195,
+      "source": "native",
+      "metrics": {
+        "characters": 723,
+        "meaningful": 700,
+        "words": 218,
+        "lines": 19,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9682,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0526,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 196,
+      "source": "native",
+      "metrics": {
+        "characters": 728,
+        "meaningful": 695,
+        "words": 196,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9547,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 197,
+      "source": "native",
+      "metrics": {
+        "characters": 546,
+        "meaningful": 520,
+        "words": 152,
+        "lines": 18,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9524,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0556,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 198,
+      "source": "native",
+      "metrics": {
+        "characters": 783,
+        "meaningful": 757,
+        "words": 236,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9668,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 199,
+      "source": "native",
+      "metrics": {
+        "characters": 768,
+        "meaningful": 735,
+        "words": 210,
+        "lines": 19,
+        "suspicious": 0,
+        "meaningful_ratio": 0.957,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0526,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 200,
+      "source": "native",
+      "metrics": {
+        "characters": 952,
+        "meaningful": 911,
+        "words": 275,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9569,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 201,
+      "source": "native",
+      "metrics": {
+        "characters": 845,
+        "meaningful": 797,
+        "words": 236,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9432,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 202,
+      "source": "native",
+      "metrics": {
+        "characters": 141,
+        "meaningful": 137,
+        "words": 41,
+        "lines": 4,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9716,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.25,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 203,
+      "source": "native",
+      "metrics": {
+        "characters": 864,
+        "meaningful": 801,
+        "words": 252,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9271,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 204,
+      "source": "native",
+      "metrics": {
+        "characters": 782,
+        "meaningful": 724,
+        "words": 211,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9258,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 205,
+      "source": "native",
+      "metrics": {
+        "characters": 694,
+        "meaningful": 646,
+        "words": 188,
+        "lines": 17,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9308,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0588,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 206,
+      "source": "native",
+      "metrics": {
+        "characters": 877,
+        "meaningful": 837,
+        "words": 266,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9544,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 207,
+      "source": "native",
+      "metrics": {
+        "characters": 813,
+        "meaningful": 778,
+        "words": 239,
+        "lines": 20,
+        "suspicious": 4,
+        "meaningful_ratio": 0.9569,
+        "suspicious_ratio": 0.0029,
+        "layout_columns_ratio": 0.05,
+        "score": 0.9767
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 208,
+      "source": "native",
+      "metrics": {
+        "characters": 155,
+        "meaningful": 148,
+        "words": 46,
+        "lines": 6,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9548,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1667,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 209,
+      "source": "native",
+      "metrics": {
+        "characters": 980,
+        "meaningful": 901,
+        "words": 279,
+        "lines": 25,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9194,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.04,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 210,
+      "source": "native",
+      "metrics": {
+        "characters": 887,
+        "meaningful": 821,
+        "words": 250,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9256,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 211,
+      "source": "native",
+      "metrics": {
+        "characters": 940,
+        "meaningful": 877,
+        "words": 260,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.933,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 212,
+      "source": "native",
+      "metrics": {
+        "characters": 194,
+        "meaningful": 178,
+        "words": 53,
+        "lines": 6,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9175,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1667,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 213,
+      "source": "native",
+      "metrics": {
+        "characters": 836,
+        "meaningful": 776,
+        "words": 246,
+        "lines": 22,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9282,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0455,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 214,
+      "source": "native",
+      "metrics": {
+        "characters": 344,
+        "meaningful": 326,
+        "words": 99,
+        "lines": 9,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9477,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1111,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 215,
+      "source": "native",
+      "metrics": {
+        "characters": 881,
+        "meaningful": 826,
+        "words": 237,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9376,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 216,
+      "source": "native",
+      "metrics": {
+        "characters": 269,
+        "meaningful": 246,
+        "words": 80,
+        "lines": 7,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9145,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.1429,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 217,
+      "source": "native",
+      "metrics": {
+        "characters": 769,
+        "meaningful": 711,
+        "words": 220,
+        "lines": 21,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9246,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0476,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 218,
+      "source": "native",
+      "metrics": {
+        "characters": 237,
+        "meaningful": 214,
+        "words": 70,
+        "lines": 8,
+        "suspicious": 0,
+        "meaningful_ratio": 0.903,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.125,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 219,
+      "source": "native",
+      "metrics": {
+        "characters": 531,
+        "meaningful": 465,
+        "words": 141,
+        "lines": 22,
+        "suspicious": 4,
+        "meaningful_ratio": 0.8757,
+        "suspicious_ratio": 0.0027,
+        "layout_columns_ratio": 0.0455,
+        "score": 0.9782
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 220,
+      "source": "native",
+      "metrics": {
+        "characters": 528,
+        "meaningful": 472,
+        "words": 136,
+        "lines": 14,
+        "suspicious": 0,
+        "meaningful_ratio": 0.8939,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0714,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 221,
+      "source": "native",
+      "metrics": {
+        "characters": 970,
+        "meaningful": 931,
+        "words": 289,
+        "lines": 23,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9598,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0435,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 222,
+      "source": "native",
+      "metrics": {
+        "characters": 774,
+        "meaningful": 733,
+        "words": 221,
+        "lines": 20,
+        "suspicious": 0,
+        "meaningful_ratio": 0.947,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.05,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 223,
+      "source": "native",
+      "metrics": {
+        "characters": 608,
+        "meaningful": 577,
+        "words": 169,
+        "lines": 17,
+        "suspicious": 0,
+        "meaningful_ratio": 0.949,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.0588,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    },
+    {
+      "page": 224,
+      "source": "native",
+      "metrics": {
+        "characters": 139,
+        "meaningful": 138,
+        "words": 27,
+        "lines": 8,
+        "suspicious": 0,
+        "meaningful_ratio": 0.9928,
+        "suspicious_ratio": 0.0,
+        "layout_columns_ratio": 0.125,
+        "score": 1.0
+      },
+      "ocr_confidence": null,
+      "ocr_dpi": null,
+      "review_reasons": [],
+      "review_image": null,
+      "warning": null
+    }
+  ]
+}
