@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import ShamsiCalendar from '@/components/ShamsiCalendar';
 import UserPhotoThumb from '@/components/UserPhotoThumb';
+import { uploadFile } from '@/lib/uploadClient';
 
 const BRANCHES = ['تهران', 'ساری'];
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { weekday: 'long', month: 'long', day: 'numeric' });
@@ -21,10 +22,7 @@ function ClassCoverPicker({ value, onChange, label = 'عکس کلاس (اختی�
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true); setErr('');
-    const fd = new FormData();
-    fd.append('file', file);
-    const res = await fetch('/api/upload', { method: 'POST', body: fd });
-    const d = await res.json();
+    const d = await uploadFile(file);
     setUploading(false);
     if (fileRef.current) fileRef.current.value = '';
     if (d.ok) onChange(d.url);

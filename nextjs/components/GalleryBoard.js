@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Icon from './Icon';
+import { uploadFile } from '@/lib/uploadClient';
+import { isImageUrl } from '@/lib/uploadUrl';
 
 export default function GalleryBoard() {
   const [items, setItems] = useState([]);
@@ -17,10 +19,7 @@ export default function GalleryBoard() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true); setError('');
-    const fd = new FormData();
-    fd.append('file', file);
-    const res = await fetch('/api/upload', { method: 'POST', body: fd });
-    const data = await res.json();
+    const data = await uploadFile(file);
     setUploading(false);
     if (data.ok) setImageUrl(data.url); else setError(data.error || 'آپلود ناموفق بود.');
   }
@@ -37,7 +36,7 @@ export default function GalleryBoard() {
   async function add(e) {
     e.preventDefault();
     setError('');
-    if (!/^https?:\/\/.+/i.test(imageUrl.trim())) { setError('نشانی تصویر معتبر نیست.'); return; }
+    if (!isImageUrl(imageUrl)) { setError('اول عکسی آپلود کنید یا نشانی کامل تصویر را وارد کنید.'); return; }
     setBusy(true);
     const res = await fetch('/api/gallery', {
       method: 'POST',

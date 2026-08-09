@@ -7,3 +7,9 @@ export function normalizeUploadUrl(value) {
   if (!/^\/media\/[A-Za-z0-9._-]+$/.test(url)) return false;
   return url;
 }
+
+// تصویری که یا روی همین سایت آپلود شده (/media/…) یا نشانی کاملِ بیرونی است.
+export function isImageUrl(value) {
+  const url = String(value ?? '').trim();
+  return /^\/media\/[A-Za-z0-9._-]+$/.test(url) || /^https?:\/\/.+/i.test(url);
+}

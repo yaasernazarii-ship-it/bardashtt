@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Icon from './Icon';
+import { uploadFile } from '@/lib/uploadClient';
 
 export default function AdminSiteContent() {
   const [groups, setGroups] = useState([]);
@@ -35,10 +36,7 @@ export default function AdminSiteContent() {
   async function uploadImage(key, file) {
     if (!file) return;
     setUploadingKey(key); setError('');
-    const fd = new FormData();
-    fd.append('file', file);
-    const res = await fetch('/api/upload', { method: 'POST', body: fd });
-    const data = await res.json();
+    const data = await uploadFile(file);
     setUploadingKey('');
     if (data.ok) set(key, data.url);
     else setError(data.error || 'آپلود ناموفق بود.');
@@ -48,10 +46,7 @@ export default function AdminSiteContent() {
   async function uploadImageAppend(key, file) {
     if (!file) return;
     setUploadingKey(key); setError('');
-    const fd = new FormData();
-    fd.append('file', file);
-    const res = await fetch('/api/upload', { method: 'POST', body: fd });
-    const data = await res.json();
+    const data = await uploadFile(file);
     setUploadingKey('');
     if (data.ok) {
       setValues((prev) => {

@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
+import { isImageUrl } from '@/lib/uploadUrl';
 
 export async function GET() {
   const user = await getSessionUser();
@@ -19,7 +20,7 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const imageUrl = String(body.imageUrl || '').trim().slice(0, 500);
-    if (!/^https?:\/\/.+/i.test(imageUrl)) {
+    if (!isImageUrl(imageUrl)) {
       return Response.json({ ok: false, error: 'نشانی تصویر معتبر نیست.' }, { status: 400 });
     }
     const caption = body.caption ? String(body.caption).trim().slice(0, 160) : null;

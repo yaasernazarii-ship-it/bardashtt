@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { SECTIONS, sectionLabel } from '@/lib/sections';
 import { BLOG_CATEGORIES, blogCategoryLabel } from '@/lib/blogCategories';
 import Icon from './Icon';
+import { uploadFile } from '@/lib/uploadClient';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
 const dateTimeFmt = new Intl.DateTimeFormat('fa-IR', {
@@ -99,10 +100,7 @@ export default function AdminPosts() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true); setError('');
-    const fd = new FormData();
-    fd.append('file', file);
-    const res = await fetch('/api/upload', { method: 'POST', body: fd });
-    const data = await res.json();
+    const data = await uploadFile(file);
     setUploading(false);
     if (data.ok) set('coverImage', data.url);
     else setError(data.error || 'آپلود ناموفق بود.');
@@ -112,10 +110,7 @@ export default function AdminPosts() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingAudio(true); setError('');
-    const fd = new FormData();
-    fd.append('file', file);
-    const res = await fetch('/api/upload', { method: 'POST', body: fd });
-    const data = await res.json();
+    const data = await uploadFile(file);
     setUploadingAudio(false);
     if (data.ok) set('audioUrl', data.url);
     else setError(data.error || 'آپلود صوت ناموفق بود.');

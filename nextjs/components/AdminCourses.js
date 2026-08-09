@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Icon from './Icon';
+import { uploadFile } from '@/lib/uploadClient';
 
-const EMPTY = { title: '', description: '', price: '', coverImage: '', teaserUrl: '', published: true, lessons: [] };
+const EMPTY ={ title: '', description: '', price: '', coverImage: '', teaserUrl: '', published: true, lessons: [] };
 
 export default function AdminCourses() {
   const [courses, setCourses] = useState([]);
@@ -58,10 +59,7 @@ export default function AdminCourses() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true); setError('');
-    const fd = new FormData();
-    fd.append('file', file);
-    const res = await fetch('/api/upload', { method: 'POST', body: fd });
-    const data = await res.json();
+    const data = await uploadFile(file);
     setUploading(false);
     if (data.ok) set('coverImage', data.url);
     else setError(data.error || 'آپلود ناموفق بود.');
