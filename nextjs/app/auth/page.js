@@ -12,6 +12,10 @@ export const metadata = {
   title: 'ورود هنرجویان',
   description: 'ورود به حساب کاربری خانواده برداشت با نام کاربری و رمز عبور.',
   alternates: { canonical: 'https://www.bardashtt.com/auth' },
+  // صفحهٔ ورود ارزش جست‌وجویی ندارد و نباید در نتایج گوگل بیاید. عمداً در
+  // robots.txt مسدود نشده تا خزندهٔ گوگل بتواند همین noindex را ببیند و
+  // نسخهٔ ایندکس‌شدهٔ فعلی را از نتایج بردارد.
+  robots: { index: false, follow: true },
 };
 
 export default function AuthPage() {

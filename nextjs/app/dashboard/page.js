@@ -5,7 +5,13 @@ import LogoutButton from '@/components/LogoutButton';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import Icon from '@/components/Icon';
 
-export const metadata = { title: 'داشبورد هنرجو' };
+// پنل شخصیِ هنرجو — نه محتوای عمومی دارد و نه باید در نتایج جست‌وجو بیاید.
+// canonical هم حذف شده چون قبلاً به‌اشتباه به صفحهٔ اصلی اشاره می‌کرد.
+export const metadata = {
+  title: 'داشبورد هنرجو',
+  robots: { index: false, follow: false },
+  alternates: { canonical: 'https://www.bardashtt.com/dashboard' },
+};
 
 // عکس ۳×۴ کاربر در سرصفحهٔ پنل؛ اگر عکسی ثبت نشده باشد دعوت به آپلود نمایش داده می‌شود.
 function UserPhoto({ user }) {
