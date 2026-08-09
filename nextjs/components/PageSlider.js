@@ -18,24 +18,34 @@ export default function PageSlider({ title, count = 3, images = [] }) {
     setIdx(((n % slides.length) + slides.length) % slides.length);
   }, [slides.length]);
 
+  // نسبتِ قاب از ابعادِ واقعیِ اولین عکس خوانده می‌شود تا هر فایلی که در پنل
+  // آپلود شود بدونِ تغییرِ کد دقیقاً جا بیفتد و دورش فضای خالی نماند.
+  const [ratio, setRatio] = useState(0);
+  const firstPic = pics[0] || '';
+  useEffect(() => {
+    if (!firstPic) return undefined;
+    let alive = true;
+    const probe = new window.Image();
+    probe.onload = () => {
+      if (alive && probe.naturalWidth && probe.naturalHeight) {
+        setRatio(probe.naturalWidth / probe.naturalHeight);
+      }
+    };
+    probe.src = firstPic;
+    return () => { alive = false; };
+  }, [firstPic]);
+
   useEffect(() => {
     const t = setInterval(() => go(idx + 1), 5000);
     return () => clearInterval(t);
   }, [idx, go]);
 
   return (
-    <div className="pslider">
+    <div className="pslider" style={ratio ? { '--ps-ratio': ratio } : undefined}>
       {slides.map((s, i) => (
         <div key={i} className={`pslider__slide${i === idx ? ' is-active' : ''}`}>
           {usingImages ? (
-            <>
-              {/* فضای سمت چپ: ادامهٔ ستونِ لبهٔ خودِ عکس (فقط دسکتاپ) */}
-              <div className="pslider__edge" style={{ backgroundImage: `url(${s})` }} />
-              {/* تیره‌کنندهٔ همان فضا — زیرِ عکس، پس به خودِ بنر دست نمی‌زند */}
-              <div className="pslider__vignette" />
-              {/* خودِ عکس: همیشه کامل، بدون بریدگی و بدون کشیدگی */}
-              <div className="pslider__img" style={{ backgroundImage: `url(${s})` }} />
-            </>
+            <div className="pslider__img" style={{ backgroundImage: `url(${s})` }} />
           ) : (
             <div className="pslider__grad" style={{ background: s }} />
           )}

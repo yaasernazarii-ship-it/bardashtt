@@ -1806,16 +1806,18 @@ summary:focus-visible {
 .pay-result__ico--error   { color: #DC2626; background: rgba(220,38,38,.1); }
 
 /* ═══ اسلایدشوِ بالای صفحه‌های داخلی (دوره‌ها، درباره ما، گالری و …) ═══
-   عکس‌ها معمولاً افقی و ۱۶:۹ آپلود می‌شوند. قاب هم بر همان اساس ارتفاع
-   می‌گیرد (۵۶.۲۵٪ عرض) تا روی گوشی دقیقاً اندازهٔ عکس باشد و چیزی بریده نشود.
-   روی نمایشگرهای بزرگ ارتفاع به ۸۲vh محدود می‌شود (قابِ تمام‌عرضِ ۱۶:۹ روی
-   پنجرهٔ پهن و کوتاه از کل ارتفاعِ مرورگر بلندتر می‌شود و جا نمی‌گیرد).
-   فضای باقی‌مانده به‌جای اینکه دو تکه شود، با چسباندنِ عکس به لبهٔ راست یک‌جا
-   در سمت چپ جمع می‌شود و همان‌جا با ادامهٔ ستونِ لبهٔ خودِ عکس پر می‌شود. */
+   قاب دقیقاً هم‌نسبتِ خودِ عکس است (`--ps-ratio` را کامپوننت از ابعاد واقعیِ
+   فایل می‌خواند)، پس هیچ فضای خالی‌ای دور عکس نمی‌ماند — نه روی گوشی نه روی
+   دسکتاپ. تنها محدودیت، سقفِ ۸۲vh است تا بنر از ارتفاعِ مرورگر بلندتر نشود؛
+   اگر سقف فعال شود عکس از *پایین* کوتاه می‌شود (نه از کناره‌ها)، چون کناره‌ها
+   لوگو و متن دارند ولی پایینِ کادر فضای خالیِ تصویر است. */
 .pslider {
+  --ps-ratio: 1.7778;
   position: relative;
   width: 100%;
-  height: clamp(190px, 56.25vw, 82vh);
+  aspect-ratio: var(--ps-ratio);
+  max-height: 82vh;
+  min-height: 180px;
   overflow: hidden;
   background: #000;
 }
@@ -1827,51 +1829,17 @@ summary:focus-visible {
 }
 .pslider__slide.is-active { opacity: 1; }
 
-/* فضای سمت چپِ دسکتاپ — به‌جای نوارِ خالی، ادامهٔ خودِ عکس.
-   `background-size: 3000% 100%` عکس را ۳۰ برابرِ عرضِ این لایه می‌کِشد، پس فقط
-   ۱/۳۰ عرضِ عکس (حدود ۵۶ پیکسل از لبهٔ چپ) دیده و پهن می‌شود. ارتفاعِ ۱۰۰٪
-   دقیقاً هم‌اندازهٔ عکسِ اصلی است، برای همین رنگ روی مرز مو‌به‌مو یکی می‌شود و
-   خطِ جدایی دیده نمی‌شود. blur نوارِ کشیده‌شده را به هاله‌ای نرم تبدیل می‌کند. */
-.pslider__edge {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 50%;
-  display: none;
-  background-repeat: no-repeat;
-  background-position: left center;
-  background-size: 3000% 100%;
-  filter: blur(58px) brightness(.75);
-}
-
-/* تیره‌شدنِ تدریجیِ همان فضا تا لبهٔ صفحه. چون زیرِ لایهٔ عکس است، هیچ‌وقت روی
-   خودِ بنر سایه نمی‌اندازد. */
-.pslider__vignette {
-  position: absolute;
-  inset: 0;
-  display: none;
-  background: linear-gradient(to right, rgba(0,0,0,.95) 0%, rgba(0,0,0,.5) 4%, rgba(0,0,0,0) 9%);
-}
-
 /* اسلایدِ گرادیانی — وقتی هنوز عکسی در پنل ثبت نشده */
 .pslider__grad { position: absolute; inset: 0; }
 
-/* خودِ عکس — کامل و با نسبت اصلی */
+/* خودِ عکس — همیشه تمامِ قاب را پر می‌کند. چون قاب هم‌نسبتِ عکس است، در حالت
+   عادی هیچ برشی رخ نمی‌دهد؛ فقط اگر سقفِ ۸۲vh فعال شود از پایین کوتاه می‌شود. */
 .pslider__img {
   position: absolute;
   inset: 0;
-  background-size: contain;
-  background-position: center;
+  background-size: cover;
+  background-position: center top;
   background-repeat: no-repeat;
-}
-
-/* روی گوشی قاب دقیقاً اندازهٔ عکس است و فضای اضافه‌ای وجود ندارد؛
-   این قانون باید بعد از قانونِ پایهٔ بالا بیاید تا خنثی نشود. */
-@media (min-width: 900px) {
-  .pslider__edge,
-  .pslider__vignette { display: block; }
-  .pslider__img { background-position: right center; }
 }
 
 .pslider__title {
