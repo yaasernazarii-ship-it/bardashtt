@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import VideoEmbed from '@/components/VideoEmbed';
 import BuyCourseButton from '@/components/BuyCourseButton';
+import Icon from '@/components/Icon';
 import { getSessionUser } from '@/lib/auth';
 import { courseBySlug, userHasCourseAccess } from '@/lib/onlineCourses';
 import { SITE_URL, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
@@ -112,7 +113,7 @@ export default async function CourseDetailPage({ params }) {
           ) : (
             /* قفل: خرید نکرده — سرفصل‌ها را می‌بیند ولی ویدیوها بسته است */
             <div className="course-locked">
-              <div className="course-locked__badge">🔒 برای دیدن ویدیوها این دوره را تهیه کنید</div>
+              <div className="course-locked__badge"><Icon name="lock" size={15} /> برای دیدن ویدیوها این دوره را تهیه کنید</div>
               <p style={{ color: 'var(--muted)', margin: '8px 0 18px' }}>
                 این دوره شامل {lessonCount.toLocaleString('fa-IR')} ویدیوی آموزشی است. پس از خرید، همهٔ ویدیوها برای شما باز می‌شود.
               </p>

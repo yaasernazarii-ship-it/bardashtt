@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Icon from './Icon';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
 const dateTimeFmt = new Intl.DateTimeFormat('fa-IR', {
@@ -65,24 +66,26 @@ export default function MyBookOrders() {
             {paid ? (
               <div style={{ marginTop: 10, padding: '8px 10px', borderRadius: 8, background: '#eaf7f0', border: '1px solid #bfe5d0', fontSize: '0.85rem', lineHeight: 1.9 }}>
                 <div style={{ fontWeight: 700, color: '#137a4a' }}>
-                  {o.amount ? `💵 مبلغ پرداخت‌شده: ${money(o.amount)} تومان` : '✅ پرداخت این سفارش ثبت شده است'}
+                  {o.amount
+                    ? <span className="meta-ico"><Icon name="banknote" size={14} /> مبلغ پرداخت‌شده: {money(o.amount)} تومان</span>
+                    : <span className="meta-ico"><Icon name="check" size={14} /> پرداخت این سفارش ثبت شده است</span>}
                 </div>
-                {o.paidAt && <div>🕒 {dateTimeFmt.format(new Date(o.paidAt))}</div>}
-                {o.refId && <div>🔖 کد پیگیری: <span dir="ltr">{o.refId}</span></div>}
-                {o.status === 'shipped' && <div>📦 سفارش شما ارسال شده است.</div>}
+                {o.paidAt && <div className="meta-ico"><Icon name="clock" size={14} /> {dateTimeFmt.format(new Date(o.paidAt))}</div>}
+                {o.refId && <div className="meta-ico"><Icon name="tag" size={14} /> کد پیگیری: <span dir="ltr">{o.refId}</span></div>}
+                {o.status === 'shipped' && <div className="meta-ico"><Icon name="package" size={14} /> سفارش شما ارسال شده است.</div>}
               </div>
             ) : o.status === 'canceled' ? (
               <div style={{ marginTop: 10, fontSize: '0.85rem', color: 'var(--muted)' }}>این سفارش لغو شده است.</div>
             ) : (
               <div style={{ marginTop: 10, fontSize: '0.85rem', color: 'var(--muted)' }}>
-                ⏳ پرداخت این سفارش هنوز ثبت نشده است
+                <Icon name="clock" size={14} /> پرداخت این سفارش هنوز ثبت نشده است
                 {o.amount ? ` — مبلغ: ${money(o.amount)} تومان` : ''}. همکاران ما برای هماهنگی با شما تماس می‌گیرند.
               </div>
             )}
 
             {o.address && (
               <div style={{ marginTop: 8, fontSize: '0.82rem', color: 'var(--muted)' }}>
-                📮 {o.address}{o.postalCode ? ` — کد پستی ${o.postalCode}` : ''}
+                <Icon name="mapPin" size={14} /> {o.address}{o.postalCode ? ` — کد پستی ${o.postalCode}` : ''}
               </div>
             )}
           </div>

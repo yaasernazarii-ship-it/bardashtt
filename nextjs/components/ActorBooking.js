@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Icon from './Icon';
 
 export default function ActorBooking({ actorId, actorName, defaultName = '', defaultPhone = '' }) {
   const [open, setOpen] = useState(false);
@@ -41,11 +42,11 @@ export default function ActorBooking({ actorId, actorName, defaultName = '', def
     <div className="actor-booking" style={{ marginTop: 24, borderTop: '1px solid var(--border)', paddingTop: 20 }}>
       {done ? (
         <div className="alert alert--success" style={{ lineHeight: 2 }}>
-          ✅ درخواست ست تایم شما برای <b>{actorName}</b> ثبت شد. به‌زودی برای هماهنگی با شما تماس می‌گیریم.
+          <Icon name="check" size={16} /> درخواست ست تایم شما برای <b>{actorName}</b> ثبت شد. به‌زودی برای هماهنگی با شما تماس می‌گیریم.
         </div>
       ) : !open ? (
         <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 20 }}>
-          <h3 style={{ margin: '0 0 6px' }}>🎬 مایل به همکاری با این بازیگر هستید؟</h3>
+          <h3 style={{ margin: '0 0 6px' }} className="icon-inline"><Icon name="clapperboard" size={18} /> مایل به همکاری با این بازیگر هستید؟</h3>
           <p style={{ color: 'var(--muted)', margin: '0 0 14px' }}>
             اگر از رزومهٔ {actorName} خوشتان آمده، برای هماهنگی زمان جلسه (ست تایم) درخواست بدهید تا با شما در ارتباط باشیم.
           </p>

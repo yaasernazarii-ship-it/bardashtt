@@ -9,6 +9,9 @@
 :target { scroll-margin-top: 96px; }
 
 :root {
+  /* تیکِ فهرست‌ها به‌صورت ماسک SVG (هم‌خانوادهٔ کامپوننت <Icon />) تا رنگش را از CSS بگیرد. */
+  --check-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+
   --bg:        #FFFFFF;
   --surface:   #F7FBFB;
   --white:     #FFFFFF;
@@ -1680,6 +1683,7 @@ summary:focus-visible {
   border-bottom: 1px solid var(--border); padding-bottom: 14px;
 }
 .sr-tab {
+  display: inline-flex; align-items: center; gap: 7px;
   cursor: pointer; font: inherit; font-weight: 600; color: var(--muted);
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 100px; padding: 9px 18px; transition: all .15s ease;
@@ -1716,7 +1720,8 @@ summary:focus-visible {
 }
 .promo-info { flex: 1; min-width: 0; }
 .promo-badge {
-  display: inline-block; font-size: 0.78rem; font-weight: 700; color: var(--dark);
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.78rem; font-weight: 700; color: var(--dark);
   background: var(--gold-lt); border-radius: 100px; padding: 4px 12px; margin-bottom: 10px;
 }
 .promo-heading { font-size: 1.25rem; font-weight: 800; margin: 0 0 6px; }
@@ -1739,3 +1744,60 @@ summary:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .promo-backdrop, .promo-card { animation: none; }
 }
+
+/* ==========================================================================
+   آیکون‌ها — کامپوننت <Icon /> جایگزین اموجی‌های قبلی شده است.
+   این قواعد فقط اندازه/رنگ/چینشِ SVG را در جایگاه‌های تکرارشونده تنظیم می‌کنند.
+   ========================================================================== */
+
+/* هر SVGِ <Icon /> این کلاس را دارد: هم‌تراز متنِ کنارش، بدون کوچک‌شدن، رنگ از والد. */
+.ico { vertical-align: -0.16em; flex-shrink: 0; }
+
+/* والدی که می‌خواهد آیکون و متن را دقیقاً کنار هم و وسط‌چین نگه دارد. */
+.icon-inline { display: inline-flex; align-items: center; gap: 6px; }
+
+/* آیکونِ بالای کارت‌های «درباره ما» و «افتخارات» */
+.about-card__ico,
+.cico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 14px;
+  border-radius: 14px;
+  color: var(--gold);
+  background: rgba(197, 160, 89, .1);
+  border: 1px solid rgba(197, 160, 89, .22);
+}
+
+/* آیکونِ کنارِ عنوان بلوک‌های رزومه */
+.rico {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: -4px;
+  margin-inline-end: 8px;
+  color: var(--gold);
+}
+
+/* ردیف‌های متادیتا (ویدیو، منبع، قیمت، تاریخ و …) که قبلاً با اموجی شروع می‌شدند */
+.meta-ico {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  vertical-align: -2px;
+}
+.meta-ico > svg { flex-shrink: 0; opacity: .8; }
+
+/* آیکونِ نتیجهٔ پرداخت */
+.pay-result__ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+}
+.pay-result__ico--success { color: #16A34A; background: rgba(22,163,74,.1); }
+.pay-result__ico--error   { color: #DC2626; background: rgba(220,38,38,.1); }

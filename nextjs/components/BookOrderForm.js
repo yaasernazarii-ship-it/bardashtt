@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Icon from './Icon';
 
 // ارقام فارسی/عربی را به لاتین تبدیل می‌کند تا کد پستی با هر کیبوردی درست وارد شود.
 function toLatinDigits(input) {
@@ -84,7 +85,7 @@ export default function BookOrderForm({ slug, price }) {
         <textarea className="form-input" rows={2} value={form.note} onChange={(e) => set('note', e.target.value)} placeholder="اگر توضیحی دارید بنویسید." />
       </div>
       <p style={{ color: 'var(--muted)', fontSize: '0.82rem', margin: '0 0 10px' }}>
-        📦 هزینهٔ ارسال پستی بر عهدهٔ خریدار است و هنگام تحویل مرسوله پرداخت می‌شود.
+        <Icon name="package" size={15} /> هزینهٔ ارسال پستی بر عهدهٔ خریدار است و هنگام تحویل مرسوله پرداخت می‌شود.
       </p>
       <button className="btn btn--dark" type="submit" disabled={busy}>
         {busy ? 'در حال اتصال…' : price > 0 ? `پرداخت و ثبت سفارش (${(price * (Number(form.quantity) || 1)).toLocaleString('fa-IR')} تومان)` : 'ثبت سفارش'}

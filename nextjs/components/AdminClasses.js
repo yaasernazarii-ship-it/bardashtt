@@ -224,7 +224,7 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
     });
     const d = await res.json();
     setSavingCover(false);
-    if (d.ok) { setMsg('عکس کلاس ذخیره شد ✅'); onChanged(); }
+    if (d.ok) { setMsg('عکس کلاس ذخیره شد.'); onChanged(); }
     else setMsg(d.error || 'خطا');
   }
 
@@ -235,7 +235,7 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
     });
     const d = await res.json();
     setSavingTotal(false);
-    if (d.ok) { setMsg('تعداد کل جلسات ذخیره شد ✅'); onChanged(); }
+    if (d.ok) { setMsg('تعداد کل جلسات ذخیره شد.'); onChanged(); }
     else setMsg(d.error || 'خطا');
   }
 
@@ -257,7 +257,7 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
     });
     const d = await res.json();
     setSavingMembers(false);
-    if (d.ok) { setMsg('هنرجویان این کلاس ذخیره شد ✅'); onChanged(); }
+    if (d.ok) { setMsg('هنرجویان این کلاس ذخیره شد.'); onChanged(); }
     else setMsg(d.error || 'خطا');
   }
 
@@ -508,7 +508,7 @@ function SessionAttendance({ sessionId, onChanged }) {
     });
     const d = await res.json();
     setSaving(false);
-    if (d.ok) { setMsg('حضور و غیاب ذخیره شد ✅'); onChanged(); }
+    if (d.ok) { setMsg('حضور و غیاب ذخیره شد.'); onChanged(); }
     else setMsg(d.error || 'خطا');
   }
 
@@ -563,7 +563,7 @@ function ProgressOverrides({ members, students, onChanged }) {
     });
     const d = await res.json();
     setSavingId(null);
-    if (d.ok) { setMsg('درصد پیشرفت ذخیره شد ✅'); onChanged(); }
+    if (d.ok) { setMsg('درصد پیشرفت ذخیره شد.'); onChanged(); }
     else setMsg(d.error || 'خطا');
   }
 

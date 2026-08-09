@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isFilmmakerOrManager } from '@/lib/auth';
 import SimplePage from '@/components/SimplePage';
+import Icon from '@/components/Icon';
 import ActorBooking from '@/components/ActorBooking';
 
 export const dynamic = 'force-dynamic';
@@ -39,7 +40,7 @@ export default async function ActorDetailPage({ params }) {
       </div>
       <div className="actor-detail">
         <div className="actor-detail__photo" style={a.photoUrl ? { backgroundImage: `url(${a.photoUrl})` } : undefined}>
-          {!a.photoUrl && <span>{a.gender === 'female' ? '👩‍🎤' : '🎭'}</span>}
+          {!a.photoUrl && <Icon name="masks" size={56} strokeWidth={1.3} />}
         </div>
         <div className="actor-detail__body">
           {a.bio && <p className="body-lg">{a.bio}</p>}

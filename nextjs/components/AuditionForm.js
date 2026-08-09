@@ -74,7 +74,7 @@ export default function AuditionForm() {
         <ol className="enroll-steps">
           {STEPS.map((s, i) => (
             <li key={s} className={i === step ? 'active' : i < step ? 'done' : undefined}>
-              <span className="enroll-steps__num">{i < step ? '✓' : i + 1}</span>
+              <span className="enroll-steps__num">{i < step ? <Icon name="checkMark" size={14} strokeWidth={3} /> : i + 1}</span>
               <span className="enroll-steps__label">{s}</span>
             </li>
           ))}

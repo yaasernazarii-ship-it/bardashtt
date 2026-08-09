@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Icon from './Icon';
 
 // مسیرهایی که پنجرهٔ پیشنهاد در آن‌ها مزاحم است یا معنا ندارد.
 const SKIP_PREFIXES = ['/dashboard', '/auth', '/register', '/payment', '/profile', '/social-responsibility'];
@@ -89,7 +90,7 @@ export default function BookPromo() {
             <img className="promo-cover" src={b.coverImage} alt={b.title} />
           )}
           <div className="promo-info">
-            {promo.badge && <span className="promo-badge">{promo.badge}</span>}
+            {promo.badge && <span className="promo-badge"><Icon name="sparkles" size={13} /> {promo.badge}</span>}
             <h2 className="promo-heading">{promo.heading}</h2>
             <p className="promo-book-title">{b.title}</p>
             {b.author && <p className="promo-author">نویسنده: {b.author}</p>}

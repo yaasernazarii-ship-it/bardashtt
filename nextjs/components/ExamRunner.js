@@ -124,7 +124,7 @@ export default function ExamRunner() {
 
       {result && (
         <div className={`alert alert--${result.passed ? 'success' : 'error'}`}>
-          <strong>{result.passed ? 'قبول شدید 🎉' : 'متأسفانه حد نصاب را کسب نکردید.'}</strong>
+          <strong>{result.passed ? 'قبول شدید' : 'متأسفانه حد نصاب را کسب نکردید.'}</strong>
           <div style={{ marginTop: 6 }}>
             نمرهٔ شما: {fa(result.score)} از {fa(result.total)} ({fa(result.percent)} درصد)
             {result.auto && ' — آزمون به‌دلیل پایان مهلت خودکار ثبت شد.'}

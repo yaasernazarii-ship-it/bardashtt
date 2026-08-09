@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { liveCourses } from '@/lib/onlineCourses';
+import Icon from './Icon';
 
 // فهرستِ دوره‌های آنلاینِ فروشی. هر کارت به صفحهٔ دوره لینک می‌شود
 // (جایی که تیزر برای همه و ویدیوها فقط برای خریدار نمایش داده می‌شود).
@@ -25,7 +26,7 @@ export default async function CourseList() {
                 <p className="post-card__excerpt">{String(c.description).slice(0, 120)}</p>
               )}
               <div className="post-card__meta">
-                <span>🎬 {c._count.lessons.toLocaleString('fa-IR')} ویدیو</span>
+                <span className="meta-ico"><Icon name="clapperboard" size={14} /> {c._count.lessons.toLocaleString('fa-IR')} ویدیو</span>
                 <span style={{ color: 'var(--dark)', fontWeight: 700 }}>{priceLabel}</span>
               </div>
             </div>

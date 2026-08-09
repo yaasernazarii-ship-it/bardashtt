@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Icon from './Icon';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', {
   weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
@@ -153,8 +154,8 @@ export default function CalendarBoard() {
                 <div className="cal-body">
                   <h3>{ev.title}</h3>
                   <div className="cal-meta">
-                    {ev.teacher && <span>👤 {ev.teacher}</span>}
-                    {ev.location && <span>📍 {ev.location}</span>}
+                    {ev.teacher && <span className="meta-ico"><Icon name="user" size={13} /> {ev.teacher}</span>}
+                    {ev.location && <span className="meta-ico"><Icon name="mapPin" size={13} /> {ev.location}</span>}
                     {ev.durationMin && <span>⏱ {ev.durationMin} دقیقه</span>}
                   </div>
                   {ev.description && <p className="cal-desc">{ev.description}</p>}

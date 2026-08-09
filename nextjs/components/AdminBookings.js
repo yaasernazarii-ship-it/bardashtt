@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Icon from './Icon';
 
 const STATUS_LABEL = { new: 'جدید', contacted: 'در حال پیگیری', done: 'انجام‌شده', rejected: 'ردشده' };
 const STATUS_TAG = { new: 'tag--gold', contacted: 'tag--dark', done: 'tag--dark', rejected: 'tag--dark' };
@@ -44,7 +45,7 @@ export default function AdminBookings() {
         {bookings.map((b) => (
           <div key={b.id} className="form-shell" style={{ margin: 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
-              <strong style={{ fontSize: '1.05rem' }}>🎭 {b.actorName}</strong>
+              <strong style={{ fontSize: '1.05rem' }} className="icon-inline"><Icon name="masks" size={17} /> {b.actorName}</strong>
               <span className={`tag ${STATUS_TAG[b.status] || 'tag--dark'}`}>{STATUS_LABEL[b.status] || b.status}</span>
             </div>
             <div style={{ color: 'var(--muted)', fontSize: '.9rem', lineHeight: 2 }}>

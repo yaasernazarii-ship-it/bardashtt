@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Icon from './Icon';
 
 const EMPTY = { firstName: '', lastName: '', phone: '', nationalId: '', branch: 'تهران', birthDate: '', idCardImage: '', goal: '' };
 
@@ -56,7 +57,7 @@ export default function SignupWizard() {
     return (
       <div className="form-shell">
         <div className="form-shell__head">
-          <h2>درخواست شما با موفقیت ثبت شد ✅</h2>
+          <h2>درخواست شما با موفقیت ثبت شد</h2>
         </div>
         <div className="alert alert--success" style={{ lineHeight: 2 }}>
           درخواست عضویت شما دریافت شد. لطفاً منتظر <b>صدور نام کاربری و رمز عبور</b> از سوی خانواده برداشت بمانید.
@@ -76,10 +77,10 @@ export default function SignupWizard() {
         </div>
         <div style={{ display: 'grid', gap: 12 }}>
           <button type="button" className="btn btn--dark btn--full" onClick={() => { setForm(EMPTY); setRole('student'); }}>
-            🎓 هنرجو
+            <Icon name="graduationCap" size={17} /> هنرجو
           </button>
           <button type="button" className="btn btn--outline btn--full" onClick={() => { setForm(EMPTY); setRole('filmmaker'); }}>
-            🎬 فیلمساز
+            <Icon name="clapperboard" size={17} /> فیلمساز
           </button>
         </div>
       </div>
@@ -147,7 +148,7 @@ export default function SignupWizard() {
         {form.idCardImage && !uploading && (
           <div style={{ marginTop: 10 }}>
             <img src={form.idCardImage} alt="عکس شناسنامه" style={{ maxWidth: '100%', maxHeight: 180, borderRadius: 10, border: '1px solid var(--border)' }} />
-            <p style={{ color: '#16A34A', fontSize: '.82rem', marginTop: 6 }}>عکس بارگذاری شد ✅</p>
+            <p style={{ color: '#16A34A', fontSize: '.82rem', marginTop: 6 }}>عکس بارگذاری شد.</p>
           </div>
         )}
       </div>

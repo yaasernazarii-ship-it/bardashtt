@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Icon from './Icon';
 
 export default function AdminSiteContent() {
   const [groups, setGroups] = useState([]);
@@ -194,7 +195,7 @@ function ImagesField({ value, uploading, onUpload, onChange }) {
       )}
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
         <label className="btn btn--dark" style={{ cursor: 'pointer', margin: 0 }}>
-          {uploading ? 'در حال آپلود…' : '➕ افزودن عکس'}
+          {uploading ? 'در حال آپلود…' : <><Icon name="plus" size={15} /> افزودن عکس</>}
           <input
             type="file"
             accept="image/*"

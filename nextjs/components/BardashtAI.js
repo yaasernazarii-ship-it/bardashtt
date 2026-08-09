@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Icon from './Icon';
 
 const SUGGESTIONS = [
   'متد پنج سوال طلایی چیست؟',
@@ -51,12 +52,12 @@ export default function BardashtAI() {
       {open && (
         <div className="bai-panel" role="dialog" aria-label="دستیار هوشمند Bardasht.AI">
           <div className="bai-head">
-            <div className="bai-av">🤖</div>
+            <div className="bai-av"><Icon name="bot" size={20} /></div>
             <div style={{ flex: 1 }}>
               <h4 style={{ margin: 0, fontSize: '1rem' }}>Bardasht.AI</h4>
               <p style={{ margin: 0, fontSize: '.75rem', opacity: .8 }}>دستیار هوشمند هنرجو</p>
             </div>
-            <button type="button" className="bai-close" onClick={() => setOpen(false)} aria-label="بستن">✕</button>
+            <button type="button" className="bai-close" onClick={() => setOpen(false)} aria-label="بستن"><Icon name="close" size={16} /></button>
           </div>
 
           <div className="bai-thread">
@@ -83,13 +84,13 @@ export default function BardashtAI() {
 
           <form onSubmit={onSubmit} className="bai-input">
             <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="پرسش خود را بنویسید…" disabled={busy} />
-            <button type="submit" disabled={busy || !input.trim()} aria-label="ارسال">↑</button>
+            <button type="submit" disabled={busy || !input.trim()} aria-label="ارسال"><Icon name="arrowUp" size={16} /></button>
           </form>
         </div>
       )}
 
       <button type="button" className="bai-fab" onClick={() => setOpen((o) => !o)} aria-label="Bardasht.AI">
-        <span className="bai-fab__icon">{open ? '✕' : '🤖'}</span>
+        <span className="bai-fab__icon"><Icon name={open ? 'close' : 'bot'} size={20} /></span>
         {!open && <span className="bai-fab__label">Bardasht.AI</span>}
       </button>
 

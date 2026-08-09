@@ -95,9 +95,9 @@ export const CONTENT_GROUPS = [
       { key: 'about.licenses.items', label: 'رزومه — فهرست مجوزها (هر مورد یک خط)', type: 'list', default: 'پروانه فعالیت کارگردانی و فیلم‌نامه‌نویسی — وزارت فرهنگ و ارشاد اسلامی\nپروانه فعالیت مشاوره فرهنگی و هنری کسب‌وکار — وزارت فرهنگ و ارشاد اسلامی\nپروانه تأسیس آموزشگاه آزاد سینمایی «تک برداشت» — سازمان فنی و حرفه‌ای کشور' },
       { key: 'about.skills.heading', label: 'رزومه — عنوان مهارت‌ها', type: 'text', default: 'حوزه تخصصی و مهارت‌ها' },
       { key: 'about.skills.g1.label', label: 'مهارت‌ها — عنوان گروه ۱', type: 'text', default: 'هنری' },
-      { key: 'about.skills.g1.items', label: 'مهارت‌ها — گروه ۱ (هر مورد یک خط)', type: 'list', default: '🎬 کارگردانی سینما\n✍️ فیلم‌نامه‌نویسی\n🎭 مربیگری بازیگری' },
+      { key: 'about.skills.g1.items', label: 'مهارت‌ها — گروه ۱ (هر مورد یک خط)', type: 'list', default: 'کارگردانی سینما\nفیلم‌نامه‌نویسی\nمربیگری بازیگری' },
       { key: 'about.skills.g2.label', label: 'مهارت‌ها — عنوان گروه ۲', type: 'text', default: 'تحلیلی و مدیریتی' },
-      { key: 'about.skills.g2.items', label: 'مهارت‌ها — گروه ۲ (هر مورد یک خط)', type: 'list', default: '🧠 تحلیل رفتار\n🎤 فن بیان و سخنوری\n💼 مشاوره کسب‌وکار فرهنگی\n📋 مدیریت تولید و برنامه‌ریزی' },
+      { key: 'about.skills.g2.items', label: 'مهارت‌ها — گروه ۲ (هر مورد یک خط)', type: 'list', default: 'تحلیل رفتار\nفن بیان و سخنوری\nمشاوره کسب‌وکار فرهنگی\nمدیریت تولید و برنامه‌ریزی' },
 
       // چرا ما؟
       { key: 'about.creds.eyebrow', label: 'چرا ما؟ — برچسب', type: 'text', default: 'چرا ما؟' },
@@ -253,31 +253,26 @@ export const CONTENT_GROUPS = [
 
       { key: 'course.c1.title', label: 'دورهٔ ۱ — نام', type: 'text', default: 'مقدماتی' },
       { key: 'course.c1.sub', label: 'دورهٔ ۱ — زیرعنوان', type: 'text', default: 'شروع مسیر' },
-      { key: 'course.c1.icon', label: 'دورهٔ ۱ — آیکن (اموجی)', type: 'text', default: '🎭' },
       { key: 'course.c1.desc', label: 'دورهٔ ۱ — توضیح', type: 'textarea', default: 'ورود به دنیای بازیگری، کشف استعداد درونی و پرورش بیان، بدن، خلاقیت و تمرکز.' },
       { key: 'course.c1.items', label: 'دورهٔ ۱ — سرفصل‌ها (هر مورد یک خط)', type: 'list', default: 'شناخت استعداد درونی\nبیان\nبدن\nخلاقیت\nتمرکز' },
 
       { key: 'course.c2.title', label: 'دورهٔ ۲ — نام', type: 'text', default: 'تکمیلی' },
       { key: 'course.c2.sub', label: 'دورهٔ ۲ — زیرعنوان', type: 'text', default: 'عمق مهارت' },
-      { key: 'course.c2.icon', label: 'دورهٔ ۲ — آیکن (اموجی)', type: 'text', default: '🧩' },
       { key: 'course.c2.desc', label: 'دورهٔ ۲ — توضیح', type: 'textarea', default: 'تعمیق مهارت‌ها با متدهای حرفه‌ای بازیگری و ساخت و تحلیل شخصیت.' },
       { key: 'course.c2.items', label: 'دورهٔ ۲ — سرفصل‌ها (هر مورد یک خط)', type: 'list', default: 'متد اکتینگ لی استراسبرگ\nمتد پنج سؤال طلایی\nتحلیل شخصیت\nشخصیت‌پردازی\nمنحنی شخصیت\nتیپ‌سازی' },
 
       { key: 'course.c3.title', label: 'دورهٔ ۳ — نام', type: 'text', default: 'اردو' },
       { key: 'course.c3.sub', label: 'دورهٔ ۳ — زیرعنوان', type: 'text', default: 'تجربه عملی' },
-      { key: 'course.c3.icon', label: 'دورهٔ ۳ — آیکن (اموجی)', type: 'text', default: '⛺' },
       { key: 'course.c3.desc', label: 'دورهٔ ۳ — توضیح', type: 'textarea', default: 'اردوهای آموزشی برای زیستن با شخصیت و تجربه‌ی فضای واقعی تولید فیلم.' },
       { key: 'course.c3.items', label: 'دورهٔ ۳ — سرفصل‌ها (هر مورد یک خط)', type: 'list', default: 'زیست با شخصیت\nکار گروهی\nآشنایی با قوانین تولید فیلم\nاتودهای گروهی' },
 
       { key: 'course.c4.title', label: 'دورهٔ ۴ — نام', type: 'text', default: 'پیشرفته' },
       { key: 'course.c4.sub', label: 'دورهٔ ۴ — زیرعنوان', type: 'text', default: 'حرفه‌ای شدن' },
-      { key: 'course.c4.icon', label: 'دورهٔ ۴ — آیکن (اموجی)', type: 'text', default: '🎥' },
       { key: 'course.c4.desc', label: 'دورهٔ ۴ — توضیح', type: 'textarea', default: 'بازیگری حرفه‌ای مقابل دوربین و شناخت زبان فنی و روانی سینما.' },
       { key: 'course.c4.items', label: 'دورهٔ ۴ — سرفصل‌ها (هر مورد یک خط)', type: 'list', default: 'بازی در قاب سینما\nشناخت لنزها\nتدوین برای بازیگر\nزبان مشترک با کارگردان و عوامل\nشناخت جایگاه‌ها در سینما\nروانشناسی بازیگر و کارگردان' },
 
       { key: 'course.c5.title', label: 'دورهٔ ۵ — نام', type: 'text', default: 'فیلمسازی' },
       { key: 'course.c5.sub', label: 'دورهٔ ۵ — زیرعنوان', type: 'text', default: 'زبان سینما' },
-      { key: 'course.c5.icon', label: 'دورهٔ ۵ — آیکن (اموجی)', type: 'text', default: '🎬' },
       { key: 'course.c5.desc', label: 'دورهٔ ۵ — توضیح', type: 'textarea', default: 'تجربه‌ی کامل ساخت و بازی در فیلم، از ایده تا اجرا.' },
       { key: 'course.c5.items', label: 'دورهٔ ۵ — سرفصل‌ها (هر مورد یک خط)', type: 'list', default: 'ساخت و بازی در فیلم' },
     ],
@@ -353,7 +348,7 @@ export const CONTENT_GROUPS = [
     title: 'پنجرهٔ پیشنهاد کتاب هنگام ورود به سایت',
     fields: [
       { key: 'bookPromo.enabled', label: 'نمایش پنجره (برای خاموش‌کردن بنویسید: خاموش)', type: 'text', default: 'روشن' },
-      { key: 'bookPromo.badge', label: 'برچسب بالای پنجره', type: 'text', default: '📚 پیشنهاد ویژه' },
+      { key: 'bookPromo.badge', label: 'برچسب بالای پنجره', type: 'text', default: 'پیشنهاد ویژه' },
       { key: 'bookPromo.heading', label: 'عنوان پنجره', type: 'text', default: 'کتابی که برای تو نوشته‌ایم' },
       { key: 'bookPromo.text', label: 'متن کوتاه زیر عنوان', type: 'textarea', default: 'قبل از شروع گشت‌وگذار در سایت، نگاهی به کتاب خانواده برداشت بینداز.' },
       { key: 'bookPromo.cta', label: 'متن دکمهٔ اصلی', type: 'text', default: 'معرفی و خرید کتاب' },

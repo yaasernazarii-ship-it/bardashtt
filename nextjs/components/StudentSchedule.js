@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Icon from './Icon';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 const timeFmt = new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit' });
@@ -98,7 +99,7 @@ export default function StudentSchedule() {
   return (
     <div>
       {hasUpdate && (
-        <div className="alert alert--info" style={{ marginBottom: 18 }}>🔔 برنامه‌ی کلاس شما به‌روزرسانی شده است.</div>
+        <div className="alert alert--info icon-inline" style={{ marginBottom: 18 }}><Icon name="bell" size={16} /> برنامه‌ی کلاس شما به‌روزرسانی شده است.</div>
       )}
 
       {/* دوره و پیشرفت */}
@@ -191,7 +192,7 @@ export default function StudentSchedule() {
                   </span>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     {s.attendance === 'present' && (
-                      <span style={{ fontSize: '.72rem', fontWeight: 700, color: '#16A34A', background: 'rgba(22,163,74,.1)', borderRadius: 999, padding: '3px 10px' }}>حاضر بودید ✓</span>
+                      <span style={{ fontSize: '.72rem', fontWeight: 700, color: '#16A34A', background: 'rgba(22,163,74,.1)', borderRadius: 999, padding: '3px 10px' }}>حاضر بودید</span>
                     )}
                     {s.attendance === 'absent' && (
                       <span style={{ fontSize: '.72rem', fontWeight: 700, color: '#DC2626', background: 'rgba(220,38,38,.1)', borderRadius: 999, padding: '3px 10px' }}>غایب بودید</span>
@@ -204,9 +205,9 @@ export default function StudentSchedule() {
                 </button>
                 {open && (
                   <div style={{ padding: '0 16px 16px', borderTop: '1px dashed var(--border)' }}>
-                    <Section icon="📘" title="چارت درسی این جلسه" text={s.chartDescription} />
-                    <Section icon="🧰" title="ابزار لازم" text={s.tools} />
-                    <Section icon="✏️" title="تمرین و اتود" text={s.homework} />
+                    <Section icon="bookOpen" title="چارت درسی این جلسه" text={s.chartDescription} />
+                    <Section icon="toolbox" title="ابزار لازم" text={s.tools} />
+                    <Section icon="pencil" title="تمرین و اتود" text={s.homework} />
                     {!s.chartDescription && !s.tools && !s.homework && (
                       <p style={{ color: 'var(--muted)', fontSize: '.85rem', marginTop: 12 }}>جزئیات این جلسه هنوز ثبت نشده است.</p>
                     )}
@@ -230,7 +231,7 @@ function Section({ icon, title, text }) {
   if (!text) return null;
   return (
     <div style={{ marginTop: 12 }}>
-      <div style={{ fontWeight: 700, marginBottom: 4 }}>{icon} {title}</div>
+      <div style={{ fontWeight: 700, marginBottom: 4 }} className="icon-inline"><Icon name={icon} size={16} /> {title}</div>
       <p style={{ color: 'var(--muted)', lineHeight: 1.9, whiteSpace: 'pre-wrap', margin: 0 }}>{text}</p>
     </div>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Icon from './Icon';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -56,7 +57,7 @@ export default function MyEnrollments() {
               <ol className="enroll-timeline">
                 {STAGES.map((st, i) => (
                   <li key={st.key} className={i < sv.reached ? 'done' : undefined}>
-                    <span className="enroll-timeline__dot">{i < sv.reached ? '✓' : i + 1}</span>
+                    <span className="enroll-timeline__dot">{i < sv.reached ? <Icon name="checkMark" size={12} strokeWidth={3} /> : i + 1}</span>
                     <span>{st.label}</span>
                   </li>
                 ))}

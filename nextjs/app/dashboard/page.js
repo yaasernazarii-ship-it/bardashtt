@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { getSessionUser, isManager } from '@/lib/auth';
 import LogoutButton from '@/components/LogoutButton';
 import DashboardSidebar from '@/components/DashboardSidebar';
+import Icon from '@/components/Icon';
 
 export const metadata = { title: 'داشبورد هنرجو' };
 
@@ -39,7 +40,7 @@ function FilmmakerDashboard({ user }) {
       </div>
       <Link href="/actors" className="dash-hero" style={{ marginBottom: 14 }}>
         <div className="dash-hero__label">ویژه‌ی فیلم‌سازان</div>
-        <h2 className="dash-hero__title">🎭 بانک بازیگران</h2>
+        <h2 className="dash-hero__title"><Icon name="masks" size={22} /> بانک بازیگران</h2>
         <p className="dash-hero__cta">مشاهده رزومه‌ها و ثبت درخواست ست تایم →</p>
       </Link>
       <div className="dash-cards">

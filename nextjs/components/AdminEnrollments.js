@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Icon from './Icon';
 
 const STATUS_LABEL = { submitted: 'در انتظار بررسی', approved: 'تأییدشده', rejected: 'ردشده' };
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -58,7 +59,7 @@ export default function AdminEnrollments() {
             </div>
             {r.aiAnalysis && <p className="enroll-admin-ai">{r.aiAnalysis}</p>}
             {r.nationalId && <div className="enroll-admin-ref">کد ملی: <b dir="ltr">{r.nationalId}</b></div>}
-            {r.videoUrl && <a className="enroll-admin-video" href={r.videoUrl} target="_blank" rel="noopener noreferrer">🎬 باز کردن فرم ویدیوها (با کد ملی بالا مطابقت دهید)</a>}
+            {r.videoUrl && <a className="enroll-admin-video" href={r.videoUrl} target="_blank" rel="noopener noreferrer"><Icon name="clapperboard" size={15} /> باز کردن فرم ویدیوها (با کد ملی بالا مطابقت دهید)</a>}
             {r.status === 'submitted' && (
               <div className="enroll-actions" style={{ marginTop: 12 }}>
                 <button className="btn btn--dark" disabled={busyId === r.id} onClick={() => act(r.id, 'approve')}>تأیید و ساخت حساب</button>

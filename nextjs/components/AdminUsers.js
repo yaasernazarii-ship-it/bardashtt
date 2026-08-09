@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Icon from './Icon';
 
 const ROLE_LABEL = { member: 'عضو', student: 'هنرجو', filmmaker: 'فیلمساز', editor: 'ادیتور', admin: 'ادمین' };
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -216,7 +217,7 @@ function UserPanel({ userId, onClose }) {
     const d = await res.json();
     setBusy(false);
     if (!d.ok) { setError(d.error || 'ذخیره نشد.'); return; }
-    setSavedMsg('رزومه ذخیره شد ✅');
+    setSavedMsg('رزومه ذخیره شد.');
     setEditResume(false);
     load();
   }
@@ -230,7 +231,7 @@ function UserPanel({ userId, onClose }) {
       <div onClick={(e) => e.stopPropagation()} style={{ background: '#fff', borderRadius: 16, width: 'min(680px,100%)', maxHeight: '92vh', overflowY: 'auto', padding: 22 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <h2 className="heading" style={{ fontSize: '1.15rem', margin: 0 }}>پنل کاربر</h2>
-          <button type="button" className="btn btn--sm btn--ghost" onClick={onClose}>✕ بستن</button>
+          <button type="button" className="btn btn--sm btn--ghost" onClick={onClose}><Icon name="close" size={14} /> بستن</button>
         </div>
 
         {loading ? <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p> : error ? <div className="alert alert--error">{error}</div> : (
@@ -309,7 +310,7 @@ function UserPanel({ userId, onClose }) {
                   )}
                   {r.selfVideoUrl && (
                     <div style={{ fontSize: '.9rem' }}>
-                      🎬 ویدیوی معرفیِ خودِ هنرجو: <a href={r.selfVideoUrl} target="_blank" rel="noopener noreferrer" dir="ltr">{r.selfVideoUrl}</a>
+                      <Icon name="clapperboard" size={14} /> ویدیوی معرفیِ خودِ هنرجو: <a href={r.selfVideoUrl} target="_blank" rel="noopener noreferrer" dir="ltr">{r.selfVideoUrl}</a>
                       <button type="button" className="btn btn--sm btn--danger" style={{ marginRight: 8 }} disabled={busy} onClick={() => moderate('deleteSelfVideo', 'ویدیوی معرفیِ بارگذاری‌شده توسط هنرجو حذف شود؟')}>حذف</button>
                     </div>
                   )}

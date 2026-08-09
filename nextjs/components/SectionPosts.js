@@ -3,6 +3,7 @@ import { livePosts } from '@/lib/content';
 import { aparatEmbedUrl } from '@/lib/aparat';
 import { blogCategoryLabel } from '@/lib/blogCategories';
 import { sourceHost } from '@/lib/sourceLink';
+import Icon from './Icon';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Tehran' });
 
@@ -35,8 +36,8 @@ export default async function SectionPosts({ section, variant = 'media', hrefBas
                 <div className="post-card__meta">
                   <span>{dateFmt.format(new Date(p.publishAt || p.createdAt))}</span>
                   {p.category && section === 'blog' && <span>{blogCategoryLabel(p.category)}</span>}
-                  {p.aparatUrl && <span>🎬 ویدیو</span>}
-                  {variant === 'article' && p.sourceUrl && <span>🔗 {sourceHost(p.sourceUrl)}</span>}
+                  {p.aparatUrl && <span className="meta-ico"><Icon name="clapperboard" size={14} /> ویدیو</span>}
+                  {variant === 'article' && p.sourceUrl && <span className="meta-ico"><Icon name="link" size={14} /> {sourceHost(p.sourceUrl)}</span>}
                 </div>
               </div>
             </>

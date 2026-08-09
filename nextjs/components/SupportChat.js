@@ -74,7 +74,7 @@ export default function SupportChat({ isOpen, onClose }) {
   function startChat() {
     if (!userName.trim()) { nameRef.current?.focus(); return; }
     setStep('chat');
-    setMessages([{ id: 'welcome', role: 'bot', body: `سلام ${userName.trim()} عزیز! 😊 پیامتون رو بنویسید، پشتیبانی همین‌جا پاسخ می‌ده.` }]);
+    setMessages([{ id: 'welcome', role: 'bot', body: `سلام ${userName.trim()} عزیز، خوش آمدید. پیامتون رو بنویسید؛ پشتیبانی همین‌جا پاسخ می‌ده.` }]);
   }
 
   async function sendMsg() {
@@ -117,8 +117,8 @@ export default function SupportChat({ isOpen, onClose }) {
       {step === 'name' ? (
         <>
           <div className="support-chat-msgs" style={{ minHeight: 80 }}>
-            <div className="chat-msg chat-msg--bot">سلام! 👋 لطفاً اسم و شماره موبایلتون رو بنویسید.</div>
-            <div className="chat-msg chat-msg--bot">ساعت پاسخ‌گویی پشتیبانی هر روز از ۹ صبح تا ۹ شب است. 🙏 خارج از این ساعت هم پیامتون رو بذارید، در اولین فرصت پاسخ می‌دیم.</div>
+            <div className="chat-msg chat-msg--bot">سلام! لطفاً اسم و شماره موبایلتون رو بنویسید.</div>
+            <div className="chat-msg chat-msg--bot">ساعت پاسخ‌گویی پشتیبانی هر روز از ۹ صبح تا ۹ شب است. خارج از این ساعت هم پیامتون رو بذارید، در اولین فرصت پاسخ می‌دیم.</div>
           </div>
           <div className="support-name-form">
             <input ref={nameRef} type="text" placeholder="نام شما" value={userName} onChange={e => setUserName(e.target.value)}

@@ -124,7 +124,7 @@ export default function BlogPostPage() {
               اطمینان آغاز کنید.
             </p>
             <p className="post-article__p">
-              👉 برای شروع، می‌توانید به بخش <Link href="/courses">دوره‌ها</Link> در خانواده برداشت سر بزنید
+              برای شروع، می‌توانید به بخش <Link href="/courses">دوره‌ها</Link> در خانواده برداشت سر بزنید
               و اولین قدم حرفه‌ای خود را بردارید.
             </p>
           </article>

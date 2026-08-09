@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Icon from './Icon';
 
 const GENDER = { male: 'آقا', female: 'خانم' };
 const faNum = (n) => (n || n === 0 ? Number(n).toLocaleString('fa-IR') : '');
@@ -37,7 +38,7 @@ export default function StudentResumeView() {
     setBusy(false);
     if (!data.ok) { setError(data.error || 'ذخیره نشد.'); return; }
     setResume((r) => ({ ...(r || {}), selfVideoUrl: data.selfVideoUrl }));
-    setMsg(data.selfVideoUrl ? 'ویدیوی معرفی شما ذخیره شد ✅' : 'ویدیوی معرفی حذف شد.');
+    setMsg(data.selfVideoUrl ? 'ویدیوی معرفی شما ذخیره شد' : 'ویدیوی معرفی حذف شد.');
   }
 
   if (loading) return <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p>;
@@ -84,7 +85,7 @@ export default function StudentResumeView() {
 
       {/* تنها بخشی که خودِ هنرجو می‌تواند تغییر دهد: ویدیوی معرفی */}
       <form onSubmit={saveVideo} className="form-shell" style={{ margin: 0 }}>
-        <h2 className="heading" style={{ fontSize: '1.05rem', marginBottom: 4 }}>🎬 ویدیوی معرفی من</h2>
+        <h2 className="heading" style={{ fontSize: '1.05rem', marginBottom: 4 }} className="icon-inline"><Icon name="clapperboard" size={17} /> ویدیوی معرفی من</h2>
         <p style={{ color: 'var(--muted)', fontSize: '.85rem', marginBottom: 14 }}>
           می‌توانید لینک ویدیوی معرفی خودتان (آپارات، اینستاگرام، گوگل‌درایو و…) را اینجا ثبت کنید. این تنها بخشی است که خودتان می‌توانید به‌روزرسانی کنید.
         </p>

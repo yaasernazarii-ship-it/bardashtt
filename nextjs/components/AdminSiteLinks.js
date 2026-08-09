@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { SITE_LINKS } from '@/lib/siteLinks';
+import Icon from './Icon';
 
 export default function AdminSiteLinks() {
   const [origin, setOrigin] = useState('');
@@ -30,7 +31,7 @@ export default function AdminSiteLinks() {
         <span style={{ flex: 1, minWidth: 0, fontSize: '.78rem', direction: 'ltr', textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--muted)' }}>{full}</span>
         <a href={path} target="_blank" rel="noopener noreferrer" className="btn btn--sm btn--outline" style={{ flexShrink: 0 }}>باز کردن</a>
         <button type="button" className="btn btn--sm btn--dark" style={{ flexShrink: 0 }} onClick={() => copy(full)}>
-          {copied === full ? '✓ کپی شد' : 'کپی'}
+          {copied === full ? <><Icon name="checkMark" size={13} strokeWidth={3} /> کپی شد</> : 'کپی'}
         </button>
       </div>
     );

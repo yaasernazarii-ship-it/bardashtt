@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import SimplePage from '@/components/SimplePage';
+import Icon from '@/components/Icon';
 import { livePosts } from '@/lib/content';
 import { loadContent, splitLines } from '@/lib/siteContent';
 import { sourceHost } from '@/lib/sourceLink';
@@ -36,8 +37,8 @@ export default async function NewsPage() {
                   {p.excerpt && <p className="post-card__excerpt">{p.excerpt}</p>}
                   <div className="post-card__meta">
                     <span>{dateFmt.format(new Date(p.createdAt))}</span>
-                    {p.aparatUrl && <span>🎬 ویدیو</span>}
-                    {p.sourceUrl && <span>🔗 {sourceHost(p.sourceUrl)}</span>}
+                    {p.aparatUrl && <span className="meta-ico"><Icon name="clapperboard" size={14} /> ویدیو</span>}
+                    {p.sourceUrl && <span className="meta-ico"><Icon name="link" size={14} /> {sourceHost(p.sourceUrl)}</span>}
                   </div>
                 </div>
               </>

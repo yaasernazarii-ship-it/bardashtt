@@ -105,7 +105,7 @@ export default function AdminPayments() {
     const d = await res.json();
     setSaving(false);
     if (!d.ok) { setError(d.error || 'خطا.'); return; }
-    setMsg(`پرداخت برای ${money(d.count || form.userIds.length)} هنرجو ثبت شد و در پنلشان نمایش داده می‌شود ✅`);
+    setMsg(`پرداخت برای ${money(d.count || form.userIds.length)} هنرجو ثبت شد و در پنلشان نمایش داده می‌شود.`);
     setForm(emptyForm); setStudentQuery('');
     load();
   }
@@ -117,7 +117,7 @@ export default function AdminPayments() {
     });
     const d = await res.json();
     if (!d.ok) { setError(d.error || 'خطا.'); return; }
-    if (action === 'markPaid') setMsg('پرداخت «پرداخت‌شده» ثبت شد و گزارش آنی به بله ارسال شد ✅');
+    if (action === 'markPaid') setMsg('پرداخت «پرداخت‌شده» ثبت شد و گزارش آنی به بله ارسال شد.');
     load();
   }
 
@@ -130,7 +130,7 @@ export default function AdminPayments() {
 
   async function copyLink(id) {
     const url = `${window.location.origin}/dashboard/pay/${id}`;
-    try { await navigator.clipboard.writeText(url); setMsg('لینک پرداخت کپی شد؛ برای هنرجو بفرستید ✅'); }
+    try { await navigator.clipboard.writeText(url); setMsg('لینک پرداخت کپی شد؛ برای هنرجو بفرستید.'); }
     catch { window.prompt('این لینک را برای هنرجو بفرستید:', url); }
   }
 

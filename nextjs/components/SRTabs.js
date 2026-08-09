@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Icon from './Icon';
 
 // تب‌بندیِ بخش‌های صفحهٔ «مسئولیت اجتماعی».
 // محتوای هر تب روی سرور رندر می‌شود و به‌صورت prop به این کامپوننت داده می‌شود؛
@@ -19,6 +20,7 @@ export default function SRTabs({ tabs }) {
             className={`sr-tab${active === i ? ' sr-tab--active' : ''}`}
             onClick={() => setActive(i)}
           >
+            {t.icon && <Icon name={t.icon} size={16} />}
             {t.label}
           </button>
         ))}

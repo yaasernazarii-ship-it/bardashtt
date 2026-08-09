@@ -19,12 +19,12 @@ export default async function SocialResponsibilityPage() {
   const tabs = [
     {
       key: 'book',
-      label: '📚 معرفی و خرید کتاب',
+      icon: 'book', label: 'معرفی و خرید کتاب',
       content: <BookList />,
     },
     {
       key: 'podcast',
-      label: '🎙️ پادکست',
+      icon: 'mic', label: 'پادکست',
       content: (
         <SectionPosts
           section="sr-podcast"
@@ -36,7 +36,7 @@ export default async function SocialResponsibilityPage() {
     },
     {
       key: 'photo',
-      label: '🖼️ عکس',
+      icon: 'image', label: 'عکس',
       content: (
         <SectionPosts
           section="sr-photo"
@@ -48,7 +48,7 @@ export default async function SocialResponsibilityPage() {
     },
     {
       key: 'video',
-      label: '🎬 ویدئو',
+      icon: 'clapperboard', label: 'ویدئو',
       content: (
         <SectionPosts
           section="sr-video"
@@ -60,7 +60,7 @@ export default async function SocialResponsibilityPage() {
     },
     {
       key: 'awareness',
-      label: '📝 آگاهی‌سازی',
+      icon: 'pencil', label: 'آگاهی‌سازی',
       content: (
         <SectionPosts
           section="social-responsibility"

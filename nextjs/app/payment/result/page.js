@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
+import Icon from '@/components/Icon';
 
 export const metadata = {
   title: 'نتیجهٔ پرداخت | خانوادهٔ برداشت',
@@ -8,19 +9,19 @@ export const metadata = {
 
 const RESULTS = {
   success: {
-    icon: '✅',
+    icon: 'check',
     title: 'با موفقیت انجام شد',
     desc: 'پرداختِ شما با موفقیت ثبت شد. از همراهی و اعتمادتان سپاسگزاریم؛ دسترسی‌ها و امکاناتِ مربوط همین حالا برای شما فعال شد. مسیرِ درخشیدن‌تان را از صمیم قلب آرزو می‌کنیم.',
     tone: 'success',
   },
   canceled: {
-    icon: '⚠️',
+    icon: 'alertTriangle',
     title: 'پرداخت انجام نشد',
     desc: 'به‌نظر می‌رسد پرداخت لغو شد یا کامل نشد. مبلغی از حساب شما کسر نشده است. در صورت تمایل می‌توانید دوباره تلاش کنید.',
     tone: 'error',
   },
   failed: {
-    icon: '❌',
+    icon: 'xCircle',
     title: 'پرداخت ناموفق بود',
     desc: 'تأییدِ پرداخت ممکن نشد. اگر مبلغی از حساب شما کسر شده، طیِ ۷۲ ساعت به‌صورت خودکار بازمی‌گردد. برای پیگیری با پشتیبانی هماهنگ کنید.',
     tone: 'error',
@@ -39,7 +40,7 @@ export default async function PaymentResultPage({ searchParams }) {
       <section style={{ background: 'var(--bg)' }}>
         <div className="container--sm">
           <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: 32, boxShadow: 'var(--shadow-md)', textAlign: 'center' }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }} aria-hidden="true">{r.icon}</div>
+            <div className={`pay-result__ico pay-result__ico--${r.tone}`}><Icon name={r.icon} size={40} strokeWidth={1.6} /></div>
             <h3 style={{ marginBottom: 12 }}>{r.title}</h3>
             <p style={{ color: 'var(--muted)', lineHeight: 2, marginBottom: 20 }}>{r.desc}</p>
             {status === 'success' && ref && (

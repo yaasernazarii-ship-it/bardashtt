@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
 import PageSlider from '@/components/PageSlider';
+import Icon from '@/components/Icon';
 import { loadContent, splitLines } from '@/lib/siteContent';
 
 export const metadata = {
@@ -60,7 +61,7 @@ export default async function AboutPage() {
         .skills-chips { display:flex;flex-wrap:wrap;gap:10px; }
         .skill-chip { display:inline-flex;align-items:center;gap:7px;background:var(--white);border:1px solid var(--border);border-radius:999px;padding:8px 14px;font-size:.82rem;font-weight:600;color:var(--dark);transition:all .25s; }
         .skill-chip:hover { border-color:var(--gold);box-shadow:0 4px 14px rgba(196,146,42,.12); }
-        .skill-chip .sk-ico { font-size:1rem; }
+        .skill-chip::before { content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0; }
         .values-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:20px; }
         .value-item { padding:36px 28px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--border); }
         .value-item .vnum { font-size:2.5rem;font-weight:900;color:var(--border);line-height:1;margin-bottom:16px; }
@@ -101,12 +102,12 @@ export default async function AboutPage() {
 
           <div className="about-cards">
             <div className="about-card">
-              <div className="about-card__ico">🎬</div>
+              <div className="about-card__ico"><Icon name="clapperboard" size={30} strokeWidth={1.6} /></div>
               <h3>{t('about.card1.title')}</h3>
               <p>{t('about.card1.body')}</p>
             </div>
             <div className="about-card">
-              <div className="about-card__ico">🛡️</div>
+              <div className="about-card__ico"><Icon name="shield" size={30} strokeWidth={1.6} /></div>
               <h3>{t('about.card2.title')}</h3>
               <p>{t('about.card2.body')}</p>
               <ul className="resume-list" style={{ marginTop: 14 }}>
@@ -167,7 +168,7 @@ export default async function AboutPage() {
 
           <div className="resume-grid">
             <div className="resume-block">
-              <h3><span className="rico">🎓</span> {t('about.edu.heading')}</h3>
+              <h3><span className="rico"><Icon name="graduationCap" size={20} /></span> {t('about.edu.heading')}</h3>
               <ul className="resume-list">
                 {splitLines(t('about.edu.items')).map((it) => (
                   <li key={it}><span className="li-ico">◆</span><span>{it}</span></li>
@@ -186,7 +187,7 @@ export default async function AboutPage() {
             </div>
 
             <div className="resume-block">
-              <h3><span className="rico">🏆</span> {t('about.honors.heading')}</h3>
+              <h3><span className="rico"><Icon name="trophy" size={20} /></span> {t('about.honors.heading')}</h3>
               <ul className="resume-list">
                 {splitLines(t('about.honors.items')).map((it) => (
                   <li key={it}><span className="li-ico">◆</span><span>{it}</span></li>
@@ -195,7 +196,7 @@ export default async function AboutPage() {
             </div>
 
             <div className="resume-block resume-block--wide">
-              <h3><span className="rico">📜</span> {t('about.licenses.heading')}</h3>
+              <h3><span className="rico"><Icon name="scroll" size={20} /></span> {t('about.licenses.heading')}</h3>
               <ul className="resume-list">
                 {splitLines(t('about.licenses.items')).map((it) => (
                   <li key={it}><span className="li-ico">◆</span><span>{it}</span></li>
@@ -236,9 +237,9 @@ export default async function AboutPage() {
             <h2 className="heading" style={{ marginTop: 14 }}>{t('about.creds.heading')}</h2>
           </div>
           <div className="cred-grid">
-            <div className="cred-card"><div className="cico">🏆</div><h3>{t('about.cred1.title')}</h3><p>{t('about.cred1.body')}</p></div>
-            <div className="cred-card"><div className="cico">🎓</div><h3>{t('about.cred2.title')}</h3><p>{t('about.cred2.body')}</p></div>
-            <div className="cred-card"><div className="cico">✅</div><h3>{t('about.cred3.title')}</h3><p>{t('about.cred3.body')}</p></div>
+            <div className="cred-card"><div className="cico"><Icon name="trophy" size={28} strokeWidth={1.6} /></div><h3>{t('about.cred1.title')}</h3><p>{t('about.cred1.body')}</p></div>
+            <div className="cred-card"><div className="cico"><Icon name="graduationCap" size={28} strokeWidth={1.6} /></div><h3>{t('about.cred2.title')}</h3><p>{t('about.cred2.body')}</p></div>
+            <div className="cred-card"><div className="cico"><Icon name="check" size={28} strokeWidth={1.6} /></div><h3>{t('about.cred3.title')}</h3><p>{t('about.cred3.body')}</p></div>
           </div>
         </div>
       </section>
@@ -267,12 +268,12 @@ export default async function AboutPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, maxWidth: 720, margin: '0 auto' }}>
             {[
-              { ico: '📞', lbl: 'تلفن', val: t('contact.phone'), href: `tel:${t('contact.phone')}` },
-              { ico: '📸', lbl: 'اینستاگرام', val: t('contact.instagram'), href: t('contact.instagramUrl') },
-              { ico: '💬', lbl: 'کانال بله', val: t('contact.bale'), href: t('contact.baleUrl') },
+              { ico: 'phone', lbl: 'تلفن', val: t('contact.phone'), href: `tel:${t('contact.phone')}` },
+              { ico: 'instagram', lbl: 'اینستاگرام', val: t('contact.instagram'), href: t('contact.instagramUrl') },
+              { ico: 'chat', lbl: 'کانال بله', val: t('contact.bale'), href: t('contact.baleUrl') },
             ].map(c => (
               <div key={c.lbl} style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 'var(--radius)', padding: '16px 12px', textAlign: 'center' }}>
-                <div style={{ fontSize: '1.4rem', marginBottom: 6 }}>{c.ico}</div>
+                <div style={{ marginBottom: 6, color: 'var(--gold)', display: 'flex', justifyContent: 'center' }}><Icon name={c.ico} size={22} /></div>
                 <h4 style={{ fontSize: '.7rem', fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,.35)', marginBottom: 6 }}>{c.lbl}</h4>
                 <a href={c.href} target={c.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" style={{ color: '#fff', fontWeight: 700, fontSize: '.9rem' }}>{c.val}</a>
               </div>

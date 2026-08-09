@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { SECTIONS, sectionLabel } from '@/lib/sections';
 import { BLOG_CATEGORIES, blogCategoryLabel } from '@/lib/blogCategories';
+import Icon from './Icon';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
 const dateTimeFmt = new Intl.DateTimeFormat('fa-IR', {
@@ -301,11 +302,11 @@ export default function AdminPosts() {
                 {(() => { const s = statusOf(p); return <span className={`enroll-badge ${s.cls}`}>{s.label}</span>; })()}
               </div>
               <div className="enroll-admin-meta">
-                <span>📍 {sectionLabel(p.section)}</span>
-                {p.category && <span>🏷️ {blogCategoryLabel(p.category)}</span>}
+                <span className="meta-ico"><Icon name="mapPin" size={14} /> {sectionLabel(p.section)}</span>
+                {p.category && <span className="meta-ico"><Icon name="tag" size={14} /> {blogCategoryLabel(p.category)}</span>}
                 <span>{dateFmt.format(new Date(p.createdAt))}</span>
-                {p.aparatUrl && <span>🎬 ویدیوی آپارات</span>}
-                {p.sourceUrl && <span>🔗 لینک به سایت منبع</span>}
+                {p.aparatUrl && <span className="meta-ico"><Icon name="clapperboard" size={14} /> ویدیوی آپارات</span>}
+                {p.sourceUrl && <span className="meta-ico"><Icon name="link" size={14} /> لینک به سایت منبع</span>}
               </div>
               <div className="enroll-actions" style={{ marginTop: 10, gap: 8 }}>
                 <button className="btn btn--dark" onClick={() => editPost(p)}>ویرایش</button>

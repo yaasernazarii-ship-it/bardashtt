@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Icon from './Icon';
 
 export default function GalleryBoard() {
   const [items, setItems] = useState([]);
@@ -96,7 +97,7 @@ export default function GalleryBoard() {
               <img src={it.imageUrl} alt={it.caption || 'تصویر گالری خانواده برداشت'} loading="lazy" />
               {it.caption && <figcaption>{it.caption}</figcaption>}
               {canManage && (
-                <button type="button" className="gallery-del" onClick={() => remove(it.id)} aria-label="حذف تصویر">✕</button>
+                <button type="button" className="gallery-del" onClick={() => remove(it.id)} aria-label="حذف تصویر"><Icon name="close" size={14} /></button>
               )}
             </figure>
           ))}

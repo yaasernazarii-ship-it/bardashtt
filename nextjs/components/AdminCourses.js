@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Icon from './Icon';
 
 const EMPTY = { title: '', description: '', price: '', coverImage: '', teaserUrl: '', published: true, lessons: [] };
 
@@ -206,9 +207,9 @@ export default function AdminCourses() {
                 </span>
               </div>
               <div className="enroll-admin-meta">
-                <span>💰 {c.price > 0 ? `${c.price.toLocaleString('fa-IR')} تومان` : 'رایگان'}</span>
-                <span>🎬 {c.lessonCount.toLocaleString('fa-IR')} ویدیو</span>
-                <span>👥 {c.buyerCount.toLocaleString('fa-IR')} خریدار</span>
+                <span className="meta-ico"><Icon name="banknote" size={14} /> {c.price > 0 ? `${c.price.toLocaleString('fa-IR')} تومان` : 'رایگان'}</span>
+                <span className="meta-ico"><Icon name="clapperboard" size={14} /> {c.lessonCount.toLocaleString('fa-IR')} ویدیو</span>
+                <span className="meta-ico"><Icon name="users" size={14} /> {c.buyerCount.toLocaleString('fa-IR')} خریدار</span>
               </div>
               <div className="enroll-actions" style={{ marginTop: 10, gap: 8 }}>
                 <button className="btn btn--dark" onClick={() => editCourse(c)}>ویرایش</button>
@@ -252,7 +253,7 @@ function CourseAccessPanel({ courseId, onCountChange }) {
     const data = await res.json();
     setBusy(false);
     if (!data.ok) { setMsg(data.error || 'خطا.'); return; }
-    setIdentifier(''); setMsg('دسترسی داده شد ✓');
+    setIdentifier(''); setMsg('دسترسی داده شد.');
     load();
   }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Icon from './Icon';
 
 const EMPTY = { title: '', author: '', description: '', price: '', coverImage: '', aparatUrl: '', audioUrl: '', published: true };
 
@@ -216,15 +217,15 @@ export default function AdminBooks() {
                 </span>
               </div>
               <div className="enroll-admin-meta">
-                <span>💰 {b.price > 0 ? `${b.price.toLocaleString('fa-IR')} تومان` : 'رایگان'}</span>
-                {b.author && <span>✍️ {b.author}</span>}
-                <span>🧾 {b.orderCount.toLocaleString('fa-IR')} سفارش</span>
+                <span className="meta-ico"><Icon name="banknote" size={14} /> {b.price > 0 ? `${b.price.toLocaleString('fa-IR')} تومان` : 'رایگان'}</span>
+                {b.author && <span className="meta-ico"><Icon name="pencil" size={14} /> {b.author}</span>}
+                <span className="meta-ico"><Icon name="receipt" size={14} /> {b.orderCount.toLocaleString('fa-IR')} سفارش</span>
                 <span style={{ color: b.paidCount > 0 ? '#137a4a' : undefined }}>
-                  ✅ {money(b.paidCount)} پرداخت‌شده
+                  <Icon name="check" size={14} /> {money(b.paidCount)} پرداخت‌شده
                   {b.paidQuantity > 0 ? ` (${money(b.paidQuantity)} نسخه)` : ''}
                 </span>
                 <span style={{ color: b.paidAmount > 0 ? '#137a4a' : undefined, fontWeight: b.paidAmount > 0 ? 700 : undefined }}>
-                  💵 {money(b.paidAmount)} تومان دریافت‌شده
+                  <Icon name="banknote" size={14} /> {money(b.paidAmount)} تومان دریافت‌شده
                 </span>
               </div>
               <div className="enroll-actions" style={{ marginTop: 10, gap: 8 }}>
@@ -299,15 +300,15 @@ function BookOrdersPanel({ bookId, onChanged }) {
               {isPaid(o) ? (
                 <div style={{ marginTop: 8, padding: '8px 10px', borderRadius: 8, background: '#eaf7f0', border: '1px solid #bfe5d0', fontSize: '0.85rem', lineHeight: 1.9 }}>
                   <div style={{ fontWeight: 700, color: '#137a4a' }}>
-                    💵 مبلغ پرداخت‌شده: {o.amount ? `${money(o.amount)} تومان` : 'ثبت‌نشده (سفارش قدیمی)'}
+                    <Icon name="banknote" size={14} /> مبلغ پرداخت‌شده: {o.amount ? `${money(o.amount)} تومان` : 'ثبت‌نشده (سفارش قدیمی)'}
                     <span style={{ fontWeight: 400, marginInlineStart: 8 }}>
                       ({o.method === 'online' ? 'پرداخت آنلاین از درگاه' : 'ثبت دستی توسط مدیریت'})
                     </span>
                   </div>
-                  {o.paidAt && <div>🕒 زمان پرداخت: {dateTimeFmt.format(new Date(o.paidAt))}</div>}
-                  {o.gatewayRefId && <div>🔖 کد پیگیری بانکی: <span dir="ltr">{o.gatewayRefId}</span></div>}
+                  {o.paidAt && <div className="meta-ico"><Icon name="clock" size={14} /> زمان پرداخت: {dateTimeFmt.format(new Date(o.paidAt))}</div>}
+                  {o.gatewayRefId && <div className="meta-ico"><Icon name="tag" size={14} /> کد پیگیری بانکی: <span dir="ltr">{o.gatewayRefId}</span></div>}
                   {o.gatewayTrackId && <div style={{ color: 'var(--muted)' }}>شناسهٔ تراکنش درگاه: <span dir="ltr">{o.gatewayTrackId}</span></div>}
-                  {o.userId && <div style={{ color: 'var(--muted)' }}>👤 خرید از حساب کاربریِ ثبت‌شده در سایت</div>}
+                  {o.userId && <div className="meta-ico" style={{ color: 'var(--muted)' }}><Icon name="user" size={14} /> خرید از حساب کاربریِ ثبت‌شده در سایت</div>}
                 </div>
               ) : (
                 <div style={{ marginTop: 8, fontSize: '0.85rem', color: 'var(--muted)' }}>
@@ -315,9 +316,9 @@ function BookOrdersPanel({ bookId, onChanged }) {
                 </div>
               )}
 
-              {o.address && <div style={{ fontSize: '0.85rem', marginTop: 6 }}>📮 {o.address}</div>}
-              {o.postalCode && <div style={{ fontSize: '0.85rem', marginTop: 4 }}>🏷️ کد پستی: <span dir="ltr">{o.postalCode}</span></div>}
-              {o.note && <div style={{ fontSize: '0.85rem', marginTop: 4, color: 'var(--muted)' }}>💬 {o.note}</div>}
+              {o.address && <div style={{ fontSize: '0.85rem', marginTop: 6 }} className="meta-ico"><Icon name="mapPin" size={14} /> {o.address}</div>}
+              {o.postalCode && <div style={{ fontSize: '0.85rem', marginTop: 4 }} className="meta-ico"><Icon name="tag" size={14} /> کد پستی: <span dir="ltr">{o.postalCode}</span></div>}
+              {o.note && <div style={{ fontSize: '0.85rem', marginTop: 4, color: 'var(--muted)' }} className="meta-ico"><Icon name="chat" size={14} /> {o.note}</div>}
               <div style={{ fontSize: '0.75rem', color: 'var(--light)', marginTop: 6 }}>{dateFmt.format(new Date(o.createdAt))}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
                 <select className="form-input" style={{ margin: 0, maxWidth: 180 }} value={o.status} onChange={(e) => setStatus(o.id, e.target.value)}>

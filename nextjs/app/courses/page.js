@@ -30,7 +30,6 @@ export default async function CoursesPage() {
       grad: GRADS[i],
       title: t(`course.c${n}.title`),
       sub: t(`course.c${n}.sub`),
-      icon: t(`course.c${n}.icon`),
       desc: t(`course.c${n}.desc`),
       items: splitLines(t(`course.c${n}.items`)),
     };

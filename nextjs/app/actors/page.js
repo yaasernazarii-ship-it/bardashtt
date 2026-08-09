@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isFilmmakerOrManager } from '@/lib/auth';
 import SimplePage from '@/components/SimplePage';
+import Icon from '@/components/Icon';
 import { loadContent, splitLines } from '@/lib/siteContent';
 
 export const metadata = {
@@ -39,7 +40,7 @@ export default async function ActorsPage() {
           {actors.map((a) => (
             <Link key={a.id} href={`/actors/${a.id}`} className="content-card actor-card">
               <div className="actor-photo" style={a.photoUrl ? { backgroundImage: `url(${a.photoUrl})` } : undefined}>
-                {!a.photoUrl && <span>{a.gender === 'female' ? '👩‍🎤' : '🎭'}</span>}
+                {!a.photoUrl && <Icon name="masks" size={40} strokeWidth={1.4} />}
               </div>
               <h3 style={{ margin: '12px 0 4px' }}>{a.fullName}</h3>
               {a.headline && <p style={{ color: 'var(--muted)', margin: 0 }}>{a.headline}</p>}

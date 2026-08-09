@@ -48,7 +48,7 @@ export default function BuyCourseButton({ slug, price, loggedIn, nextPath }) {
   return (
     <div>
       <button className="btn btn--gold" onClick={buy} disabled={loading || done} style={{ width: '100%' }}>
-        {loading ? 'در حال ثبت…' : done ? 'درخواست ثبت شد ✓' : `خرید دوره — ${priceLabel}`}
+        {loading ? 'در حال ثبت…' : done ? 'درخواست ثبت شد' : `خرید دوره — ${priceLabel}`}
       </button>
       {msg && (
         <div className={`alert ${done ? 'alert--success' : 'alert--error'}`} style={{ marginTop: 12 }}>

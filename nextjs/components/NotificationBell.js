@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import Icon from './Icon';
 
 function timeAgo(iso) {
   const d = new Date(iso);
@@ -13,7 +14,7 @@ function timeAgo(iso) {
   return d.toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
-const KIND_ICON = { content: '📢', class: '📅', system: '🔔' };
+const KIND_ICON = { content: 'megaphone', class: 'calendar', system: 'bell' };
 
 export default function NotificationBell() {
   const [ready, setReady] = useState(false); // آیا کاربر واردشده و باید زنگ نمایش داده شود؟
@@ -62,7 +63,7 @@ export default function NotificationBell() {
   return (
     <div className={`notif${open ? ' notif--open' : ''}`} ref={ref}>
       <button type="button" className="notif__btn" onClick={toggle} aria-haspopup="true" aria-expanded={open} aria-label="اعلان‌ها">
-        <span className="notif__ico" aria-hidden="true">🔔</span>
+        <span className="notif__ico"><Icon name="bell" size={18} /></span>
         {unread > 0 && <span className="notif__badge">{unread > 9 ? '9+' : unread}</span>}
       </button>
       {open && (
@@ -75,7 +76,7 @@ export default function NotificationBell() {
               {items.map((n) => {
                 const inner = (
                   <>
-                    <span className="notif__item-ico" aria-hidden="true">{KIND_ICON[n.kind] || '🔔'}</span>
+                    <span className="notif__item-ico"><Icon name={KIND_ICON[n.kind] || 'bell'} size={16} /></span>
                     <span className="notif__item-main">
                       <span className="notif__item-title">{n.title}</span>
                       {n.body && <span className="notif__item-body">{n.body}</span>}
