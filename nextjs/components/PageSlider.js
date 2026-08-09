@@ -29,13 +29,16 @@ export default function PageSlider({ title, count = 3, images = [] }) {
         <div key={i} className={`pslider__slide${i === idx ? ' is-active' : ''}`}>
           {usingImages ? (
             <>
-              {/* پرکنندهٔ محو برای وقتی نسبتِ عکس با قاب یکی نیست */}
-              <div className="pslider__fill" style={{ backgroundImage: `url(${s})` }} />
+              {/* کناره‌ها: ادامهٔ ستونِ لبهٔ خودِ عکس (فقط دسکتاپ) */}
+              <div className="pslider__edge pslider__edge--left" style={{ backgroundImage: `url(${s})` }} />
+              <div className="pslider__edge pslider__edge--right" style={{ backgroundImage: `url(${s})` }} />
+              {/* تیره‌کنندهٔ کناره‌ها — زیرِ عکس، پس به خودِ بنر دست نمی‌زند */}
+              <div className="pslider__vignette" />
               {/* خودِ عکس: همیشه کامل، بدون بریدگی و بدون کشیدگی */}
               <div className="pslider__img" style={{ backgroundImage: `url(${s})` }} />
             </>
           ) : (
-            <div className="pslider__fill pslider__fill--flat" style={{ background: s }} />
+            <div className="pslider__grad" style={{ background: s }} />
           )}
         </div>
       ))}
