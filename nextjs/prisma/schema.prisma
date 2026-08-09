@@ -48,6 +48,7 @@ model ClassGroup {
   name          String // نام کلاس/گروه
   branch        String // تهران | ساری
   courseTitle   String? // دوره
+  coverImage    String? // عکس کلاس؛ در پنل مدیریت و در برنامهٔ هنرجو نمایش داده می‌شود
   totalSessions Int            @default(8) // تعداد کل جلسات این دوره (مبنای محاسبه‌ی درصد پیشرفت هنرجو)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt

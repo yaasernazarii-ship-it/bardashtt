@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
+import { normalizeUploadUrl } from '@/lib/uploadUrl';
 
 const BRANCHES = ['تهران', 'ساری'];
 
@@ -36,6 +37,8 @@ export async function POST(request) {
     const name = String(b.name || '').trim().slice(0, 80);
     const branch = BRANCHES.includes(b.branch) ? b.branch : null;
     const courseTitle = String(b.courseTitle || '').trim().slice(0, 120) || null;
+    const coverImage = normalizeUploadUrl(b.coverImage);
+    if (coverImage === false) return Response.json({ ok: false, error: 'عکس کلاس نامعتبر است؛ عکس را از همین فرم آپلود کنید.' }, { status: 400 });
     if (!name) return Response.json({ ok: false, error: 'نام کلاس الزامی است.' }, { status: 400 });
     if (!branch) return Response.json({ ok: false, error: 'شعبه را انتخاب کنید (تهران یا ساری).' }, { status: 400 });
 
@@ -47,7 +50,7 @@ export async function POST(request) {
       totalSessions = n;
     }
 
-    const group = await prisma.classGroup.create({ data: { name, branch, courseTitle, totalSessions } });
+    const group = await prisma.classGroup.create({ data: { name, branch, courseTitle, coverImage, totalSessions } });
     return Response.json({ ok: true, group });
   } catch {
     return Response.json({ ok: false, error: 'درخواست نامعتبر است.' }, { status: 400 });

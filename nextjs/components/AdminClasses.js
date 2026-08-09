@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ShamsiCalendar from '@/components/ShamsiCalendar';
 
 const BRANCHES = ['تهران', 'ساری'];
@@ -8,13 +8,51 @@ const dateFmt = new Intl.DateTimeFormat('fa-IR', { weekday: 'long', month: 'long
 const timeFmt = new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit' });
 
 const emptySession = { title: '', startsAt: '', chartDescription: '', tools: '', homework: '' };
+const emptyGroup = { name: '', branch: 'تهران', courseTitle: '', coverImage: '', totalSessions: '8' };
+
+// انتخاب و آپلودِ عکس کلاس؛ مقدارِ ذخیره‌شده آدرسِ /media/… است.
+function ClassCoverPicker({ value, onChange, label = 'عکس کلاس (اختیاری)' }) {
+  const [uploading, setUploading] = useState(false);
+  const [err, setErr] = useState('');
+  const fileRef = useRef(null);
+
+  async function pick(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true); setErr('');
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const d = await res.json();
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = '';
+    if (d.ok) onChange(d.url);
+    else setErr(d.error || 'آپلود ناموفق بود.');
+  }
+
+  return (
+    <div className="form-group">
+      {label && <label className="form-label">{label}</label>}
+      <input ref={fileRef} type="file" accept="image/*" className="form-input" onChange={pick} disabled={uploading} />
+      {uploading && <span style={{ color: 'var(--muted)', fontSize: '.8rem' }}>در حال آپلود…</span>}
+      {err && <span style={{ color: '#B91C1C', fontSize: '.8rem' }}>{err}</span>}
+      {value && (
+        <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={value} alt="عکس کلاس" style={{ width: 96, height: 64, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} />
+          <button type="button" className="btn btn--sm btn--outline" onClick={() => onChange('')}>حذف عکس</button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AdminClasses() {
   const [groups, setGroups] = useState([]);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [newGroup, setNewGroup] = useState({ name: '', branch: 'تهران', courseTitle: '', totalSessions: '8' });
+  const [newGroup, setNewGroup] = useState(emptyGroup);
   const [openId, setOpenId] = useState(null);
 
   async function load() {
@@ -36,7 +74,7 @@ export default function AdminClasses() {
     });
     const d = await res.json();
     if (!d.ok) { setError(d.error || 'خطا.'); return; }
-    setNewGroup({ name: '', branch: 'تهران', courseTitle: '', totalSessions: '8' });
+    setNewGroup(emptyGroup);
     load();
   }
 
@@ -69,6 +107,7 @@ export default function AdminClasses() {
             <input className="form-input" type="number" min={1} max={100} value={newGroup.totalSessions}
               onChange={(e) => setNewGroup({ ...newGroup, totalSessions: e.target.value })} placeholder="۸" />
           </div>
+          <ClassCoverPicker value={newGroup.coverImage} onChange={(url) => setNewGroup({ ...newGroup, coverImage: url })} />
         </div>
         <button className="btn btn--dark" type="submit">افزودن کلاس</button>
       </form>
@@ -170,10 +209,24 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
   const [msg, setMsg] = useState('');
   const [totalSessions, setTotalSessions] = useState(String(group.totalSessions || 8));
   const [savingTotal, setSavingTotal] = useState(false);
+  const [cover, setCover] = useState(group.coverImage || '');
+  const [savingCover, setSavingCover] = useState(false);
   const [attendanceSessionId, setAttendanceSessionId] = useState(null);
 
   useEffect(() => { setMemberIds(group.members.map((m) => m.id)); }, [group]);
   useEffect(() => { setTotalSessions(String(group.totalSessions || 8)); }, [group.totalSessions]);
+  useEffect(() => { setCover(group.coverImage || ''); }, [group.coverImage]);
+
+  async function saveCover() {
+    setSavingCover(true); setMsg('');
+    const res = await fetch(`/api/admin/classes/${group.id}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ coverImage: cover }),
+    });
+    const d = await res.json();
+    setSavingCover(false);
+    if (d.ok) { setMsg('عکس کلاس ذخیره شد ✅'); onChanged(); }
+    else setMsg(d.error || 'خطا');
+  }
 
   async function saveTotalSessions() {
     setSavingTotal(true); setMsg('');
@@ -248,6 +301,10 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
     <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px' }}>
         <button type="button" onClick={onToggle} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 12, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'right' }}>
+          {group.coverImage && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={group.coverImage} alt="" style={{ width: 52, height: 40, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} />
+          )}
           <span style={{ fontWeight: 800 }}>{group.name}</span>
           <span style={{ background: 'var(--surface)', borderRadius: 999, padding: '3px 10px', fontSize: '.78rem', color: 'var(--muted)' }}>{group.branch}</span>
           {group.courseTitle && <span style={{ fontSize: '.78rem', color: 'var(--muted)' }}>· {group.courseTitle}</span>}
@@ -273,6 +330,15 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
           {/* تب ۱: تنظیمات کلاس (تعداد جلسات + تخصیص هنرجویان) */}
           <div className={`tab-panel${tab === 'settings' ? ' active' : ''}`}>
             <div style={{ display: 'grid', gap: 22 }}>
+              <div>
+                <h3 style={{ fontWeight: 800, marginBottom: 8 }}>عکس کلاس</h3>
+                <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginTop: 0, marginBottom: 8 }}>این عکس در فهرست کلاس‌های پنل و در صفحهٔ «برنامهٔ کلاسی» هنرجویانِ همین کلاس نمایش داده می‌شود.</p>
+                <ClassCoverPicker value={cover} onChange={setCover} label="" />
+                <button type="button" className="btn btn--dark btn--sm" onClick={saveCover} disabled={savingCover}>
+                  {savingCover ? 'در حال ذخیره…' : 'ذخیره عکس'}
+                </button>
+              </div>
+
               <div>
                 <h3 style={{ fontWeight: 800, marginBottom: 8 }}>تعداد کل جلسات دوره</h3>
                 <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginTop: 0, marginBottom: 8 }}>مبنای محاسبه‌ی خودکار درصد پیشرفت هنرجویان این کلاس (پیش‌فرض ۸ جلسه).</p>

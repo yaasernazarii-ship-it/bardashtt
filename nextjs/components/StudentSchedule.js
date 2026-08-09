@@ -104,6 +104,11 @@ export default function StudentSchedule() {
       {/* دوره و پیشرفت */}
       <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', marginBottom: 24 }}>
         <div style={{ background: 'var(--dark)', color: '#fff', borderRadius: 16, padding: 20 }}>
+          {group.coverImage && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={group.coverImage} alt={group.name}
+              style={{ width: '100%', height: 132, objectFit: 'cover', borderRadius: 12, marginBottom: 14, display: 'block' }} />
+          )}
           <div style={{ opacity: .75, fontSize: '.85rem', marginBottom: 6 }}>دوره‌ی شما</div>
           <div style={{ fontWeight: 800, fontSize: '1.15rem' }}>{group.courseTitle || 'تعیین‌نشده'}</div>
           <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>

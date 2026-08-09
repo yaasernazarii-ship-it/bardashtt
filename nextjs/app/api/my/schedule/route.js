@@ -41,7 +41,13 @@ export async function GET() {
 
   return Response.json({
     ok: true,
-    group: { id: group.id, name: group.name, branch: group.branch, courseTitle: group.courseTitle || user.courseTitle || null },
+    group: {
+      id: group.id,
+      name: group.name,
+      branch: group.branch,
+      courseTitle: group.courseTitle || user.courseTitle || null,
+      coverImage: group.coverImage,
+    },
     progress,
     presentCount,
     totalSessions,
