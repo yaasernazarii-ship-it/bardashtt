@@ -28,6 +28,9 @@ export default async function SimplePage({ title, subtitle, tag = 'خانواد�
               <p>{t('common.cta.text')}</p>
               <div className="cta-card__actions">
                 <Link href="/courses" className="btn btn--gold">{t('common.cta.primary')}</Link>
+                {/* صفحهٔ ثبت‌نام از هیچ‌جای سایت لینک نداشت و برای گوگل «یتیم» بود؛
+                    این دکمه از همهٔ صفحه‌های ساده به آن مسیر می‌دهد. */}
+                <Link href="/register" className="btn btn--hero-secondary">ثبت‌نام رایگان</Link>
                 <a href={`tel:${t('contact.phone')}`} className="btn btn--hero-secondary">{t('common.cta.secondary')}</a>
               </div>
             </div>
