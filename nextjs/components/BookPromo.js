@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import Icon from './Icon';
 
 // مسیرهایی که پنجرهٔ پیشنهاد در آن‌ها مزاحم است یا معنا ندارد.
-const SKIP_PREFIXES = ['/dashboard', '/auth', '/register', '/payment', '/profile', '/social-responsibility'];
+const SKIP_PREFIXES = ['/dashboard', '/auth', '/panel', '/register', '/payment', '/profile', '/social-responsibility'];
 const UNTIL_KEY = 'bookPromo.hiddenUntil';
 const SHOWN_KEY = 'bookPromo.shownThisVisit';
 

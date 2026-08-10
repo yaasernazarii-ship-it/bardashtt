@@ -1914,3 +1914,37 @@ summary:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .pslider__slide { transition: none; }
 }
+
+/* ── PANEL GATE (صفحهٔ ورود اختصاصیِ پنل مدیریت) ──────────── */
+.panel-gate {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 32px 18px;
+  background:
+    radial-gradient(1000px 500px at 50% -10%, rgba(196,146,42,.16), transparent 60%),
+    linear-gradient(180deg, #16181B 0%, #23262B 100%);
+}
+.panel-gate__box {
+  width: 100%; max-width: 430px;
+  background: var(--white, #fff);
+  border-radius: 26px;
+  padding: clamp(24px, 5vw, 38px);
+  box-shadow: 0 30px 80px rgba(0,0,0,.45);
+}
+.panel-gate__brand { text-align: center; margin-bottom: 26px; }
+.panel-gate__badge {
+  display: inline-block; margin-bottom: 12px;
+  padding: 6px 14px; border-radius: 999px;
+  background: var(--dark, #1B1B1B); color: #fff;
+  font-size: .74rem; font-weight: 800; letter-spacing: .04em;
+}
+.panel-gate__brand h1 { font-size: 1.5rem; color: var(--dark, #1B1B1B); margin: 0 0 6px; }
+.panel-gate__brand p { color: var(--muted, #6B7280); font-size: .88rem; margin: 0; }
+.panel-gate__foot {
+  display: flex; justify-content: space-between; gap: 12px;
+  margin-top: 22px; padding-top: 18px;
+  border-top: 1px solid var(--border, #E5E7EB);
+  font-size: .82rem;
+}
+.panel-gate__foot a { color: var(--muted, #6B7280); font-weight: 700; }
+.panel-gate__foot a:hover { color: var(--dark, #1B1B1B); }

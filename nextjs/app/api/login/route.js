@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { createSession } from '@/lib/auth';
+import { createSession, isManager } from '@/lib/auth';
 import { verifyPassword } from '@/lib/password';
 
 export async function POST(request) {
@@ -19,6 +19,11 @@ export async function POST(request) {
     }
     if (user.active === false) {
       return Response.json({ ok: false, error: 'حساب کاربری شما غیرفعال شده است. با پشتیبانی خانواده برداشت تماس بگیرید.' }, { status: 403 });
+    }
+
+    // ورود از صفحهٔ اختصاصیِ پنل (/panel): فقط ادمین و ادیتور؛ برای بقیه نشستی ساخته نمی‌شود.
+    if (b.panel === true && !isManager(user)) {
+      return Response.json({ ok: false, error: 'این صفحه فقط برای مدیر و ادیتور سایت است. هنرجویان از صفحهٔ ورود سایت وارد شوند.' }, { status: 403 });
     }
 
     await createSession(user.id, { remember });
