@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
-const fa = (n) => new Intl.NumberFormat('fa-IR', { useGrouping: false }).format(n);
+const fa = (n) => new Intl.NumberFormat('fa-IR', { useGrouping: false }).format(n ?? 0);
 
 function clock(ms) {
   const total = Math.max(0, Math.floor(ms / 1000));
@@ -16,12 +16,12 @@ export default function ExamRunner() {
   const [state, setState] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
+  const [choice, setChoice] = useState(null);
   const [remaining, setRemaining] = useState(0);
   const [result, setResult] = useState(null);
   const [confirming, setConfirming] = useState(false);
   const submittingRef = useRef(false);
+  const movingRef = useRef(false);
 
   const load = useCallback(async () => {
     try {
@@ -29,8 +29,7 @@ export default function ExamRunner() {
       const data = await res.json();
       if (!data.ok) { setError(data.error || 'دریافت اطلاعات آزمون ممکن نشد.'); return; }
       setState(data);
-      setAnswers(data.current ? data.current.answers || {} : {});
-      setIndex(0);
+      setChoice(data.current ? data.current.choice : null);
     } catch {
       setError('ارتباط با سرور برقرار نشد.');
     }
@@ -61,25 +60,49 @@ export default function ExamRunner() {
     }
   }, [load]);
 
-  // آزمونی که مهلتش در نبودِ کاربر تمام شده، همان‌جا تصحیح و بسته می‌شود.
+  // آزمونی که مهلتش تمام شده، همان‌جا تصحیح و بسته می‌شود.
   useEffect(() => {
     if (state?.expiredAttemptId) submit(state.expiredAttemptId, true);
   }, [state?.expiredAttemptId, submit]);
 
-  // شمارش معکوس؛ با رسیدن به صفر، آزمون خودکار ثبت می‌شود.
+  // رفتن به سوال بعدی؛ حرکتی یک‌طرفه که سرور هم آن را تأیید می‌کند.
+  const goNext = useCallback(async (attemptId, cursor, auto = false) => {
+    if (movingRef.current) return;
+    movingRef.current = true;
+    if (!auto) setBusy(true);
+    try {
+      const res = await fetch('/api/exam/next', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ attemptId, cursor }),
+      });
+      const data = await res.json();
+      if (!data.ok) { setError(data.error || 'رفتن به سوال بعدی ممکن نشد.'); return; }
+      if (data.finished) { await submit(attemptId, auto); return; }
+      setConfirming(false);
+      await load();
+    } catch {
+      setError('ارتباط با سرور برقرار نشد؛ اتصال اینترنت را بررسی کنید.');
+    } finally {
+      movingRef.current = false;
+      setBusy(false);
+    }
+  }, [load, submit]);
+
+  // شمارش معکوسِ همین سوال؛ با رسیدن به صفر خودکار به سوال بعدی می‌رود.
   useEffect(() => {
     const current = state?.current;
-    if (!current) return undefined;
-    const end = new Date(current.expiresAt).getTime();
+    if (!current || !current.questionEndsAt) return undefined;
+    const end = new Date(current.questionEndsAt).getTime();
     const tick = () => {
       const left = end - Date.now();
       setRemaining(left);
-      if (left <= 0) submit(current.id, true);
+      if (left <= 0) goNext(current.id, current.cursor, true);
     };
     tick();
-    const t = setInterval(tick, 1000);
+    const t = setInterval(tick, 500);
     return () => clearInterval(t);
-  }, [state?.current, submit]);
+  }, [state?.current, goNext]);
 
   async function start() {
     setBusy(true); setError(''); setResult(null);
@@ -95,18 +118,20 @@ export default function ExamRunner() {
     }
   }
 
-  async function choose(questionId, choice) {
+  async function pick(questionId, index) {
     const current = state?.current;
     if (!current) return;
-    setAnswers((a) => ({ ...a, [questionId]: choice }));
+    const next = choice === index ? null : index;
+    setChoice(next);
     try {
       const res = await fetch('/api/exam/answer', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ attemptId: current.id, questionId, choice }),
+        body: JSON.stringify({ attemptId: current.id, questionId, choice: next }),
       });
       const data = await res.json();
       if (!data.ok && data.expired) submit(current.id, true);
+      else if (!data.ok && data.moved) await load();
     } catch {
       setError('پاسخ ذخیره نشد؛ اتصال اینترنت را بررسی کنید.');
     }
@@ -117,6 +142,7 @@ export default function ExamRunner() {
 
   const cfg = state.config;
   const current = state.current;
+  const q = current?.question;
 
   return (
     <div style={{ display: 'grid', gap: 18 }}>
@@ -127,7 +153,7 @@ export default function ExamRunner() {
           <strong>{result.passed ? 'قبول شدید' : 'متأسفانه حد نصاب را کسب نکردید.'}</strong>
           <div style={{ marginTop: 6 }}>
             نمرهٔ شما: {fa(result.score)} از {fa(result.total)} ({fa(result.percent)} درصد)
-            {result.auto && ' — آزمون به‌دلیل پایان مهلت خودکار ثبت شد.'}
+            {result.auto && ' — آزمون به‌دلیل پایان مهلت خودکار ثبت و تصحیح شد.'}
           </div>
           {result.certificate && (
             <div style={{ marginTop: 6 }}>
@@ -158,99 +184,77 @@ export default function ExamRunner() {
       )}
 
       {/* آزمون باز */}
-      {current ? (
+      {current && q ? (
         <>
           <div className="stack-card" style={{ position: 'sticky', top: 0, zIndex: 5, display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <strong>سوال {fa(index + 1)} از {fa(current.total)}</strong>
+              <strong>سوال {fa(current.cursor + 1)} از {fa(current.total)}</strong>
               <span style={{ color: 'var(--muted)', marginRight: 12 }}>
-                پاسخ‌داده‌شده: {fa(Object.keys(answers).length)}
+                پاسخ‌داده‌شده: {fa(current.answeredCount)}
               </span>
             </div>
-            <div style={{ fontWeight: 800, color: remaining < 5 * 60 * 1000 ? '#dc2626' : 'var(--dark)' }}>
-              زمان باقی‌مانده: {clock(remaining)}
+            <div style={{ fontWeight: 800, color: remaining <= 10000 ? '#dc2626' : 'var(--dark)' }}>
+              مهلت این سوال: {clock(remaining)}
             </div>
           </div>
 
-          {current.questions[index] && (
-            <div className="stack-card">
-              {current.questions[index].topic && (
-                <span className="tag tag--dark" style={{ marginBottom: 10 }}>{current.questions[index].topic}</span>
-              )}
-              <h3 style={{ lineHeight: 1.9, marginBottom: 16 }}>{current.questions[index].text}</h3>
-              <div style={{ display: 'grid', gap: 10 }}>
-                {current.questions[index].options.map((opt, i) => {
-                  const qid = current.questions[index].id;
-                  const selected = answers[qid] === i;
-                  return (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => choose(qid, selected ? null : i)}
-                      style={{
-                        textAlign: 'right',
-                        padding: '12px 14px',
-                        borderRadius: 12,
-                        border: `1px solid ${selected ? 'var(--dark)' : 'var(--border)'}`,
-                        background: selected ? 'var(--dark)' : '#fff',
-                        color: selected ? '#fff' : 'var(--dark)',
-                        cursor: 'pointer',
-                        font: 'inherit',
-                        lineHeight: 1.8,
-                      }}
-                    >
-                      {fa(i + 1)}) {opt}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div style={{ display: 'flex', gap: 10, marginTop: 18, justifyContent: 'space-between' }}>
-                <button className="btn" type="button" disabled={index === 0} onClick={() => setIndex((i) => i - 1)}>سوال قبلی</button>
-                <button className="btn btn--dark" type="button" disabled={index >= current.questions.length - 1} onClick={() => setIndex((i) => i + 1)}>سوال بعدی</button>
-              </div>
-            </div>
-          )}
+          <div className="alert alert--info">
+            به هر سوال {fa(current.perQuestionSec)} ثانیه فرصت دارید. با تمام‌شدن این زمان یا زدن دکمهٔ «سوال بعدی»،
+            سوال بسته می‌شود و <strong>امکان بازگشت به آن وجود ندارد</strong>.
+          </div>
 
           <div className="stack-card">
-            <h4 style={{ marginBottom: 12 }}>مرور سوالات</h4>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {current.questions.map((q, i) => {
-                const done = answers[q.id] !== undefined;
+            {q.topic && <span className="tag tag--dark" style={{ marginBottom: 10 }}>{q.topic}</span>}
+            <h3 style={{ lineHeight: 1.9, marginBottom: 16 }}>{q.text}</h3>
+            <div style={{ display: 'grid', gap: 10 }}>
+              {q.options.map((opt, i) => {
+                const selected = choice === i;
                 return (
                   <button
-                    key={q.id}
+                    key={i}
                     type="button"
-                    onClick={() => setIndex(i)}
+                    onClick={() => pick(q.id, i)}
                     style={{
-                      width: 38, height: 38, borderRadius: 10, cursor: 'pointer', font: 'inherit', fontWeight: 700,
-                      border: `1px solid ${i === index ? 'var(--dark)' : 'var(--border)'}`,
-                      background: done ? '#dcfce7' : '#fff',
-                      color: 'var(--dark)',
+                      textAlign: 'right',
+                      padding: '12px 14px',
+                      borderRadius: 12,
+                      border: `1px solid ${selected ? 'var(--dark)' : 'var(--border)'}`,
+                      background: selected ? 'var(--dark)' : '#fff',
+                      color: selected ? '#fff' : 'var(--dark)',
+                      cursor: 'pointer',
+                      font: 'inherit',
+                      lineHeight: 1.8,
                     }}
                   >
-                    {fa(i + 1)}
+                    {fa(i + 1)}) {opt}
                   </button>
                 );
               })}
             </div>
-          </div>
 
-          <div className="stack-card">
-            {confirming ? (
-              <>
-                <p style={{ marginBottom: 12, lineHeight: 1.9 }}>
-                  {fa(current.total - Object.keys(answers).length)} سوال بی‌پاسخ مانده است.
-                  پس از ثبت نهایی، امکان تغییر پاسخ‌ها وجود ندارد.
-                </p>
-                <div style={{ display: 'flex', gap: 10 }}>
-                  <button className="btn btn--dark" disabled={busy} onClick={() => submit(current.id)}>{busy ? 'در حال ثبت…' : 'بله، ثبت نهایی کن'}</button>
-                  <button className="btn" onClick={() => setConfirming(false)}>بازگشت به آزمون</button>
-                </div>
-              </>
-            ) : (
-              <button className="btn btn--gold btn--full" onClick={() => setConfirming(true)}>ثبت نهایی آزمون</button>
-            )}
+            <div style={{ marginTop: 18 }}>
+              {confirming ? (
+                <>
+                  <p style={{ marginBottom: 12, lineHeight: 1.9 }}>
+                    {current.isLast
+                      ? 'این آخرین سوال است. با تأیید، آزمون ثبت و تصحیح می‌شود.'
+                      : choice === null
+                        ? 'این سوال بی‌پاسخ می‌ماند و دیگر نمی‌توانید به آن برگردید. مطمئنید؟'
+                        : 'با رفتن به سوال بعدی، پاسخ همین سوال قطعی می‌شود و بازگشت ممکن نیست. مطمئنید؟'}
+                  </p>
+                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                    <button className="btn btn--dark" disabled={busy} onClick={() => (current.isLast ? submit(current.id) : goNext(current.id, current.cursor))}>
+                      {busy ? 'صبر کنید…' : current.isLast ? 'بله، ثبت نهایی کن' : 'بله، سوال بعدی'}
+                    </button>
+                    <button className="btn" disabled={busy} onClick={() => setConfirming(false)}>انصراف</button>
+                  </div>
+                </>
+              ) : (
+                <button className={`btn ${current.isLast ? 'btn--gold' : 'btn--dark'} btn--full`} disabled={busy} onClick={() => setConfirming(true)}>
+                  {current.isLast ? 'پایان و ثبت نهایی آزمون' : 'سوال بعدی'}
+                </button>
+              )}
+            </div>
           </div>
         </>
       ) : (
@@ -258,20 +262,33 @@ export default function ExamRunner() {
           <h3 style={{ marginBottom: 10 }}>آزمون فارغ‌التحصیلی</h3>
           <ul style={{ lineHeight: 2.1, color: 'var(--muted)', paddingInlineStart: 18, marginBottom: 18 }}>
             <li>تعداد سوال: {fa(cfg.questionCount)} سوال چهارگزینه‌ای</li>
-            <li>مدت آزمون: {fa(cfg.durationMin)} دقیقه</li>
+            <li>مهلت هر سوال: {fa(cfg.secondsPerQuestion)} ثانیه</li>
             <li>حد نصاب قبولی: {fa(cfg.passPercent)} درصد</li>
-            <li>پاسخ‌ها هم‌زمان ذخیره می‌شوند؛ اگر ارتباط قطع شود از همان‌جا ادامه می‌دهید.</li>
-            <li>با پایان مهلت، آزمون خودکار ثبت و تصحیح می‌شود.</li>
+            <li>سوال‌ها یکی‌یکی نمایش داده می‌شوند و <strong>بازگشت به سوال قبلی ممکن نیست</strong>.</li>
+            <li>با پایان مهلت هر سوال، خودکار به سوال بعدی می‌روید و سوال قبلی بسته می‌شود.</li>
+            <li>در پایان، آزمون بر اساس پاسخ‌های درست شما تصحیح می‌شود.</li>
           </ul>
 
           {state.passedBefore ? (
             <div className="alert alert--success">شما در این آزمون قبول شده‌اید و نیازی به شرکت مجدد نیست.</div>
           ) : state.bankSize === 0 ? (
             <div className="alert alert--info">هنوز سوالی در بانک آزمون ثبت نشده است. لطفاً بعداً مراجعه کنید.</div>
+          ) : !state.permit ? (
+            <div className="alert alert--info">
+              برای شرکت در آزمون باید مدیر یا ادیتور آموزشگاه به شما اجازه بدهد.
+              پس از صدور اجازه، همین‌جا دکمهٔ «شروع آزمون» را می‌بینید و اعلانی هم برایتان فرستاده می‌شود.
+            </div>
           ) : (
-            <button className="btn btn--dark btn--full" disabled={busy} onClick={start}>
-              {busy ? 'در حال آماده‌سازی…' : 'شروع آزمون'}
-            </button>
+            <>
+              <div className="alert alert--success" style={{ marginBottom: 14 }}>
+                اجازهٔ شرکت در آزمون برای شما صادر شده است
+                {state.permit.grantedByName ? ` (توسط ${state.permit.grantedByName})` : ''}
+                {state.permit.expiresAt ? ` — تا ${dateFmt.format(new Date(state.permit.expiresAt))} فرصت شروع دارید.` : '.'}
+              </div>
+              <button className="btn btn--dark btn--full" disabled={busy} onClick={start}>
+                {busy ? 'در حال آماده‌سازی…' : 'شروع آزمون'}
+              </button>
+            </>
           )}
         </div>
       )}

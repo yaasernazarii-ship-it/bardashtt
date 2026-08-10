@@ -1,0 +1,96 @@
+import { prisma } from './prisma';
+import { gradeAttempt } from './exam';
+import { issueCertificate } from './certificate';
+import { notifyUsers } from './notifications';
+
+// ── مجوز آزمون ────────────────────────────────────────────────
+// یک مجوز وقتی قابل استفاده است که باطل نشده باشد، هنوز خرج نشده باشد و مهلتش نگذشته باشد.
+export function usablePermitWhere(userId, now = new Date()) {
+  return {
+    userId,
+    revoked: false,
+    usedAt: null,
+    OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+  };
+}
+
+export function findUsablePermit(userId, now = new Date()) {
+  return prisma.examPermit.findFirst({
+    where: usablePermitWhere(userId, now),
+    orderBy: { grantedAt: 'asc' }, // قدیمی‌ترین مجوز اول خرج می‌شود
+  });
+}
+
+// ── حرکت رو به جلوی سوال‌ها ────────────────────────────────────
+// مهلت هر سوال مستقل است و با بستن مرورگر متوقف نمی‌شود. این تابع وضعیت ذخیره‌شده را
+// با زمان واقعی هماهنگ می‌کند: هر مهلتِ سپری‌شده یک سوال جلو می‌برد. مکان‌نما هرگز عقب نمی‌رود.
+export async function syncCursor(attempt, now = new Date()) {
+  if (attempt.submittedAt) return attempt;
+
+  const perMs = Math.max(1, attempt.perQuestionSec) * 1000;
+
+  // آزمونی که پیش از راه‌اندازی مهلتِ تک‌سوالی باز شده بود، از همین لحظه زمان‌بندی می‌شود.
+  if (!attempt.questionEndsAt) {
+    return prisma.examAttempt.update({
+      where: { id: attempt.id },
+      data: { questionEndsAt: new Date(now.getTime() + perMs) },
+    });
+  }
+
+  const ends = attempt.questionEndsAt.getTime();
+  if (now.getTime() < ends) return attempt;
+
+  const skipped = Math.floor((now.getTime() - ends) / perMs) + 1;
+  const cursor = Math.min(attempt.cursor + skipped, attempt.total);
+  const questionEndsAt = cursor >= attempt.total ? attempt.questionEndsAt : new Date(ends + skipped * perMs);
+
+  return prisma.examAttempt.update({
+    where: { id: attempt.id },
+    data: { cursor, questionEndsAt },
+  });
+}
+
+// آزمون وقتی تمام است که همهٔ سوال‌ها رد شده باشند یا مهلت کل به پایان رسیده باشد.
+export function isAttemptOver(attempt, now = new Date()) {
+  return attempt.cursor >= attempt.total || attempt.expiresAt <= now;
+}
+
+// ── تصحیح و ثبت نهایی ─────────────────────────────────────────
+// تنها جایی که نمره‌دهی انجام می‌شود؛ چه با ثبت دستی، چه با تمام‌شدن مهلت.
+export async function finalizeAttempt(user, attempt) {
+  const ids = Array.isArray(attempt.questionIds) ? attempt.questionIds : [];
+  const questions = await prisma.examQuestion.findMany({ where: { id: { in: ids } } });
+  const answers = attempt.answers && typeof attempt.answers === 'object' ? attempt.answers : {};
+  const result = gradeAttempt(questions, answers);
+
+  await prisma.examAttempt.update({
+    where: { id: attempt.id },
+    data: {
+      score: result.score,
+      percent: result.percent,
+      passed: result.passed,
+      cursor: attempt.total,
+      submittedAt: new Date(),
+    },
+  });
+
+  let certificate = null;
+  if (result.passed) {
+    try {
+      certificate = await issueCertificate(user, { attemptId: attempt.id, percent: result.percent });
+      // فارغ‌التحصیلی هنرجو با قبولی در آزمون ثبت می‌شود.
+      await prisma.user.update({ where: { id: user.id }, data: { graduated: true } });
+      await notifyUsers([user.id], {
+        title: 'گواهی‌نامهٔ شما صادر شد',
+        body: `کد استعلام گواهی شما ${certificate.serial} است.`,
+        href: '/dashboard/exam',
+        kind: 'system',
+      });
+    } catch {
+      // نمرهٔ آزمون ثبت شده؛ اگر صدور گواهی خطا داد، مدیر می‌تواند دستی صادر کند.
+      certificate = null;
+    }
+  }
+
+  return { result, certificate };
+}

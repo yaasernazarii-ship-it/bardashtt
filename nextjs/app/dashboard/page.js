@@ -39,7 +39,7 @@ const MANAGER_GROUPS = [
       { href: '/dashboard/admin/signups', title: 'تأیید حساب‌ها', text: 'درخواست‌های عضویت جدید را بررسی و تأیید کنید.' },
       { href: '/dashboard/admin/enrollments', title: 'بررسی ثبت‌نام‌ها', text: 'فرم‌های ثبت‌نام دوره و ویدیوهای ارسالی.' },
       { href: '/dashboard/admin/classes', title: 'کلاس‌ها و تقویم', text: 'جلسه‌ها، حضور و غیاب و تقویم آموزشی.' },
-      { href: '/dashboard/admin/exam', title: 'آزمون و بانک سوال', text: 'سؤال‌های آزمون پایان دوره را مدیریت کنید.' },
+      { href: '/dashboard/admin/exam', title: 'آزمون و بانک سوال', text: 'اجازهٔ آزمون هنرجویان و سؤال‌های آزمون پایان دوره.' },
       { href: '/dashboard/admin/certificates', title: 'گواهی‌نامه‌ها', text: 'صدور و پیگیری گواهی پایان دوره.' },
       { href: '/dashboard/admin/support', title: 'پشتیبانی آنلاین', text: 'پاسخ به گفتگوهای زندهٔ کاربران سایت.' },
     ],

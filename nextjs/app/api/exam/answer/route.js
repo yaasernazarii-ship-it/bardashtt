@@ -1,9 +1,10 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser } from '@/lib/auth';
 import { OPTION_COUNT } from '@/lib/exam';
+import { isAttemptOver, syncCursor } from '@/lib/examRun';
 
-// ذخیرهٔ خودکار یک پاسخ. اگر هنرجو مرورگر را ببندد یا اینترنتش قطع شود،
-// پاسخ‌های ثبت‌شده باقی می‌مانند و با بازگشت، آزمون از همان‌جا ادامه پیدا می‌کند.
+// ثبت پاسخِ سوال جاری. فقط سوالی که هنرجو همین حالا روی آن است پذیرفته می‌شود؛
+// با گذشتن مهلتِ آن سوال، دیگر هیچ تغییری روی پاسخش ممکن نیست.
 export async function PATCH(request) {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
@@ -23,16 +24,25 @@ export async function PATCH(request) {
     return Response.json({ ok: false, error: 'گزینهٔ نامعتبر است.' }, { status: 400 });
   }
 
-  const attempt = await prisma.examAttempt.findFirst({ where: { id: attemptId, userId: user.id } });
-  if (!attempt) return Response.json({ ok: false, error: 'آزمون یافت نشد.' }, { status: 404 });
-  if (attempt.submittedAt) return Response.json({ ok: false, error: 'این آزمون قبلاً ثبت شده است.' }, { status: 409 });
-  if (attempt.expiresAt <= new Date()) {
+  const found = await prisma.examAttempt.findFirst({ where: { id: attemptId, userId: user.id } });
+  if (!found) return Response.json({ ok: false, error: 'آزمون یافت نشد.' }, { status: 404 });
+  if (found.submittedAt) return Response.json({ ok: false, error: 'این آزمون قبلاً ثبت شده است.' }, { status: 409 });
+
+  const now = new Date();
+  const attempt = await syncCursor(found, now);
+  if (isAttemptOver(attempt, now)) {
     return Response.json({ ok: false, error: 'مهلت آزمون به پایان رسیده است.', expired: true }, { status: 409 });
   }
 
   const ids = Array.isArray(attempt.questionIds) ? attempt.questionIds : [];
-  if (!ids.includes(questionId)) {
-    return Response.json({ ok: false, error: 'این سوال در آزمون شما نیست.' }, { status: 400 });
+  if (ids[attempt.cursor] !== questionId) {
+    // یا مهلت این سوال گذشته و رد شده، یا هنوز نوبتش نرسیده؛ در هر دو حالت پاسخ پذیرفته نیست.
+    return Response.json({
+      ok: false,
+      error: 'مهلت این سوال تمام شده است و بازگشت به آن ممکن نیست.',
+      moved: true,
+      cursor: attempt.cursor,
+    }, { status: 409 });
   }
 
   const answers = { ...(attempt.answers && typeof attempt.answers === 'object' ? attempt.answers : {}) };

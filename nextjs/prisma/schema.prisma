@@ -39,6 +39,7 @@ model User {
   payments     Payment[]
   courseAccesses CourseAccess[] // دوره‌های آنلاینی که این کاربر خریده/دسترسی دارد
   examAttempts ExamAttempt[] // تلاش‌های آزمون فارغ‌التحصیلی
+  examPermits  ExamPermit[] // اجازه‌های شرکت در آزمون که مدیر/ادیتور صادر کرده
   certificates Certificate[] // گواهی‌نامه‌های صادرشده
 
   @@index([classGroupId])
@@ -146,21 +147,44 @@ model ExamQuestion {
   @@index([topic])
 }
 
+// مجوز شرکت در آزمون. بدون یک مجوزِ استفاده‌نشده، هیچ‌کس نمی‌تواند آزمون را شروع کند.
+// هر مجوز فقط یک بار مصرف می‌شود و به همان تلاشی که با آن باز شده گره می‌خورد.
+model ExamPermit {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  grantedById   String? // مدیر یا ادیتوری که اجازه را صادر کرده
+  grantedByName String?
+  grantedAt     DateTime  @default(now())
+  expiresAt     DateTime? // مهلت استفاده از مجوز؛ خالی یعنی بدون مهلت
+  usedAt        DateTime? // لحظه‌ای که آزمون با این مجوز باز شد
+  attemptId     String?   @unique // تلاشی که این مجوز خرج آن شد
+  revoked       Boolean   @default(false)
+  note          String?
+
+  @@index([userId, revoked])
+  @@index([grantedAt])
+}
+
 // یک بار شرکت هنرجو در آزمون. سوالات در لحظهٔ شروع قفل می‌شوند تا رفرش صفحه سوال‌ها را عوض نکند.
+// آزمون تک‌سواله جلو می‌رود: «cursor» فقط زیاد می‌شود و بازگشت به سوال قبلی ممکن نیست.
 model ExamAttempt {
-  id          String       @id @default(cuid())
-  userId      String
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  questionIds Json // ترتیب ثابت سوالاتِ همین تلاش
-  answers     Json         @default("{}") // { questionId: اندیس گزینهٔ انتخابی }
-  total       Int // تعداد سوالات این آزمون
-  score       Int? // تعداد پاسخ درست (پس از تصحیح)
-  percent     Int? // درصد نمره
-  passed      Boolean      @default(false)
-  startedAt   DateTime     @default(now())
-  expiresAt   DateTime // پایان مهلت پاسخ‌گویی
-  submittedAt DateTime? // خالی یعنی آزمون هنوز باز است
-  certificate Certificate?
+  id             String       @id @default(cuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionIds    Json // ترتیب ثابت سوالاتِ همین تلاش
+  answers        Json         @default("{}") // { questionId: اندیس گزینهٔ انتخابی }
+  total          Int // تعداد سوالات این آزمون
+  cursor         Int          @default(0) // شمارهٔ سوال جاری (از ۰)؛ هرگز کم نمی‌شود
+  perQuestionSec Int          @default(60) // مهلت پاسخ به هر سوال، به ثانیه
+  questionEndsAt DateTime? // پایان مهلتِ سوال جاری
+  score          Int? // تعداد پاسخ درست (پس از تصحیح)
+  percent        Int? // درصد نمره
+  passed         Boolean      @default(false)
+  startedAt      DateTime     @default(now())
+  expiresAt      DateTime // پایان مهلت کل آزمون
+  submittedAt    DateTime? // خالی یعنی آزمون هنوز باز است
+  certificate    Certificate?
 
   @@index([userId, startedAt])
   @@index([submittedAt])

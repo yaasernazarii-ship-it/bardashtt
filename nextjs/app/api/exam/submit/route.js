@@ -1,8 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser } from '@/lib/auth';
-import { gradeAttempt } from '@/lib/exam';
-import { issueCertificate } from '@/lib/certificate';
-import { notifyUsers } from '@/lib/notifications';
+import { finalizeAttempt } from '@/lib/examRun';
 
 // تصحیح و ثبت نهایی. اگر مهلت تمام شده باشد هم همین مسیر تصحیح می‌کند،
 // یعنی پاسخ‌های ذخیره‌شده تا لحظهٔ انقضا از بین نمی‌روند.
@@ -27,41 +25,7 @@ export async function POST(request) {
     });
   }
 
-  const ids = Array.isArray(attempt.questionIds) ? attempt.questionIds : [];
-  const questions = await prisma.examQuestion.findMany({ where: { id: { in: ids } } });
-  const answers = attempt.answers && typeof attempt.answers === 'object' ? attempt.answers : {};
-  const result = gradeAttempt(questions, answers);
-
-  await prisma.examAttempt.update({
-    where: { id: attempt.id },
-    data: {
-      score: result.score,
-      percent: result.percent,
-      passed: result.passed,
-      submittedAt: new Date(),
-    },
-  });
-
-  let certificate = null;
-  if (result.passed) {
-    try {
-      certificate = await issueCertificate(user, {
-        attemptId: attempt.id,
-        percent: result.percent,
-      });
-      // فارغ‌التحصیلی هنرجو با قبولی در آزمون ثبت می‌شود.
-      await prisma.user.update({ where: { id: user.id }, data: { graduated: true } });
-      await notifyUsers([user.id], {
-        title: 'گواهی‌نامهٔ شما صادر شد',
-        body: `کد استعلام گواهی شما ${certificate.serial} است.`,
-        href: '/dashboard/exam',
-        kind: 'system',
-      });
-    } catch {
-      // نمرهٔ آزمون ثبت شده؛ اگر صدور گواهی خطا داد، مدیر می‌تواند دستی صادر کند.
-      certificate = null;
-    }
-  }
+  const { result, certificate } = await finalizeAttempt(user, attempt);
 
   return Response.json({
     ok: true,

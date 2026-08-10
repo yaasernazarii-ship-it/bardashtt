@@ -6,8 +6,8 @@ const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long
 const fa = (n) => new Intl.NumberFormat('fa-IR', { useGrouping: false }).format(n ?? 0);
 const EMPTY = { text: '', options: ['', '', '', ''], correct: 0, topic: '' };
 
-export default function AdminExam({ questionCount, passPercent }) {
-  const [tab, setTab] = useState('bank');
+export default function AdminExam({ questionCount, passPercent, secondsPerQuestion }) {
+  const [tab, setTab] = useState('permits');
   const [items, setItems] = useState([]);
   const [activeCount, setActiveCount] = useState(0);
   const [attempts, setAttempts] = useState([]);
@@ -20,6 +20,15 @@ export default function AdminExam({ questionCount, passPercent }) {
   const [form, setForm] = useState(EMPTY);
   const [editingId, setEditingId] = useState(null);
   const [bulk, setBulk] = useState('');
+
+  // اجازهٔ شرکت در آزمون
+  const [permits, setPermits] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [passedIds, setPassedIds] = useState([]);
+  const [permitUser, setPermitUser] = useState('');
+  const [permitDays, setPermitDays] = useState('7');
+  const [permitNote, setPermitNote] = useState('');
+  const [permitSearch, setPermitSearch] = useState('');
 
   async function loadBank(q = '') {
     setLoading(true);
@@ -40,7 +49,57 @@ export default function AdminExam({ questionCount, passPercent }) {
     if (data.ok) setAttempts(data.items); else setError(data.error || 'خطا در بارگذاری.');
   }
 
-  useEffect(() => { loadBank(); loadAttempts(); }, []);
+  async function loadPermits() {
+    const res = await fetch('/api/admin/exam/permits');
+    const data = await res.json();
+    if (!data.ok) { setError(data.error || 'خطا در بارگذاری.'); return; }
+    setPermits(data.items);
+    setStudents(data.students);
+    setPassedIds(data.passedUserIds || []);
+  }
+
+  useEffect(() => { loadBank(); loadAttempts(); loadPermits(); }, []);
+
+  async function grantPermit(e) {
+    e.preventDefault();
+    setBusy(true); setError(''); setNotice('');
+    try {
+      const res = await fetch('/api/admin/exam/permits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: permitUser, days: permitDays === '' ? null : Number(permitDays), note: permitNote }),
+      });
+      const data = await res.json();
+      if (!data.ok) { setError(data.error || 'صدور اجازه ناموفق بود.'); return; }
+      setNotice('اجازهٔ آزمون صادر شد و به هنرجو اطلاع داده شد.');
+      setPermitUser(''); setPermitNote('');
+      await loadPermits();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function revokePermit(p) {
+    const who = p.user?.displayName || p.user?.username || p.user?.phone || 'این هنرجو';
+    if (!confirm(`اجازهٔ آزمون ${who} باطل شود؟`)) return;
+    setError(''); setNotice('');
+    const res = await fetch('/api/admin/exam/permits', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: p.id }),
+    });
+    const data = await res.json();
+    if (!data.ok) { setError(data.error || 'باطل‌کردن ناموفق بود.'); return; }
+    setNotice('اجازه باطل شد.');
+    await loadPermits();
+  }
+
+  function permitStatus(p) {
+    if (p.usedAt) return { label: 'استفاده شده', color: 'var(--muted)' };
+    if (p.revoked) return { label: 'باطل شده', color: '#dc2626' };
+    if (p.expiresAt && new Date(p.expiresAt) <= new Date()) return { label: 'مهلت گذشته', color: '#dc2626' };
+    return { label: 'فعال — منتظر شرکت هنرجو', color: '#16a34a' };
+  }
 
   function resetForm() { setForm(EMPTY); setEditingId(null); }
 
@@ -119,13 +178,91 @@ export default function AdminExam({ questionCount, passPercent }) {
       <div className="alert alert--info">
         سوال فعال در بانک: <strong>{fa(activeCount)}</strong> — هر آزمون {fa(questionCount)} سوال تصادفی از همین بانک برمی‌دارد.
         {activeCount < questionCount && ' هنوز به تعداد لازم نرسیده‌اید؛ آزمون با همین تعداد موجود برگزار می‌شود.'}
-        {' '}حد نصاب قبولی: {fa(passPercent)} درصد.
+        {' '}مهلت هر سوال: {fa(secondsPerQuestion)} ثانیه — حد نصاب قبولی: {fa(passPercent)} درصد.
       </div>
 
-      <div style={{ display: 'flex', gap: 8 }}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <button className={`btn ${tab === 'permits' ? 'btn--dark' : ''}`} onClick={() => { setTab('permits'); loadPermits(); }}>اجازهٔ آزمون</button>
         <button className={`btn ${tab === 'bank' ? 'btn--dark' : ''}`} onClick={() => setTab('bank')}>بانک سوالات</button>
         <button className={`btn ${tab === 'results' ? 'btn--dark' : ''}`} onClick={() => { setTab('results'); loadAttempts(); }}>کارنامه‌ها</button>
       </div>
+
+      {tab === 'permits' && (
+        <>
+          <form className="stack-card" onSubmit={grantPermit}>
+            <h3 style={{ marginBottom: 8 }}>صدور اجازهٔ آزمون</h3>
+            <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 14 }}>
+              هیچ هنرجویی بدون اجازهٔ شما نمی‌تواند آزمون بدهد. هر اجازه فقط یک بار مصرف می‌شود؛
+              با شروع آزمون خرج می‌شود و برای شرکت دوباره باید اجازهٔ تازه صادر کنید.
+            </p>
+            <div className="form-group">
+              <label className="form-label">هنرجو</label>
+              <select className="form-input" required value={permitUser} onChange={(e) => setPermitUser(e.target.value)}>
+                <option value="">— انتخاب کنید —</option>
+                {students.map((s) => (
+                  <option key={s.id} value={s.id} disabled={passedIds.includes(s.id)}>
+                    {(s.displayName || s.username || s.phone)}
+                    {s.branch ? ` — ${s.branch}` : ''}
+                    {passedIds.includes(s.id) ? ' (قبول شده)' : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">مهلت استفاده (روز)</label>
+              <input className="form-input" type="number" min={1} max={365} dir="ltr" value={permitDays}
+                onChange={(e) => setPermitDays(e.target.value)} placeholder="خالی = بدون مهلت" />
+              <span style={{ color: 'var(--muted)', fontSize: '.85rem' }}>
+                اگر تا این مهلت آزمون را شروع نکند، اجازه باطل می‌شود. برای بدون‌مهلت، خالی بگذارید.
+              </span>
+            </div>
+            <div className="form-group">
+              <label className="form-label">یادداشت (اختیاری)</label>
+              <input className="form-input" value={permitNote} onChange={(e) => setPermitNote(e.target.value)} placeholder="مثلاً: تسویهٔ شهریه انجام شد" />
+            </div>
+            <button className="btn btn--dark" disabled={busy || !permitUser}>{busy ? 'در حال صدور…' : 'صدور اجازه'}</button>
+          </form>
+
+          <div className="stack-card">
+            <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
+              <input className="form-input" placeholder="جست‌وجوی نام یا شماره…" value={permitSearch} onChange={(e) => setPermitSearch(e.target.value)} />
+            </div>
+            <h3 style={{ marginBottom: 12 }}>اجازه‌های صادرشده</h3>
+            {permits.length === 0 ? (
+              <p style={{ color: 'var(--muted)' }}>هنوز به کسی اجازهٔ آزمون داده نشده است.</p>
+            ) : (
+              <div style={{ display: 'grid', gap: 8 }}>
+                {permits
+                  .filter((p) => {
+                    const q = permitSearch.trim();
+                    if (!q) return true;
+                    const hay = `${p.user?.displayName || ''} ${p.user?.username || ''} ${p.user?.phone || ''}`;
+                    return hay.includes(q);
+                  })
+                  .map((p) => {
+                    const st = permitStatus(p);
+                    return (
+                      <div key={p.id} style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', justifyContent: 'space-between', border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px' }}>
+                        <span>
+                          <strong>{p.user?.displayName || p.user?.username || '—'}</strong>{' '}
+                          <span dir="ltr" style={{ color: 'var(--muted)' }}>{p.user?.phone}</span>
+                        </span>
+                        <span style={{ color: 'var(--muted)' }}>صدور: {dateFmt.format(new Date(p.grantedAt))}</span>
+                        <span style={{ color: 'var(--muted)' }}>
+                          {p.expiresAt ? `مهلت: ${dateFmt.format(new Date(p.expiresAt))}` : 'بدون مهلت'}
+                        </span>
+                        <span style={{ fontWeight: 700, color: st.color }}>{st.label}</span>
+                        {!p.usedAt && !p.revoked && (
+                          <button className="btn btn--danger" onClick={() => revokePermit(p)}>باطل کن</button>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
+        </>
+      )}
 
       {tab === 'bank' && (
         <>
