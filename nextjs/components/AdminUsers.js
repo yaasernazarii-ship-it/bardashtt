@@ -136,8 +136,18 @@ export default function AdminUsers() {
 
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginTop: 12, borderTop: '1px solid var(--border)', paddingTop: 12 }}>
                       <button type="button" className="btn btn--sm btn--dark" onClick={() => setPanelId(u.id)}>مشاهدهٔ پنل کامل</button>
+
+                      {/* نام کاربری و رمز عبور برای هر حسابی — از جمله حساب خودتان — قابل تغییر است،
+                          چون کاربر دیگر از پروفایلش رمز عوض نمی‌کند و تنها راه، همین‌جاست. */}
+                      <button type="button" className="btn btn--sm btn--outline" disabled={savingId === u.id} onClick={() => setUsername(u)}>
+                        {u.username ? 'تغییر نام کاربری' : 'تعیین نام کاربری'}
+                      </button>
+                      <button type="button" className="btn btn--sm btn--outline" disabled={savingId === u.id} onClick={() => resetPassword(u)}>
+                        {u.username ? 'رمز جدید' : 'تعیین رمز'}
+                      </button>
+
                       {isSelf ? (
-                        <span style={{ color: 'var(--muted)', fontSize: '.82rem' }}>نقش و وضعیتِ حساب خودتان از این‌جا قابل تغییر نیست.</span>
+                        <span style={{ color: 'var(--muted)', fontSize: '.82rem' }}>نقش و فعال/غیرفعال‌کردنِ حساب خودتان از این‌جا قابل تغییر نیست.</span>
                       ) : (
                         <>
                           <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.82rem', color: 'var(--muted)' }}>
@@ -151,12 +161,6 @@ export default function AdminUsers() {
                               <option value="admin">ادمین</option>
                             </select>
                           </label>
-                          <button type="button" className="btn btn--sm btn--outline" disabled={savingId === u.id} onClick={() => setUsername(u)}>
-                            {u.username ? 'تغییر نام کاربری' : 'تعیین نام کاربری'}
-                          </button>
-                          <button type="button" className="btn btn--sm btn--outline" disabled={savingId === u.id} onClick={() => resetPassword(u)}>
-                            {u.username ? 'رمز جدید' : 'تعیین رمز'}
-                          </button>
                           {u.role === 'student' && (
                             <button type="button" className={`btn btn--sm ${u.graduated ? 'btn--dark' : 'btn--outline'}`}
                               disabled={savingId === u.id} onClick={() => toggleGraduated(u)}>
