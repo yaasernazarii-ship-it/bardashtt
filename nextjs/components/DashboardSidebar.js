@@ -24,6 +24,13 @@ const FILMMAKER_ITEMS = [
   { key: 'courses', href: '/courses', icon: 'clapperboard', label: 'دوره‌ها' },
 ];
 
+// ادمین/ادیتور منوی هنرجویی (تقویم، ثبت‌نام من، آزمون، رزومه) را نمی‌بینند؛
+// فقط خانهٔ مدیریت و پروفایل خودشان، تا مسیر ورود به پنل گم نشود.
+const MANAGER_PERSONAL_ITEMS = [
+  { key: 'dashboard', href: '/dashboard', icon: 'home', label: 'خانهٔ مدیریت' },
+  { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل من' },
+];
+
 const MANAGER_ITEMS = [
   { key: 'enrollments', href: '/dashboard/admin/enrollments', icon: 'clipboard', label: 'بررسی ثبت‌نام‌ها' },
   { key: 'signups', href: '/dashboard/admin/signups', icon: 'check', label: 'تأیید حساب‌ها' },
@@ -42,7 +49,8 @@ const MANAGER_ITEMS = [
   { key: 'audit', href: '/dashboard/admin/audit', icon: 'clipboard', label: 'گزارش تغییرات' },
 ];
 
-function itemsForRole(role, graduated) {
+function itemsForRole(role, graduated, manager) {
+  if (manager) return MANAGER_PERSONAL_ITEMS;
   if (role === 'filmmaker') return FILMMAKER_ITEMS;
   return STUDENT_ITEMS.filter((it) => {
     // هنرجوی فارغ‌التحصیل تقویم کلاس را در منو نمی‌بیند.
@@ -55,7 +63,7 @@ function itemsForRole(role, graduated) {
 
 export default function DashboardSidebar({ active, role, isAdmin = false, isManager = false, graduated = false }) {
   const showManager = isAdmin || isManager;
-  const visibleItems = itemsForRole(role, graduated);
+  const visibleItems = itemsForRole(role, graduated, showManager);
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
