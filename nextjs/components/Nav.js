@@ -5,7 +5,9 @@ import { usePathname } from 'next/navigation';
 import NotificationBell from './NotificationBell';
 import Icon from './Icon';
 
-const navLinks = [
+// آیتم‌های منو از پنل («متن صفحات» ← «منوی بالای سایت») می‌آیند و به‌صورت prop
+// می‌رسند. فهرست زیر فقط پشتیبانِ حالتی است که content ارسال نشده باشد.
+const FALLBACK_LINKS = [
   { href: '/', label: 'خانه' },
   { href: '/about', label: 'درباره ما' },
   { href: '/courses', label: 'دوره‌ها' },
@@ -35,7 +37,24 @@ const navLinks = [
   { href: '/social-responsibility', label: 'مسئولیت اجتماعی' },
 ];
 
-export default function Nav({ onOpenChat, logo }) {
+const FALLBACK_TEXT = {
+  supportButton: 'پشتیبانی',
+  supportFaq: 'سوالات متداول',
+  supportChat: 'پشتیبانی آنلاین',
+  supportChatHint: 'گفت‌وگوی زنده با تیم ما',
+  callLabel: 'تماس با ما',
+  phoneText: '021-91090934',
+  phoneHref: '02191090934',
+  btnLogin: 'ورود',
+  btnDashboard: 'داشبورد',
+  btnLogout: 'خروج',
+  drawerTitle: 'منوی سایت',
+  drawerSubtitle: 'خانواده برداشت',
+};
+
+export default function Nav({ onOpenChat, logo, content }) {
+  const c = { ...FALLBACK_TEXT, ...(content || {}) };
+  const navLinks = content?.menu?.length ? content.menu : FALLBACK_LINKS;
   const [menuOpen, setMenuOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [openIndex, setOpenIndex] = useState(null);
@@ -107,7 +126,7 @@ export default function Nav({ onOpenChat, logo }) {
                     <span>{item.label}</span>
                     <span className="nav__caret" aria-hidden="true" />
                   </button>
-                  <ul className="dropdown" style={item.label === 'آثار' ? { minWidth: 210 } : {}}>
+                  <ul className="dropdown" style={{ minWidth: 210 }}>
                     {item.children.map((child, j) => (
                       child.type === 'sep' ? (
                         <li key={j} className="drop-sep" />
@@ -145,30 +164,30 @@ export default function Nav({ onOpenChat, logo }) {
           <div className="nav__actions">
             <div className={`nav__support${supportOpen ? ' open' : ''}`} ref={supportRef}>
               <button type="button" className="nav__support-btn" onClick={() => setSupportOpen(p => !p)} aria-haspopup="true" aria-expanded={supportOpen}>
-                <span className="nav__support-dot" />پشتیبانی
+                <span className="nav__support-dot" />{c.supportButton}
                 <span className="nav__caret" aria-hidden="true" />
               </button>
               <ul className="hdr-support-drop">
-                <li><Link href="/faq" onClick={() => setSupportOpen(false)}><span className="drop-icon"><Icon name="clipboard" size={18} /></span>سوالات متداول</Link></li>
+                <li><Link href="/faq" onClick={() => setSupportOpen(false)}><span className="drop-icon"><Icon name="clipboard" size={18} /></span>{c.supportFaq}</Link></li>
                 <li className="drop-sep" />
                 <li>
                   <button type="button" onClick={() => { onOpenChat?.(); setSupportOpen(false); }}>
                     <span className="drop-icon"><Icon name="chat" size={18} /></span>
-                    <span>پشتیبانی آنلاین<span className="drop-phone">گفت‌وگوی زنده با تیم ما</span></span>
+                    <span>{c.supportChat}<span className="drop-phone">{c.supportChatHint}</span></span>
                     <span className="drop-online-dot" />
                   </button>
                 </li>
                 <li className="drop-sep" />
-                <li><a href="tel:02191090934"><span className="drop-icon"><Icon name="phone" size={18} /></span><span>تماس با ما<span className="drop-phone">021-91090934</span></span></a></li>
+                <li><a href={`tel:${String(c.phoneHref || '').replace(/[^0-9+]/g, '')}`}><span className="drop-icon"><Icon name="phone" size={18} /></span><span>{c.callLabel}<span className="drop-phone">{c.phoneText}</span></span></a></li>
               </ul>
             </div>
             {user ? (
               <>
-                <Link href="/dashboard" className="btn btn--dark btn--sm">داشبورد</Link>
-                <button type="button" className="btn btn--outline btn--sm" onClick={logout}>خروج</button>
+                <Link href="/dashboard" className="btn btn--dark btn--sm">{c.btnDashboard}</Link>
+                <button type="button" className="btn btn--outline btn--sm" onClick={logout}>{c.btnLogout}</button>
               </>
             ) : (
-              <Link href="/auth" className="btn btn--outline btn--sm">ورود</Link>
+              <Link href="/auth" className="btn btn--outline btn--sm">{c.btnLogin}</Link>
             )}
           </div>
           {user && <NotificationBell />}
@@ -191,8 +210,8 @@ export default function Nav({ onOpenChat, logo }) {
       <aside id="mobile-menu" className={`mobile-drawer${menuOpen ? ' mobile-drawer--open' : ''}`} aria-hidden={!menuOpen}>
         <div className="mobile-drawer__head">
           <div>
-            <strong>منوی سایت</strong>
-            <span>خانواده برداشت</span>
+            <strong>{c.drawerTitle}</strong>
+            <span>{c.drawerSubtitle}</span>
           </div>
           <button type="button" onClick={() => setMenuOpen(false)} aria-label="بستن منو"><Icon name="close" size={22} /></button>
         </div>
@@ -218,14 +237,14 @@ export default function Nav({ onOpenChat, logo }) {
           ))}
         </div>
         <div className="mobile-drawer__actions">
-          <button type="button" className="btn btn--outline" onClick={onOpenChat}>پشتیبانی آنلاین</button>
+          <button type="button" className="btn btn--outline" onClick={onOpenChat}>{c.supportChat}</button>
           {user ? (
             <>
-              <Link href="/dashboard" className="btn btn--dark">داشبورد</Link>
-              <button type="button" className="btn btn--outline" onClick={logout}>خروج از حساب</button>
+              <Link href="/dashboard" className="btn btn--dark">{c.btnDashboard}</Link>
+              <button type="button" className="btn btn--outline" onClick={logout}>{c.btnLogout}</button>
             </>
           ) : (
-            <Link href="/auth" className="btn btn--outline">ورود</Link>
+            <Link href="/auth" className="btn btn--outline">{c.btnLogin}</Link>
           )}
         </div>
       </aside>

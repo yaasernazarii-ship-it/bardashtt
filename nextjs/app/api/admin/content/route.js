@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { CONTENT_GROUPS, isKnownKey } from '@/lib/siteContent';
+import { logAction } from '@/lib/audit';
 
 async function guard() {
   const user = await getSessionUser();
@@ -43,9 +44,11 @@ export async function POST(request) {
   }
 
   const ops = [];
+  const changedKeys = [];
   for (const [key, raw] of Object.entries(updates)) {
     if (!isKnownKey(key)) continue;
     const value = String(raw ?? '').slice(0, 8000);
+    changedKeys.push(key);
     ops.push(
       prisma.siteContent.upsert({
         where: { key },
@@ -57,5 +60,11 @@ export async function POST(request) {
   if (ops.length === 0) return Response.json({ ok: false, error: 'تغییری برای ذخیره یافت نشد.' }, { status: 400 });
 
   await prisma.$transaction(ops);
+  await logAction(g.user, {
+    action: 'content.update',
+    targetType: 'siteContent',
+    targetId: changedKeys.slice(0, 10).join('، '),
+    summary: `${changedKeys.length} متن سایت ویرایش شد`,
+  });
   return Response.json({ ok: true, saved: ops.length });
 }

@@ -4,12 +4,11 @@ import Icon from '@/components/Icon';
 import { livePosts } from '@/lib/content';
 import { loadContent, splitLines } from '@/lib/siteContent';
 import { sourceHost } from '@/lib/sourceLink';
+import { pageMetadata } from '@/lib/pageMeta';
 
-export const metadata = {
-  title: 'اخبار و مطالب',
-  description: 'آخرین اخبار، مطالب و ویدیوهای خانواده برداشت.',
-  alternates: { canonical: 'https://www.bardashtt.com/news' },
-};
+export async function generateMetadata() {
+  return pageMetadata('news');
+}
 export const dynamic = 'force-dynamic';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });

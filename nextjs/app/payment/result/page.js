@@ -1,42 +1,33 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
 import Icon from '@/components/Icon';
+import { loadContent } from '@/lib/siteContent';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'نتیجهٔ پرداخت | خانوادهٔ برداشت',
   robots: { index: false, follow: false },
 };
 
-const RESULTS = {
-  success: {
-    icon: 'check',
-    title: 'با موفقیت انجام شد',
-    desc: 'پرداختِ شما با موفقیت ثبت شد. از همراهی و اعتمادتان سپاسگزاریم؛ دسترسی‌ها و امکاناتِ مربوط همین حالا برای شما فعال شد. مسیرِ درخشیدن‌تان را از صمیم قلب آرزو می‌کنیم.',
-    tone: 'success',
-  },
-  canceled: {
-    icon: 'alertTriangle',
-    title: 'پرداخت انجام نشد',
-    desc: 'به‌نظر می‌رسد پرداخت لغو شد یا کامل نشد. مبلغی از حساب شما کسر نشده است. در صورت تمایل می‌توانید دوباره تلاش کنید.',
-    tone: 'error',
-  },
-  failed: {
-    icon: 'xCircle',
-    title: 'پرداخت ناموفق بود',
-    desc: 'تأییدِ پرداخت ممکن نشد. اگر مبلغی از حساب شما کسر شده، طیِ ۷۲ ساعت به‌صورت خودکار بازمی‌گردد. برای پیگیری با پشتیبانی هماهنگ کنید.',
-    tone: 'error',
-  },
+// عنوان و متن هر حالت از پنل («متن صفحات» ← «صفحهٔ نتیجهٔ پرداخت») می‌آید؛
+// آیکون و رنگ ثابت می‌مانند تا معنای بصری موفق/ناموفق دست‌نخورده بماند.
+const TONES = {
+  success: { icon: 'check', tone: 'success' },
+  canceled: { icon: 'alertTriangle', tone: 'error' },
+  failed: { icon: 'xCircle', tone: 'error' },
 };
 
 export default async function PaymentResultPage({ searchParams }) {
   const sp = await searchParams;
-  const status = RESULTS[sp?.status] ? sp.status : 'failed';
-  const r = RESULTS[status];
+  const status = TONES[sp?.status] ? sp.status : 'failed';
+  const t = await loadContent();
+  const r = { ...TONES[status], title: t(`payment.${status}.title`), desc: t(`payment.${status}.desc`) };
   const ref = sp?.ref ? String(sp.ref) : '';
 
   return (
     <PageLayout>
-      <div className="page-header"><h1>نتیجهٔ پرداخت</h1></div>
+      <div className="page-header"><h1>{t('payment.header')}</h1></div>
       <section style={{ background: 'var(--bg)' }}>
         <div className="container--sm">
           <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: 32, boxShadow: 'var(--shadow-md)', textAlign: 'center' }}>
@@ -45,12 +36,12 @@ export default async function PaymentResultPage({ searchParams }) {
             <p style={{ color: 'var(--muted)', lineHeight: 2, marginBottom: 20 }}>{r.desc}</p>
             {status === 'success' && ref && (
               <div className="alert alert--info" style={{ marginBottom: 20 }} dir="ltr">
-                کد پیگیری: {ref}
+                {t('payment.refLabel')}: {ref}
               </div>
             )}
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link className="btn btn--dark" href="/dashboard">داشبورد من</Link>
-              <Link className="btn" href="/">صفحهٔ اصلی</Link>
+              <Link className="btn btn--dark" href="/dashboard">{t('payment.btn.dashboard')}</Link>
+              <Link className="btn" href="/">{t('payment.btn.home')}</Link>
             </div>
           </div>
         </div>

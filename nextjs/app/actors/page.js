@@ -5,12 +5,11 @@ import { getSessionUser, isFilmmakerOrManager } from '@/lib/auth';
 import SimplePage from '@/components/SimplePage';
 import Icon from '@/components/Icon';
 import { loadContent, splitLines } from '@/lib/siteContent';
+import { pageMetadata } from '@/lib/pageMeta';
 
-export const metadata = {
-  title: 'بانک بازیگران',
-  description: 'فهرست رزومه بازیگران خانواده برداشت برای فیلم‌سازان و کارگردانان.',
-  alternates: { canonical: 'https://www.bardashtt.com/actors' },
-};
+export async function generateMetadata() {
+  return pageMetadata('actors');
+}
 
 export const dynamic = 'force-dynamic';
 

@@ -1,12 +1,11 @@
 import SimplePage from '@/components/SimplePage';
 import SectionPosts from '@/components/SectionPosts';
 import { loadContent, splitLines } from '@/lib/siteContent';
+import { pageMetadata } from '@/lib/pageMeta';
 
-export const metadata = {
-  title: 'پشتوانه علمی و هنری',
-  description: 'رزومه، افتخارات و پشتوانه علمی و هنری تیم آموزشی خانواده برداشت.',
-  alternates: { canonical: 'https://www.bardashtt.com/works/resume' },
-};
+export async function generateMetadata() {
+  return pageMetadata('worksResume');
+}
 
 export const dynamic = 'force-dynamic';
 

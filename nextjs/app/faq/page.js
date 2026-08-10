@@ -4,13 +4,11 @@ import Accordion from '@/components/Accordion';
 import OpenChatButton from '@/components/OpenChatButton';
 import { loadContent, splitLines } from '@/lib/siteContent';
 import { SITE_URL, faqJsonLd, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
+import { pageMetadata } from '@/lib/pageMeta';
 
-export const metadata = {
-  title: 'سوالات متداول',
-  description: 'پاسخ به سوالات پرتکرار درباره دوره‌ها، ثبت‌نام، آزمون و گواهینامه خانواده برداشت.',
-  alternates: { canonical: `${SITE_URL}/faq` },
-  openGraph: { type: 'website', title: 'سوالات متداول | خانواده برداشت', url: `${SITE_URL}/faq` },
-};
+export async function generateMetadata() {
+  return pageMetadata('faq');
+}
 
 export const dynamic = 'force-dynamic';
 

@@ -1,12 +1,11 @@
 import SimplePage from '@/components/SimplePage';
 import SectionPosts from '@/components/SectionPosts';
 import { loadContent, splitLines } from '@/lib/siteContent';
+import { pageMetadata } from '@/lib/pageMeta';
 
-export const metadata = {
-  title: 'خروجی خانواده برداشت',
-  description: 'نمایش خروجی‌های آموزشی، تمرین‌ها و آثار هنرجویان خانواده برداشت.',
-  alternates: { canonical: 'https://www.bardashtt.com/works/output' },
-};
+export async function generateMetadata() {
+  return pageMetadata('worksOutput');
+}
 
 export const dynamic = 'force-dynamic';
 

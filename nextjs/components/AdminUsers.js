@@ -63,10 +63,24 @@ export default function AdminUsers() {
   }
 
   async function resetPassword(u) {
-    const pass = window.prompt(`رمز عبور جدید برای «${u.displayName || u.username}» را وارد کنید (حداقل ۶ کاراکتر):`);
+    const name = u.displayName || u.username || u.phone;
+    const pass = window.prompt(`رمز عبور جدید برای «${name}» را وارد کنید (حداقل ۶ کاراکتر):`);
     if (pass === null) return;
     if (pass.trim().length < 6) { setError('رمز عبور حداقل ۶ کاراکتر باشد.'); return; }
     await patch(u.id, { password: pass.trim() });
+  }
+
+  // بدون نام کاربری، رمز عبور بی‌فایده است؛ چون ورود با «نام کاربری + رمز» انجام می‌شود.
+  async function setUsername(u) {
+    const name = u.displayName || u.phone;
+    const val = window.prompt(`نام کاربری برای «${name}» (حروف انگلیسی کوچک، عدد، نقطه، خط تیره — ۳ تا ۳۲ نویسه):`, u.username || '');
+    if (val === null) return;
+    const clean = val.trim().toLowerCase();
+    if (clean && !/^[a-z0-9._-]{3,32}$/.test(clean)) {
+      setError('نام کاربری فقط حروف انگلیسی کوچک، عدد، نقطه، خط تیره و زیرخط (۳ تا ۳۲ نویسه).');
+      return;
+    }
+    await patch(u.id, { username: clean });
   }
 
   if (loading) return <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p>;
@@ -137,9 +151,12 @@ export default function AdminUsers() {
                               <option value="admin">ادمین</option>
                             </select>
                           </label>
-                          {u.username && (
-                            <button type="button" className="btn btn--sm btn--outline" disabled={savingId === u.id} onClick={() => resetPassword(u)}>رمز جدید</button>
-                          )}
+                          <button type="button" className="btn btn--sm btn--outline" disabled={savingId === u.id} onClick={() => setUsername(u)}>
+                            {u.username ? 'تغییر نام کاربری' : 'تعیین نام کاربری'}
+                          </button>
+                          <button type="button" className="btn btn--sm btn--outline" disabled={savingId === u.id} onClick={() => resetPassword(u)}>
+                            {u.username ? 'رمز جدید' : 'تعیین رمز'}
+                          </button>
                           {u.role === 'student' && (
                             <button type="button" className={`btn btn--sm ${u.graduated ? 'btn--dark' : 'btn--outline'}`}
                               disabled={savingId === u.id} onClick={() => toggleGraduated(u)}>

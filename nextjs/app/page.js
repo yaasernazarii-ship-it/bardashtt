@@ -3,12 +3,11 @@ import PageLayout from '@/components/PageLayout';
 import HomeHeroBg from '@/components/HomeHeroBg';
 import Icon from '@/components/Icon';
 import { loadContent, splitLines } from '@/lib/siteContent';
+import { pageMetadata } from '@/lib/pageMeta';
 
-export const metadata = {
-  title: 'خانواده برداشت | اولین آموزشگاه رایگان بازیگری سینما در ایران',
-  description: 'خانواده برداشت — اولین و تنها آموزشگاه رایگان بازیگری سینما در ایران. دوره‌های مقدماتی، تکمیلی و پیشرفته بازیگری در تهران و مازندران. ثبت‌نام رایگان.',
-  alternates: { canonical: 'https://www.bardashtt.com/' },
-};
+export async function generateMetadata() {
+  return pageMetadata('home');
+}
 
 export const dynamic = 'force-dynamic';
 

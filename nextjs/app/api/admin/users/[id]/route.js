@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { hashPassword } from '@/lib/password';
+import { logAction } from '@/lib/audit';
 
 const ROLES = ['member', 'student', 'filmmaker', 'editor', 'admin'];
 
@@ -135,6 +136,24 @@ export async function PATCH(request, { params }) {
       }
     }
 
+    // تعیین یا پاک‌کردن نام کاربری؛ بدون نام کاربری، رمز عبور بی‌فایده است
+    // چون ورود با «نام کاربری + رمز» انجام می‌شود.
+    if (body.username !== undefined) {
+      const raw = String(body.username || '').trim().toLowerCase();
+      if (raw) {
+        if (!/^[a-z0-9._-]{3,32}$/.test(raw)) {
+          return Response.json({ ok: false, error: 'نام کاربری فقط حروف انگلیسی کوچک، عدد، نقطه، خط تیره و زیرخط (۳ تا ۳۲ نویسه).' }, { status: 400 });
+        }
+        const clash = await prisma.user.findUnique({ where: { username: raw }, select: { id: true } });
+        if (clash && clash.id !== id) {
+          return Response.json({ ok: false, error: 'این نام کاربری قبلاً گرفته شده است.' }, { status: 400 });
+        }
+        data.username = raw;
+      } else {
+        data.username = null;
+      }
+    }
+
     // بازنشانی رمز عبور
     if (body.password !== undefined) {
       const password = String(body.password || '');
@@ -152,6 +171,24 @@ export async function PATCH(request, { params }) {
       data,
       select: { id: true, phone: true, displayName: true, city: true, role: true, username: true, passwordPlain: true, active: true, branch: true, graduated: true, progressOverride: true },
     });
+
+    const who = updated.displayName || updated.username || updated.phone;
+    const parts = [];
+    if (data.role !== undefined) parts.push(`نقش → ${data.role}`);
+    if (data.active !== undefined) parts.push(data.active ? 'فعال شد' : 'غیرفعال شد');
+    if (data.username !== undefined) parts.push(`نام کاربری → ${data.username || '—'}`);
+    if (data.passwordHash !== undefined) parts.push('رمز عبور بازنشانی شد');
+    if (data.graduated !== undefined) parts.push(data.graduated ? 'فارغ‌التحصیل شد' : 'بازگشت به تحصیل');
+    if (data.progressOverride !== undefined) parts.push(`درصد پیشرفت → ${data.progressOverride ?? 'خودکار'}`);
+    if (parts.length) {
+      await logAction(user, {
+        action: data.passwordHash !== undefined ? 'user.password' : 'user.update',
+        targetType: 'user',
+        targetId: id,
+        summary: `${who}: ${parts.join('، ')}`,
+      });
+    }
+
     return Response.json({ ok: true, user: updated });
   } catch {
     return Response.json({ ok: false, error: 'کاربر یافت نشد یا درخواست نامعتبر است.' }, { status: 400 });

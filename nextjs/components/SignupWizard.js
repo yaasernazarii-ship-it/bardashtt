@@ -5,7 +5,34 @@ import Icon from './Icon';
 
 const EMPTY = { firstName: '', lastName: '', phone: '', nationalId: '', branch: 'تهران', birthDate: '', idCardImage: '', goal: '' };
 
-export default function SignupWizard() {
+// متن‌ها از پنل («متن صفحات» ← «فرم ثبت‌نام») می‌آیند و به‌صورت prop می‌رسند.
+// مقادیر زیر فقط پشتیبانِ حالتی هستند که content ارسال نشده باشد.
+const FALLBACK = {
+  roleTitle: 'ساخت حساب کاربری',
+  roleSubtitle: 'ابتدا مشخص کنید به چه عنوانی می‌خواهید عضو شوید.',
+  roleStudent: 'هنرجو',
+  roleFilmmaker: 'فیلمساز',
+  studentTitle: 'ساخت حساب کاربری هنرجو',
+  filmmakerTitle: 'ساخت حساب کاربری فیلمساز',
+  formSubtitle: 'اطلاعات زیر را کامل کنید تا پس از تأیید، حساب کاربری شما ساخته شود.',
+  labelFirstName: 'نام',
+  labelLastName: 'نام خانوادگی',
+  labelPhone: 'شماره تماس',
+  labelBirthDate: 'تاریخ تولد',
+  labelBranch: 'شعبه ثبت‌نامی',
+  labelIdCard: 'عکس شناسنامه یا کارت ملی',
+  labelNationalId: 'کد ملی',
+  labelGoal: 'هدفتان از انتخاب خانواده برداشت',
+  placeholderGoal: 'کمی درباره‌ی هدف و انگیزه‌تان بنویسید…',
+  submit: 'ثبت درخواست',
+  submitting: 'در حال ثبت…',
+  back: 'بازگشت',
+  doneTitle: 'درخواست شما با موفقیت ثبت شد',
+  doneText: 'درخواست عضویت شما دریافت شد. لطفاً منتظر صدور نام کاربری و رمز عبور از سوی خانواده برداشت بمانید. پس از بررسی و تأیید، این اطلاعات برای شما ارسال می‌شود و می‌توانید از صفحهٔ ورود وارد حساب خود شوید.',
+};
+
+export default function SignupWizard({ content }) {
+  const c = { ...FALLBACK, ...(content || {}) };
   const [role, setRole] = useState(''); // '' | 'student' | 'filmmaker'
   const [form, setForm] = useState(EMPTY);
   const [loading, setLoading] = useState(false);
@@ -57,12 +84,9 @@ export default function SignupWizard() {
     return (
       <div className="form-shell">
         <div className="form-shell__head">
-          <h2>درخواست شما با موفقیت ثبت شد</h2>
+          <h2>{c.doneTitle}</h2>
         </div>
-        <div className="alert alert--success" style={{ lineHeight: 2 }}>
-          درخواست عضویت شما دریافت شد. لطفاً منتظر <b>صدور نام کاربری و رمز عبور</b> از سوی خانواده برداشت بمانید.
-          پس از بررسی و تأیید، این اطلاعات برای شما ارسال می‌شود و می‌توانید از صفحهٔ <b>ورود</b> وارد حساب خود شوید.
-        </div>
+        <div className="alert alert--success" style={{ lineHeight: 2 }}>{c.doneText}</div>
       </div>
     );
   }
@@ -72,15 +96,15 @@ export default function SignupWizard() {
     return (
       <div className="form-shell">
         <div className="form-shell__head">
-          <h2>ساخت حساب کاربری</h2>
-          <p>ابتدا مشخص کنید به چه عنوانی می‌خواهید عضو شوید.</p>
+          <h2>{c.roleTitle}</h2>
+          <p>{c.roleSubtitle}</p>
         </div>
         <div style={{ display: 'grid', gap: 12 }}>
           <button type="button" className="btn btn--dark btn--full" onClick={() => { setForm(EMPTY); setRole('student'); }}>
-            <Icon name="graduationCap" size={17} /> هنرجو
+            <Icon name="graduationCap" size={17} /> {c.roleStudent}
           </button>
           <button type="button" className="btn btn--outline btn--full" onClick={() => { setForm(EMPTY); setRole('filmmaker'); }}>
-            <Icon name="clapperboard" size={17} /> فیلمساز
+            <Icon name="clapperboard" size={17} /> {c.roleFilmmaker}
           </button>
         </div>
       </div>
@@ -94,22 +118,22 @@ export default function SignupWizard() {
         role: 'filmmaker', firstName: form.firstName, lastName: form.lastName, nationalId: form.nationalId, goal: form.goal,
       })}>
         <div className="form-shell__head">
-          <h2>ساخت حساب کاربری فیلمساز</h2>
-          <p>اطلاعات زیر را کامل کنید تا پس از تأیید، حساب کاربری شما ساخته شود.</p>
+          <h2>{c.filmmakerTitle}</h2>
+          <p>{c.formSubtitle}</p>
         </div>
         {error && <div className="alert alert--error">{error}</div>}
-        <div className="form-group"><label className="form-label">نام</label>
+        <div className="form-group"><label className="form-label">{c.labelFirstName}</label>
           <input className="form-input" required value={form.firstName} onChange={(e) => set('firstName', e.target.value)} /></div>
-        <div className="form-group"><label className="form-label">نام خانوادگی</label>
+        <div className="form-group"><label className="form-label">{c.labelLastName}</label>
           <input className="form-input" required value={form.lastName} onChange={(e) => set('lastName', e.target.value)} /></div>
-        <div className="form-group"><label className="form-label">کد ملی</label>
+        <div className="form-group"><label className="form-label">{c.labelNationalId}</label>
           <input className="form-input" dir="ltr" inputMode="numeric" maxLength={10} required placeholder="کد ملی ۱۰ رقمی"
             value={form.nationalId} onChange={(e) => set('nationalId', e.target.value.replace(/[^\d]/g, ''))} /></div>
-        <div className="form-group"><label className="form-label">هدفتان از انتخاب خانواده برداشت</label>
-          <textarea className="form-input" rows={4} required placeholder="کمی درباره‌ی هدف و انگیزه‌تان بنویسید…"
+        <div className="form-group"><label className="form-label">{c.labelGoal}</label>
+          <textarea className="form-input" rows={4} required placeholder={c.placeholderGoal}
             value={form.goal} onChange={(e) => set('goal', e.target.value)} /></div>
-        <button className="btn btn--dark btn--full" disabled={loading}>{loading ? 'در حال ثبت…' : 'ثبت درخواست'}</button>
-        <button type="button" className="btn btn--ghost btn--full" style={{ marginTop: 8 }} onClick={reset}>بازگشت</button>
+        <button className="btn btn--dark btn--full" disabled={loading}>{loading ? c.submitting : c.submit}</button>
+        <button type="button" className="btn btn--ghost btn--full" style={{ marginTop: 8 }} onClick={reset}>{c.back}</button>
       </form>
     );
   }
@@ -121,27 +145,27 @@ export default function SignupWizard() {
       branch: form.branch, birthDate: form.birthDate, idCardImage: form.idCardImage,
     })}>
       <div className="form-shell__head">
-        <h2>ساخت حساب کاربری هنرجو</h2>
-        <p>اطلاعات زیر را کامل کنید تا پس از تأیید، حساب کاربری شما ساخته شود.</p>
+        <h2>{c.studentTitle}</h2>
+        <p>{c.formSubtitle}</p>
       </div>
       {error && <div className="alert alert--error">{error}</div>}
-      <div className="form-group"><label className="form-label">نام</label>
+      <div className="form-group"><label className="form-label">{c.labelFirstName}</label>
         <input className="form-input" required value={form.firstName} onChange={(e) => set('firstName', e.target.value)} /></div>
-      <div className="form-group"><label className="form-label">نام خانوادگی</label>
+      <div className="form-group"><label className="form-label">{c.labelLastName}</label>
         <input className="form-input" required value={form.lastName} onChange={(e) => set('lastName', e.target.value)} /></div>
-      <div className="form-group"><label className="form-label">شماره تماس</label>
+      <div className="form-group"><label className="form-label">{c.labelPhone}</label>
         <input className="form-input" dir="ltr" type="tel" inputMode="numeric" required placeholder="09xxxxxxxxx"
           value={form.phone} onChange={(e) => set('phone', e.target.value)} /></div>
-      <div className="form-group"><label className="form-label">تاریخ تولد</label>
+      <div className="form-group"><label className="form-label">{c.labelBirthDate}</label>
         <input className="form-input" dir="ltr" required placeholder="مثلاً ۱۳۸۰/۰۵/۱۲"
           value={form.birthDate} onChange={(e) => set('birthDate', e.target.value)} /></div>
-      <div className="form-group"><label className="form-label">شعبه ثبت‌نامی</label>
+      <div className="form-group"><label className="form-label">{c.labelBranch}</label>
         <select className="form-input" value={form.branch} onChange={(e) => set('branch', e.target.value)}>
           <option value="تهران">تهران</option>
           <option value="ساری">ساری</option>
         </select></div>
       <div className="form-group">
-        <label className="form-label">عکس شناسنامه یا کارت ملی</label>
+        <label className="form-label">{c.labelIdCard}</label>
         <input className="form-input" type="file" accept="image/png,image/jpeg,image/webp"
           onChange={(e) => uploadIdCard(e.target.files?.[0])} />
         {uploading && <p style={{ color: 'var(--muted)', fontSize: '.82rem', marginTop: 6 }}>در حال بارگذاری عکس…</p>}
@@ -152,8 +176,8 @@ export default function SignupWizard() {
           </div>
         )}
       </div>
-      <button className="btn btn--dark btn--full" disabled={loading || uploading}>{loading ? 'در حال ثبت…' : 'ثبت درخواست'}</button>
-      <button type="button" className="btn btn--ghost btn--full" style={{ marginTop: 8 }} onClick={reset}>بازگشت</button>
+      <button className="btn btn--dark btn--full" disabled={loading || uploading}>{loading ? c.submitting : c.submit}</button>
+      <button type="button" className="btn btn--ghost btn--full" style={{ marginTop: 8 }} onClick={reset}>{c.back}</button>
     </form>
   );
 }

@@ -3,12 +3,11 @@ import PageLayout from '@/components/PageLayout';
 import PageSlider from '@/components/PageSlider';
 import Icon from '@/components/Icon';
 import { loadContent, splitLines } from '@/lib/siteContent';
+import { pageMetadata } from '@/lib/pageMeta';
 
-export const metadata = {
-  title: 'درباره ما — آموزشگاه رایگان بازیگری',
-  description: 'آشنایی با خانواده برداشت، اولین آموزشگاه رایگان بازیگری سینما در ایران. داستان ما، تیم آموزشی، شعبه تهران و مازندران.',
-  alternates: { canonical: 'https://www.bardashtt.com/about' },
-};
+export async function generateMetadata() {
+  return pageMetadata('about');
+}
 
 export const dynamic = 'force-dynamic';
 

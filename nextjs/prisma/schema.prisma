@@ -487,3 +487,21 @@ model BookOrder {
   @@index([phone])
   @@index([gatewayTrackId])
 }
+
+// گزارش تغییرات مدیریتی: چه کسی، کِی، چه چیزی را عوض کرد.
+// عمداً به User رابطه ندارد تا حذف یک حساب، تاریخچه‌اش را پاک نکند.
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String? // شناسهٔ کاربرِ انجام‌دهنده
+  actorName  String? // نام نمایشی در همان لحظه
+  actorRole  String? // نقش در همان لحظه (admin | editor)
+  action     String // content.update | user.role | user.password | user.active | ...
+  targetType String? // siteContent | user | ...
+  targetId   String? // شناسه یا کلیدِ هدف
+  summary    String? // توضیح کوتاه فارسی برای نمایش در پنل
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([action])
+  @@index([actorId])
+}

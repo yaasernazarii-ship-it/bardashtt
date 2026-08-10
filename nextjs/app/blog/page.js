@@ -3,12 +3,11 @@ import SimplePage from '@/components/SimplePage';
 import SectionPosts from '@/components/SectionPosts';
 import { loadContent, splitLines } from '@/lib/siteContent';
 import { BLOG_CATEGORIES } from '@/lib/blogCategories';
+import { pageMetadata } from '@/lib/pageMeta';
 
-export const metadata = {
-  title: 'مقاله‌ها',
-  description: 'مطالب آموزشی و تحلیلی درباره بازیگری و سینما.',
-  alternates: { canonical: 'https://www.bardashtt.com/blog' },
-};
+export async function generateMetadata() {
+  return pageMetadata('blog');
+}
 
 export const dynamic = 'force-dynamic';
 

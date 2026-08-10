@@ -1,4 +1,6 @@
 import { prisma } from '@/lib/prisma';
+import { SEO_GROUPS } from '@/lib/seoFields';
+import { FORM_GROUPS } from '@/lib/formFields';
 
 // رجیستری متن‌های قابل‌ویرایش صفحات.
 // هر فیلد: key یکتا، label فارسی، type ('text' | 'textarea' | 'image' | 'images' | 'list')، و مقدار پیش‌فرض.
@@ -377,6 +379,65 @@ export const CONTENT_GROUPS = [
       { key: 'about.edu2.image', label: 'گواهی تحصیلی ۲', type: 'image', default: '/edu-oxford.jpg' },
     ],
   },
+  {
+    id: 'navMenu',
+    title: 'منوی بالای سایت',
+    fields: [
+      {
+        key: 'nav.menu',
+        label:
+          'آیتم‌های منو — هر خط یک آیتم به شکل «نام | نشانی». خطی که نشانی ندارد یک منوی کشویی می‌سازد و خط‌های بعدی که با «-» شروع شوند زیرمجموعهٔ آن هستند. برای خط جداکننده داخل کشویی بنویسید «- ---». ترتیب خط‌ها همان ترتیب نمایش است.',
+        type: 'list',
+        default: [
+          'خانه | /',
+          'درباره ما | /about',
+          'دوره‌ها | /courses',
+          'آموزش',
+          '- یادگیری آنلاین | /online-learning',
+          '- آزمون فارغ‌التحصیلی | /certificate',
+          '- استعلام گواهینامه | /verify',
+          '- داشبورد هنرجو | /dashboard',
+          'بازیگران | /actors',
+          'گالری | /gallery',
+          'آثار',
+          '- خروجی خانواده برداشت | /works/output',
+          '- ---',
+          '- تولیدات تبلیغاتی | /works/advertising',
+          '- ---',
+          '- پشتوانه علمی و هنری | /works/resume',
+          'اخبار | /news',
+          'مقاله‌ها | /blog',
+          'مسئولیت اجتماعی | /social-responsibility',
+        ].join('\n'),
+      },
+      { key: 'nav.support.button', label: 'نام دکمهٔ پشتیبانی در نوار بالا', type: 'text', default: 'پشتیبانی' },
+      { key: 'nav.support.faq', label: 'گزینهٔ سوالات متداول در کشویی پشتیبانی', type: 'text', default: 'سوالات متداول' },
+      { key: 'nav.support.chat', label: 'گزینهٔ گفت‌وگوی زنده', type: 'text', default: 'پشتیبانی آنلاین' },
+      { key: 'nav.support.chatHint', label: 'زیرنویس گزینهٔ گفت‌وگوی زنده', type: 'text', default: 'گفت‌وگوی زنده با تیم ما' },
+      { key: 'nav.support.callLabel', label: 'عنوان گزینهٔ تماس', type: 'text', default: 'تماس با ما' },
+      { key: 'nav.support.phoneText', label: 'شمارهٔ نمایشی تماس', type: 'text', default: '021-91090934' },
+      { key: 'nav.support.phoneHref', label: 'شمارهٔ تماس برای دکمهٔ شماره‌گیری (فقط رقم)', type: 'text', default: '02191090934' },
+      { key: 'nav.btn.login', label: 'دکمهٔ ورود', type: 'text', default: 'ورود' },
+      { key: 'nav.btn.dashboard', label: 'دکمهٔ داشبورد (کاربر واردشده)', type: 'text', default: 'داشبورد' },
+      { key: 'nav.btn.logout', label: 'دکمهٔ خروج', type: 'text', default: 'خروج' },
+      { key: 'nav.drawer.title', label: 'عنوان منوی موبایل', type: 'text', default: 'منوی سایت' },
+      { key: 'nav.drawer.subtitle', label: 'زیرعنوان منوی موبایل', type: 'text', default: 'خانواده برداشت' },
+    ],
+  },
+  {
+    id: 'footer',
+    title: 'فوتر (پایین همهٔ صفحات)',
+    fields: [
+      { key: 'footer.copyright', label: 'متن کپی‌رایت', type: 'text', default: '© ۱۴۰۳ خانواده برداشت — تمامی حقوق محفوظ است' },
+      { key: 'footer.instagram', label: 'نشانی اینستاگرام (خالی = پنهان شود)', type: 'text', default: 'https://instagram.com/bardashtt' },
+      { key: 'footer.bale', label: 'نشانی بله (خالی = پنهان شود)', type: 'text', default: 'https://ble.ir/bardasht_family' },
+      { key: 'footer.phone', label: 'شمارهٔ تماس فوتر، فقط رقم (خالی = پنهان شود)', type: 'text', default: '02191090934' },
+      { key: 'footer.enamad.id', label: 'شناسهٔ نماد اعتماد الکترونیکی (خالی = نماد نمایش داده نشود)', type: 'text', default: '6904582' },
+      { key: 'footer.enamad.code', label: 'کد نماد اعتماد الکترونیکی', type: 'text', default: 'jrlGjZiXKgnOIz1eCEqYDxlgu851c6iO' },
+    ],
+  },
+  ...FORM_GROUPS,
+  ...SEO_GROUPS,
 ];
 
 // نگاشت key → فیلد (برای اعتبارسنجی و مقدار پیش‌فرض)

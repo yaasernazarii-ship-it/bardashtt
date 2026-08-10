@@ -1,11 +1,10 @@
 import SimplePage from '@/components/SimplePage';
 import { loadContent, splitLines } from '@/lib/siteContent';
+import { pageMetadata } from '@/lib/pageMeta';
 
-export const metadata = {
-  title: 'آزمون فارغ‌التحصیلی',
-  description: 'آزمون و مسیر دریافت گواهینامه خانواده برداشت.',
-  alternates: { canonical: 'https://www.bardashtt.com/certificate' },
-};
+export async function generateMetadata() {
+  return pageMetadata('certificate');
+}
 
 export const dynamic = 'force-dynamic';
 

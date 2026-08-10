@@ -3,12 +3,11 @@ import SectionPosts from '@/components/SectionPosts';
 import BookList from '@/components/BookList';
 import SRTabs from '@/components/SRTabs';
 import { loadContent, splitLines } from '@/lib/siteContent';
+import { pageMetadata } from '@/lib/pageMeta';
 
-export const metadata = {
-  title: 'مسئولیت اجتماعی',
-  description: 'فعالیت‌های فرهنگی و اجتماعی خانواده برداشت: معرفی و خرید کتاب، پادکست، عکس، ویدئو و آگاهی‌سازی.',
-  alternates: { canonical: 'https://www.bardashtt.com/social-responsibility' },
-};
+export async function generateMetadata() {
+  return pageMetadata('socialResponsibility');
+}
 
 export const dynamic = 'force-dynamic';
 

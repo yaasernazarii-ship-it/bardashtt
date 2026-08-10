@@ -11,7 +11,28 @@ function safeNext() {
   return '/dashboard';
 }
 
-export default function AuthForm() {
+// متن‌ها از پنل («متن صفحات» ← «فرم ورود») می‌آیند و به‌صورت prop می‌رسند.
+// مقادیر زیر فقط پشتیبانِ حالتی هستند که content ارسال نشده باشد.
+const FALLBACK = {
+  pwTitle: 'ورود هنرجویان',
+  pwSubtitle: 'با نام کاربری و رمزی که پس از تأیید حساب برایتان ارسال شده وارد شوید.',
+  pwUsername: 'نام کاربری',
+  pwPassword: 'رمز عبور',
+  pwRemember: 'مرا به خاطر بسپار',
+  pwSubmit: 'ورود',
+  pwForgot: 'ورود با شماره موبایل و کد پیامکی',
+  smsTitle: 'ورود با کد پیامکی',
+  smsSubtitle: 'شماره موبایلِ ثبت‌شده در حسابتان را وارد کنید تا کد تأیید برایتان پیامک شود.',
+  smsPhone: 'شماره موبایل',
+  smsSend: 'ارسال کد تأیید',
+  smsCode: 'کد تأیید پیامک‌شده',
+  smsEditPhone: 'اصلاح شماره موبایل',
+  smsBack: 'بازگشت به ورود با نام کاربری و رمز',
+  wait: 'لطفاً صبر کنید…',
+};
+
+export default function AuthForm({ content }) {
+  const c = { ...FALLBACK, ...(content || {}) };
   const router = useRouter();
   // mode: password (ورود عادی) | recover (بازیابی با کد پیامکی برای حساب تأییدشده)
   const [mode, setMode] = useState('password');
@@ -105,28 +126,28 @@ export default function AuthForm() {
         <>
           <form onSubmit={loginPassword}>
             <div className="form-shell__head">
-              <h2>ورود هنرجویان</h2>
-              <p>با نام کاربری و رمزی که پس از تأیید حساب برایتان ارسال شده وارد شوید.</p>
+              <h2>{c.pwTitle}</h2>
+              <p>{c.pwSubtitle}</p>
             </div>
             <div className="form-group">
-              <label className="form-label">نام کاربری</label>
+              <label className="form-label">{c.pwUsername}</label>
               <input className="form-input" dir="ltr" autoComplete="username" required value={username} onChange={(e) => setUsername(e.target.value)} />
             </div>
             <div className="form-group">
-              <label className="form-label">رمز عبور</label>
+              <label className="form-label">{c.pwPassword}</label>
               <input className="form-input" dir="ltr" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, cursor: 'pointer', color: 'var(--muted)' }}>
               <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-              <span>مرا به خاطر بسپار</span>
+              <span>{c.pwRemember}</span>
             </label>
-            <button className="btn btn--dark btn--full" disabled={loading}>{loading ? 'لطفاً صبر کنید…' : 'ورود'}</button>
+            <button className="btn btn--dark btn--full" disabled={loading}>{loading ? c.wait : c.pwSubmit}</button>
           </form>
 
           <p className="form-hint" style={{ textAlign: 'center', marginTop: 16 }}>
             <button type="button" onClick={() => switchMode('recover')}
               style={{ background: 'none', border: 'none', color: 'var(--dark)', fontWeight: 800, cursor: 'pointer', font: 'inherit' }}>
-              ورود با شماره موبایل و کد پیامکی
+              {c.pwForgot}
             </button>
           </p>
         </>
@@ -135,29 +156,29 @@ export default function AuthForm() {
       {mode === 'recover' && (
         <>
           <div className="form-shell__head">
-            <h2>ورود با کد پیامکی</h2>
-            <p>شماره موبایلِ ثبت‌شده در حسابتان را وارد کنید تا کد تأیید برایتان پیامک شود.</p>
+            <h2>{c.smsTitle}</h2>
+            <p>{c.smsSubtitle}</p>
           </div>
 
           {recoverStep === 'phone' ? (
             <form onSubmit={sendCode}>
               <div className="form-group">
-                <label className="form-label">شماره موبایل</label>
+                <label className="form-label">{c.smsPhone}</label>
                 <input className="form-input" dir="ltr" inputMode="numeric" autoComplete="tel" placeholder="09xxxxxxxxx" required value={phone} onChange={(e) => setPhone(e.target.value)} />
               </div>
-              <button className="btn btn--dark btn--full" disabled={loading}>{loading ? 'لطفاً صبر کنید…' : 'ارسال کد تأیید'}</button>
+              <button className="btn btn--dark btn--full" disabled={loading}>{loading ? c.wait : c.smsSend}</button>
             </form>
           ) : (
             <form onSubmit={verifyCode}>
               <div className="form-group">
-                <label className="form-label">کد تأیید پیامک‌شده</label>
+                <label className="form-label">{c.smsCode}</label>
                 <input className="form-input" dir="ltr" inputMode="numeric" autoComplete="one-time-code" placeholder="****" required value={code} onChange={(e) => setCode(e.target.value)} />
               </div>
-              <button className="btn btn--dark btn--full" disabled={loading}>{loading ? 'لطفاً صبر کنید…' : 'ورود'}</button>
+              <button className="btn btn--dark btn--full" disabled={loading}>{loading ? c.wait : c.pwSubmit}</button>
               <p className="form-hint" style={{ textAlign: 'center', marginTop: 12 }}>
                 <button type="button" onClick={() => { setRecoverStep('phone'); setError(''); }}
                   style={{ background: 'none', border: 'none', color: 'var(--muted)', fontWeight: 700, cursor: 'pointer', font: 'inherit' }}>
-                  اصلاح شماره موبایل
+                  {c.smsEditPhone}
                 </button>
               </p>
             </form>
@@ -166,7 +187,7 @@ export default function AuthForm() {
           <p className="form-hint" style={{ textAlign: 'center', marginTop: 16 }}>
             <button type="button" onClick={() => switchMode('password')}
               style={{ background: 'none', border: 'none', color: 'var(--dark)', fontWeight: 800, cursor: 'pointer', font: 'inherit' }}>
-              بازگشت به ورود با نام کاربری و رمز
+              {c.smsBack}
             </button>
           </p>
         </>

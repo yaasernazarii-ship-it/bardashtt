@@ -4,7 +4,15 @@ import { useState } from 'react';
 import AuthForm from '@/components/AuthForm';
 import SignupWizard from '@/components/SignupWizard';
 
-export default function AccountPanel({ initialView = 'login' }) {
+export default function AccountPanel({ initialView = 'login', auth, signup }) {
+  // برچسب تب‌ها از پنل («متن صفحات» ← «فرم ورود») می‌آید.
+  const c = {
+    tabLogin: 'ورود به حساب',
+    tabSignup: 'ساخت حساب کاربری',
+    toSignup: 'حساب ندارید؟',
+    toLogin: 'قبلاً ثبت‌نام کرده‌اید؟',
+    ...(auth || {}),
+  };
   const [view, setView] = useState(initialView); // login | signup
 
   const tabStyle = (active) => ({
@@ -24,28 +32,28 @@ export default function AccountPanel({ initialView = 'login' }) {
     <div>
       <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
         <button type="button" style={tabStyle(view === 'login')} onClick={() => setView('login')}>
-          ورود به حساب
+          {c.tabLogin}
         </button>
         <button type="button" style={tabStyle(view === 'signup')} onClick={() => setView('signup')}>
-          ساخت حساب کاربری
+          {c.tabSignup}
         </button>
       </div>
 
-      {view === 'login' ? <AuthForm /> : <SignupWizard />}
+      {view === 'login' ? <AuthForm content={auth} /> : <SignupWizard content={signup} />}
 
       <p className="form-hint" style={{ textAlign: 'center', marginTop: 14 }}>
         {view === 'login' ? (
-          <>حساب ندارید؟{' '}
+          <>{c.toSignup}{' '}
             <button type="button" onClick={() => setView('signup')}
               style={{ background: 'none', border: 'none', color: 'var(--dark)', fontWeight: 800, cursor: 'pointer', font: 'inherit' }}>
-              ساخت حساب کاربری
+              {c.tabSignup}
             </button>
           </>
         ) : (
-          <>قبلاً ثبت‌نام کرده‌اید؟{' '}
+          <>{c.toLogin}{' '}
             <button type="button" onClick={() => setView('login')}
               style={{ background: 'none', border: 'none', color: 'var(--dark)', fontWeight: 800, cursor: 'pointer', font: 'inherit' }}>
-              ورود به حساب
+              {c.tabLogin}
             </button>
           </>
         )}

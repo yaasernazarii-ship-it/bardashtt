@@ -1,40 +1,35 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
 import AccountPanel from '@/components/AccountPanel';
+import { pageMetadata } from '@/lib/pageMeta';
+import { loadContent } from '@/lib/siteContent';
+import { authContent, signupContent, parsePairs } from '@/lib/formContent';
 
-const perks = [
-  { title: 'حساب تأییدشده', text: 'حساب شما پس از بررسی و تأیید خانواده برداشت ساخته می‌شود.' },
-  { title: 'دسترسی متمرکز', text: 'کلاس‌ها، آزمون‌ها و وضعیت آموزشی شما در یک فضای ساده.' },
-  { title: 'ورود امن', text: 'با نام کاربری و رمز اختصاصی وارد می‌شوید؛ در صورت فراموشی رمز، با کد پیامکی حسابتان را بازیابی می‌کنید.' },
-];
+export async function generateMetadata() {
+  return pageMetadata('auth');
+}
 
-export const metadata = {
-  title: 'ورود هنرجویان',
-  description: 'ورود به حساب کاربری خانواده برداشت با نام کاربری و رمز عبور.',
-  alternates: { canonical: 'https://www.bardashtt.com/auth' },
-  // صفحهٔ ورود ارزش جست‌وجویی ندارد و نباید در نتایج گوگل بیاید. عمداً در
-  // robots.txt مسدود نشده تا خزندهٔ گوگل بتواند همین noindex را ببیند و
-  // نسخهٔ ایندکس‌شدهٔ فعلی را از نتایج بردارد.
-  robots: { index: false, follow: true },
-};
+export const dynamic = 'force-dynamic';
 
-export default function AuthPage() {
+export default async function AuthPage() {
+  const t = await loadContent();
+  const perks = parsePairs(t('auth.page.perks'));
   return (
     <PageLayout>
       <div className="page-header">
         <div className="page-header__inner">
-          <div className="page-header__tag">ورود هنرجویان</div>
-          <h1>ورود به حساب کاربری</h1>
-          <p>برای دسترسی به وضعیت آموزشی، برنامه کلاس‌ها و خدمات هنرجویی، با نام کاربری و رمز عبور خود وارد شوید.</p>
+          <div className="page-header__tag">{t('auth.page.tag')}</div>
+          <h1>{t('auth.page.title')}</h1>
+          <p>{t('auth.page.subtitle')}</p>
           <div className="breadcrumb"><Link href="/">خانه</Link> › ورود</div>
         </div>
       </div>
       <section style={{ background: 'var(--surface)' }}>
         <div className="container split-layout split-layout--compact">
           <div className="stack-card">
-            <span className="tag tag--dark" style={{ marginBottom: 18 }}>مزایای حساب هنرجویی</span>
-            <h2 className="heading" style={{ fontSize: 'clamp(1.5rem,3vw,2.2rem)', marginBottom: 12 }}>همه چیز در یک پنل ساده و سریع</h2>
-            <p style={{ color: 'var(--muted)', lineHeight: 1.95, marginBottom: 20 }}>با ورود به حساب، مسیر آموزشی، دسترسی به دوره‌ها، اطلاع‌رسانی‌ها و وضعیت هنرجویی شما در یک محیط یکپارچه در دسترس خواهد بود.</p>
+            <span className="tag tag--dark" style={{ marginBottom: 18 }}>{t('auth.page.sideTag')}</span>
+            <h2 className="heading" style={{ fontSize: 'clamp(1.5rem,3vw,2.2rem)', marginBottom: 12 }}>{t('auth.page.sideHeading')}</h2>
+            <p style={{ color: 'var(--muted)', lineHeight: 1.95, marginBottom: 20 }}>{t('auth.page.sideText')}</p>
             <div className="feature-list">
               {perks.map((item, index) => (
                 <div key={item.title} className="feature-list__item">
@@ -48,7 +43,7 @@ export default function AuthPage() {
             </div>
           </div>
           <div>
-            <AccountPanel />
+            <AccountPanel auth={authContent(t)} signup={signupContent(t)} />
           </div>
         </div>
       </section>

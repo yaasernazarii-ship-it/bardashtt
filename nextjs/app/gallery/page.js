@@ -2,12 +2,11 @@ import SimplePage from '@/components/SimplePage';
 import GalleryBoard from '@/components/GalleryBoard';
 import SectionPosts from '@/components/SectionPosts';
 import { loadContent, splitLines } from '@/lib/siteContent';
+import { pageMetadata } from '@/lib/pageMeta';
 
-export const metadata = {
-  title: 'گالری',
-  description: 'گالری تصاویر کلاس‌ها، اردوها و فعالیت‌های خانواده برداشت.',
-  alternates: { canonical: 'https://www.bardashtt.com/gallery' },
-};
+export async function generateMetadata() {
+  return pageMetadata('gallery');
+}
 
 export const dynamic = 'force-dynamic';
 

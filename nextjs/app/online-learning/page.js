@@ -2,12 +2,11 @@ import SimplePage from '@/components/SimplePage';
 import SectionPosts from '@/components/SectionPosts';
 import CourseList from '@/components/CourseList';
 import { loadContent, splitLines } from '@/lib/siteContent';
+import { pageMetadata } from '@/lib/pageMeta';
 
-export const metadata = {
-  title: 'یادگیری آنلاین',
-  description: 'منابع آنلاین آموزشی خانواده برداشت برای تمرین بازیگری در خانه.',
-  alternates: { canonical: 'https://www.bardashtt.com/online-learning' },
-};
+export async function generateMetadata() {
+  return pageMetadata('onlineLearning');
+}
 
 export const dynamic = 'force-dynamic';
 

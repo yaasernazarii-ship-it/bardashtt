@@ -1,11 +1,10 @@
 import SimplePage from '@/components/SimplePage';
 import { loadContent, splitLines } from '@/lib/siteContent';
+import { pageMetadata } from '@/lib/pageMeta';
 
-export const metadata = {
-  title: 'بیمه هنرجویان',
-  description: 'پوشش بیمه‌ای و ایمنی هنرجویان در دوره‌ها و اردوهای خانواده برداشت.',
-  alternates: { canonical: 'https://www.bardashtt.com/insurance' },
-};
+export async function generateMetadata() {
+  return pageMetadata('insurance');
+}
 
 export const dynamic = 'force-dynamic';
 

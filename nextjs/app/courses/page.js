@@ -2,6 +2,7 @@ import PageLayout from '@/components/PageLayout';
 import CoursesExplorer from '@/components/CoursesExplorer';
 import PageSlider from '@/components/PageSlider';
 import { loadContent, splitLines } from '@/lib/siteContent';
+import { pageMetadata } from '@/lib/pageMeta';
 
 // شماره و رنگِ گرادیانِ هر دوره ثابت‌اند؛ متن و سرفصل‌ها از پنل می‌آیند.
 const NUMS = ['۰۱', '۰۲', '۰۳', '۰۴', '۰۵'];
@@ -13,11 +14,9 @@ const GRADS = [
   'linear-gradient(135deg,#2a0f0f 0%,#4a1c1c 100%)',
 ];
 
-export const metadata = {
-  title: 'دوره‌های بازیگری',
-  description: 'دوره‌های بازیگری مقدماتی، تکمیلی، اردو، پیشرفته و فیلمسازی در خانواده برداشت. ثبت‌نام کاملاً رایگان.',
-  alternates: { canonical: 'https://www.bardashtt.com/courses' },
-};
+export async function generateMetadata() {
+  return pageMetadata('courses');
+}
 
 export const dynamic = 'force-dynamic';
 

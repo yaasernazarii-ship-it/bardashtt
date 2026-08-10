@@ -7,6 +7,9 @@ import { uploadFile } from '@/lib/uploadClient';
 export default function AdminSiteContent() {
   const [groups, setGroups] = useState([]);
   const [values, setValues] = useState({});
+  const [initial, setInitial] = useState({});
+  const [openIds, setOpenIds] = useState([]);
+  const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -21,6 +24,9 @@ export default function AdminSiteContent() {
       const v = {};
       for (const g of data.groups) for (const f of g.fields) v[f.key] = f.value;
       setValues(v);
+      setInitial(v);
+      // بخش اول باز و بقیه بسته؛ با این تعداد فیلد، بازبودنِ همه صفحه را غیرقابل‌استفاده می‌کند.
+      setOpenIds(data.groups.length ? [data.groups[0].id] : []);
     } else {
       setError(data.error || 'خطا در بارگذاری.');
     }
@@ -57,19 +63,44 @@ export default function AdminSiteContent() {
     } else setError(data.error || 'آپلود ناموفق بود.');
   }
 
+  // فقط فیلدهای تغییرکرده ارسال می‌شوند؛ هم نوشتن بی‌مورد در دیتابیس کم می‌شود
+  // و هم «گزارش تغییرات» دقیقاً همان چیزی را نشان می‌دهد که واقعاً عوض شده.
+  const changedKeys = Object.keys(values).filter((k) => values[k] !== initial[k]);
+
   async function save(e) {
     e.preventDefault();
+    if (changedKeys.length === 0) { setOkMsg('تغییری برای ذخیره وجود ندارد.'); return; }
     setSaving(true); setError(''); setOkMsg('');
+    const updates = {};
+    for (const k of changedKeys) updates[k] = values[k];
     const res = await fetch('/api/admin/content', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ updates: values }),
+      body: JSON.stringify({ updates }),
     });
     const data = await res.json();
     setSaving(false);
-    if (data.ok) setOkMsg('تغییرات ذخیره شد و روی سایت اعمال شد.');
-    else setError(data.error || 'خطا در ذخیره.');
+    if (data.ok) {
+      setInitial(values);
+      setOkMsg('تغییرات ذخیره شد و روی سایت اعمال شد.');
+    } else setError(data.error || 'خطا در ذخیره.');
   }
+
+  function toggle(id) {
+    setOpenIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  }
+
+  const q = query.trim().toLowerCase();
+  const visibleGroups = q
+    ? groups
+        .map((g) => ({
+          ...g,
+          fields: g.fields.filter(
+            (f) => f.label.toLowerCase().includes(q) || f.key.toLowerCase().includes(q) || String(values[f.key] ?? '').toLowerCase().includes(q)
+          ),
+        }))
+        .filter((g) => g.fields.length > 0 || g.title.toLowerCase().includes(q))
+    : groups;
 
   if (loading) return <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p>;
 
@@ -78,10 +109,38 @@ export default function AdminSiteContent() {
       {error && <div className="alert alert--error" style={{ marginBottom: 12 }}>{error}</div>}
       {okMsg && <div className="alert alert--success" style={{ marginBottom: 12 }}>{okMsg}</div>}
 
-      {groups.map((g) => (
-        <div key={g.id} className="form-shell" style={{ marginBottom: 22 }}>
-          <h2 className="heading" style={{ fontSize: '1.1rem', marginBottom: 16 }}>{g.title}</h2>
-          {g.fields.map((f) => (
+      <div className="form-group">
+        <input
+          className="form-input"
+          type="search"
+          placeholder="جست‌وجو در عنوان فیلدها و متن‌ها… (مثلاً «منو»، «فوتر»، «عنوان سئو»)"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <p className="form-hint">
+          {q
+            ? `${visibleGroups.reduce((n, g) => n + g.fields.length, 0)} فیلد پیدا شد.`
+            : `${groups.reduce((n, g) => n + g.fields.length, 0)} فیلد در ${groups.length} بخش. روی عنوان هر بخش بزنید تا باز شود.`}
+        </p>
+      </div>
+
+      {visibleGroups.map((g) => {
+        const open = q ? true : openIds.includes(g.id);
+        const dirty = g.fields.filter((f) => values[f.key] !== initial[f.key]).length;
+        return (
+        <div key={g.id} className="form-shell" style={{ marginBottom: 14 }}>
+          <button
+            type="button"
+            onClick={() => toggle(g.id)}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', background: 'none', border: 'none', padding: 0, cursor: q ? 'default' : 'pointer', font: 'inherit', textAlign: 'right' }}
+          >
+            <span style={{ color: 'var(--muted)', fontSize: '.9rem' }}>{open ? '▾' : '◂'}</span>
+            <h2 className="heading" style={{ fontSize: '1.1rem', margin: 0, flex: 1 }}>{g.title}</h2>
+            {dirty > 0 && <span className="tag tag--gold" style={{ fontSize: '.72rem' }}>{dirty} تغییر ذخیره‌نشده</span>}
+            <span style={{ color: 'var(--muted)', fontSize: '.78rem' }}>{g.fields.length} فیلد</span>
+          </button>
+          {open && <div style={{ marginTop: 16 }} />}
+          {open && g.fields.map((f) => (
             <div className="form-group" key={f.key}>
               <label className="form-label">{f.label}</label>
               {f.type === 'image' ? (
@@ -140,12 +199,16 @@ export default function AdminSiteContent() {
             </div>
           ))}
         </div>
-      ))}
+        );
+      })}
 
-      <div style={{ position: 'sticky', bottom: 0, background: 'var(--bg)', padding: '12px 0' }}>
-        <button className="btn btn--dark" type="submit" disabled={saving}>
-          {saving ? 'در حال ذخیره…' : 'ذخیره همهٔ تغییرات'}
+      <div style={{ position: 'sticky', bottom: 0, background: 'var(--bg)', padding: '12px 0', display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+        <button className="btn btn--dark" type="submit" disabled={saving || changedKeys.length === 0}>
+          {saving ? 'در حال ذخیره…' : 'ذخیره تغییرات'}
         </button>
+        <span style={{ color: 'var(--muted)', fontSize: '.85rem' }}>
+          {changedKeys.length === 0 ? 'تغییری ثبت نشده.' : `${changedKeys.length} فیلد تغییر کرده و ذخیره نشده است.`}
+        </span>
       </div>
     </form>
   );

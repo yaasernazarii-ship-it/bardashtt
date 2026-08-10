@@ -2,23 +2,18 @@ import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
 import SignupWizard from '@/components/SignupWizard';
 import { loadContent } from '@/lib/siteContent';
+import { pageMetadata } from '@/lib/pageMeta';
+import { signupContent, parsePairs } from '@/lib/formContent';
 
-const benefits = [
-  { title: 'کاملاً رایگان', text: 'تمام مسیر آموزشی اصلی بدون شهریه برگزار می‌شود.' },
-  { title: 'ارتباط مستقیم', text: 'پس از ثبت درخواست، تیم پشتیبانی برای مراحل بعدی با شما تماس می‌گیرد.' },
-  { title: 'مسیر مرحله‌ای', text: 'از آشنایی اولیه تا ورود به فضای حرفه‌ای بازیگری.' },
-];
-
-export const metadata = {
-  title: 'ثبت‌نام رایگان',
-  description: 'ثبت درخواست عضویت در خانواده برداشت برای شروع مسیر آموزش رایگان بازیگری سینما.',
-  alternates: { canonical: 'https://www.bardashtt.com/register' },
-};
+export async function generateMetadata() {
+  return pageMetadata('register');
+}
 
 export const dynamic = 'force-dynamic';
 
 export default async function RegisterPage() {
   const t = await loadContent();
+  const benefits = parsePairs(t('register.benefits'));
   return (
     <PageLayout>
       <div className="page-header">
@@ -32,7 +27,7 @@ export default async function RegisterPage() {
       <section style={{ background: 'var(--surface)' }}>
         <div className="container split-layout">
           <div className="stack-card stack-card--dark">
-            <span className="tag tag--gold" style={{ marginBottom: 18 }}>چرا از اینجا شروع کنیم؟</span>
+            <span className="tag tag--gold" style={{ marginBottom: 18 }}>{t('register.benefits.tag')}</span>
             <h2 className="heading" style={{ color: '#fff', fontSize: 'clamp(1.5rem,3vw,2.2rem)', marginBottom: 12 }}>{t('register.side.heading')}</h2>
             <p style={{ lineHeight: 1.95, marginBottom: 20 }}>{t('register.side.text')}</p>
             <div className="feature-list">
@@ -47,7 +42,7 @@ export default async function RegisterPage() {
               ))}
             </div>
           </div>
-          <SignupWizard />
+          <SignupWizard content={signupContent(t)} />
         </div>
       </section>
     </PageLayout>

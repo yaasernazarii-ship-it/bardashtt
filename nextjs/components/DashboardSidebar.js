@@ -39,6 +39,7 @@ const MANAGER_ITEMS = [
   { key: 'content', href: '/dashboard/admin/content', icon: 'fileText', label: 'متن صفحات' },
   { key: 'links', href: '/dashboard/admin/links', icon: 'link', label: 'لینک صفحات' },
   { key: 'admin', href: '/dashboard/admin', icon: 'settings', label: 'کاربران' },
+  { key: 'audit', href: '/dashboard/admin/audit', icon: 'clipboard', label: 'گزارش تغییرات' },
 ];
 
 function itemsForRole(role, graduated) {

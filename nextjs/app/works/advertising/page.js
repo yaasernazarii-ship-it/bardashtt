@@ -1,12 +1,11 @@
 import SimplePage from '@/components/SimplePage';
 import SectionPosts from '@/components/SectionPosts';
 import { loadContent, splitLines } from '@/lib/siteContent';
+import { pageMetadata } from '@/lib/pageMeta';
 
-export const metadata = {
-  title: 'تولیدات تبلیغاتی',
-  description: 'معرفی پروژه‌های تبلیغاتی و ویدیویی تولیدشده توسط هنرجویان و تیم خانواده برداشت.',
-  alternates: { canonical: 'https://www.bardashtt.com/works/advertising' },
-};
+export async function generateMetadata() {
+  return pageMetadata('worksAdvertising');
+}
 
 export const dynamic = 'force-dynamic';
 
