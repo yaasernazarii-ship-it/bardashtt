@@ -104,6 +104,14 @@ export default function ExamRunner() {
     return () => clearInterval(t);
   }, [state?.current, goNext]);
 
+  // آزمون شروع‌شده وقفه ندارد؛ اگر کاربر بخواهد صفحه را ببندد، مرورگر هشدار می‌دهد.
+  useEffect(() => {
+    if (!state?.current) return undefined;
+    const warn = (e) => { e.preventDefault(); e.returnValue = ''; };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [state?.current]);
+
   async function start() {
     setBusy(true); setError(''); setResult(null);
     try {
@@ -118,21 +126,32 @@ export default function ExamRunner() {
     }
   }
 
+  // انتخاب گزینه قطعی است: بعد از ثبت، نه عوض می‌شود و نه برداشته می‌شود.
   async function pick(questionId, index) {
     const current = state?.current;
-    if (!current) return;
-    const next = choice === index ? null : index;
-    setChoice(next);
+    if (!current || choice !== null) return;
+    setChoice(index);
     try {
       const res = await fetch('/api/exam/answer', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ attemptId: current.id, questionId, choice: next }),
+        body: JSON.stringify({ attemptId: current.id, questionId, choice: index }),
       });
       const data = await res.json();
-      if (!data.ok && data.expired) submit(current.id, true);
-      else if (!data.ok && data.moved) await load();
+      if (data.ok) {
+        setState((s) => (s?.current ? { ...s, current: { ...s.current, choice: index, answeredCount: data.answered } } : s));
+      } else if (data.expired) {
+        submit(current.id, true);
+      } else if (data.locked) {
+        setChoice(data.choice);
+      } else if (data.moved) {
+        await load();
+      } else {
+        setChoice(null);
+        setError(data.error || 'ثبت پاسخ ممکن نشد؛ دوباره تلاش کنید.');
+      }
     } catch {
+      setChoice(null);
       setError('پاسخ ذخیره نشد؛ اتصال اینترنت را بررسی کنید.');
     }
   }
@@ -143,6 +162,7 @@ export default function ExamRunner() {
   const cfg = state.config;
   const current = state.current;
   const q = current?.question;
+  const locked = choice !== null; // گزینه انتخاب شده و دیگر قابل تغییر نیست
 
   return (
     <div style={{ display: 'grid', gap: 18 }}>
@@ -199,8 +219,8 @@ export default function ExamRunner() {
           </div>
 
           <div className="alert alert--info">
-            به هر سوال {fa(current.perQuestionSec)} ثانیه فرصت دارید. با تمام‌شدن این زمان یا زدن دکمهٔ «سوال بعدی»،
-            سوال بسته می‌شود و <strong>امکان بازگشت به آن وجود ندارد</strong>.
+            به هر سوال {fa(current.perQuestionSec)} ثانیه فرصت دارید. گزینه‌ای که انتخاب کنید <strong>قطعی است و تغییر نمی‌کند</strong>،
+            و با تمام‌شدن زمان یا زدن دکمهٔ «سوال بعدی» <strong>بازگشت به این سوال ممکن نیست</strong>.
           </div>
 
           <div className="stack-card">
@@ -209,10 +229,12 @@ export default function ExamRunner() {
             <div style={{ display: 'grid', gap: 10 }}>
               {q.options.map((opt, i) => {
                 const selected = choice === i;
+                const dimmed = locked && !selected;
                 return (
                   <button
                     key={i}
                     type="button"
+                    disabled={locked}
                     onClick={() => pick(q.id, i)}
                     style={{
                       textAlign: 'right',
@@ -220,8 +242,9 @@ export default function ExamRunner() {
                       borderRadius: 12,
                       border: `1px solid ${selected ? 'var(--dark)' : 'var(--border)'}`,
                       background: selected ? 'var(--dark)' : '#fff',
-                      color: selected ? '#fff' : 'var(--dark)',
-                      cursor: 'pointer',
+                      color: selected ? '#fff' : dimmed ? 'var(--muted)' : 'var(--dark)',
+                      opacity: dimmed ? 0.6 : 1,
+                      cursor: locked ? 'default' : 'pointer',
                       font: 'inherit',
                       lineHeight: 1.8,
                     }}
@@ -232,15 +255,19 @@ export default function ExamRunner() {
               })}
             </div>
 
+            {locked && (
+              <p style={{ marginTop: 12, color: 'var(--muted)', lineHeight: 1.9 }}>
+                پاسخ شما ثبت شد. نتیجهٔ آزمون در پایان اعلام می‌شود.
+              </p>
+            )}
+
             <div style={{ marginTop: 18 }}>
               {confirming ? (
                 <>
                   <p style={{ marginBottom: 12, lineHeight: 1.9 }}>
                     {current.isLast
                       ? 'این آخرین سوال است. با تأیید، آزمون ثبت و تصحیح می‌شود.'
-                      : choice === null
-                        ? 'این سوال بی‌پاسخ می‌ماند و دیگر نمی‌توانید به آن برگردید. مطمئنید؟'
-                        : 'با رفتن به سوال بعدی، پاسخ همین سوال قطعی می‌شود و بازگشت ممکن نیست. مطمئنید؟'}
+                      : 'این سوال بی‌پاسخ می‌ماند و دیگر نمی‌توانید به آن برگردید. مطمئنید؟'}
                   </p>
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     <button className="btn btn--dark" disabled={busy} onClick={() => (current.isLast ? submit(current.id) : goNext(current.id, current.cursor))}>
@@ -250,7 +277,15 @@ export default function ExamRunner() {
                   </div>
                 </>
               ) : (
-                <button className={`btn ${current.isLast ? 'btn--gold' : 'btn--dark'} btn--full`} disabled={busy} onClick={() => setConfirming(true)}>
+                <button
+                  className={`btn ${current.isLast ? 'btn--gold' : 'btn--dark'} btn--full`}
+                  disabled={busy}
+                  onClick={() => {
+                    // وقتی پاسخ ثبت شده، چیزی برای تأیید نمانده؛ مستقیم جلو می‌رویم تا وقت هدر نرود.
+                    if (locked && !current.isLast) goNext(current.id, current.cursor);
+                    else setConfirming(true);
+                  }}
+                >
                   {current.isLast ? 'پایان و ثبت نهایی آزمون' : 'سوال بعدی'}
                 </button>
               )}
@@ -266,6 +301,9 @@ export default function ExamRunner() {
             <li>حد نصاب قبولی: {fa(cfg.passPercent)} درصد</li>
             <li>سوال‌ها یکی‌یکی نمایش داده می‌شوند و <strong>بازگشت به سوال قبلی ممکن نیست</strong>.</li>
             <li>با پایان مهلت هر سوال، خودکار به سوال بعدی می‌روید و سوال قبلی بسته می‌شود.</li>
+            <li>انتخاب گزینه قطعی است؛ پس از کلیک روی یک گزینه، امکان تغییر آن وجود ندارد.</li>
+            <li>درست یا غلط بودن پاسخ‌ها در حین آزمون نمایش داده نمی‌شود؛ نتیجه فقط در پایان اعلام می‌شود.</li>
+            <li>آزمون پس از شروع <strong>وقفه ندارد</strong>؛ زمان روی سرور می‌گذرد و با بستن صفحه یا قطعی اینترنت متوقف نمی‌شود.</li>
             <li>در پایان، آزمون بر اساس پاسخ‌های درست شما تصحیح می‌شود.</li>
           </ul>
 
@@ -273,6 +311,16 @@ export default function ExamRunner() {
             <div className="alert alert--success">شما در این آزمون قبول شده‌اید و نیازی به شرکت مجدد نیست.</div>
           ) : state.bankSize === 0 ? (
             <div className="alert alert--info">هنوز سوالی در بانک آزمون ثبت نشده است. لطفاً بعداً مراجعه کنید.</div>
+          ) : state.permitExempt ? (
+            <>
+              <div className="alert alert--info" style={{ marginBottom: 14 }}>
+                شما مدیر/ادیتور هستید و برای بازبینی آزمون به اجازه نیاز ندارید. این اجرا فقط برای بررسی است و
+                گواهی‌نامه‌ای از آن صادر نمی‌شود. قواعد آزمون (زمان هر سوال و قطعی‌بودن پاسخ‌ها) برای شما هم برقرار است.
+              </div>
+              <button className="btn btn--dark btn--full" disabled={busy} onClick={start}>
+                {busy ? 'در حال آماده‌سازی…' : 'شروع آزمون (بازبینی مدیر)'}
+              </button>
+            </>
           ) : !state.permit ? (
             <div className="alert alert--info">
               برای شرکت در آزمون باید مدیر یا ادیتور آموزشگاه به شما اجازه بدهد.

@@ -4,7 +4,8 @@ import { OPTION_COUNT } from '@/lib/exam';
 import { isAttemptOver, syncCursor } from '@/lib/examRun';
 
 // ثبت پاسخِ سوال جاری. فقط سوالی که هنرجو همین حالا روی آن است پذیرفته می‌شود؛
-// با گذشتن مهلتِ آن سوال، دیگر هیچ تغییری روی پاسخش ممکن نیست.
+// انتخاب گزینه قطعی است: پس از ثبت، نه قابل تغییر است و نه قابل حذف.
+// با گذشتن مهلتِ آن سوال هم دیگر هیچ تغییری روی پاسخش ممکن نیست.
 export async function PATCH(request) {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
@@ -18,9 +19,9 @@ export async function PATCH(request) {
 
   const attemptId = String(body.attemptId || '');
   const questionId = String(body.questionId || '');
-  const choice = body.choice === null ? null : Number(body.choice);
+  const choice = Number(body.choice);
 
-  if (choice !== null && (!Number.isInteger(choice) || choice < 0 || choice >= OPTION_COUNT)) {
+  if (!Number.isInteger(choice) || choice < 0 || choice >= OPTION_COUNT) {
     return Response.json({ ok: false, error: 'گزینهٔ نامعتبر است.' }, { status: 400 });
   }
 
@@ -46,9 +47,19 @@ export async function PATCH(request) {
   }
 
   const answers = { ...(attempt.answers && typeof attempt.answers === 'object' ? attempt.answers : {}) };
-  if (choice === null) delete answers[questionId];
-  else answers[questionId] = choice;
+
+  // گزینهٔ انتخاب‌شده قفل است؛ درخواست دوم برای همین سوال پذیرفته نمی‌شود.
+  if (answers[questionId] !== undefined) {
+    return Response.json({
+      ok: false,
+      error: 'پاسخ این سوال ثبت شده است و تغییر آن ممکن نیست.',
+      locked: true,
+      choice: answers[questionId],
+    }, { status: 409 });
+  }
+
+  answers[questionId] = choice;
 
   await prisma.examAttempt.update({ where: { id: attempt.id }, data: { answers } });
-  return Response.json({ ok: true, answered: Object.keys(answers).length });
+  return Response.json({ ok: true, answered: Object.keys(answers).length, choice });
 }

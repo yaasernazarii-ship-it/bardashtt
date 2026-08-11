@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import { isManager } from './auth';
 import { gradeAttempt } from './exam';
 import { issueCertificate } from './certificate';
 import { notifyUsers } from './notifications';
@@ -74,8 +75,9 @@ export async function finalizeAttempt(user, attempt) {
     },
   });
 
+  // آزمونِ بازبینیِ مدیر/ادیتور فقط نمره می‌گیرد؛ گواهی صادر نمی‌شود و فارغ‌التحصیل ثبت نمی‌شود.
   let certificate = null;
-  if (result.passed) {
+  if (result.passed && !isManager(user)) {
     try {
       certificate = await issueCertificate(user, { attemptId: attempt.id, percent: result.percent });
       // فارغ‌التحصیلی هنرجو با قبولی در آزمون ثبت می‌شود.

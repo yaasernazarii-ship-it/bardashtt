@@ -6,7 +6,7 @@ export const SCHOOL_NAME = 'آموزشگاه سینمایی تک برداشت';
 export const EXAM_QUESTION_COUNT = 100; // تعداد سوال هر آزمون
 // مهلت هر سوال جداگانه است و مهلت کل آزمون از جمعِ همین‌ها ساخته می‌شود.
 // چون بازگشت به سوال قبلی ممکن نیست، زمانِ استفاده‌نشدهٔ یک سوال به سوال بعدی منتقل نمی‌شود.
-export const EXAM_SECONDS_PER_QUESTION = 60; // مهلت پاسخ به هر سوال، به ثانیه
+export const EXAM_SECONDS_PER_QUESTION = 20; // مهلت پاسخ به هر سوال، به ثانیه
 export const EXAM_PASS_PERCENT = 70; // حد نصاب قبولی
 export const OPTION_COUNT = 4;
 

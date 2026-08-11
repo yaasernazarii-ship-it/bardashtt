@@ -8,8 +8,8 @@ import {
 } from '@/lib/exam';
 import { findUsablePermit, isAttemptOver, syncCursor } from '@/lib/examRun';
 
-// آزمون فارغ‌التحصیلی مخصوص هنرجوست؛ مدیر هم برای بازبینی می‌تواند آن را باز کند.
-// اما باز کردنِ صفحه کافی نیست: شروع آزمون به مجوزِ صادرشده توسط مدیر/ادیتور نیاز دارد.
+// آزمون فارغ‌التحصیلی مخصوص هنرجوست؛ مدیر و ادیتور هم برای بازبینی می‌توانند آن را باز کنند.
+// هنرجو بدون مجوزِ صادرشده نمی‌تواند شروع کند، ولی مدیر/ادیتور برای بازبینی مجوز لازم ندارد.
 function canTakeExam(user) {
   return user.role === 'student' || isManager(user);
 }
@@ -104,7 +104,9 @@ export async function GET() {
     },
     bankSize,
     permit: permitInfo(permit),
-    canStart: !open && !passedBefore && bankSize > 0 && !!permit,
+    // مدیر/ادیتور برای بازبینی آزمون به مجوز نیاز ندارد و نتیجه‌اش گواهی صادر نمی‌کند.
+    permitExempt: isManager(user),
+    canStart: !open && !passedBefore && bankSize > 0 && (!!permit || isManager(user)),
     passedBefore,
     expiredAttemptId: open && over ? open.id : null,
     current,
@@ -132,9 +134,10 @@ export async function POST() {
   const passed = await prisma.examAttempt.findFirst({ where: { userId: user.id, passed: true } });
   if (passed) return Response.json({ ok: false, error: 'شما قبلاً در این آزمون قبول شده‌اید.' }, { status: 409 });
 
-  // بدون اجازهٔ مدیر یا ادیتور، آزمون باز نمی‌شود.
-  const permit = await findUsablePermit(user.id, now);
-  if (!permit) {
+  // بدون اجازهٔ مدیر یا ادیتور، آزمون باز نمی‌شود. خودِ مدیر/ادیتور برای بازبینی مستثناست.
+  const exempt = isManager(user);
+  const permit = exempt ? null : await findUsablePermit(user.id, now);
+  if (!permit && !exempt) {
     return Response.json({
       ok: false,
       error: 'برای شرکت در آزمون باید مدیر یا ادیتور به شما اجازه بدهد. پس از صدور اجازه، همین صفحه دکمهٔ شروع را نشان می‌دهد.',
@@ -165,13 +168,15 @@ export async function POST() {
 
   // مجوز همین‌جا خرج می‌شود. شرط usedAt در updateMany جلوی مصرف دوباره‌ی
   // یک مجوز را در دو درخواست هم‌زمان می‌گیرد.
-  const spent = await prisma.examPermit.updateMany({
-    where: { id: permit.id, usedAt: null, revoked: false },
-    data: { usedAt: now, attemptId: attempt.id },
-  });
-  if (spent.count === 0) {
-    await prisma.examAttempt.delete({ where: { id: attempt.id } });
-    return Response.json({ ok: false, error: 'اجازهٔ آزمون شما معتبر نیست. با پشتیبانی تماس بگیرید.' }, { status: 403 });
+  if (permit) {
+    const spent = await prisma.examPermit.updateMany({
+      where: { id: permit.id, usedAt: null, revoked: false },
+      data: { usedAt: now, attemptId: attempt.id },
+    });
+    if (spent.count === 0) {
+      await prisma.examAttempt.delete({ where: { id: attempt.id } });
+      return Response.json({ ok: false, error: 'اجازهٔ آزمون شما معتبر نیست. با پشتیبانی تماس بگیرید.' }, { status: 403 });
+    }
   }
 
   return Response.json({ ok: true });
