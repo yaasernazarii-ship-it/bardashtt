@@ -6,7 +6,7 @@ const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long
 const fa = (n) => new Intl.NumberFormat('fa-IR', { useGrouping: false }).format(n ?? 0);
 const EMPTY = { text: '', options: ['', '', '', ''], correct: 0, topic: '' };
 
-export default function AdminExam({ questionCount, passPercent, secondsPerQuestion }) {
+export default function AdminExam({ questionCount, passPercent, secondsPerQuestion, classScoreMax, examWeight }) {
   const [tab, setTab] = useState('permits');
   const [items, setItems] = useState([]);
   const [activeCount, setActiveCount] = useState(0);
@@ -28,7 +28,10 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
   const [permitUser, setPermitUser] = useState('');
   const [permitDays, setPermitDays] = useState('7');
   const [permitNote, setPermitNote] = useState('');
+  const [permitScore, setPermitScore] = useState('');
   const [permitSearch, setPermitSearch] = useState('');
+  const [editScoreId, setEditScoreId] = useState(null);
+  const [editScore, setEditScore] = useState('');
 
   async function loadBank(q = '') {
     setLoading(true);
@@ -67,12 +70,17 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
       const res = await fetch('/api/admin/exam/permits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: permitUser, days: permitDays === '' ? null : Number(permitDays), note: permitNote }),
+        body: JSON.stringify({
+          userId: permitUser,
+          days: permitDays === '' ? null : Number(permitDays),
+          note: permitNote,
+          classScore: permitScore,
+        }),
       });
       const data = await res.json();
       if (!data.ok) { setError(data.error || 'صدور اجازه ناموفق بود.'); return; }
-      setNotice('اجازهٔ آزمون صادر شد و به هنرجو اطلاع داده شد.');
-      setPermitUser(''); setPermitNote('');
+      setNotice('اجازهٔ آزمون با نمرهٔ کلاسی ثبت شد و به هنرجو اطلاع داده شد.');
+      setPermitUser(''); setPermitNote(''); setPermitScore('');
       await loadPermits();
     } finally {
       setBusy(false);
@@ -94,10 +102,26 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
     await loadPermits();
   }
 
+  // اصلاح نمرهٔ کلاسی فقط تا پیش از شروع آزمون ممکن است؛ سرور هم همین را کنترل می‌کند.
+  async function saveScore(p) {
+    setError(''); setNotice('');
+    const res = await fetch('/api/admin/exam/permits', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: p.id, classScore: editScore }),
+    });
+    const data = await res.json();
+    if (!data.ok) { setError(data.error || 'ثبت نمرهٔ کلاسی ناموفق بود.'); return; }
+    setNotice('نمرهٔ کلاسی به‌روز شد.');
+    setEditScoreId(null); setEditScore('');
+    await loadPermits();
+  }
+
   function permitStatus(p) {
     if (p.usedAt) return { label: 'استفاده شده', color: 'var(--muted)' };
     if (p.revoked) return { label: 'باطل شده', color: '#dc2626' };
     if (p.expiresAt && new Date(p.expiresAt) <= new Date()) return { label: 'مهلت گذشته', color: '#dc2626' };
+    if (p.classScore === null) return { label: 'نمرهٔ کلاسی ثبت نشده — آزمون باز نمی‌شود', color: '#dc2626' };
     return { label: 'فعال — منتظر شرکت هنرجو', color: '#16a34a' };
   }
 
@@ -179,6 +203,10 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
         سوال فعال در بانک: <strong>{fa(activeCount)}</strong> — هر آزمون {fa(questionCount)} سوال تصادفی از همین بانک برمی‌دارد.
         {activeCount < questionCount && ' هنوز به تعداد لازم نرسیده‌اید؛ آزمون با همین تعداد موجود برگزار می‌شود.'}
         {' '}مهلت هر سوال: {fa(secondsPerQuestion)} ثانیه — حد نصاب قبولی: {fa(passPercent)} درصد.
+        <div style={{ marginTop: 6 }}>
+          نمرهٔ نهایی از ۱۰۰: <strong>{fa(examWeight)} نمره از آزمون کتبی</strong> + <strong>{fa(classScoreMax)} نمره تکلیف کلاسی</strong>.
+          نمرهٔ کلاسی را هنگام صدور اجازه ثبت می‌کنید و گواهی بر اساس نمرهٔ نهایی صادر می‌شود.
+        </div>
       </div>
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -194,6 +222,7 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
             <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 14 }}>
               هیچ هنرجویی بدون اجازهٔ شما نمی‌تواند آزمون بدهد. هر اجازه فقط یک بار مصرف می‌شود؛
               با شروع آزمون خرج می‌شود و برای شرکت دوباره باید اجازهٔ تازه صادر کنید.
+              نمرهٔ تکلیف کلاسی هم همین‌جا و پیش از شروع آزمون ثبت می‌شود.
             </p>
             <div className="form-group">
               <label className="form-label">هنرجو</label>
@@ -209,6 +238,15 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
               </select>
             </div>
             <div className="form-group">
+              <label className="form-label">نمرهٔ تکلیف و فعالیت کلاسی (از {fa(classScoreMax)})</label>
+              <input className="form-input" type="number" min={0} max={classScoreMax} step={1} required dir="ltr"
+                value={permitScore} onChange={(e) => setPermitScore(e.target.value)} placeholder={`عددی بین 0 تا ${classScoreMax}`} />
+              <span style={{ color: 'var(--muted)', fontSize: '.85rem' }}>
+                این نمره پیش از آزمون ثبت می‌شود و در پایان به سهم آزمون ({fa(examWeight)} نمره) اضافه می‌شود.
+                تا وقتی هنرجو آزمون را شروع نکرده، قابل اصلاح است؛ پس از شروع دیگر تغییر نمی‌کند.
+              </span>
+            </div>
+            <div className="form-group">
               <label className="form-label">مهلت استفاده (روز)</label>
               <input className="form-input" type="number" min={1} max={365} dir="ltr" value={permitDays}
                 onChange={(e) => setPermitDays(e.target.value)} placeholder="خالی = بدون مهلت" />
@@ -220,7 +258,7 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
               <label className="form-label">یادداشت (اختیاری)</label>
               <input className="form-input" value={permitNote} onChange={(e) => setPermitNote(e.target.value)} placeholder="مثلاً: تسویهٔ شهریه انجام شد" />
             </div>
-            <button className="btn btn--dark" disabled={busy || !permitUser}>{busy ? 'در حال صدور…' : 'صدور اجازه'}</button>
+            <button className="btn btn--dark" disabled={busy || !permitUser || permitScore === ''}>{busy ? 'در حال صدور…' : 'صدور اجازه و ثبت نمرهٔ کلاسی'}</button>
           </form>
 
           <div className="stack-card">
@@ -251,6 +289,24 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
                         <span style={{ color: 'var(--muted)' }}>
                           {p.expiresAt ? `مهلت: ${dateFmt.format(new Date(p.expiresAt))}` : 'بدون مهلت'}
                         </span>
+                        {editScoreId === p.id ? (
+                          <span style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                            <input className="form-input" type="number" min={0} max={classScoreMax} step={1} dir="ltr"
+                              style={{ width: 90 }} value={editScore} onChange={(e) => setEditScore(e.target.value)} />
+                            <button className="btn btn--dark" onClick={() => saveScore(p)}>ثبت</button>
+                            <button className="btn" onClick={() => { setEditScoreId(null); setEditScore(''); }}>انصراف</button>
+                          </span>
+                        ) : (
+                          <span>
+                            نمرهٔ کلاسی: <strong>{p.classScore === null ? '—' : `${fa(p.classScore)} از ${fa(classScoreMax)}`}</strong>
+                            {!p.usedAt && !p.revoked && (
+                              <button className="btn" style={{ marginRight: 8 }}
+                                onClick={() => { setEditScoreId(p.id); setEditScore(p.classScore === null ? '' : String(p.classScore)); }}>
+                                {p.classScore === null ? 'ثبت نمره' : 'اصلاح'}
+                              </button>
+                            )}
+                          </span>
+                        )}
                         <span style={{ fontWeight: 700, color: st.color }}>{st.label}</span>
                         {!p.usedAt && !p.revoked && (
                           <button className="btn btn--danger" onClick={() => revokePermit(p)}>باطل کن</button>
@@ -354,7 +410,15 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
                 <div key={a.id} style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'space-between', border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px' }}>
                   <span><strong>{a.user?.displayName || a.user?.username || '—'}</strong> <span dir="ltr" style={{ color: 'var(--muted)' }}>{a.user?.phone}</span></span>
                   <span style={{ color: 'var(--muted)' }}>{dateFmt.format(new Date(a.submittedAt || a.startedAt))}</span>
-                  <span>{a.submittedAt ? `${fa(a.score)} از ${fa(a.total)} (${fa(a.percent)}٪)` : 'در حال برگزاری'}</span>
+                  <span>{a.submittedAt ? `آزمون: ${fa(a.score)} از ${fa(a.total)} (${fa(a.percent)}٪)` : 'در حال برگزاری'}</span>
+                  {a.submittedAt && (
+                    <span style={{ color: 'var(--muted)' }}>
+                      کلاسی: {a.classScore === null ? '—' : `${fa(a.classScore)} از ${fa(classScoreMax)}`}
+                    </span>
+                  )}
+                  {a.submittedAt && (
+                    <span><strong>نمرهٔ نهایی: {fa(a.finalPercent ?? a.percent)} از ۱۰۰</strong></span>
+                  )}
                   {a.submittedAt && (
                     <span style={{ fontWeight: 700, color: a.passed ? '#16a34a' : '#dc2626' }}>{a.passed ? 'قبول' : 'مردود'}</span>
                   )}

@@ -62,13 +62,15 @@ export async function finalizeAttempt(user, attempt) {
   const ids = Array.isArray(attempt.questionIds) ? attempt.questionIds : [];
   const questions = await prisma.examQuestion.findMany({ where: { id: { in: ids } } });
   const answers = attempt.answers && typeof attempt.answers === 'object' ? attempt.answers : {};
-  const result = gradeAttempt(questions, answers);
+  // نمرهٔ کلاسی همان چیزی است که در لحظهٔ شروع در تلاش کپی شده؛ اینجا فقط به نمرهٔ آزمون افزوده می‌شود.
+  const result = gradeAttempt(questions, answers, attempt.classScore);
 
   await prisma.examAttempt.update({
     where: { id: attempt.id },
     data: {
       score: result.score,
       percent: result.percent,
+      finalPercent: result.finalPercent,
       passed: result.passed,
       cursor: attempt.total,
       submittedAt: new Date(),
@@ -79,7 +81,13 @@ export async function finalizeAttempt(user, attempt) {
   let certificate = null;
   if (result.passed && !isManager(user)) {
     try {
-      certificate = await issueCertificate(user, { attemptId: attempt.id, percent: result.percent });
+      // نمرهٔ درج‌شده روی گواهی، نمرهٔ نهایی است؛ ریز نمره هم برای استعلام ذخیره می‌شود.
+      certificate = await issueCertificate(user, {
+        attemptId: attempt.id,
+        percent: result.finalPercent,
+        examPercent: result.percent,
+        classScore: result.classScore,
+      });
       // فارغ‌التحصیلی هنرجو با قبولی در آزمون ثبت می‌شود.
       await prisma.user.update({ where: { id: user.id }, data: { graduated: true } });
       await notifyUsers([user.id], {

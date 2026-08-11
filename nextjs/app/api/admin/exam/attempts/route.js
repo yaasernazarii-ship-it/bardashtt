@@ -24,6 +24,8 @@ export async function GET() {
       total: a.total,
       score: a.score,
       percent: a.percent,
+      classScore: a.classScore,
+      finalPercent: a.finalPercent,
       passed: a.passed,
       startedAt: a.startedAt.toISOString(),
       submittedAt: a.submittedAt ? a.submittedAt.toISOString() : null,

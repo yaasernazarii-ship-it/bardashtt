@@ -161,6 +161,7 @@ model ExamPermit {
   attemptId     String?   @unique // تلاشی که این مجوز خرج آن شد
   revoked       Boolean   @default(false)
   note          String?
+  classScore    Int? // نمرهٔ تکلیف/فعالیت کلاسی از ۲۰؛ همراه با صدور اجازه و پیش از شروع آزمون ثبت می‌شود
 
   @@index([userId, revoked])
   @@index([grantedAt])
@@ -179,7 +180,9 @@ model ExamAttempt {
   perQuestionSec Int          @default(60) // مهلت پاسخ به هر سوال، به ثانیه
   questionEndsAt DateTime? // پایان مهلتِ سوال جاری
   score          Int? // تعداد پاسخ درست (پس از تصحیح)
-  percent        Int? // درصد نمره
+  percent        Int? // درصد نمرهٔ آزمون (فقط پاسخ‌های درست)
+  classScore     Int? // نمرهٔ کلاسیِ کپی‌شده از مجوز در لحظهٔ شروع؛ بعد از شروع تغییر نمی‌کند
+  finalPercent   Int? // نمرهٔ نهایی از ۱۰۰ = سهم آزمون + نمرهٔ کلاسی؛ ملاک قبولی و گواهی
   passed         Boolean      @default(false)
   startedAt      DateTime     @default(now())
   expiresAt      DateTime // پایان مهلت کل آزمون
@@ -204,7 +207,9 @@ model Certificate {
   nationalId  String?
   courseTitle String?
   branch      String?
-  percent     Int?
+  percent     Int? // نمرهٔ نهایی از ۱۰۰ که روی گواهی درج می‌شود
+  examPercent Int? // ریز نمره: درصد آزمون
+  classScore  Int? // ریز نمره: نمرهٔ کلاسی از ۲۰
   revoked     Boolean      @default(false) // ابطال توسط مدیر؛ در استعلام «باطل» نشان داده می‌شود
   issuedById  String?
   issuedAt    DateTime     @default(now())

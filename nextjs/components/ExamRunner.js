@@ -172,8 +172,17 @@ export default function ExamRunner() {
         <div className={`alert alert--${result.passed ? 'success' : 'error'}`}>
           <strong>{result.passed ? 'قبول شدید' : 'متأسفانه حد نصاب را کسب نکردید.'}</strong>
           <div style={{ marginTop: 6 }}>
-            نمرهٔ شما: {fa(result.score)} از {fa(result.total)} ({fa(result.percent)} درصد)
+            نمرهٔ آزمون: {fa(result.score)} از {fa(result.total)} ({fa(result.percent)} درصد)
             {result.auto && ' — آزمون به‌دلیل پایان مهلت خودکار ثبت و تصحیح شد.'}
+          </div>
+          {Number.isInteger(result.classScore) && (
+            <div style={{ marginTop: 4 }}>
+              نمرهٔ تکلیف و فعالیت کلاسی: {fa(result.classScore)} از {fa(cfg.classScoreMax)}
+              {' '}(سهم آزمون از نمرهٔ نهایی: {fa(cfg.examWeight)})
+            </div>
+          )}
+          <div style={{ marginTop: 4, fontWeight: 800 }}>
+            نمرهٔ نهایی: {fa(result.finalPercent ?? result.percent)} از ۱۰۰
           </div>
           {result.certificate && (
             <div style={{ marginTop: 6 }}>
@@ -298,13 +307,17 @@ export default function ExamRunner() {
           <ul style={{ lineHeight: 2.1, color: 'var(--muted)', paddingInlineStart: 18, marginBottom: 18 }}>
             <li>تعداد سوال: {fa(cfg.questionCount)} سوال چهارگزینه‌ای</li>
             <li>مهلت هر سوال: {fa(cfg.secondsPerQuestion)} ثانیه</li>
-            <li>حد نصاب قبولی: {fa(cfg.passPercent)} درصد</li>
+            <li>حد نصاب قبولی: {fa(cfg.passPercent)} از ۱۰۰ <strong>روی نمرهٔ نهایی</strong></li>
+            <li>
+              نمرهٔ نهایی از ۱۰۰ ساخته می‌شود از: <strong>{fa(cfg.examWeight)} نمره آزمون کتبی</strong> به‌علاوهٔ{' '}
+              <strong>{fa(cfg.classScoreMax)} نمره تکلیف و فعالیت کلاسی</strong> که مدرس پیش از آزمون ثبت کرده است.
+            </li>
             <li>سوال‌ها یکی‌یکی نمایش داده می‌شوند و <strong>بازگشت به سوال قبلی ممکن نیست</strong>.</li>
             <li>با پایان مهلت هر سوال، خودکار به سوال بعدی می‌روید و سوال قبلی بسته می‌شود.</li>
             <li>انتخاب گزینه قطعی است؛ پس از کلیک روی یک گزینه، امکان تغییر آن وجود ندارد.</li>
             <li>درست یا غلط بودن پاسخ‌ها در حین آزمون نمایش داده نمی‌شود؛ نتیجه فقط در پایان اعلام می‌شود.</li>
             <li>آزمون پس از شروع <strong>وقفه ندارد</strong>؛ زمان روی سرور می‌گذرد و با بستن صفحه یا قطعی اینترنت متوقف نمی‌شود.</li>
-            <li>در پایان، آزمون بر اساس پاسخ‌های درست شما تصحیح می‌شود.</li>
+            <li>در پایان، نمرهٔ آزمون با نمرهٔ کلاسی جمع می‌شود و گواهی بر اساس نمرهٔ نهایی صادر می‌گردد.</li>
           </ul>
 
           {state.passedBefore ? (
@@ -316,6 +329,7 @@ export default function ExamRunner() {
               <div className="alert alert--info" style={{ marginBottom: 14 }}>
                 شما مدیر/ادیتور هستید و برای بازبینی آزمون به اجازه نیاز ندارید. این اجرا فقط برای بررسی است و
                 گواهی‌نامه‌ای از آن صادر نمی‌شود. قواعد آزمون (زمان هر سوال و قطعی‌بودن پاسخ‌ها) برای شما هم برقرار است.
+                نمرهٔ کلاسی هم برای بازبینی ثبت نمی‌شود، پس نمرهٔ نهایی این اجرا فقط از خودِ آزمون حساب می‌شود.
               </div>
               <button className="btn btn--dark btn--full" disabled={busy} onClick={start}>
                 {busy ? 'در حال آماده‌سازی…' : 'شروع آزمون (بازبینی مدیر)'}
@@ -326,12 +340,21 @@ export default function ExamRunner() {
               برای شرکت در آزمون باید مدیر یا ادیتور آموزشگاه به شما اجازه بدهد.
               پس از صدور اجازه، همین‌جا دکمهٔ «شروع آزمون» را می‌بینید و اعلانی هم برایتان فرستاده می‌شود.
             </div>
+          ) : state.permit.classScore === null ? (
+            <div className="alert alert--info">
+              اجازهٔ شرکت در آزمون صادر شده، اما نمرهٔ تکلیف کلاسی شما هنوز ثبت نشده است.
+              چون نمرهٔ نهایی از جمع این دو ساخته می‌شود، آزمون تا ثبت آن توسط مدیر یا ادیتور شروع نمی‌شود.
+            </div>
           ) : (
             <>
               <div className="alert alert--success" style={{ marginBottom: 14 }}>
                 اجازهٔ شرکت در آزمون برای شما صادر شده است
                 {state.permit.grantedByName ? ` (توسط ${state.permit.grantedByName})` : ''}
                 {state.permit.expiresAt ? ` — تا ${dateFmt.format(new Date(state.permit.expiresAt))} فرصت شروع دارید.` : '.'}
+                <div style={{ marginTop: 6 }}>
+                  نمرهٔ تکلیف و فعالیت کلاسی ثبت‌شدهٔ شما: <strong>{fa(state.permit.classScore)} از {fa(cfg.classScoreMax)}</strong>
+                  {' '}— این نمره در پایان به نمرهٔ آزمون اضافه می‌شود.
+                </div>
               </div>
               <button className="btn btn--dark btn--full" disabled={busy} onClick={start}>
                 {busy ? 'در حال آماده‌سازی…' : 'شروع آزمون'}
@@ -348,7 +371,11 @@ export default function ExamRunner() {
             {state.history.map((h) => (
               <div key={h.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 10, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 10 }}>
                 <span>{dateFmt.format(new Date(h.submittedAt || h.startedAt))}</span>
-                <span>{fa(h.score ?? 0)} از {fa(h.total)} — {fa(h.percent ?? 0)}٪</span>
+                <span>آزمون: {fa(h.score ?? 0)} از {fa(h.total)} ({fa(h.percent ?? 0)}٪)</span>
+                <span>
+                  {Number.isInteger(h.classScore) ? `کلاسی: ${fa(h.classScore)} از ${fa(cfg.classScoreMax)} — ` : ''}
+                  نهایی: {fa(h.finalPercent ?? h.percent ?? 0)} از ۱۰۰
+                </span>
                 <span style={{ fontWeight: 700, color: h.passed ? '#16a34a' : '#dc2626' }}>{h.passed ? 'قبول' : 'مردود'}</span>
               </div>
             ))}

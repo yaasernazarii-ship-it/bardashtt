@@ -30,6 +30,8 @@ export async function POST(request) {
       courseTitle: cert.courseTitle,
       branch: cert.branch,
       percent: cert.percent,
+      examPercent: cert.examPercent,
+      classScore: cert.classScore,
       issuedAt: cert.issuedAt.toISOString(),
       revoked: cert.revoked,
       school: SCHOOL_NAME,

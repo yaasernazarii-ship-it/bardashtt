@@ -7,8 +7,13 @@ export const EXAM_QUESTION_COUNT = 100; // تعداد سوال هر آزمون
 // مهلت هر سوال جداگانه است و مهلت کل آزمون از جمعِ همین‌ها ساخته می‌شود.
 // چون بازگشت به سوال قبلی ممکن نیست، زمانِ استفاده‌نشدهٔ یک سوال به سوال بعدی منتقل نمی‌شود.
 export const EXAM_SECONDS_PER_QUESTION = 20; // مهلت پاسخ به هر سوال، به ثانیه
-export const EXAM_PASS_PERCENT = 70; // حد نصاب قبولی
+export const EXAM_PASS_PERCENT = 70; // حد نصاب قبولی (روی نمرهٔ نهایی سنجیده می‌شود)
 export const OPTION_COUNT = 4;
+
+// نمرهٔ نهایی از دو بخش ساخته می‌شود: آزمون و تکلیف/فعالیت کلاسی.
+// نمرهٔ کلاسی را مدیر یا ادیتور پیش از شروع آزمون ثبت می‌کند و پس از تصحیح به نمرهٔ آزمون اضافه می‌شود.
+export const CLASS_SCORE_MAX = 20; // سقف نمرهٔ کلاسی
+export const EXAM_WEIGHT = 100 - CLASS_SCORE_MAX; // سهم آزمون از نمرهٔ نهایی
 
 export const SERIAL_PREFIX = 'TB'; // Tak Bardasht
 
@@ -64,15 +69,34 @@ export function pickRandom(items, n) {
   return arr.slice(0, Math.min(n, arr.length));
 }
 
+// نمرهٔ کلاسی عددی صحیح بین ۰ تا سقف است. مقدار نامعتبر باید همان‌جا رد شود، نه گرد شود.
+export function parseClassScore(input) {
+  if (input === undefined || input === null || input === '') return null;
+  const n = Number(String(input).replace(/[۰-۹]/g, (ch) => String(ch.charCodeAt(0) - 0x06f0)));
+  if (!Number.isInteger(n) || n < 0 || n > CLASS_SCORE_MAX) return null;
+  return n;
+}
+
+// نمرهٔ نهایی = سهم آزمون (از ۸۰) + نمرهٔ کلاسی (از ۲۰).
+// اگر نمرهٔ کلاسی ثبت نشده باشد — مثل آزمونِ بازبینی مدیر — همان درصد آزمون ملاک است.
+export function finalPercent(examPercent, classScore) {
+  const exam = Math.max(0, Math.min(100, Math.round(examPercent) || 0));
+  if (classScore === null || classScore === undefined) return exam;
+  const cls = Math.max(0, Math.min(CLASS_SCORE_MAX, Math.round(classScore) || 0));
+  return Math.round((exam * EXAM_WEIGHT) / 100) + cls;
+}
+
 // تصحیح: answers یک شیء { questionId: اندیس گزینه } است.
-export function gradeAttempt(questions, answers) {
+// نمرهٔ کلاسی پیش از آزمون ثبت شده و اینجا فقط به نمرهٔ آزمون افزوده می‌شود.
+export function gradeAttempt(questions, answers, classScore = null) {
   let score = 0;
   for (const q of questions) {
     if (answers[q.id] === q.correct) score += 1;
   }
   const total = questions.length;
   const percent = total ? Math.round((score / total) * 100) : 0;
-  return { score, total, percent, passed: percent >= EXAM_PASS_PERCENT };
+  const final = finalPercent(percent, classScore);
+  return { score, total, percent, classScore: classScore ?? null, finalPercent: final, passed: final >= EXAM_PASS_PERCENT };
 }
 
 // گزینه‌ها همیشه باید آرایه‌ای از رشته باشند؛ ورودی ادمین ممکن است ناقص باشد.

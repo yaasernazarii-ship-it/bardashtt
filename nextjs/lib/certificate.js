@@ -3,7 +3,13 @@ import { buildSerial, jalaliYear } from '@/lib/exam';
 
 // صدور گواهی برای یک کاربر. اطلاعات هویتی در لحظهٔ صدور کپی می‌شود تا تغییر بعدیِ پروفایل،
 // گواهیِ صادرشده را عوض نکند. اگر برای همان تلاشِ آزمون قبلاً گواهی صادر شده باشد، همان برگردانده می‌شود.
-export async function issueCertificate(user, { attemptId = null, percent = null, issuedById = null } = {}) {
+export async function issueCertificate(user, {
+  attemptId = null,
+  percent = null,
+  examPercent = null,
+  classScore = null,
+  issuedById = null,
+} = {}) {
   if (attemptId) {
     const existing = await prisma.certificate.findUnique({ where: { attemptId } });
     if (existing) return existing;
@@ -28,6 +34,8 @@ export async function issueCertificate(user, { attemptId = null, percent = null,
           courseTitle: user.courseTitle || null,
           branch: user.branch || null,
           percent,
+          examPercent,
+          classScore,
           issuedById,
         },
       });

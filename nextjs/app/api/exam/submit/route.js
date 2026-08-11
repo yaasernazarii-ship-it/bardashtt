@@ -20,7 +20,14 @@ export async function POST(request) {
   if (attempt.submittedAt) {
     return Response.json({
       ok: true,
-      result: { score: attempt.score, total: attempt.total, percent: attempt.percent, passed: attempt.passed },
+      result: {
+        score: attempt.score,
+        total: attempt.total,
+        percent: attempt.percent,
+        classScore: attempt.classScore,
+        finalPercent: attempt.finalPercent,
+        passed: attempt.passed,
+      },
       alreadySubmitted: true,
     });
   }

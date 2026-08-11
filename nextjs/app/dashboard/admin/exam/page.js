@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { getSessionUser, isManager } from '@/lib/auth';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import AdminExam from '@/components/AdminExam';
-import { EXAM_PASS_PERCENT, EXAM_QUESTION_COUNT, EXAM_SECONDS_PER_QUESTION } from '@/lib/exam';
+import { CLASS_SCORE_MAX, EXAM_PASS_PERCENT, EXAM_QUESTION_COUNT, EXAM_SECONDS_PER_QUESTION, EXAM_WEIGHT } from '@/lib/exam';
 
 export const metadata = { title: 'بانک سوال و آزمون' };
 
@@ -19,7 +19,13 @@ export default async function AdminExamPage() {
           <h1 className="dash-head__title">آزمون فارغ‌التحصیلی</h1>
           <p className="dash-head__sub">به هنرجویان اجازهٔ آزمون بدهید، بانک سوالات را مدیریت کنید و کارنامه‌ها را ببینید.</p>
         </div>
-        <AdminExam questionCount={EXAM_QUESTION_COUNT} passPercent={EXAM_PASS_PERCENT} secondsPerQuestion={EXAM_SECONDS_PER_QUESTION} />
+        <AdminExam
+          questionCount={EXAM_QUESTION_COUNT}
+          passPercent={EXAM_PASS_PERCENT}
+          secondsPerQuestion={EXAM_SECONDS_PER_QUESTION}
+          classScoreMax={CLASS_SCORE_MAX}
+          examWeight={EXAM_WEIGHT}
+        />
       </main>
     </div>
   );

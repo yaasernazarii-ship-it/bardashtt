@@ -1,9 +1,11 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import {
+  CLASS_SCORE_MAX,
   EXAM_PASS_PERCENT,
   EXAM_QUESTION_COUNT,
   EXAM_SECONDS_PER_QUESTION,
+  EXAM_WEIGHT,
   pickRandom,
 } from '@/lib/exam';
 import { findUsablePermit, isAttemptOver, syncCursor } from '@/lib/examRun';
@@ -32,6 +34,8 @@ function attemptSummary(a) {
     total: a.total,
     score: a.score,
     percent: a.percent,
+    classScore: a.classScore,
+    finalPercent: a.finalPercent,
     passed: a.passed,
     startedAt: a.startedAt.toISOString(),
     submittedAt: a.submittedAt ? a.submittedAt.toISOString() : null,
@@ -46,6 +50,7 @@ function permitInfo(p) {
     grantedAt: p.grantedAt.toISOString(),
     expiresAt: p.expiresAt ? p.expiresAt.toISOString() : null,
     note: p.note,
+    classScore: p.classScore,
   };
 }
 
@@ -101,12 +106,16 @@ export async function GET() {
       questionCount: EXAM_QUESTION_COUNT,
       secondsPerQuestion: EXAM_SECONDS_PER_QUESTION,
       passPercent: EXAM_PASS_PERCENT,
+      classScoreMax: CLASS_SCORE_MAX,
+      examWeight: EXAM_WEIGHT,
     },
     bankSize,
     permit: permitInfo(permit),
     // مدیر/ادیتور برای بازبینی آزمون به مجوز نیاز ندارد و نتیجه‌اش گواهی صادر نمی‌کند.
     permitExempt: isManager(user),
-    canStart: !open && !passedBefore && bankSize > 0 && (!!permit || isManager(user)),
+    // اجازهٔ بدون نمرهٔ کلاسی (مربوط به پیش از راه‌اندازی این قاعده) آزمون را باز نمی‌کند.
+    canStart: !open && !passedBefore && bankSize > 0
+      && ((!!permit && permit.classScore !== null) || isManager(user)),
     passedBefore,
     expiredAttemptId: open && over ? open.id : null,
     current,
@@ -144,6 +153,14 @@ export async function POST() {
       needsPermit: true,
     }, { status: 403 });
   }
+  // نمرهٔ کلاسی باید پیش از شروع ثبت شده باشد، وگرنه نمرهٔ نهایی قابل محاسبه نیست.
+  if (permit && permit.classScore === null) {
+    return Response.json({
+      ok: false,
+      error: 'نمرهٔ تکلیف کلاسی شما هنوز ثبت نشده است. تا ثبت آن توسط مدیر یا ادیتور، آزمون شروع نمی‌شود.',
+      needsClassScore: true,
+    }, { status: 409 });
+  }
 
   const pool = await prisma.examQuestion.findMany({ where: { active: true }, select: { id: true } });
   if (pool.length === 0) {
@@ -159,6 +176,8 @@ export async function POST() {
       questionIds: chosen,
       answers: {},
       total: chosen.length,
+      // نمرهٔ کلاسی همین‌جا کپی می‌شود تا تغییر بعدیِ مجوز، نمرهٔ آزمونِ برگزارشده را عوض نکند.
+      classScore: permit ? permit.classScore : null,
       cursor: 0,
       perQuestionSec: EXAM_SECONDS_PER_QUESTION,
       questionEndsAt: new Date(now.getTime() + perMs),

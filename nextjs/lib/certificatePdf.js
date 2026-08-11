@@ -62,9 +62,14 @@ export async function buildCertificatePdf(cert) {
   y = center(doc, `${course}${branch} را با موفقیت به پایان رسانده`, y + 14, { size: 14, color: INK });
 
   const scoreLine = Number.isInteger(cert.percent)
-    ? `و در آزمون پایان دوره با کسب نمرهٔ ${cert.percent} از ۱۰۰ پذیرفته شده است.`
+    ? `و با کسب نمرهٔ نهایی ${cert.percent} از ۱۰۰ پذیرفته شده است.`
     : 'و در آزمون پایان دوره پذیرفته شده است.';
   y = center(doc, scoreLine, y + 8, { size: 14, color: INK });
+
+  // ریز نمره فقط وقتی درج می‌شود که نمرهٔ کلاسی ثبت شده باشد.
+  if (Number.isInteger(cert.classScore) && Number.isInteger(cert.examPercent)) {
+    y = center(doc, `(آزمون کتبی: ${cert.examPercent} درصد — تکلیف و فعالیت کلاسی: ${cert.classScore} از ۲۰)`, y + 6, { size: 11, color: MUTED });
+  }
 
   // نوار پایین: کد استعلام، تاریخ صدور، محل امضا
   const baseY = H - 150;

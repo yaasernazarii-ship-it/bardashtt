@@ -2,8 +2,9 @@ import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { logAction } from '@/lib/audit';
 import { notifyUsers } from '@/lib/notifications';
+import { CLASS_SCORE_MAX, parseClassScore } from '@/lib/exam';
 
-const USER_FIELDS = { id: true, displayName: true, username: true, phone: true, role: true, branch: true, courseTitle: true, graduated: true };
+const USER_FIELDS ={ id: true, displayName: true, username: true, phone: true, role: true, branch: true, courseTitle: true, graduated: true };
 
 function shape(p) {
   return {
@@ -15,6 +16,7 @@ function shape(p) {
     usedAt: p.usedAt ? p.usedAt.toISOString() : null,
     revoked: p.revoked,
     note: p.note,
+    classScore: p.classScore,
   };
 }
 
@@ -77,6 +79,15 @@ export async function POST(request) {
   const passed = await prisma.examAttempt.findFirst({ where: { userId, passed: true } });
   if (passed) return Response.json({ ok: false, error: 'این هنرجو قبلاً در آزمون قبول شده است.' }, { status: 409 });
 
+  // نمرهٔ کلاسی باید همین‌جا — یعنی پیش از شروع آزمون — ثبت شود و بعداً به نمرهٔ آزمون اضافه می‌شود.
+  const classScore = parseClassScore(body.classScore);
+  if (classScore === null) {
+    return Response.json({
+      ok: false,
+      error: `نمرهٔ تکلیف کلاسی الزامی است و باید عددی صحیح بین ۰ تا ${CLASS_SCORE_MAX} باشد.`,
+    }, { status: 400 });
+  }
+
   // مهلت استفاده از اجازه، بر حسب روز. خالی یعنی بدون مهلت.
   let expiresAt = null;
   if (body.days !== undefined && body.days !== null && body.days !== '') {
@@ -93,6 +104,7 @@ export async function POST(request) {
       grantedById: user.id,
       grantedByName: user.displayName || user.username || user.phone || null,
       expiresAt,
+      classScore,
       note: body.note ? String(body.note).slice(0, 200) : null,
     },
     include: { user: { select: USER_FIELDS } },
@@ -103,11 +115,11 @@ export async function POST(request) {
     action: 'exam.permit.grant',
     targetType: 'user',
     targetId: userId,
-    summary: `اجازهٔ آزمون برای ${who}${expiresAt ? ` تا ${expiresAt.toISOString().slice(0, 10)}` : ''}`,
+    summary: `اجازهٔ آزمون برای ${who} با نمرهٔ کلاسی ${classScore} از ${CLASS_SCORE_MAX}${expiresAt ? ` تا ${expiresAt.toISOString().slice(0, 10)}` : ''}`,
   });
   await notifyUsers([userId], {
     title: 'اجازهٔ شرکت در آزمون صادر شد',
-    body: 'می‌توانید از بخش «آزمون و گواهی‌نامه» آزمون پایان دوره را شروع کنید.',
+    body: `نمرهٔ تکلیف کلاسی شما ${classScore} از ${CLASS_SCORE_MAX} ثبت شد. می‌توانید از بخش «آزمون و گواهی‌نامه» آزمون پایان دوره را شروع کنید.`,
     href: '/dashboard/exam',
     kind: 'system',
   });
@@ -115,7 +127,8 @@ export async function POST(request) {
   return Response.json({ ok: true, item: shape(permit) });
 }
 
-// باطل‌کردن یک اجازهٔ استفاده‌نشده.
+// اصلاح نمرهٔ کلاسی یا باطل‌کردن یک اجازهٔ استفاده‌نشده.
+// پس از شروع آزمون هیچ‌کدام ممکن نیست؛ نمرهٔ کلاسی همان لحظه در تلاش کپی شده است.
 export async function PATCH(request) {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
@@ -132,7 +145,35 @@ export async function PATCH(request) {
   const permit = await prisma.examPermit.findUnique({ where: { id }, include: { user: { select: USER_FIELDS } } });
   if (!permit) return Response.json({ ok: false, error: 'اجازه یافت نشد.' }, { status: 404 });
   if (permit.usedAt) {
-    return Response.json({ ok: false, error: 'این اجازه خرج شده و آزمونش برگزار شده است؛ دیگر قابل باطل‌کردن نیست.' }, { status: 409 });
+    return Response.json({ ok: false, error: 'آزمون این اجازه برگزار شده است؛ دیگر نه قابل باطل‌کردن است و نه نمرهٔ کلاسی‌اش تغییر می‌کند.' }, { status: 409 });
+  }
+
+  const who = permit.user?.displayName || permit.user?.username || permit.user?.phone;
+
+  // اصلاح نمرهٔ کلاسی، تا وقتی هنرجو آزمون را شروع نکرده است.
+  if (body.classScore !== undefined) {
+    if (permit.revoked) {
+      return Response.json({ ok: false, error: 'این اجازه باطل شده است؛ برای ثبت نمرهٔ تازه اجازهٔ جدید صادر کنید.' }, { status: 409 });
+    }
+    const classScore = parseClassScore(body.classScore);
+    if (classScore === null) {
+      return Response.json({
+        ok: false,
+        error: `نمرهٔ تکلیف کلاسی باید عددی صحیح بین ۰ تا ${CLASS_SCORE_MAX} باشد.`,
+      }, { status: 400 });
+    }
+    const scored = await prisma.examPermit.update({
+      where: { id },
+      data: { classScore },
+      include: { user: { select: USER_FIELDS } },
+    });
+    await logAction(user, {
+      action: 'exam.permit.score',
+      targetType: 'user',
+      targetId: permit.userId,
+      summary: `نمرهٔ کلاسی ${who} از ${permit.classScore ?? '—'} به ${classScore} تغییر کرد`,
+    });
+    return Response.json({ ok: true, item: shape(scored) });
   }
 
   const updated = await prisma.examPermit.update({
@@ -141,7 +182,6 @@ export async function PATCH(request) {
     include: { user: { select: USER_FIELDS } },
   });
 
-  const who = permit.user?.displayName || permit.user?.username || permit.user?.phone;
   await logAction(user, {
     action: 'exam.permit.revoke',
     targetType: 'user',
