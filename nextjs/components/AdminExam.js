@@ -239,9 +239,10 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
             </div>
             <div className="form-group">
               <label className="form-label">نمرهٔ تکلیف و فعالیت کلاسی (از {fa(classScoreMax)})</label>
-              <input className="form-input" type="number" min={0} max={classScoreMax} step={1} required dir="ltr"
-                value={permitScore} onChange={(e) => setPermitScore(e.target.value)} placeholder={`عددی بین 0 تا ${classScoreMax}`} />
+              <input className="form-input" type="number" min={0} max={classScoreMax} step={0.1} required dir="ltr"
+                value={permitScore} onChange={(e) => setPermitScore(e.target.value)} placeholder={`عددی بین 0 تا ${classScoreMax} — مثل 18.5`} />
               <span style={{ color: 'var(--muted)', fontSize: '.85rem' }}>
+                اعشار تا یک رقم پذیرفته می‌شود (مثل ۱۸٫۵).
                 این نمره پیش از آزمون ثبت می‌شود و در پایان به سهم آزمون ({fa(examWeight)} نمره) اضافه می‌شود.
                 تا وقتی هنرجو آزمون را شروع نکرده، قابل اصلاح است؛ پس از شروع دیگر تغییر نمی‌کند.
               </span>
@@ -291,7 +292,7 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
                         </span>
                         {editScoreId === p.id ? (
                           <span style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                            <input className="form-input" type="number" min={0} max={classScoreMax} step={1} dir="ltr"
+                            <input className="form-input" type="number" min={0} max={classScoreMax} step={0.1} dir="ltr"
                               style={{ width: 90 }} value={editScore} onChange={(e) => setEditScore(e.target.value)} />
                             <button className="btn btn--dark" onClick={() => saveScore(p)}>ثبت</button>
                             <button className="btn" onClick={() => { setEditScoreId(null); setEditScore(''); }}>انصراف</button>

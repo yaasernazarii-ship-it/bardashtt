@@ -2,7 +2,9 @@ import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { logAction } from '@/lib/audit';
 import { notifyUsers } from '@/lib/notifications';
-import { CLASS_SCORE_MAX, parseClassScore } from '@/lib/exam';
+import { CLASS_SCORE_MAX, formatScore, parseClassScore } from '@/lib/exam';
+
+const SCORE_RULE = `باید عددی بین ۰ تا ${CLASS_SCORE_MAX} با حداکثر یک رقم اعشار باشد (مثل ۱۸٫۵).`;
 
 const USER_FIELDS ={ id: true, displayName: true, username: true, phone: true, role: true, branch: true, courseTitle: true, graduated: true };
 
@@ -84,7 +86,7 @@ export async function POST(request) {
   if (classScore === null) {
     return Response.json({
       ok: false,
-      error: `نمرهٔ تکلیف کلاسی الزامی است و باید عددی صحیح بین ۰ تا ${CLASS_SCORE_MAX} باشد.`,
+      error: `نمرهٔ تکلیف کلاسی الزامی است و ${SCORE_RULE}`,
     }, { status: 400 });
   }
 
@@ -115,11 +117,11 @@ export async function POST(request) {
     action: 'exam.permit.grant',
     targetType: 'user',
     targetId: userId,
-    summary: `اجازهٔ آزمون برای ${who} با نمرهٔ کلاسی ${classScore} از ${CLASS_SCORE_MAX}${expiresAt ? ` تا ${expiresAt.toISOString().slice(0, 10)}` : ''}`,
+    summary: `اجازهٔ آزمون برای ${who} با نمرهٔ کلاسی ${formatScore(classScore)} از ${CLASS_SCORE_MAX}${expiresAt ? ` تا ${expiresAt.toISOString().slice(0, 10)}` : ''}`,
   });
   await notifyUsers([userId], {
     title: 'اجازهٔ شرکت در آزمون صادر شد',
-    body: `نمرهٔ تکلیف کلاسی شما ${classScore} از ${CLASS_SCORE_MAX} ثبت شد. می‌توانید از بخش «آزمون و گواهی‌نامه» آزمون پایان دوره را شروع کنید.`,
+    body: `نمرهٔ تکلیف کلاسی شما ${formatScore(classScore)} از ${CLASS_SCORE_MAX} ثبت شد. می‌توانید از بخش «آزمون و گواهی‌نامه» آزمون پایان دوره را شروع کنید.`,
     href: '/dashboard/exam',
     kind: 'system',
   });
@@ -159,7 +161,7 @@ export async function PATCH(request) {
     if (classScore === null) {
       return Response.json({
         ok: false,
-        error: `نمرهٔ تکلیف کلاسی باید عددی صحیح بین ۰ تا ${CLASS_SCORE_MAX} باشد.`,
+        error: `نمرهٔ تکلیف کلاسی ${SCORE_RULE}`,
       }, { status: 400 });
     }
     const scored = await prisma.examPermit.update({
@@ -171,7 +173,7 @@ export async function PATCH(request) {
       action: 'exam.permit.score',
       targetType: 'user',
       targetId: permit.userId,
-      summary: `نمرهٔ کلاسی ${who} از ${permit.classScore ?? '—'} به ${classScore} تغییر کرد`,
+      summary: `نمرهٔ کلاسی ${who} از ${permit.classScore === null ? '—' : formatScore(permit.classScore)} به ${formatScore(classScore)} تغییر کرد`,
     });
     return Response.json({ ok: true, item: shape(scored) });
   }

@@ -84,7 +84,7 @@ export default function AdminCertificates() {
         </div>
         <div className="form-group">
           <label className="form-label">نمرهٔ نهایی (اختیاری، از ۱۰۰ — شامل نمرهٔ کلاسی)</label>
-          <input className="form-input" dir="ltr" inputMode="numeric" value={percent} onChange={(e) => setPercent(e.target.value)} />
+          <input className="form-input" dir="ltr" inputMode="decimal" placeholder="مثل 82.5" value={percent} onChange={(e) => setPercent(e.target.value)} />
         </div>
         <button className="btn btn--dark" disabled={busy || !userId}>{busy ? 'در حال صدور…' : 'صدور گواهی'}</button>
       </form>
@@ -104,7 +104,7 @@ export default function AdminCertificates() {
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, color: 'var(--muted)', marginTop: 6 }}>
                   {c.courseTitle && <span>دوره: {c.courseTitle}</span>}
                   {c.branch && <span>شعبه: {c.branch}</span>}
-                  {Number.isInteger(c.percent) && <span>نمرهٔ نهایی: {fa(c.percent)} از ۱۰۰</span>}
+                  {Number.isFinite(c.percent) && <span>نمرهٔ نهایی: {fa(c.percent)} از ۱۰۰</span>}
                   <span>{dateFmt.format(new Date(c.issuedAt))}</span>
                   {c.revoked && <span style={{ color: '#dc2626', fontWeight: 700 }}>باطل‌شده</span>}
                 </div>

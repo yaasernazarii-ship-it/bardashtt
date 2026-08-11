@@ -2,7 +2,7 @@
 import path from 'node:path';
 import PDFDocument from 'pdfkit';
 import { shape } from './rtl';
-import { SCHOOL_NAME, honorific } from './exam';
+import { SCHOOL_NAME, formatScore, honorific } from './exam';
 
 const FONT_REGULAR = path.join(process.cwd(), 'assets/fonts/Vazirmatn-Regular.ttf');
 const FONT_BOLD = path.join(process.cwd(), 'assets/fonts/Vazirmatn-Bold.ttf');
@@ -61,14 +61,14 @@ export async function buildCertificatePdf(cert) {
   const branch = cert.branch ? ` (شعبهٔ ${cert.branch})` : '';
   y = center(doc, `${course}${branch} را با موفقیت به پایان رسانده`, y + 14, { size: 14, color: INK });
 
-  const scoreLine = Number.isInteger(cert.percent)
-    ? `و با کسب نمرهٔ نهایی ${cert.percent} از ۱۰۰ پذیرفته شده است.`
+  const scoreLine = Number.isFinite(cert.percent)
+    ? `و با کسب نمرهٔ نهایی ${formatScore(cert.percent)} از ۱۰۰ پذیرفته شده است.`
     : 'و در آزمون پایان دوره پذیرفته شده است.';
   y = center(doc, scoreLine, y + 8, { size: 14, color: INK });
 
   // ریز نمره فقط وقتی درج می‌شود که نمرهٔ کلاسی ثبت شده باشد.
-  if (Number.isInteger(cert.classScore) && Number.isInteger(cert.examPercent)) {
-    y = center(doc, `(آزمون کتبی: ${cert.examPercent} درصد — تکلیف و فعالیت کلاسی: ${cert.classScore} از ۲۰)`, y + 6, { size: 11, color: MUTED });
+  if (Number.isFinite(cert.classScore) && Number.isFinite(cert.examPercent)) {
+    y = center(doc, `(آزمون کتبی: ${cert.examPercent} درصد — تکلیف و فعالیت کلاسی: ${formatScore(cert.classScore)} از ۲۰)`, y + 6, { size: 11, color: MUTED });
   }
 
   // نوار پایین: کد استعلام، تاریخ صدور، محل امضا

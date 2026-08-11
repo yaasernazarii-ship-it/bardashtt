@@ -175,7 +175,7 @@ export default function ExamRunner() {
             نمرهٔ آزمون: {fa(result.score)} از {fa(result.total)} ({fa(result.percent)} درصد)
             {result.auto && ' — آزمون به‌دلیل پایان مهلت خودکار ثبت و تصحیح شد.'}
           </div>
-          {Number.isInteger(result.classScore) && (
+          {Number.isFinite(result.classScore) && (
             <div style={{ marginTop: 4 }}>
               نمرهٔ تکلیف و فعالیت کلاسی: {fa(result.classScore)} از {fa(cfg.classScoreMax)}
               {' '}(سهم آزمون از نمرهٔ نهایی: {fa(cfg.examWeight)})
@@ -373,7 +373,7 @@ export default function ExamRunner() {
                 <span>{dateFmt.format(new Date(h.submittedAt || h.startedAt))}</span>
                 <span>آزمون: {fa(h.score ?? 0)} از {fa(h.total)} ({fa(h.percent ?? 0)}٪)</span>
                 <span>
-                  {Number.isInteger(h.classScore) ? `کلاسی: ${fa(h.classScore)} از ${fa(cfg.classScoreMax)} — ` : ''}
+                  {Number.isFinite(h.classScore) ? `کلاسی: ${fa(h.classScore)} از ${fa(cfg.classScoreMax)} — ` : ''}
                   نهایی: {fa(h.finalPercent ?? h.percent ?? 0)} از ۱۰۰
                 </span>
                 <span style={{ fontWeight: 700, color: h.passed ? '#16a34a' : '#dc2626' }}>{h.passed ? 'قبول' : 'مردود'}</span>

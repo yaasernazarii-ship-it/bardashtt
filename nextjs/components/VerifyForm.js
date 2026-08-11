@@ -85,10 +85,10 @@ export default function VerifyForm({ content }) {
                 <div>دارندهٔ گواهی: <strong>{cert.holder}</strong></div>
                 {cert.courseTitle && <div>دوره: <strong>{cert.courseTitle}</strong></div>}
                 {cert.branch && <div>شعبه: <strong>{cert.branch}</strong></div>}
-                {Number.isInteger(cert.percent) && (
+                {Number.isFinite(cert.percent) && (
                   <div>
                     نمرهٔ نهایی دوره: <strong>{fa(cert.percent)} از ۱۰۰</strong>
-                    {Number.isInteger(cert.classScore) && (
+                    {Number.isFinite(cert.classScore) && (
                       <span style={{ color: 'var(--muted)' }}>
                         {' '}(آزمون {fa(cert.examPercent ?? 0)}٪ + تکلیف کلاسی {fa(cert.classScore)} از ۲۰)
                       </span>

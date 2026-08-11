@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { issueCertificate } from '@/lib/certificate';
 import { notifyUsers } from '@/lib/notifications';
+import { parseScore } from '@/lib/exam';
 
 function serialize(c) {
   return {
@@ -52,9 +53,12 @@ export async function POST(request) {
     return Response.json({ ok: false, error: 'نام و نام خانوادگی این کاربر ثبت نشده است.' }, { status: 400 });
   }
 
-  const percent = body.percent === undefined || body.percent === null || body.percent === ''
-    ? null
-    : Math.max(0, Math.min(100, parseInt(body.percent, 10) || 0));
+  // نمرهٔ نهایی می‌تواند اعشاری باشد (مثل ۸۲٫۵). خالی یعنی گواهی بدون درج نمره.
+  const hasPercent = !(body.percent === undefined || body.percent === null || String(body.percent).trim() === '');
+  const percent = hasPercent ? parseScore(body.percent, 100) : null;
+  if (hasPercent && percent === null) {
+    return Response.json({ ok: false, error: 'نمرهٔ نهایی باید عددی بین ۰ تا ۱۰۰ با حداکثر یک رقم اعشار باشد.' }, { status: 400 });
+  }
 
   const cert = await issueCertificate(target, { percent, issuedById: manager.id });
   await prisma.user.update({ where: { id: target.id }, data: { graduated: true } });

@@ -69,12 +69,43 @@ export function pickRandom(items, n) {
   return arr.slice(0, Math.min(n, arr.length));
 }
 
-// نمرهٔ کلاسی عددی صحیح بین ۰ تا سقف است. مقدار نامعتبر باید همان‌جا رد شود، نه گرد شود.
+// نمره‌ها حداکثر یک رقم اعشار دارند؛ همه‌جا با همین دقت ذخیره و نمایش داده می‌شوند.
+export const SCORE_DECIMALS = 1;
+
+export function roundScore(n) {
+  return Math.round(Number(n) * 10) / 10;
+}
+
+// نمایش نمره در متنِ ساده (PDF، پیامک، گزارش): عدد صحیح بدون اعشار، اعشاری با یک رقم.
+export function formatScore(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return '';
+  const v = roundScore(n);
+  return Number.isInteger(v) ? String(v) : v.toFixed(SCORE_DECIMALS);
+}
+
+// ارقام فارسی/عربی و جداکننده‌های اعشارِ رایج (٫ و / و ,) را به شکل استاندارد لاتین برمی‌گرداند.
+function latinNumber(input) {
+  return String(input)
+    .replace(/[۰-۹]/g, (ch) => String(ch.charCodeAt(0) - 0x06f0))
+    .replace(/[٠-٩]/g, (ch) => String(ch.charCodeAt(0) - 0x0660))
+    .replace(/[٫،,\/]/g, '.')
+    .trim();
+}
+
+// عددی بین ۰ تا سقف، با حداکثر یک رقم اعشار. مقدار نامعتبر باید همان‌جا رد شود، نه گرد شود.
+export function parseScore(input, max) {
+  if (input === undefined || input === null || String(input).trim() === '') return null;
+  const raw = latinNumber(input);
+  if (!/^(\d+(\.\d?)?|\.\d)$/.test(raw)) return null; // بیش از یک رقم اعشار پذیرفته نمی‌شود
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n < 0 || n > max) return null;
+  return roundScore(n);
+}
+
+// نمرهٔ تکلیف/فعالیت کلاسی: بین ۰ تا ۲۰، اعشار تا یک رقم (مثل ۱۸٫۵).
 export function parseClassScore(input) {
-  if (input === undefined || input === null || input === '') return null;
-  const n = Number(String(input).replace(/[۰-۹]/g, (ch) => String(ch.charCodeAt(0) - 0x06f0)));
-  if (!Number.isInteger(n) || n < 0 || n > CLASS_SCORE_MAX) return null;
-  return n;
+  return parseScore(input, CLASS_SCORE_MAX);
 }
 
 // نمرهٔ نهایی = سهم آزمون (از ۸۰) + نمرهٔ کلاسی (از ۲۰).
@@ -82,8 +113,8 @@ export function parseClassScore(input) {
 export function finalPercent(examPercent, classScore) {
   const exam = Math.max(0, Math.min(100, Math.round(examPercent) || 0));
   if (classScore === null || classScore === undefined) return exam;
-  const cls = Math.max(0, Math.min(CLASS_SCORE_MAX, Math.round(classScore) || 0));
-  return Math.round((exam * EXAM_WEIGHT) / 100) + cls;
+  const cls = Math.max(0, Math.min(CLASS_SCORE_MAX, Number(classScore) || 0));
+  return roundScore(Math.round((exam * EXAM_WEIGHT) / 100) + cls);
 }
 
 // تصحیح: answers یک شیء { questionId: اندیس گزینه } است.
