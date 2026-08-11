@@ -29,9 +29,8 @@ export async function POST(request) {
       holder: `${honorific(cert.gender)} ${cert.fullName}`.trim(),
       courseTitle: cert.courseTitle,
       branch: cert.branch,
+      // فقط نمرهٔ نهایی؛ همان‌طور که روی خودِ گواهی درج شده، ریز نمره افشا نمی‌شود.
       percent: cert.percent,
-      examPercent: cert.examPercent,
-      classScore: cert.classScore,
       issuedAt: cert.issuedAt.toISOString(),
       revoked: cert.revoked,
       school: SCHOOL_NAME,

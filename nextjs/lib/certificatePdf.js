@@ -61,15 +61,12 @@ export async function buildCertificatePdf(cert) {
   const branch = cert.branch ? ` (شعبهٔ ${cert.branch})` : '';
   y = center(doc, `${course}${branch} را با موفقیت به پایان رسانده`, y + 14, { size: 14, color: INK });
 
+  // فقط نمرهٔ نهایی (جمع آزمون و نمرهٔ کلاسی) روی گواهی درج می‌شود؛
+  // ریز نمره عمداً نمی‌آید و فقط در پنل مدیریت و کارنامهٔ خود هنرجو دیده می‌شود.
   const scoreLine = Number.isFinite(cert.percent)
     ? `و با کسب نمرهٔ نهایی ${formatScore(cert.percent)} از ۱۰۰ پذیرفته شده است.`
     : 'و در آزمون پایان دوره پذیرفته شده است.';
   y = center(doc, scoreLine, y + 8, { size: 14, color: INK });
-
-  // ریز نمره فقط وقتی درج می‌شود که نمرهٔ کلاسی ثبت شده باشد.
-  if (Number.isFinite(cert.classScore) && Number.isFinite(cert.examPercent)) {
-    y = center(doc, `(آزمون کتبی: ${cert.examPercent} درصد — تکلیف و فعالیت کلاسی: ${formatScore(cert.classScore)} از ۲۰)`, y + 6, { size: 11, color: MUTED });
-  }
 
   // نوار پایین: کد استعلام، تاریخ صدور، محل امضا
   const baseY = H - 150;

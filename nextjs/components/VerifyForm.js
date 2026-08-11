@@ -86,14 +86,7 @@ export default function VerifyForm({ content }) {
                 {cert.courseTitle && <div>دوره: <strong>{cert.courseTitle}</strong></div>}
                 {cert.branch && <div>شعبه: <strong>{cert.branch}</strong></div>}
                 {Number.isFinite(cert.percent) && (
-                  <div>
-                    نمرهٔ نهایی دوره: <strong>{fa(cert.percent)} از ۱۰۰</strong>
-                    {Number.isFinite(cert.classScore) && (
-                      <span style={{ color: 'var(--muted)' }}>
-                        {' '}(آزمون {fa(cert.examPercent ?? 0)}٪ + تکلیف کلاسی {fa(cert.classScore)} از ۲۰)
-                      </span>
-                    )}
-                  </div>
+                  <div>نمرهٔ نهایی دوره: <strong>{fa(cert.percent)} از ۱۰۰</strong></div>
                 )}
                 <div>تاریخ صدور: <strong>{dateFmt.format(new Date(cert.issuedAt))}</strong></div>
                 <div>کد گواهی: <strong dir="ltr">{cert.serial}</strong></div>

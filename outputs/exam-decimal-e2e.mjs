@@ -126,7 +126,8 @@ try {
   r = await req('/api/verify', { method: 'POST', body: { serial } });
   d = await json(r);
   const v = d.certificate || {};
-  check(v?.percent === 70.5 && v?.classScore === 18.5, 'استعلام عمومی نمرهٔ ۷۰٫۵ و کلاسی ۱۸٫۵ را نشان می‌دهد', JSON.stringify(d).slice(0, 300));
+  check(v?.percent === 70.5, 'استعلام عمومی نمرهٔ نهایی ۷۰٫۵ را نشان می‌دهد', JSON.stringify(d).slice(0, 300));
+  check(v.classScore === undefined && v.examPercent === undefined, 'استعلام عمومی ریز نمره را افشا نمی‌کند', JSON.stringify(v));
 
   const pdf = await req(`/api/certificate/${encodeURIComponent(serial)}`, { token: student.token });
   const buf = Buffer.from(await pdf.arrayBuffer());
