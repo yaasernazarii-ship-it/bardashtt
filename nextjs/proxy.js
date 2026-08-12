@@ -13,7 +13,7 @@ function cookieDomainForHost(host) {
 // با هر بازدید، کوکیِ نشست را با انقضای تازه و دامنه‌ی مشترک (apex + www) دوباره صادر می‌کنیم.
 // این کار باعث می‌شود کاربران فعال هرگز به‌صورت ناخواسته خارج نشوند و کوکی‌های host-only قدیمی
 // به‌تدریج به نسخه‌ی دامنه‌مشترک مهاجرت کنند؛ بدون نیاز به ورود دوباره.
-export function middleware(req) {
+export function proxy(req) {
   const res = NextResponse.next();
   const token = req.cookies.get(SESSION_COOKIE)?.value;
   if (token) {

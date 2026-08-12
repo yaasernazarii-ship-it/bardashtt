@@ -51,7 +51,8 @@ export function faqJsonLd(groups) {
 }
 
 export function jsonLdScript(data) {
-  return { __html: JSON.stringify(data) };
+  // escape '<' تا اگر متنِ عنوان/توضیحات حاوی «</script>» بود، از تگ اسکریپت خارج نشود.
+  return { __html: JSON.stringify(data).replace(/</g, '\\u003c') };
 }
 
 export { SITE_URL, DEFAULT_IMAGE };
