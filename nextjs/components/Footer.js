@@ -3,7 +3,7 @@ import Icon from './Icon';
 // متن و لینک‌های فوتر از پنل («متن صفحات» ← «فوتر») می‌آیند. مقادیر زیر فقط
 // پشتیبانِ حالتی هستند که کامپوننت بدون content رندر شود.
 const FALLBACK = {
-  copyright: '© ۱۴۰۳ خانواده برداشت — تمامی حقوق محفوظ است',
+  copyright: '© ۱۴۰۵ خانواده برداشت — تمامی حقوق محفوظ است',
   instagram: 'https://instagram.com/bardashtt',
   bale: 'https://ble.ir/bardasht_family',
   phone: '02191090934',

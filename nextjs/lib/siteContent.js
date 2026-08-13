@@ -428,7 +428,7 @@ export const CONTENT_GROUPS = [
     id: 'footer',
     title: 'فوتر (پایین همهٔ صفحات)',
     fields: [
-      { key: 'footer.copyright', label: 'متن کپی‌رایت', type: 'text', default: '© ۱۴۰۳ خانواده برداشت — تمامی حقوق محفوظ است' },
+      { key: 'footer.copyright', label: 'متن کپی‌رایت', type: 'text', default: '© ۱۴۰۵ خانواده برداشت — تمامی حقوق محفوظ است' },
       { key: 'footer.instagram', label: 'نشانی اینستاگرام (خالی = پنهان شود)', type: 'text', default: 'https://instagram.com/bardashtt' },
       { key: 'footer.bale', label: 'نشانی بله (خالی = پنهان شود)', type: 'text', default: 'https://ble.ir/bardasht_family' },
       { key: 'footer.phone', label: 'شمارهٔ تماس فوتر، فقط رقم (خالی = پنهان شود)', type: 'text', default: '02191090934' },
