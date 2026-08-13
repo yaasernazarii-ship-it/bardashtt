@@ -296,7 +296,7 @@ export const CONTENT_GROUPS = [
     fields: [
       { key: 'actors.tag', label: 'برچسب', type: 'text', default: 'بازیگران' },
       { key: 'actors.title', label: 'عنوان', type: 'text', default: 'بانک بازیگران' },
-      { key: 'actors.subtitle', label: 'زیرعنوان', type: 'text', default: 'رزومه بازیگران خانواده برداشت؛ ویژه فیلم‌سازان و کارگردانان' },
+      { key: 'actors.subtitle', label: 'زیرعنوان', type: 'text', default: 'رزومه بازیگران خانواده برداشت؛ ویژه فیلم‌سازان' },
       { key: 'actors.empty', label: 'متن حالت خالی', type: 'text', default: 'هنوز رزومه‌ای برای نمایش عمومی ثبت نشده است.' },
       { key: 'actors.slides', label: 'اسلایدشوی بالای صفحه (افزودن/حذف/جابه‌جایی عکس؛ خالی = بدون اسلایدشو)', type: 'images', default: '' },
     ],
