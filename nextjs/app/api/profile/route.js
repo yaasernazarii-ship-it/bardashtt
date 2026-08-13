@@ -19,11 +19,16 @@ export async function PATCH(request) {
       const y = parseInt(body.birthYear, 10);
       if (!Number.isNaN(y) && y > 1300 && y < 1420) data.birthYear = y;
     }
+    // مشخصات حرفه‌ای فیلمساز؛ برای هنرجو معنایی ندارد و ذخیره نمی‌شود.
+    if (user.role === 'filmmaker') {
+      if (typeof body.company === 'string') data.company = body.company.trim().slice(0, 100) || null;
+      if (typeof body.activityField === 'string') data.activityField = body.activityField.trim().slice(0, 100) || null;
+    }
 
     const updated = await prisma.user.update({ where: { id: user.id }, data });
     return Response.json({
       ok: true,
-      user: { id: updated.id, phone: updated.phone, contactPhone: updated.contactPhone, displayName: updated.displayName, city: updated.city, birthYear: updated.birthYear, gender: updated.gender, role: updated.role },
+      user: { id: updated.id, phone: updated.phone, contactPhone: updated.contactPhone, displayName: updated.displayName, city: updated.city, birthYear: updated.birthYear, gender: updated.gender, role: updated.role, company: updated.company, activityField: updated.activityField },
     });
   } catch {
     return Response.json({ ok: false, error: 'درخواست نامعتبر است.' }, { status: 400 });

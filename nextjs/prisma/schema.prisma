@@ -16,6 +16,8 @@ model User {
   role         String       @default("member") // member | student | filmmaker | editor | admin
   gender       String? // male | female — مبنای درج «آقای/خانم» روی گواهی‌نامه
   contactPhone String? // شماره تماس تکمیلی که کاربر (به‌ویژه فیلمساز) در پروفایل پر می‌کند
+  company      String? // نام گروه/شرکت فیلم‌سازی (فقط فیلمساز)
+  activityField String? // حوزهٔ فعالیت فیلمساز: سینما، سریال، تبلیغات، مستند…
   photoUrl     String? // عکس پرسنلی ۳×۴ که خود کاربر در پروفایلش آپلود می‌کند
   username     String?      @unique
   passwordHash String?
@@ -122,12 +124,27 @@ model BookingRequest {
   phone       String // شماره تماس
   message     String // پیام/توضیح ست تایم
   status      String   @default("new") // new | contacted | done | rejected
-  adminNote   String? // یادداشت ادمین/ادیتور
+  adminNote   String? // یادداشت ادمین/ادیتور (خصوصی — فیلمساز نمی‌بیند)
+  reply       String? // پاسخ پشتیبانی که خودِ فیلمساز در داشبوردش می‌بیند
+  replyAt     DateTime? // زمان ثبت/به‌روزرسانی پاسخ
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([status])
   @@index([actorId])
+  @@index([userId])
+}
+
+// «لیست کوتاه» فیلمساز: بازیگرانی که برای بررسی بعدی نشان کرده است.
+model ActorShortlist {
+  id        String   @id @default(cuid())
+  userId    String // فیلمساز
+  actorId   String // ActorResume.id
+  note      String? // یادداشت شخصیِ فیلمساز دربارهٔ این بازیگر
+  createdAt DateTime @default(now())
+
+  @@unique([userId, actorId])
+  @@index([userId])
 }
 
 // بانک سوالات آزمون فارغ‌التحصیلی. هر آزمون، سوالاتش را به‌صورت تصادفی از سوالاتِ فعال برمی‌دارد،

@@ -80,6 +80,8 @@ export default function ProfileForm({ initial, role }) {
     city: initial.city || '',
     birthYear: initial.birthYear || '',
     gender: initial.gender || '',
+    company: initial.company || '',
+    activityField: initial.activityField || '',
   });
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -130,10 +132,21 @@ export default function ProfileForm({ initial, role }) {
         <p className="form-hint">روی گواهی‌نامهٔ پایان دوره به‌صورت «آقای …» یا «خانم …» درج می‌شود.</p>
       </div>
       {isFilmmaker && (
-        <div className="form-group">
-          <label className="form-label">شماره تماس</label>
-          <input className="form-input" dir="ltr" type="tel" inputMode="tel" placeholder="09xxxxxxxxx" autoComplete="tel" value={form.contactPhone} onChange={(e) => update('contactPhone', e.target.value)} />
-        </div>
+        <>
+          <div className="form-group">
+            <label className="form-label">شماره تماس</label>
+            <input className="form-input" dir="ltr" type="tel" inputMode="tel" placeholder="09xxxxxxxxx" autoComplete="tel" value={form.contactPhone} onChange={(e) => update('contactPhone', e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">شرکت / گروه تولید</label>
+            <input className="form-input" value={form.company} onChange={(e) => update('company', e.target.value)} placeholder="نام شرکت یا گروه فیلم‌سازی" />
+            <p className="form-hint">در بررسی درخواست‌های ست تایم به تیم پشتیبانی کمک می‌کند.</p>
+          </div>
+          <div className="form-group">
+            <label className="form-label">زمینهٔ فعالیت</label>
+            <input className="form-input" value={form.activityField} onChange={(e) => update('activityField', e.target.value)} placeholder="مثلاً کارگردانی، تیزر تبلیغاتی، سریال شبکه نمایش خانگی" />
+          </div>
+        </>
       )}
       <div className="form-group">
         <label className="form-label">شهر</label>

@@ -5,6 +5,8 @@ import { getSessionUser, isFilmmakerOrManager } from '@/lib/auth';
 import SimplePage from '@/components/SimplePage';
 import Icon from '@/components/Icon';
 import ActorBooking from '@/components/ActorBooking';
+import ShortlistButton from '@/components/ShortlistButton';
+import { embedSrc } from '@/lib/embed';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,12 +33,19 @@ export default async function ActorDetailPage({ params }) {
   const a = await prisma.actorResume.findFirst({ where: { id, isPublic: true } });
   if (!a) notFound();
 
+  const inShortlist = !!(await prisma.actorShortlist.findUnique({
+    where: { userId_actorId: { userId: user.id, actorId: a.id } },
+    select: { id: true },
+  }));
+
   const skills = a.skills ? a.skills.split(/[,،]/).map((s) => s.trim()).filter(Boolean) : [];
+  const introSrc = embedSrc(a.selfVideoUrl);
 
   return (
     <SimplePage title={a.fullName} subtitle={a.headline || 'رزومه بازیگری'} tag="بازیگران" cta={false}>
-      <div style={{ marginBottom: 18 }}>
+      <div style={{ marginBottom: 18, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <Link href="/actors" className="btn btn--outline btn--sm">→ بازگشت به فهرست</Link>
+        <ShortlistButton actorId={a.id} initial={inShortlist} />
       </div>
       <div className="actor-detail">
         <div className="actor-detail__photo" style={a.photoUrl ? { backgroundImage: `url(${a.photoUrl})` } : undefined}>
@@ -62,6 +71,20 @@ export default async function ActorDetailPage({ params }) {
             <div style={{ marginTop: 16 }}>
               <h3 style={{ marginBottom: 10 }}>سوابق و تجربه‌ها</h3>
               <p style={{ whiteSpace: 'pre-line', color: 'var(--text)', lineHeight: 2 }}>{a.experience}</p>
+            </div>
+          )}
+          {introSrc && (
+            <div style={{ marginTop: 20 }}>
+              <h3 style={{ marginBottom: 10 }} className="icon-inline"><Icon name="video" size={18} /> ویدیوی معرفی</h3>
+              <div style={{ position: 'relative', aspectRatio: '16 / 9', borderRadius: 'var(--radius)', overflow: 'hidden', background: '#000' }}>
+                <iframe
+                  src={introSrc}
+                  title={`ویدیوی معرفی ${a.fullName}`}
+                  allowFullScreen
+                  loading="lazy"
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}
+                />
+              </div>
             </div>
           )}
           {a.showreelUrl && (

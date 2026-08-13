@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import LogoutButton from '@/components/LogoutButton';
 import DashboardSidebar from '@/components/DashboardSidebar';
@@ -104,8 +105,36 @@ function ManagerDashboard({ user }) {
   );
 }
 
-function FilmmakerDashboard({ user }) {
+// داشبورد فیلمساز عمداً هیچ بخش آموزشی (دوره، ثبت‌نام، تقویم) ندارد؛
+// چرخهٔ کارِ او فقط این است: بانک بازیگران → لیست کوتاه → درخواست ست تایم → پیگیری پاسخ.
+async function FilmmakerDashboard({ user }) {
   const name = user.displayName || 'فیلمساز گرامی';
+
+  const [byStatus, shortlistCount, latestActors, actorsCount, lastReply] = await Promise.all([
+    prisma.bookingRequest.groupBy({ by: ['status'], where: { userId: user.id }, _count: { _all: true } }),
+    prisma.actorShortlist.count({ where: { userId: user.id } }),
+    prisma.actorResume.findMany({
+      where: { isPublic: true },
+      orderBy: { updatedAt: 'desc' },
+      take: 4,
+      select: { id: true, fullName: true, headline: true },
+    }),
+    prisma.actorResume.count({ where: { isPublic: true } }),
+    prisma.bookingRequest.findFirst({
+      where: { userId: user.id, reply: { not: null } },
+      orderBy: { replyAt: 'desc' },
+      select: { actorName: true, reply: true },
+    }),
+  ]);
+
+  const count = (s) => byStatus.find((r) => r.status === s)?._count?._all || 0;
+  const open = count('new');
+  const inProgress = count('contacted');
+  const done = count('done');
+  const total = byStatus.reduce((sum, r) => sum + r._count._all, 0);
+
+  const profileIncomplete = !user.displayName || !user.company;
+
   return (
     <>
       <div className="dash-head">
@@ -118,25 +147,110 @@ function FilmmakerDashboard({ user }) {
         </div>
         <LogoutButton />
       </div>
+
+      {profileIncomplete && (
+        <div className="alert alert--info" style={{ marginBottom: 14 }}>
+          <Icon name="user" size={16} /> پروفایل حرفه‌ای شما کامل نیست. با ثبت نام، شرکت و زمینهٔ فعالیت، درخواست‌های ست تایم شما سریع‌تر بررسی می‌شود.{' '}
+          <Link href="/dashboard/profile" style={{ fontWeight: 700 }}>تکمیل پروفایل ←</Link>
+        </div>
+      )}
+
+      {lastReply?.reply && (
+        <div className="alert alert--success" style={{ marginBottom: 14, lineHeight: 2 }}>
+          <Icon name="chat" size={16} /> پاسخ پشتیبانی دربارهٔ <b>{lastReply.actorName}</b>: {lastReply.reply}{' '}
+          <Link href="/dashboard/requests" style={{ fontWeight: 700 }}>مشاهدهٔ همهٔ درخواست‌ها ←</Link>
+        </div>
+      )}
+
       <Link href="/actors" className="dash-hero" style={{ marginBottom: 14 }}>
         <div className="dash-hero__label">ویژه‌ی فیلم‌سازان</div>
         <h2 className="dash-hero__title"><Icon name="masks" size={22} /> بانک بازیگران</h2>
-        <p className="dash-hero__cta">مشاهده رزومه‌ها و ثبت درخواست ست تایم →</p>
+        <p className="dash-hero__cta">
+          {actorsCount > 0 ? `${actorsCount.toLocaleString('fa-IR')} رزومه آماده مشاهده — ثبت درخواست ست تایم` : 'مشاهده رزومه‌ها و ثبت درخواست ست تایم'} →
+        </p>
       </Link>
-      <div className="dash-cards">
+
+      <div className="dash-cards" style={{ marginBottom: 22 }}>
+        <Link href="/dashboard/requests" className="dash-card" style={{ display: 'block' }}>
+          <h3 className="dash-card__title"><Icon name="clipboard" size={16} /> درخواست‌های ست تایم</h3>
+          <p className="dash-card__text">
+            {total === 0
+              ? 'هنوز درخواستی ثبت نکرده‌اید. از رزومهٔ هر بازیگر می‌توانید درخواست بدهید.'
+              : `${total.toLocaleString('fa-IR')} درخواست — ${open.toLocaleString('fa-IR')} در انتظار بررسی، ${inProgress.toLocaleString('fa-IR')} در حال پیگیری، ${done.toLocaleString('fa-IR')} انجام‌شده.`}
+          </p>
+          <span className="dash-card__link">پیگیری درخواست‌ها →</span>
+        </Link>
+        <Link href="/dashboard/shortlist" className="dash-card" style={{ display: 'block' }}>
+          <h3 className="dash-card__title"><Icon name="trophy" size={16} /> لیست کوتاه من</h3>
+          <p className="dash-card__text">
+            {shortlistCount === 0
+              ? 'بازیگرانی که می‌پسندید را نشان کنید تا بعداً راحت پیدایشان کنید.'
+              : `${shortlistCount.toLocaleString('fa-IR')} بازیگر در لیست کوتاه شما ذخیره شده است.`}
+          </p>
+          <span className="dash-card__link">مشاهده لیست →</span>
+        </Link>
         <div className="dash-card">
-          <h3 className="dash-card__title">حساب کاربری</h3>
-          <p className="dash-card__text">شماره موبایل: <span dir="ltr">{user.phone}</span></p>
-          <Link href="/dashboard/profile" className="dash-card__link">تکمیل پروفایل →</Link>
-        </div>
-        <div className="dash-card">
-          <h3 className="dash-card__title">دوره‌های خانواده برداشت</h3>
-          <p className="dash-card__text">معرفی دوره‌ها و کارگاه‌های آموزشی را ببینید.</p>
-          <Link href="/courses" className="dash-card__link">مشاهده دوره‌ها →</Link>
+          <h3 className="dash-card__title"><Icon name="user" size={16} /> حساب کاربری</h3>
+          <p className="dash-card__text">
+            شماره موبایل: <span dir="ltr">{user.phone}</span>
+            {user.company ? <><br />{user.company}</> : null}
+          </p>
+          <Link href="/dashboard/profile" className="dash-card__link">ویرایش پروفایل →</Link>
         </div>
       </div>
+
+      {latestActors.length > 0 && (
+        <section>
+          <h2 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--dark)', margin: '0 0 12px' }}>تازه‌ترین رزومه‌ها</h2>
+          <div className="dash-cards">
+            {latestActors.map((a) => (
+              <Link key={a.id} href={`/actors/${a.id}`} className="dash-card" style={{ display: 'block' }}>
+                <h3 className="dash-card__title">{a.fullName}</h3>
+                <p className="dash-card__text">{a.headline || 'رزومه بازیگری'}</p>
+                <span className="dash-card__link">مشاهده رزومه →</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </>
   );
+}
+
+// یادآوری برای هنرجو: رزومه‌اش را مدیریت می‌نویسد، اما ویدیوی معرفی را باید خودش بگذارد؛
+// بدون ویدیو، رزومه در بانک بازیگران برای فیلم‌سازان کم‌جان دیده می‌شود.
+async function StudentResumeNudge({ user }) {
+  const resume = await prisma.actorResume.findUnique({
+    where: { userId: user.id },
+    select: { isPublic: true, selfVideoUrl: true },
+  });
+
+  if (!resume) {
+    return (
+      <div className="alert alert--info" style={{ marginBottom: 14 }}>
+        <Icon name="masks" size={16} /> هنوز رزومهٔ بازیگری برای شما ثبت نشده است. رزومه را مدیریت آموزشگاه تنظیم می‌کند؛ برای پیگیری با پشتیبانی در تماس باشید.
+      </div>
+    );
+  }
+
+  if (!resume.selfVideoUrl) {
+    return (
+      <div className="alert alert--warning" style={{ marginBottom: 14 }}>
+        <Icon name="video" size={16} /> رزومهٔ شما ویدیوی معرفی ندارد. با یک ویدیوی کوتاه، شانس دیده‌شدن شما توسط فیلم‌سازان بیشتر می‌شود.{' '}
+        <Link href="/dashboard/resume" style={{ fontWeight: 700 }}>بارگذاری ویدیوی معرفی ←</Link>
+      </div>
+    );
+  }
+
+  if (!resume.isPublic) {
+    return (
+      <div className="alert alert--info" style={{ marginBottom: 14 }}>
+        <Icon name="masks" size={16} /> رزومهٔ شما هنوز در بانک بازیگران منتشر نشده است. انتشار آن را مدیریت آموزشگاه انجام می‌دهد.
+      </div>
+    );
+  }
+
+  return null;
 }
 
 export default async function DashboardPage() {
@@ -165,6 +279,7 @@ export default async function DashboardPage() {
               </div>
               <LogoutButton />
             </div>
+            {user.role === 'student' && <StudentResumeNudge user={user} />}
             <div className="dash-cards" style={{ gridTemplateColumns: user.graduated ? undefined : '2fr 1fr' }}>
               {!user.graduated && (
                 <Link href="/dashboard/calendar" className="dash-hero">

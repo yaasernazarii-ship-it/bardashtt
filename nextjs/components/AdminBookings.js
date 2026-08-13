@@ -11,6 +11,8 @@ export default function AdminBookings() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [busyId, setBusyId] = useState('');
+  // پیش‌نویس پاسخ برای هر درخواست؛ کلید = شناسهٔ درخواست.
+  const [drafts, setDrafts] = useState({});
 
   async function load() {
     const res = await fetch('/api/bookings');
@@ -21,17 +23,26 @@ export default function AdminBookings() {
   }
   useEffect(() => { load(); }, []);
 
-  async function setStatus(id, status) {
+  async function patch(id, body) {
     setBusyId(id); setError('');
     const res = await fetch(`/api/admin/bookings/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify(body),
     });
     const data = await res.json();
     setBusyId('');
     if (data.ok) load();
     else setError(data.error || 'عملیات انجام نشد.');
+  }
+
+  const setStatus = (id, status) => patch(id, { status });
+
+  async function sendReply(id) {
+    const reply = (drafts[id] || '').trim();
+    if (!reply) return;
+    await patch(id, { reply });
+    setDrafts((d) => ({ ...d, [id]: '' }));
   }
 
   if (loading) return <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p>;
@@ -56,6 +67,33 @@ export default function AdminBookings() {
             <div style={{ marginTop: 10, background: 'var(--surface)', borderRadius: 10, padding: 12, whiteSpace: 'pre-line', lineHeight: 2 }}>
               {b.message}
             </div>
+            {/* پاسخ پشتیبانی — این متن را خودِ فیلمساز در «درخواست‌های ست تایم» داشبوردش می‌بیند و اعلان می‌گیرد. */}
+            <div style={{ marginTop: 14 }}>
+              {b.reply && (
+                <div style={{ marginBottom: 10, padding: '8px 10px', borderRadius: 8, background: '#eaf7f0', border: '1px solid #bfe5d0', fontSize: '.88rem', lineHeight: 2, whiteSpace: 'pre-line' }}>
+                  <b>پاسخ فعلی (قابل مشاهده برای فیلمساز):</b>
+                  <div>{b.reply}</div>
+                </div>
+              )}
+              <label className="form-label">{b.reply ? 'ویرایش پاسخ' : 'پاسخ به فیلمساز'}</label>
+              <textarea
+                className="form-input"
+                rows={2}
+                value={drafts[b.id] ?? ''}
+                onChange={(e) => setDrafts((d) => ({ ...d, [b.id]: e.target.value }))}
+                placeholder="مثلاً: با بازیگر هماهنگ شد؛ جلسه پنج‌شنبه ساعت ۱۶ در دفتر."
+              />
+              <button
+                type="button"
+                className="btn btn--outline btn--sm"
+                style={{ marginTop: 8 }}
+                disabled={busyId === b.id || !(drafts[b.id] || '').trim()}
+                onClick={() => sendReply(b.id)}
+              >
+                ارسال پاسخ و اعلان
+              </button>
+            </div>
+
             <div style={{ display: 'flex', gap: 8, marginTop: 14, flexWrap: 'wrap' }}>
               <a className="btn btn--gold" href={`tel:${b.phone}`}>تماس تلفنی</a>
               <a className="btn btn--outline" href={`https://wa.me/98${String(b.phone).replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer">واتساپ</a>

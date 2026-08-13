@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import Icon from './Icon';
 
 export default function ActorBooking({ actorId, actorName, defaultName = '', defaultPhone = '' }) {
@@ -42,7 +43,8 @@ export default function ActorBooking({ actorId, actorName, defaultName = '', def
     <div className="actor-booking" style={{ marginTop: 24, borderTop: '1px solid var(--border)', paddingTop: 20 }}>
       {done ? (
         <div className="alert alert--success" style={{ lineHeight: 2 }}>
-          <Icon name="check" size={16} /> درخواست ست تایم شما برای <b>{actorName}</b> ثبت شد. به‌زودی برای هماهنگی با شما تماس می‌گیریم.
+          <Icon name="check" size={16} /> درخواست ست تایم شما برای <b>{actorName}</b> ثبت شد. به‌زودی برای هماهنگی با شما تماس می‌گیریم.{' '}
+          <Link href="/dashboard/requests" style={{ fontWeight: 700 }}>پیگیری در داشبورد ←</Link>
         </div>
       ) : !open ? (
         <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 20 }}>

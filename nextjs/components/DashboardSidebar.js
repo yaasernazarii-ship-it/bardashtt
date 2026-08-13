@@ -15,13 +15,15 @@ const STUDENT_ITEMS = [
   { key: 'courses', href: '/courses', icon: 'clapperboard', label: 'دوره‌ها' },
 ];
 
-// منوی اختصاصیِ فیلمساز: به‌جای برنامه/ثبت‌نام/دستیار/رزومهٔ هنرجویی، فقط دسترسی‌های مربوط به خودش را می‌بیند.
+// منوی اختصاصیِ فیلمساز. این پنل عمداً هیچ آیتم آموزشی (دوره، ثبت‌نام، تقویم، آزمون، رزومهٔ هنرجویی)
+// ندارد؛ فیلمساز مخاطبِ آموزش نیست و داشبوردش فقط حول کارِ خودش می‌چرخد: بانک بازیگران و پیگیری ست تایم.
 const FILMMAKER_ITEMS = [
   { key: 'dashboard', href: '/dashboard', icon: 'home', label: 'داشبورد' },
-  { key: 'actors', href: '/actors', icon: 'user', label: 'بانک بازیگران' },
+  { key: 'actors', href: '/actors', icon: 'masks', label: 'بانک بازیگران' },
+  { key: 'shortlist', href: '/dashboard/shortlist', icon: 'trophy', label: 'لیست کوتاه من' },
+  { key: 'requests', href: '/dashboard/requests', icon: 'clipboard', label: 'درخواست‌های ست تایم' },
   { key: 'orders', href: '/dashboard/orders', icon: 'book', label: 'سفارش‌های من' },
   { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل' },
-  { key: 'courses', href: '/courses', icon: 'clapperboard', label: 'دوره‌ها' },
 ];
 
 // ادمین/ادیتور منوی هنرجویی (تقویم، ثبت‌نام من، آزمون، رزومه) را نمی‌بینند؛

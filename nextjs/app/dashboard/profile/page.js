@@ -3,7 +3,7 @@ import { getSessionUser, isManager } from '@/lib/auth';
 import ProfileForm from '@/components/ProfileForm';
 import DashboardSidebar from '@/components/DashboardSidebar';
 
-export const metadata = { title: 'پروفایل هنرجو' };
+export const metadata = { title: 'پروفایل من' };
 
 export default async function ProfilePage() {
   const user = await getSessionUser();
@@ -17,7 +17,7 @@ export default async function ProfilePage() {
           <h1 className="dash-head__title">پروفایل من</h1>
           <p className="dash-head__sub">اطلاعات حساب کاربری خود را تکمیل و ویرایش کنید.</p>
         </div>
-        <ProfileForm role={user.role} initial={{ phone: user.phone, contactPhone: user.contactPhone, displayName: user.displayName, city: user.city, birthYear: user.birthYear, gender: user.gender, photoUrl: user.photoUrl }} />
+        <ProfileForm role={user.role} initial={{ phone: user.phone, contactPhone: user.contactPhone, displayName: user.displayName, city: user.city, birthYear: user.birthYear, gender: user.gender, photoUrl: user.photoUrl, company: user.company, activityField: user.activityField }} />
         {/* رمز عبور را فقط مدیریت (ادمین/ادیتور) صادر و تغییر می‌دهد؛ کاربر خودش دسترسی تغییر ندارد. */}
         <div className="form-shell" style={{ maxWidth: 520, marginTop: 24 }}>
           <div className="form-shell__head">
