@@ -31,6 +31,7 @@ model User {
   classGroup   ClassGroup?  @relation(fields: [classGroupId], references: [id])
   scheduleSeenAt DateTime? // آخرین باری که هنرجو برنامه‌اش را دید (برای نوتیفیکیشن)
   notificationsReadAt DateTime? // آخرین باری که کاربر اعلان‌هایش را دید (برای شمارش خوانده‌نشده‌ها)
+  staffReportsSeenAt DateTime? // آخرین باری که ادمین/ادیتور تابلوی گزارش کار تیمی را باز کرد (مبنای شمارش خوانده‌نشده)
   progressOverride Int? // درصد پیشرفتِ دستیِ تعیین‌شده توسط ادمین/ادیتور؛ اگر تنظیم شود جای محاسبهٔ خودکار (بر پایه‌ی حضور) را می‌گیرد
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
@@ -550,4 +551,42 @@ model AuditLog {
   @@index([createdAt])
   @@index([action])
   @@index([actorId])
+}
+
+// تابلوی گزارش کار داخلیِ تیم مدیریت: ادمین و ادیتور اینجا به هم گزارش کار می‌دهند.
+// این محتوا هرگز در سایت عمومی یا داشبورد هنرجو/فیلمساز دیده نمی‌شود و همهٔ مسیرهای آن
+// در سرور با isManager محافظت شده‌اند. نام و نقشِ نویسنده در همان لحظه کپی می‌شود تا
+// تغییر نقش یا حذف حساب، تاریخچهٔ گزارش‌ها را بی‌معنا نکند.
+model StaffReport {
+  id         String    @id @default(cuid())
+  authorId   String
+  authorName String
+  authorRole String // admin | editor (در لحظهٔ ثبت)
+  title      String
+  body       String
+  category   String    @default("report") // report | issue | request
+  status     String    @default("open") // open | done
+  doneById   String?
+  doneByName String?
+  doneAt     DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  comments   StaffReportComment[]
+
+  @@index([createdAt])
+  @@index([status])
+  @@index([authorId])
+}
+
+model StaffReportComment {
+  id         String      @id @default(cuid())
+  reportId   String
+  report     StaffReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  authorId   String
+  authorName String
+  authorRole String
+  body       String
+  createdAt  DateTime    @default(now())
+
+  @@index([reportId, createdAt])
 }

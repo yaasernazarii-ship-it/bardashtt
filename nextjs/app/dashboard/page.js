@@ -71,9 +71,20 @@ const MANAGER_GROUPS = [
   },
 ];
 
-function ManagerDashboard({ user }) {
+async function ManagerDashboard({ user }) {
   const name = user.displayName || 'همکار گرامی';
   const roleLabel = user.role === 'admin' ? 'مدیر' : 'ادیتور';
+
+  // تابلوی گزارش کار تیمی: چند مورد از آخرین بازدیدِ همین مدیر تازه است و چند کار هنوز باز مانده.
+  const seenAt = user.staffReportsSeenAt || new Date(0);
+  const [newReports, newComments, openReports, latestReport] = await Promise.all([
+    prisma.staffReport.count({ where: { createdAt: { gt: seenAt }, authorId: { not: user.id } } }),
+    prisma.staffReportComment.count({ where: { createdAt: { gt: seenAt }, authorId: { not: user.id } } }),
+    prisma.staffReport.count({ where: { status: 'open' } }),
+    prisma.staffReport.findFirst({ orderBy: { createdAt: 'desc' }, select: { title: true, authorName: true } }),
+  ]);
+  const unread = newReports + newComments;
+
   return (
     <>
       <div className="dash-head">
@@ -86,6 +97,20 @@ function ManagerDashboard({ user }) {
         </div>
         <LogoutButton />
       </div>
+
+      {/* دفترِ کار مشترک مدیر و ادیتور؛ فقط همین دو نقش این بخش را می‌بینند. */}
+      <Link href="/dashboard/admin/reports" className="dash-hero" style={{ marginBottom: 26 }}>
+        <div className="dash-hero__label">فقط مدیر و ادیتور</div>
+        <h2 className="dash-hero__title">
+          <Icon name="users" size={22} /> گزارش کار تیمی
+          {unread > 0 && <span className="tag tag--gold" style={{ marginRight: 8 }}>{unread.toLocaleString('fa-IR')} مورد تازه</span>}
+        </h2>
+        <p className="dash-hero__cta">
+          {latestReport
+            ? `${openReports.toLocaleString('fa-IR')} کار باز · آخرین گزارش: «${latestReport.title}» از ${latestReport.authorName} →`
+            : 'اولین گزارش کار را برای همکارتان ثبت کنید →'}
+        </p>
+      </Link>
 
       {MANAGER_GROUPS.map((group) => (
         <section key={group.title} style={{ marginBottom: 26 }}>
