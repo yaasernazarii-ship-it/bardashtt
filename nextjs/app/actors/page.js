@@ -24,7 +24,8 @@ export default async function ActorsPage() {
       orderBy: { updatedAt: 'desc' },
       select: {
         id: true, fullName: true, headline: true, city: true, photoUrl: true,
-        gender: true, birthYear: true, skills: true, selfVideoUrl: true,
+        gender: true, birthYear: true, heightCm: true, skills: true,
+        experience: true, selfVideoUrl: true, showreelUrl: true,
       },
     }),
     prisma.actorShortlist.findMany({ where: { userId: user.id }, select: { actorId: true } }),
