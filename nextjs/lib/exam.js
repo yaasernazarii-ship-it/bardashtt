@@ -53,9 +53,12 @@ export function normalizeSerial(input) {
   return String(input || '')
     .replace(/[۰-۹]/g, (ch) => String(ch.charCodeAt(0) - 0x06f0))
     .replace(/[٠-٩]/g, (ch) => String(ch.charCodeAt(0) - 0x0660))
+    // ترتیب مهم است: اول فاصله‌های ابتدا و انتها حذف می‌شوند، وگرنه به خط تیره تبدیل
+    // می‌شدند و کدِ کپی‌شده با یک فاصلهٔ اضافه هرگز پیدا نمی‌شد.
+    .trim()
     .replace(/[\u2010-\u2015_\s]+/g, '-')
     .replace(/-+/g, '-')
-    .trim()
+    .replace(/^-|-$/g, '')
     .toUpperCase();
 }
 

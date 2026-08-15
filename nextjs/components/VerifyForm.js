@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
 const fa = (n) => new Intl.NumberFormat('fa-IR', { useGrouping: false }).format(n ?? 0);
@@ -24,14 +24,13 @@ export default function VerifyForm({ content }) {
   const [error, setError] = useState('');
   const [cert, setCert] = useState(null);
 
-  async function check(e) {
-    e.preventDefault();
+  const run = useCallback(async (serial) => {
     setLoading(true); setError(''); setCert(null);
     try {
       const res = await fetch('/api/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ serial: code }),
+        body: JSON.stringify({ serial }),
       });
       const data = await res.json();
       if (!data.ok) { setError(data.error || 'استعلام ناموفق بود.'); return; }
@@ -41,6 +40,19 @@ export default function VerifyForm({ content }) {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  // QR روی گواهی به همین صفحه با ?code=… می‌رسد؛ کد پر و استعلام خودکار انجام می‌شود.
+  useEffect(() => {
+    const fromLink = new URLSearchParams(window.location.search).get('code');
+    if (!fromLink) return;
+    setCode(fromLink);
+    run(fromLink);
+  }, [run]);
+
+  function check(e) {
+    e.preventDefault();
+    run(code);
   }
 
   return (

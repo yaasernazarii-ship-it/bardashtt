@@ -1,15 +1,27 @@
 // ساخت PDF گواهی‌نامهٔ پایان دوره با pdfkit (A4 افقی، فارسی راست‌چین).
+// طرح از چند لایه ساخته می‌شود: زمینهٔ کرم، قاب دولایهٔ طلایی، گل‌آذینِ گوشه‌ها،
+// رزتِ کم‌رنگِ پس‌زمینه (همان بافتِ امنیتیِ اسناد رسمی)، متن اصلی، و نوار پایین
+// شامل کد استعلام، QR استعلام آنلاین و محل مهر و امضا.
 import path from 'node:path';
 import PDFDocument from 'pdfkit';
 import { shape } from './rtl';
 import { SCHOOL_NAME, formatScore, honorific } from './exam';
+import { qrMatrix } from './qr';
 
 const FONT_REGULAR = path.join(process.cwd(), 'assets/fonts/Vazirmatn-Regular.ttf');
 const FONT_BOLD = path.join(process.cwd(), 'assets/fonts/Vazirmatn-Bold.ttf');
+const LOGO = path.join(process.cwd(), 'assets/cert-logo.png');
+
+const VERIFY_BASE = 'https://bardashtt.com/verify';
 
 const GOLD = '#b08d3f';
-const INK = '#12100c';
-const MUTED = '#5b5449';
+const GOLD_SOFT = '#d9c48c';
+const CREAM = '#fdfaf3';
+const INK = '#191510';
+const MUTED = '#6a6153';
+
+// ارقام لاتین به فارسی؛ نقطهٔ اعشار هم به جداکنندهٔ فارسی تبدیل می‌شود.
+const fa = (value) => String(value ?? '').replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]).replace(/\./g, '٫');
 
 const fmtDate = (d) => {
   try {
@@ -19,20 +31,92 @@ const fmtDate = (d) => {
   }
 };
 
-// یک خط متنِ وسط‌چین در عرض کاملِ صفحه.
-function center(doc, text, y, { size = 14, bold = false, color = INK } = {}) {
-  const left = doc.page.margins.left;
-  const width = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+// ── ابزارهای متن ────────────────────────────────────────────────
+// raw برای رشته‌هایی که فقط لاتین‌اند (مثل نشانی سایت)؛ آن‌ها نباید از shape رد شوند
+// چون در نبودِ متن فارسی، pdfkit معکوسشان نمی‌کند و از پیش‌معکوس‌سازی وارونه درمی‌آیند.
+function write(doc, text, x, y, width, { size = 12, bold = false, color = INK, align = 'right', raw = false } = {}) {
   doc.font(bold ? FONT_BOLD : FONT_REGULAR).fontSize(size).fillColor(color);
-  doc.text(shape(text), left, y, { width, align: 'center', features: [] });
+  doc.text(raw ? String(text) : shape(text), x, y, { width, align, features: [], lineBreak: false });
   return doc.y;
+}
+
+function center(doc, text, y, { size = 12, bold = false, color = INK } = {}) {
+  const W = doc.page.width;
+  return write(doc, text, 40, y, W - 80, { size, bold, color, align: 'center' });
+}
+
+function textWidth(doc, text, size, bold) {
+  doc.font(bold ? FONT_BOLD : FONT_REGULAR).fontSize(size);
+  return doc.widthOfString(shape(text), { features: [] });
+}
+
+// ── اجزای تزئینی ────────────────────────────────────────────────
+function diamond(doc, cx, cy, r, color = GOLD) {
+  doc.moveTo(cx, cy - r).lineTo(cx + r, cy).lineTo(cx, cy + r).lineTo(cx - r, cy).closePath().fillColor(color).fill();
+}
+
+// خط تزئینیِ وسط‌چین با لوزیِ میانی
+function divider(doc, cx, cy, half) {
+  doc.moveTo(cx - half, cy).lineTo(cx - 9, cy).lineWidth(0.9).strokeColor(GOLD).stroke();
+  doc.moveTo(cx + 9, cy).lineTo(cx + half, cy).lineWidth(0.9).strokeColor(GOLD).stroke();
+  diamond(doc, cx, cy, 3.6);
+}
+
+// گل‌آذینِ گوشه: دو کمانِ هم‌مرکز و یک لوزی. sx/sy جهت گوشه را می‌چرخاند.
+function cornerOrnament(doc, x, y, sx, sy) {
+  doc.save();
+  doc.translate(x, y).scale(sx, sy);
+  doc.path('M 0 46 A 46 46 0 0 1 46 0').lineWidth(1.1).strokeColor(GOLD).stroke();
+  doc.path('M 0 32 A 32 32 0 0 1 32 0').lineWidth(0.5).strokeColor(GOLD_SOFT).stroke();
+  diamond(doc, 27, 27, 3);
+  doc.restore();
+}
+
+// رزتِ کم‌رنگِ پس‌زمینه: بیضی‌های چرخانِ هم‌مرکز، همان بافتی که روی اسناد بهادار دیده می‌شود.
+function rosette(doc, cx, cy, rx, ry, count) {
+  doc.save();
+  doc.opacity(0.05);
+  doc.translate(cx, cy);
+  for (let i = 0; i < count; i++) {
+    doc.save();
+    doc.rotate((180 / count) * i);
+    doc.ellipse(0, 0, rx, ry).lineWidth(0.5).strokeColor(GOLD).stroke();
+    doc.restore();
+  }
+  doc.restore();
+  doc.opacity(1);
+}
+
+// ── QR استعلام ─────────────────────────────────────────────────
+function drawQr(doc, payload, x, y, box) {
+  const m = qrMatrix(payload);
+  const n = m.length;
+  const quiet = 3; // حاشیهٔ سفیدِ لازم برای خوانده‌شدن کد
+  const unit = box / (n + quiet * 2);
+
+  doc.rect(x, y, box, box).fillColor('#ffffff').fill();
+  doc.rect(x, y, box, box).lineWidth(0.6).strokeColor(GOLD_SOFT).stroke();
+
+  doc.fillColor(INK);
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      if (!m[r][c]) continue;
+      doc.rect(x + (c + quiet) * unit, y + (r + quiet) * unit, unit + 0.2, unit + 0.2).fill();
+    }
+  }
 }
 
 export async function buildCertificatePdf(cert) {
   const doc = new PDFDocument({
     size: 'A4',
     layout: 'landscape',
-    margins: { top: 56, bottom: 56, left: 56, right: 56 },
+    // همهٔ اجزا با مختصات مطلق چیده می‌شوند؛ حاشیهٔ صفر جلوی صفحهٔ اضافیِ ناخواسته را می‌گیرد.
+    margins: { top: 0, bottom: 0, left: 0, right: 0 },
+    info: {
+      Title: `گواهی‌نامهٔ پایان دوره — ${cert.serial}`,
+      Author: SCHOOL_NAME,
+      Subject: 'گواهی‌نامهٔ پایان دورهٔ آموزشی',
+    },
   });
   const chunks = [];
   doc.on('data', (c) => chunks.push(c));
@@ -40,54 +124,91 @@ export async function buildCertificatePdf(cert) {
 
   const W = doc.page.width;
   const H = doc.page.height;
+  const CX = W / 2;
 
-  // قاب طلایی دولایه
-  doc.rect(24, 24, W - 48, H - 48).lineWidth(3).strokeColor(GOLD).stroke();
-  doc.rect(34, 34, W - 68, H - 68).lineWidth(0.8).strokeColor(GOLD).stroke();
+  // زمینه و قاب
+  doc.rect(20, 20, W - 40, H - 40).fillColor(CREAM).fill();
+  doc.rect(20, 20, W - 40, H - 40).lineWidth(2.6).strokeColor(GOLD).stroke();
+  doc.rect(29, 29, W - 58, H - 58).lineWidth(0.6).strokeColor(GOLD_SOFT).stroke();
 
-  let y = 70;
-  y = center(doc, SCHOOL_NAME, y, { size: 22, bold: true, color: INK });
-  y = center(doc, 'گواهی‌نامهٔ پایان دوره', y + 10, { size: 30, bold: true, color: GOLD });
+  cornerOrnament(doc, 38, 38, 1, 1);
+  cornerOrnament(doc, W - 38, 38, -1, 1);
+  cornerOrnament(doc, 38, H - 38, 1, -1);
+  cornerOrnament(doc, W - 38, H - 38, -1, -1);
 
-  doc.moveTo(W / 2 - 90, y + 16).lineTo(W / 2 + 90, y + 16).lineWidth(1).strokeColor(GOLD).stroke();
+  rosette(doc, CX, H / 2 + 6, 168, 58, 18);
 
-  y = center(doc, 'بدین‌وسیله گواهی می‌شود', y + 34, { size: 13, color: MUTED });
+  // سربرگ
+  doc.image(LOGO, CX - 30, 46, { height: 64 });
+  center(doc, SCHOOL_NAME, 120, { size: 13.5, bold: true, color: MUTED });
+  center(doc, 'گواهی‌نامهٔ پایان دوره', 142, { size: 29, bold: true, color: GOLD });
+  divider(doc, CX, 194, 118);
+
+  // متن اصلی
+  center(doc, 'بدین‌وسیله گواهی می‌شود که', 212, { size: 11.5, color: MUTED });
 
   const title = honorific(cert.gender);
   const holder = title ? `${title} ${cert.fullName}` : cert.fullName;
-  y = center(doc, holder, y + 12, { size: 26, bold: true, color: INK });
+  center(doc, holder, 236, { size: 25, bold: true, color: INK });
+
+  // زیرخطِ نامِ دارنده، به اندازهٔ خودِ نام
+  const nameHalf = Math.min(Math.max(textWidth(doc, holder, 25, true) / 2 + 34, 110), (W - 160) / 2);
+  const underlineY = 276;
+  doc.moveTo(CX - nameHalf, underlineY).lineTo(CX + nameHalf, underlineY).lineWidth(0.8).strokeColor(GOLD_SOFT).stroke();
+  diamond(doc, CX - nameHalf, underlineY, 2.4, GOLD_SOFT);
+  diamond(doc, CX + nameHalf, underlineY, 2.4, GOLD_SOFT);
 
   const course = cert.courseTitle ? `دورهٔ ${cert.courseTitle}` : 'دورهٔ آموزشی بازیگری';
-  const branch = cert.branch ? ` (شعبهٔ ${cert.branch})` : '';
-  y = center(doc, `${course}${branch} را با موفقیت به پایان رسانده`, y + 14, { size: 14, color: INK });
+  center(doc, `${course} را در این آموزشگاه با موفقیت به پایان رسانده`, 296, { size: 13, color: INK });
 
   // فقط نمرهٔ نهایی (جمع آزمون و نمرهٔ کلاسی) روی گواهی درج می‌شود؛
   // ریز نمره عمداً نمی‌آید و فقط در پنل مدیریت و کارنامهٔ خود هنرجو دیده می‌شود.
   const scoreLine = Number.isFinite(cert.percent)
-    ? `و با کسب نمرهٔ نهایی ${formatScore(cert.percent)} از ۱۰۰ پذیرفته شده است.`
+    ? `و در آزمون پایان دوره با نمرهٔ نهایی ${fa(formatScore(cert.percent))} از ۱۰۰ پذیرفته شده است.`
     : 'و در آزمون پایان دوره پذیرفته شده است.';
-  y = center(doc, scoreLine, y + 8, { size: 14, color: INK });
+  center(doc, scoreLine, 322, { size: 13, color: INK });
 
-  // نوار پایین: کد استعلام، تاریخ صدور، محل امضا
-  const baseY = H - 150;
-  doc.font(FONT_BOLD).fontSize(12).fillColor(INK);
-  doc.text(shape(`کد استعلام: ${cert.serial}`), 56, baseY, { width: 240, align: 'right', features: [] });
-  doc.font(FONT_REGULAR).fontSize(11).fillColor(MUTED);
-  doc.text(shape(`تاریخ صدور: ${fmtDate(cert.issuedAt)}`), 56, baseY + 20, { width: 240, align: 'right', features: [] });
-  doc.text(shape('اعتبار این گواهی از bardashtt.com/verify قابل استعلام است.'), 56, baseY + 38, {
-    width: 300,
-    align: 'right',
-    features: [],
-  });
+  divider(doc, CX, 372, 46);
 
-  doc.moveTo(W - 250, baseY + 34).lineTo(W - 90, baseY + 34).lineWidth(0.8).strokeColor('#999').stroke();
-  doc.font(FONT_REGULAR).fontSize(11).fillColor(MUTED);
-  doc.text(shape('مهر و امضای مدیریت آموزشگاه'), W - 300, baseY + 42, { width: 210, align: 'center', features: [] });
+  // ── نوار پایین ───────────────────────────────────────────────
+  const footY = H - 160;
+
+  // راست: شناسهٔ گواهی
+  const infoW = 250;
+  const infoX = W - 58 - infoW;
+  let infoY = footY;
+  write(doc, `کد استعلام: ${cert.serial}`, infoX, infoY, infoW, { size: 12, bold: true });
+  infoY += 21;
+  write(doc, `تاریخ صدور: ${fmtDate(cert.issuedAt)}`, infoX, infoY, infoW, { size: 10.5, color: MUTED });
+  if (cert.nationalId) {
+    infoY += 18;
+    write(doc, `کد ملی: ${fa(cert.nationalId)}`, infoX, infoY, infoW, { size: 10.5, color: MUTED });
+  }
+  if (cert.branch) {
+    infoY += 18;
+    write(doc, `شعبه: ${cert.branch}`, infoX, infoY, infoW, { size: 10.5, color: MUTED });
+  }
+
+  // وسط: QR استعلام آنلاین
+  const qrBox = 76;
+  drawQr(doc, `${VERIFY_BASE}?code=${cert.serial}`, CX - qrBox / 2, footY - 10, qrBox);
+  write(doc, 'استعلام آنلاین اعتبار', CX - 95, footY + qrBox - 3, 190, { size: 9, color: MUTED, align: 'center' });
+  write(doc, 'bardashtt.com/verify', CX - 95, footY + qrBox + 10, 190, { size: 9, color: MUTED, align: 'center', raw: true });
+
+  // چپ: محل مهر و امضا
+  const signW = 214;
+  const signX = 58;
+  doc.moveTo(signX + 12, footY + 58).lineTo(signX + signW - 12, footY + 58).lineWidth(0.7).strokeColor('#b9b1a2').stroke();
+  write(doc, 'مهر و امضای مدیریت آموزشگاه', signX, footY + 66, signW, { size: 10.5, color: MUTED, align: 'center' });
 
   if (cert.revoked) {
-    doc.font(FONT_BOLD).fontSize(60).fillColor('#dc2626').opacity(0.25);
-    doc.text(shape('باطل شد'), 0, H / 2 - 30, { width: W, align: 'center', features: [] });
+    doc.save();
+    doc.translate(CX, H / 2).rotate(-16);
+    doc.opacity(0.2);
+    doc.font(FONT_BOLD).fontSize(74).fillColor('#dc2626');
+    doc.text(shape('باطل شد'), -220, -46, { width: 440, align: 'center', features: [], lineBreak: false });
     doc.opacity(1);
+    doc.restore();
   }
 
   doc.end();
