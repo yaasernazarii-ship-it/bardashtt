@@ -566,6 +566,8 @@ model StaffReport {
   body       String
   category   String    @default("report") // report | issue | request
   status     String    @default("open") // open | done
+  targetId   String? // گیرندهٔ گزارش؛ null یعنی «همهٔ تیم»
+  targetName String? // نام گیرنده در لحظهٔ ثبت (تا تغییر نام/حذف حساب تاریخچه را خراب نکند)
   doneById   String?
   doneByName String?
   doneAt     DateTime?
@@ -576,6 +578,7 @@ model StaffReport {
   @@index([createdAt])
   @@index([status])
   @@index([authorId])
+  @@index([targetId])
 }
 
 model StaffReportComment {
@@ -589,4 +592,49 @@ model StaffReportComment {
   createdAt  DateTime    @default(now())
 
   @@index([reportId, createdAt])
+}
+
+// گفت‌وگوی داخلیِ تیم مدیریت (کنار تابلوی گزارش کار). دو نوع دارد:
+// group → یک گفت‌وگوی گروهی که همهٔ ادمین/ادیتورهای فعال عضو آن‌اند،
+// direct → گفت‌وگوی خصوصیِ دونفره که فقط همان دو نفر می‌بینند (حتی ادمینِ دیگر هم نه).
+// عضویت از روی همین ستون‌ها در سرور بررسی می‌شود؛ هیچ مسیری بدون آن بررسی اجرا نمی‌شود.
+model StaffChatThread {
+  id            String   @id @default(cuid())
+  kind          String   @default("direct") // group | direct
+  pairKey       String   @unique // "group" برای گروهی، وگرنه دو شناسهٔ کاربر مرتب‌شده با «|»
+  userAId       String? // فقط در direct
+  userBId       String? // فقط در direct
+  lastMessageAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+  messages      StaffChatMessage[]
+  reads         StaffChatRead[]
+
+  @@index([lastMessageAt])
+  @@index([userAId])
+  @@index([userBId])
+}
+
+model StaffChatMessage {
+  id         String          @id @default(cuid())
+  threadId   String
+  thread     StaffChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  authorId   String
+  authorName String
+  authorRole String
+  body       String
+  createdAt  DateTime        @default(now())
+
+  @@index([threadId, createdAt])
+}
+
+// آخرین باری که هر کاربر یک گفت‌وگو را باز کرده؛ مبنای شمارندهٔ خوانده‌نشده.
+model StaffChatRead {
+  id         String          @id @default(cuid())
+  threadId   String
+  thread     StaffChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  userId     String
+  lastReadAt DateTime        @default(now())
+
+  @@unique([threadId, userId])
+  @@index([userId])
 }

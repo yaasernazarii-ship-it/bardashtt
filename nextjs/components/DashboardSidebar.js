@@ -34,7 +34,7 @@ const MANAGER_PERSONAL_ITEMS = [
 ];
 
 const MANAGER_ITEMS = [
-  { key: 'reports', href: '/dashboard/admin/reports', icon: 'users', label: 'گزارش کار تیمی' },
+  { key: 'reports', href: '/dashboard/admin/reports', icon: 'users', label: 'گزارش و گفت‌وگوی تیم' },
   { key: 'enrollments', href: '/dashboard/admin/enrollments', icon: 'clipboard', label: 'بررسی ثبت‌نام‌ها' },
   { key: 'signups', href: '/dashboard/admin/signups', icon: 'check', label: 'تأیید حساب‌ها' },
   { key: 'classes', href: '/dashboard/admin/classes', icon: 'calendar', label: 'کلاس‌ها و تقویم' },

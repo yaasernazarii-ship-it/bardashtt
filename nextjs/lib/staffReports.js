@@ -32,6 +32,28 @@ export async function otherManagerIds(exceptUserId) {
   return rows.map((r) => r.id);
 }
 
+// فهرست همکارانِ فعالِ تیم مدیریت (برای انتخاب گیرندهٔ گزارش و شروع گفت‌وگو).
+// هر ادیتورِ تازه‌ای که ادمین اضافه کند، بدون هیچ تنظیم دیگری خودش در این فهرست می‌آید.
+export async function listColleagues(exceptUserId) {
+  const rows = await prisma.user.findMany({
+    where: { role: { in: ['admin', 'editor'] }, active: true, ...(exceptUserId ? { id: { not: exceptUserId } } : {}) },
+    orderBy: [{ role: 'asc' }, { displayName: 'asc' }],
+    select: { id: true, displayName: true, username: true, phone: true, role: true },
+  });
+  return rows.map((u) => ({ id: u.id, name: displayNameOf(u), role: u.role }));
+}
+
+// گیرندهٔ گزارش: باید یکی از مدیرانِ فعال و غیر از خودِ نویسنده باشد؛ در غیر این صورت «همهٔ تیم».
+export async function resolveTarget(targetId, authorId) {
+  if (!targetId || typeof targetId !== 'string' || targetId === authorId) return { targetId: null, targetName: null };
+  const target = await prisma.user.findFirst({
+    where: { id: targetId, role: { in: ['admin', 'editor'] }, active: true },
+    select: { id: true, displayName: true, username: true, phone: true },
+  });
+  if (!target) return { targetId: null, targetName: null };
+  return { targetId: target.id, targetName: displayNameOf(target) };
+}
+
 export function serializeReport(r, viewer) {
   return {
     id: r.id,
@@ -42,6 +64,8 @@ export function serializeReport(r, viewer) {
     authorId: r.authorId,
     authorName: r.authorName,
     authorRole: r.authorRole,
+    targetId: r.targetId || null,
+    targetName: r.targetName || null,
     doneByName: r.doneByName,
     doneAt: r.doneAt ? r.doneAt.toISOString() : null,
     createdAt: r.createdAt.toISOString(),

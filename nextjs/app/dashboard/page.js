@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
+import { countChatUnread } from '@/lib/staffChat';
 import LogoutButton from '@/components/LogoutButton';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import Icon from '@/components/Icon';
@@ -75,13 +76,16 @@ async function ManagerDashboard({ user }) {
   const name = user.displayName || 'همکار گرامی';
   const roleLabel = user.role === 'admin' ? 'مدیر' : 'ادیتور';
 
-  // تابلوی گزارش کار تیمی: چند مورد از آخرین بازدیدِ همین مدیر تازه است و چند کار هنوز باز مانده.
+  // تابلوی گزارش کار تیمی: چند مورد از آخرین بازدیدِ همین مدیر تازه است، چند کار به خودش ارجاع شده،
+  // چند کار باز مانده و چند پیام گفت‌وگوی تیمی خوانده نشده است.
   const seenAt = user.staffReportsSeenAt || new Date(0);
-  const [newReports, newComments, openReports, latestReport] = await Promise.all([
+  const [newReports, newComments, openReports, myOpenTasks, latestReport, chatUnread] = await Promise.all([
     prisma.staffReport.count({ where: { createdAt: { gt: seenAt }, authorId: { not: user.id } } }),
     prisma.staffReportComment.count({ where: { createdAt: { gt: seenAt }, authorId: { not: user.id } } }),
     prisma.staffReport.count({ where: { status: 'open' } }),
+    prisma.staffReport.count({ where: { status: 'open', targetId: user.id } }),
     prisma.staffReport.findFirst({ orderBy: { createdAt: 'desc' }, select: { title: true, authorName: true } }),
+    countChatUnread(user),
   ]);
   const unread = newReports + newComments;
 
@@ -102,13 +106,14 @@ async function ManagerDashboard({ user }) {
       <Link href="/dashboard/admin/reports" className="dash-hero" style={{ marginBottom: 26 }}>
         <div className="dash-hero__label">فقط مدیر و ادیتور</div>
         <h2 className="dash-hero__title">
-          <Icon name="users" size={22} /> گزارش کار تیمی
+          <Icon name="users" size={22} /> گزارش کار و گفت‌وگوی تیمی
           {unread > 0 && <span className="tag tag--gold" style={{ marginRight: 8 }}>{unread.toLocaleString('fa-IR')} مورد تازه</span>}
+          {chatUnread > 0 && <span className="tag tag--gold" style={{ marginRight: 8 }}>{chatUnread.toLocaleString('fa-IR')} پیام نخوانده</span>}
         </h2>
         <p className="dash-hero__cta">
           {latestReport
-            ? `${openReports.toLocaleString('fa-IR')} کار باز · آخرین گزارش: «${latestReport.title}» از ${latestReport.authorName} →`
-            : 'اولین گزارش کار را برای همکارتان ثبت کنید →'}
+            ? `${openReports.toLocaleString('fa-IR')} کار باز${myOpenTasks > 0 ? ` (${myOpenTasks.toLocaleString('fa-IR')} ارجاع به شما)` : ''} · آخرین گزارش: «${latestReport.title}» از ${latestReport.authorName} →`
+            : 'اولین گزارش کار را ثبت کنید یا با همکارتان گفت‌وگو را شروع کنید →'}
         </p>
       </Link>
 

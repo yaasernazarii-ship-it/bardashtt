@@ -3,7 +3,9 @@ import { getSessionUser, isManager } from '@/lib/auth';
 import { logAction } from '@/lib/audit';
 import { notifyUsers } from '@/lib/notifications';
 import { isLocked, recordFailure } from '@/lib/rateLimit';
-import { CATEGORIES, LIMITS, cleanText, displayNameOf, otherManagerIds, serializeReport } from '@/lib/staffReports';
+import {
+  CATEGORIES, LIMITS, cleanText, displayNameOf, listColleagues, otherManagerIds, resolveTarget, serializeReport,
+} from '@/lib/staffReports';
 
 // تابلوی گزارش کار تیمی — فقط ادمین و ادیتور. هیچ مسیری در این پوشه نباید بدون این بررسی اجرا شود.
 async function guard() {
@@ -20,11 +22,13 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const status = searchParams.get('status') || '';
   const mine = searchParams.get('mine') === '1';
+  const forMe = searchParams.get('to') === 'me';
   const q = cleanText(searchParams.get('q'), 80);
 
   const where = {
     ...(status === 'open' || status === 'done' ? { status } : {}),
     ...(mine ? { authorId: user.id } : {}),
+    ...(forMe ? { targetId: user.id } : {}),
     ...(q
       ? {
           OR: [
@@ -36,16 +40,20 @@ export async function GET(request) {
       : {}),
   };
 
-  const reports = await prisma.staffReport.findMany({
-    where,
-    orderBy: { createdAt: 'desc' },
-    take: 100,
-    include: { comments: { orderBy: { createdAt: 'asc' } } },
-  });
+  const [reports, colleagues] = await Promise.all([
+    prisma.staffReport.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+      include: { comments: { orderBy: { createdAt: 'asc' } } },
+    }),
+    listColleagues(user.id),
+  ]);
 
   return Response.json({
     ok: true,
     me: { id: user.id, name: displayNameOf(user), role: user.role },
+    colleagues,
     reports: reports.map((r) => serializeReport(r, user)),
   });
 }
@@ -72,16 +80,23 @@ export async function POST(request) {
 
   recordFailure(rateKey, { max: 30 });
   const name = displayNameOf(user);
+  // گیرنده: یک همکار مشخص یا (اگر انتخاب نشده باشد) کلِ تیم.
+  const { targetId, targetName } = await resolveTarget(body.targetId, user.id);
 
   const report = await prisma.staffReport.create({
-    data: { authorId: user.id, authorName: name, authorRole: user.role, title, body: text, category },
+    data: { authorId: user.id, authorName: name, authorRole: user.role, title, body: text, category, targetId, targetName },
     include: { comments: true },
   });
 
   await Promise.all([
-    logAction(user, { action: 'staffReport.create', targetType: 'staffReport', targetId: report.id, summary: `ثبت گزارش کار: ${title}` }),
-    notifyUsers(await otherManagerIds(user.id), {
-      title: `گزارش کار تازه از ${name}`,
+    logAction(user, {
+      action: 'staffReport.create',
+      targetType: 'staffReport',
+      targetId: report.id,
+      summary: `ثبت گزارش کار برای ${targetName || 'همهٔ تیم'}: ${title}`,
+    }),
+    notifyUsers(targetId ? [targetId] : await otherManagerIds(user.id), {
+      title: targetId ? `گزارش تازه از ${name} برای شما` : `گزارش کار تازه از ${name}`,
       body: title,
       href: '/dashboard/admin/reports',
       kind: 'system',

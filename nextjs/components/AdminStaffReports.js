@@ -2,14 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Icon from './Icon';
+import StaffAvatar, { ROLE_LABEL } from './StaffAvatar';
 
 const CATEGORIES = {
   report: { label: 'گزارش کار', icon: 'clipboard' },
   issue: { label: 'مشکل و اشکال', icon: 'alertTriangle' },
   request: { label: 'درخواست و یادآوری', icon: 'megaphone' },
 };
-
-const ROLE_LABEL = { admin: 'مدیر', editor: 'ادیتور' };
 
 const FILTERS = [
   { key: '', label: 'همه' },
@@ -24,35 +23,22 @@ function when(iso) {
   return `${d.toLocaleDateString('fa-IR')} — ${d.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' })}`;
 }
 
-function Avatar({ name, role }) {
-  return (
-    <span
-      title={ROLE_LABEL[role] || role}
-      style={{
-        width: 34, height: 34, borderRadius: '50%', flex: '0 0 34px',
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        background: role === 'admin' ? 'var(--dark)' : 'var(--gold)',
-        color: role === 'admin' ? '#fff' : 'var(--dark)',
-        fontWeight: 800, fontSize: '.85rem',
-      }}
-    >
-      {(name || '؟').trim().charAt(0)}
-    </span>
-  );
-}
+const Avatar = StaffAvatar;
 
 export default function AdminStaffReports() {
   const [reports, setReports] = useState([]);
   const [me, setMe] = useState(null);
+  const [colleagues, setColleagues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
 
   const [status, setStatus] = useState('');
   const [mine, setMine] = useState(false);
+  const [forMe, setForMe] = useState(false);
   const [q, setQ] = useState('');
 
-  const [form, setForm] = useState({ title: '', body: '', category: 'report' });
+  const [form, setForm] = useState({ title: '', body: '', category: 'report', targetId: '' });
   const [replies, setReplies] = useState({});
   const [editing, setEditing] = useState(null); // { id, title, body, category }
   const seenSent = useRef(false);
@@ -62,13 +48,14 @@ export default function AdminStaffReports() {
     const params = new URLSearchParams();
     if (status) params.set('status', status);
     if (mine) params.set('mine', '1');
+    if (forMe) params.set('to', 'me');
     if (q.trim()) params.set('q', q.trim());
     const res = await fetch(`/api/admin/reports?${params.toString()}`);
     const data = await res.json().catch(() => ({}));
-    if (data.ok) { setReports(data.reports); setMe(data.me); }
+    if (data.ok) { setReports(data.reports); setMe(data.me); setColleagues(data.colleagues || []); }
     else setError(data.error || 'خطا در بارگذاری گزارش‌ها.');
     setLoading(false);
-  }, [status, mine, q]);
+  }, [status, mine, forMe, q]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -101,7 +88,7 @@ export default function AdminStaffReports() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
     });
-    if (ok) setForm({ title: '', body: '', category: 'report' });
+    if (ok) setForm({ title: '', body: '', category: 'report', targetId: '' });
   }
 
   const setStatusOf = (id, next) => send(`/api/admin/reports/${id}`, {
@@ -115,7 +102,7 @@ export default function AdminStaffReports() {
     const ok = await send(`/api/admin/reports/${editing.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: editing.title, body: editing.body, category: editing.category }),
+      body: JSON.stringify({ title: editing.title, body: editing.body, category: editing.category, targetId: editing.targetId }),
     });
     if (ok) setEditing(null);
   }
@@ -165,6 +152,13 @@ export default function AdminStaffReports() {
               {Object.entries(CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
             </select>
           </div>
+          <div className="form-group" style={{ margin: 0, flex: '0 0 210px' }}>
+            <label className="form-label">گیرنده</label>
+            <select className="form-input" value={form.targetId} onChange={(e) => setForm((f) => ({ ...f, targetId: e.target.value }))}>
+              <option value="">همهٔ تیم</option>
+              {colleagues.map((c) => <option key={c.id} value={c.id}>{c.name} ({ROLE_LABEL[c.role] || c.role})</option>)}
+            </select>
+          </div>
         </div>
         <div className="form-group" style={{ marginTop: 12, marginBottom: 0 }}>
           <label className="form-label">متن گزارش</label>
@@ -178,9 +172,15 @@ export default function AdminStaffReports() {
           />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12, flexWrap: 'wrap' }}>
-          <button className="btn btn--gold" type="submit" disabled={busy === '/api/admin/reports'}>ثبت و اطلاع به همکاران</button>
+          <button className="btn btn--gold" type="submit" disabled={busy === '/api/admin/reports'}>
+            {form.targetId
+              ? `ثبت و اطلاع به ${colleagues.find((c) => c.id === form.targetId)?.name || 'همکار'}`
+              : 'ثبت و اطلاع به همهٔ تیم'}
+          </button>
           <span style={{ color: 'var(--muted)', fontSize: '.82rem' }}>
             <Icon name="lock" size={13} /> این تابلو فقط برای مدیر و ادیتور است؛ هنرجو، فیلم‌ساز و بازدیدکنندهٔ سایت آن را نمی‌بینند.
+            اعلانِ گزارشِ ارجاع‌شده فقط برای گیرنده می‌رود، ولی خودِ گزارش روی تابلوی مشترک تیم می‌ماند —
+            برای حرفِ کاملاً خصوصی از تب «گفت‌وگو» استفاده کنید.
           </span>
         </div>
       </form>
@@ -199,6 +199,9 @@ export default function AdminStaffReports() {
         ))}
         <button type="button" className={`btn btn--sm ${mine ? 'btn--gold' : 'btn--outline'}`} onClick={() => setMine((v) => !v)}>
           <Icon name="user" size={14} /> فقط گزارش‌های من
+        </button>
+        <button type="button" className={`btn btn--sm ${forMe ? 'btn--gold' : 'btn--outline'}`} onClick={() => setForMe((v) => !v)}>
+          <Icon name="bell" size={14} /> ارجاع‌شده به من
         </button>
         <input
           className="form-input"
@@ -238,6 +241,9 @@ export default function AdminStaffReports() {
                 </div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   <span className="tag"><Icon name={cat.icon} size={13} /> {cat.label}</span>
+                  <span className={`tag ${r.targetId ? (r.targetId === me?.id ? 'tag--gold' : 'tag--wine') : ''}`}>
+                    <Icon name="users" size={13} /> برای: {r.targetId === me?.id ? 'شما' : (r.targetName || 'همهٔ تیم')}
+                  </span>
                   <span className={`tag ${r.status === 'done' ? 'tag--dark' : 'tag--gold'}`}>
                     {r.status === 'done' ? `انجام‌شده${r.doneByName ? ` — ${r.doneByName}` : ''}` : 'باز'}
                   </span>
@@ -260,14 +266,25 @@ export default function AdminStaffReports() {
                     value={editing.body}
                     onChange={(e) => setEditing((d) => ({ ...d, body: e.target.value }))}
                   />
-                  <select
-                    className="form-input"
-                    style={{ width: 'auto', marginTop: 8 }}
-                    value={editing.category}
-                    onChange={(e) => setEditing((d) => ({ ...d, category: e.target.value }))}
-                  >
-                    {Object.entries(CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
-                  </select>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <select
+                      className="form-input"
+                      style={{ width: 'auto', marginTop: 8 }}
+                      value={editing.category}
+                      onChange={(e) => setEditing((d) => ({ ...d, category: e.target.value }))}
+                    >
+                      {Object.entries(CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+                    </select>
+                    <select
+                      className="form-input"
+                      style={{ width: 'auto', marginTop: 8 }}
+                      value={editing.targetId}
+                      onChange={(e) => setEditing((d) => ({ ...d, targetId: e.target.value }))}
+                    >
+                      <option value="">برای همهٔ تیم</option>
+                      {colleagues.map((c) => <option key={c.id} value={c.id}>برای {c.name}</option>)}
+                    </select>
+                  </div>
                   <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
                     <button type="button" className="btn btn--gold btn--sm" onClick={saveEdit}>ذخیره</button>
                     <button type="button" className="btn btn--ghost btn--sm" onClick={() => setEditing(null)}>انصراف</button>
@@ -332,7 +349,7 @@ export default function AdminStaffReports() {
                     <button
                       type="button"
                       className="btn btn--ghost btn--sm"
-                      onClick={() => setEditing({ id: r.id, title: r.title, body: r.body, category: r.category })}
+                      onClick={() => setEditing({ id: r.id, title: r.title, body: r.body, category: r.category, targetId: r.targetId || '' })}
                     >
                       <Icon name="pencil" size={14} /> ویرایش
                     </button>

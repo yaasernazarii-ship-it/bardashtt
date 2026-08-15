@@ -3,7 +3,7 @@ import { getSessionUser, isManager } from '@/lib/auth';
 import { logAction } from '@/lib/audit';
 import { notifyUsers } from '@/lib/notifications';
 import { isLocked, recordFailure } from '@/lib/rateLimit';
-import { CATEGORIES, LIMITS, cleanText, displayNameOf, otherManagerIds, serializeReport } from '@/lib/staffReports';
+import { CATEGORIES, LIMITS, cleanText, displayNameOf, resolveTarget, serializeReport } from '@/lib/staffReports';
 
 async function guard() {
   const user = await getSessionUser();
@@ -36,7 +36,8 @@ export async function PATCH(request, { params }) {
     data.doneAt = b.status === 'done' ? new Date() : null;
   }
 
-  const editing = typeof b.title === 'string' || typeof b.body === 'string' || typeof b.category === 'string';
+  const editing = typeof b.title === 'string' || typeof b.body === 'string' || typeof b.category === 'string'
+    || typeof b.targetId === 'string';
   if (editing) {
     if (report.authorId !== user.id) {
       return Response.json({ ok: false, error: 'فقط نویسندهٔ گزارش می‌تواند متن آن را ویرایش کند.' }, { status: 403 });
@@ -52,6 +53,11 @@ export async function PATCH(request, { params }) {
       data.body = text;
     }
     if (typeof b.category === 'string' && Object.keys(CATEGORIES).includes(b.category)) data.category = b.category;
+    if (typeof b.targetId === 'string') {
+      const { targetId, targetName } = await resolveTarget(b.targetId, user.id);
+      data.targetId = targetId;
+      data.targetName = targetName;
+    }
   }
 
   if (Object.keys(data).length === 0) return Response.json({ ok: false, error: 'تغییری ارسال نشد.' }, { status: 400 });
@@ -83,7 +89,7 @@ export async function POST(request, { params }) {
   const text = cleanText(b.body, LIMITS.comment);
   if (!text) return Response.json({ ok: false, error: 'متن پاسخ خالی است.' }, { status: 400 });
 
-  const report = await prisma.staffReport.findUnique({ where: { id }, select: { id: true, title: true, authorId: true } });
+  const report = await prisma.staffReport.findUnique({ where: { id }, select: { id: true, title: true, authorId: true, targetId: true } });
   if (!report) return Response.json({ ok: false, error: 'گزارش پیدا نشد.' }, { status: 404 });
 
   recordFailure(rateKey, { max: 60 });
@@ -92,10 +98,11 @@ export async function POST(request, { params }) {
     data: { reportId: id, authorId: user.id, authorName: name, authorRole: user.role, body: text },
   });
 
-  // نویسندهٔ گزارش (اگر خودش پاسخ نداده) باید بداند جواب گرفته است.
-  if (report.authorId !== user.id) {
-    await notifyUsers([report.authorId], {
-      title: `${name} به گزارش شما پاسخ داد`,
+  // نویسندهٔ گزارش و گیرندهٔ آن (هرکدام که خودش پاسخ نداده) باید بدانند گفت‌وگو ادامه پیدا کرده است.
+  const listeners = [report.authorId, report.targetId].filter((uid) => uid && uid !== user.id);
+  if (listeners.length > 0) {
+    await notifyUsers(listeners, {
+      title: `${name} به گزارش پاسخ داد`,
       body: report.title,
       href: '/dashboard/admin/reports',
       kind: 'system',
