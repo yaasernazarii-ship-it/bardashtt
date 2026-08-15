@@ -248,7 +248,9 @@ export default function AdminStaffChat({ onUnread, active = true }) {
                   : 'گفت‌وگوی خصوصی — فقط شما و همین همکار آن را می‌بینید'}
               </span>
             </div>
-            <span className="tag tag--gold staff-chat__lock"><Icon name="lock" size={13} /> داخلی</span>
+            <span className="tag tag--gold staff-chat__lock" title="این گفت‌وگو فقط برای تیم مدیریت باز است؛ قفل نیست و می‌توانید پیام بفرستید">
+              <Icon name="lock" size={13} /> فقط تیم مدیریت
+            </span>
           </header>
 
           <div className="staff-chat__msgs" ref={boxRef} onScroll={onScroll}>

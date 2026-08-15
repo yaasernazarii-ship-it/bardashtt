@@ -1965,14 +1965,15 @@ summary:focus-visible {
 .staff-tab.is-active { background: var(--dark); color: #fff; }
 
 .staff-chat {
-  display: grid; grid-template-columns: 268px 1fr;
+  display: grid; grid-template-columns: 268px 1fr; grid-template-rows: minmax(0, 1fr);
   border: 1px solid var(--border); border-radius: 22px;
   background: var(--white); overflow: hidden; box-shadow: var(--shadow-sm);
-  min-height: 540px;
+  /* ارتفاع به پنجره مقید است تا کادر نوشتن پیام همیشه دیده شود و زیر تای صفحه نیفتد */
+  height: clamp(380px, calc(100vh - 300px), 680px);
 }
 .staff-chat__side {
   border-left: 1px solid var(--border); background: var(--surface);
-  display: flex; flex-direction: column; overflow-y: auto; max-height: 68vh;
+  display: flex; flex-direction: column; overflow-y: auto; min-height: 0;
 }
 .staff-chat__peer {
   display: flex; align-items: center; gap: 10px; text-align: right;
@@ -1996,7 +1997,7 @@ summary:focus-visible {
 }
 .staff-chat__empty-side { padding: 18px 14px; color: var(--muted); font-size: .8rem; line-height: 1.9; }
 
-.staff-chat__main { display: flex; flex-direction: column; min-width: 0; }
+.staff-chat__main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 .staff-chat__head {
   display: flex; align-items: center; gap: 10px;
   padding: 14px 18px; border-bottom: 1px solid var(--border); background: var(--white);
@@ -2007,7 +2008,7 @@ summary:focus-visible {
 .staff-chat__msgs {
   flex: 1; overflow-y: auto; padding: 18px;
   display: flex; flex-direction: column; gap: 10px;
-  background: var(--surface); min-height: 320px; max-height: 56vh;
+  background: var(--surface); min-height: 0;
 }
 .staff-chat__note { color: var(--muted); font-size: .86rem; text-align: center; margin: auto; }
 .staff-chat__day {
@@ -2056,9 +2057,12 @@ summary:focus-visible {
 .staff-chat__send:disabled { opacity: .45; cursor: default; }
 
 @media (max-width: 860px) {
-  .staff-chat { grid-template-columns: 1fr; min-height: 0; }
+  .staff-chat {
+    grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr);
+    height: clamp(360px, calc(100vh - 230px), 640px);
+  }
   .staff-chat__side {
-    flex-direction: row; overflow-x: auto; max-height: none;
+    flex: none; flex-direction: row; overflow-x: auto; overflow-y: hidden;
     border-left: none; border-bottom: 1px solid var(--border);
   }
   .staff-chat__peer {
@@ -2067,7 +2071,7 @@ summary:focus-visible {
   }
   .staff-chat__peer.is-active { box-shadow: inset 0 -3px 0 var(--gold); }
   .staff-chat__peer-time { display: none; }
-  .staff-chat__msgs { max-height: 58vh; }
+  .staff-chat__msgs { padding: 14px; }
   .staff-bubble { max-width: 88%; }
   .staff-bubble__del { opacity: 1; }
 }
