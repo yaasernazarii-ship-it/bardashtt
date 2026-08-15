@@ -20,7 +20,7 @@ export const CONTENT_GROUPS = [
     id: 'home',
     title: 'صفحهٔ اصلی',
     fields: [
-      { key: 'home.hero.logo', label: 'لوگوی بالای صفحهٔ اصلی', type: 'image', default: '/bardasht-logo.png' },
+      { key: 'home.hero.logo', label: 'لوگوی بالای صفحهٔ اصلی', type: 'image', default: '/imgg.png' },
       { key: 'home.hero.bgImage', label: 'عکس پس‌زمینهٔ هدر صفحهٔ اصلی', type: 'image', default: '/hero-cinema-bg.png' },
       { key: 'home.hero.slides', label: 'اسلایدهای هدر صفحهٔ اصلی (چند عکس — افزودن/حذف/جابه‌جایی؛ اگر خالی باشد همان عکس پس‌زمینهٔ بالا نشان داده می‌شود)', type: 'images', default: '' },
       { key: 'home.hero.eyebrow', label: 'برچسب بالای عنوان', type: 'text', default: 'اولین آموزشگاه رایگان بازیگری سینما در ایران' },

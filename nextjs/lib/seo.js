@@ -1,5 +1,5 @@
 const SITE_URL = 'https://www.bardashtt.com';
-const DEFAULT_IMAGE = `${SITE_URL}/bardasht-logo.png`;
+const DEFAULT_IMAGE = `${SITE_URL}/imgg.png`;
 
 // schema.org Article — برای صفحهٔ جزئیات مطلب (وبلاگ/اخبار)
 export function articleJsonLd({ title, description, url, image, datePublished, dateModified }) {
