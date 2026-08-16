@@ -14,6 +14,8 @@ const FONT_BOLD = path.join(process.cwd(), 'assets/fonts/Vazirmatn-Bold.ttf');
 const LOGO = path.join(process.cwd(), 'assets/cert-logo.png');
 // نشان سازمان آموزش فنی و حرفه‌ای؛ تا وقتی فایلش روی سرور نباشد، سربرگ بدون آن کشیده می‌شود.
 const LOGO_TVTO = path.join(process.cwd(), 'assets/cert-logo-tvto.png');
+const SIGNATURE = path.join(process.cwd(), 'assets/cert-signature.png');
+const STAMP = path.join(process.cwd(), 'assets/cert-stamp.png');
 
 const VERIFY_BASE = 'https://bardashtt.com/verify';
 
@@ -200,9 +202,18 @@ export async function buildCertificatePdf(cert) {
   write(doc, 'استعلام آنلاین اعتبار', CX - 95, footY + qrBox - 3, 190, { size: 9, color: MUTED, align: 'center' });
   write(doc, 'bardashtt.com/verify', CX - 95, footY + qrBox + 10, 190, { size: 9, color: MUTED, align: 'center', raw: true });
 
-  // چپ: محل مهر و امضا
+  // چپ: محل مهر و امضا. تصویر امضا و مهر اختیاری است؛ تا وقتی اسکنشان روی سرور
+  // قرار نگرفته، فقط خط و عنوانِ محلِ امضا چاپ می‌شود و گواهی دستی مهر می‌خورد.
   const signW = 214;
   const signX = 58;
+  if (fs.existsSync(SIGNATURE)) doc.image(SIGNATURE, signX + 20, footY + 6, { fit: [112, 46] });
+  if (fs.existsSync(STAMP)) {
+    doc.save();
+    doc.opacity(0.88);
+    doc.image(STAMP, signX + signW - 74, footY - 6, { fit: [70, 70] });
+    doc.opacity(1);
+    doc.restore();
+  }
   doc.moveTo(signX + 12, footY + 58).lineTo(signX + signW - 12, footY + 58).lineWidth(0.7).strokeColor('#b9b1a2').stroke();
   write(doc, 'مهر و امضای مدیریت آموزشگاه', signX, footY + 66, signW, { size: 10.5, color: MUTED, align: 'center' });
 
