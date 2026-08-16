@@ -7,6 +7,7 @@ import Icon from './Icon';
 const STUDENT_ITEMS = [
   { key: 'dashboard', href: '/dashboard', icon: 'home', label: 'داشبورد' },
   { key: 'schedule', href: '/dashboard/schedule', icon: 'calendar', label: 'برنامه و تقویم من' },
+  { key: 'live-classes', href: '/dashboard/live-classes', icon: 'video', label: 'کلاس‌های آنلاین من' },
   { key: 'enrollment', href: '/dashboard/enrollment', icon: 'graduationCap', label: 'ثبت‌نام من' },
   { key: 'exam', href: '/dashboard/exam', icon: 'check', label: 'آزمون و گواهی‌نامه' },
   { key: 'orders', href: '/dashboard/orders', icon: 'book', label: 'سفارش‌های من' },
@@ -38,6 +39,7 @@ const MANAGER_ITEMS = [
   { key: 'enrollments', href: '/dashboard/admin/enrollments', icon: 'clipboard', label: 'بررسی ثبت‌نام‌ها' },
   { key: 'signups', href: '/dashboard/admin/signups', icon: 'check', label: 'تأیید حساب‌ها' },
   { key: 'classes', href: '/dashboard/admin/classes', icon: 'calendar', label: 'کلاس‌ها و تقویم' },
+  { key: 'live-classes', href: '/dashboard/admin/live-classes', icon: 'video', label: 'کلاس‌های آنلاین' },
   { key: 'exam-admin', href: '/dashboard/admin/exam', icon: 'check', label: 'آزمون و بانک سوال' },
   { key: 'certificates', href: '/dashboard/admin/certificates', icon: 'fileText', label: 'گواهی‌نامه‌ها' },
   { key: 'payments', href: '/dashboard/admin/payments', icon: 'creditCard', label: 'پرداخت‌ها و شهریه' },
@@ -56,8 +58,8 @@ function itemsForRole(role, graduated, manager) {
   if (manager) return MANAGER_PERSONAL_ITEMS;
   if (role === 'filmmaker') return FILMMAKER_ITEMS;
   return STUDENT_ITEMS.filter((it) => {
-    // هنرجوی فارغ‌التحصیل تقویم کلاس را در منو نمی‌بیند.
-    if (it.key === 'schedule' && graduated) return false;
+    // هنرجوی فارغ‌التحصیل تقویم کلاس و کلاس آنلاین را در منو نمی‌بیند.
+    if ((it.key === 'schedule' || it.key === 'live-classes') && graduated) return false;
     // آزمون فارغ‌التحصیلی فقط برای هنرجوست، نه عضو عادی.
     if (it.key === 'exam' && role !== 'student') return false;
     return true;

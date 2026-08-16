@@ -41,6 +41,7 @@ const MANAGER_GROUPS = [
       { href: '/dashboard/admin/signups', title: 'تأیید حساب‌ها', text: 'درخواست‌های عضویت جدید را بررسی و تأیید کنید.' },
       { href: '/dashboard/admin/enrollments', title: 'بررسی ثبت‌نام‌ها', text: 'فرم‌های ثبت‌نام دوره و ویدیوهای ارسالی.' },
       { href: '/dashboard/admin/classes', title: 'کلاس‌ها و تقویم', text: 'جلسه‌ها، حضور و غیاب و تقویم آموزشی.' },
+      { href: '/dashboard/admin/live-classes', title: 'کلاس‌های آنلاین', text: 'شروع و پایان پخش زندهٔ جلسات.' },
       { href: '/dashboard/admin/exam', title: 'آزمون و بانک سوال', text: 'اجازهٔ آزمون هنرجویان و سؤال‌های آزمون پایان دوره.' },
       { href: '/dashboard/admin/certificates', title: 'گواهی‌نامه‌ها', text: 'صدور و پیگیری گواهی پایان دوره.' },
       { href: '/dashboard/admin/support', title: 'پشتیبانی آنلاین', text: 'پاسخ به گفتگوهای زندهٔ کاربران سایت.' },
@@ -79,13 +80,14 @@ async function ManagerDashboard({ user }) {
   // تابلوی گزارش کار تیمی: چند مورد از آخرین بازدیدِ همین مدیر تازه است، چند کار به خودش ارجاع شده،
   // چند کار باز مانده و چند پیام گفت‌وگوی تیمی خوانده نشده است.
   const seenAt = user.staffReportsSeenAt || new Date(0);
-  const [newReports, newComments, openReports, myOpenTasks, latestReport, chatUnread] = await Promise.all([
+  const [newReports, newComments, openReports, myOpenTasks, latestReport, chatUnread, liveCount] = await Promise.all([
     prisma.staffReport.count({ where: { createdAt: { gt: seenAt }, authorId: { not: user.id } } }),
     prisma.staffReportComment.count({ where: { createdAt: { gt: seenAt }, authorId: { not: user.id } } }),
     prisma.staffReport.count({ where: { status: 'open' } }),
     prisma.staffReport.count({ where: { status: 'open', targetId: user.id } }),
     prisma.staffReport.findFirst({ orderBy: { createdAt: 'desc' }, select: { title: true, authorName: true } }),
     countChatUnread(user),
+    prisma.classSession.count({ where: { liveStatus: 'live' } }),
   ]);
   const unread = newReports + newComments;
 
@@ -101,6 +103,17 @@ async function ManagerDashboard({ user }) {
         </div>
         <LogoutButton />
       </div>
+
+      {/* بنر پخش زنده؛ فقط وقتی حداقل یک جلسه هم‌اکنون در حال برگزاری است نمایش داده می‌شود. */}
+      {liveCount > 0 && (
+        <Link href="/dashboard/admin/live-classes" className="dash-hero" style={{ marginBottom: 14, border: '2px solid #DC2626' }}>
+          <div className="dash-hero__label" style={{ color: '#F87171', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span className="live-dot" /> اکنون در حال پخش
+          </div>
+          <h2 className="dash-hero__title"><Icon name="video" size={22} /> {liveCount.toLocaleString('fa-IR')} کلاس آنلاین اکنون در حال برگزاری است</h2>
+          <p className="dash-hero__cta">مشاهدهٔ کلاس‌های آنلاین →</p>
+        </Link>
+      )}
 
       {/* دفترِ کار مشترک مدیر و ادیتور؛ فقط همین دو نقش این بخش را می‌بینند. */}
       <Link href="/dashboard/admin/reports" className="dash-hero" style={{ marginBottom: 26 }}>
@@ -283,6 +296,27 @@ async function StudentResumeNudge({ user }) {
   return null;
 }
 
+// یادآوری برای هنرجو: اگر همین حالا جلسه‌ای از کلاس خودش در حال پخش زنده است، بالای داشبورد نشانش بده.
+async function LiveNowNudge({ user }) {
+  if (!user.classGroupId || user.graduated) return null;
+  const session = await prisma.classSession.findFirst({
+    where: { groupId: user.classGroupId, liveStatus: 'live' },
+    orderBy: { liveStartedAt: 'desc' },
+    select: { id: true, title: true },
+  });
+  if (!session) return null;
+
+  return (
+    <Link href={`/dashboard/live-classes/${session.id}`} className="dash-hero" style={{ marginBottom: 14, border: '2px solid #DC2626' }}>
+      <div className="dash-hero__label" style={{ color: '#F87171', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span className="live-dot" /> در حال پخش زنده
+      </div>
+      <h2 className="dash-hero__title"><Icon name="video" size={22} /> {session.title}</h2>
+      <p className="dash-hero__cta">ورود به کلاس →</p>
+    </Link>
+  );
+}
+
 export default async function DashboardPage() {
   const user = await getSessionUser();
   if (!user) redirect('/auth');
@@ -309,6 +343,7 @@ export default async function DashboardPage() {
               </div>
               <LogoutButton />
             </div>
+            <LiveNowNudge user={user} />
             {user.role === 'student' && <StudentResumeNudge user={user} />}
             <div className="dash-cards" style={{ gridTemplateColumns: user.graduated ? undefined : '2fr 1fr' }}>
               {!user.graduated && (

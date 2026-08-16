@@ -22,6 +22,8 @@ export async function PATCH(request, { params }) {
     if (b.chartDescription !== undefined) data.chartDescription = b.chartDescription ? String(b.chartDescription).trim().slice(0, 2000) : null;
     if (b.tools !== undefined) data.tools = b.tools ? String(b.tools).trim().slice(0, 1000) : null;
     if (b.homework !== undefined) data.homework = b.homework ? String(b.homework).trim().slice(0, 2000) : null;
+    // ویدیوی ضبط‌شدهٔ این جلسه (فقط برای جلسهٔ پایان‌یافته در پنل هنرجو نمایش داده می‌شود)
+    if (b.recordingUrl !== undefined) data.recordingUrl = b.recordingUrl ? String(b.recordingUrl).trim().slice(0, 2000) : null;
 
     const session = await prisma.classSession.update({ where: { id }, data });
     await prisma.classGroup.update({ where: { id: existing.groupId }, data: { updatedAt: new Date() } });

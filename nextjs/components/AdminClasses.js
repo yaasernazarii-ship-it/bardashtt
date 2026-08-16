@@ -10,7 +10,7 @@ const dateFmt = new Intl.DateTimeFormat('fa-IR', { weekday: 'long', month: 'long
 const timeFmt = new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit' });
 
 const emptySession = { title: '', startsAt: '', chartDescription: '', tools: '', homework: '' };
-const emptyGroup = { name: '', branch: 'تهران', courseTitle: '', coverImage: '', totalSessions: '8' };
+const emptyGroup = { name: '', branch: 'تهران', courseTitle: '', teacherName: '', coverImage: '', totalSessions: '8' };
 
 // انتخاب و آپلودِ عکس کلاس؛ مقدارِ ذخیره‌شده آدرسِ /media/… است.
 function ClassCoverPicker({ value, onChange, label = 'عکس کلاس (اختیاری)' }) {
@@ -100,6 +100,10 @@ export default function AdminClasses() {
           <div className="form-group">
             <label className="form-label">دوره</label>
             <input className="form-input" value={newGroup.courseTitle} onChange={(e) => setNewGroup({ ...newGroup, courseTitle: e.target.value })} placeholder="مثلاً دوره مقدماتی بازیگری" />
+          </div>
+          <div className="form-group">
+            <label className="form-label">نام استاد</label>
+            <input className="form-input" value={newGroup.teacherName} onChange={(e) => setNewGroup({ ...newGroup, teacherName: e.target.value })} placeholder="مثلاً علی محمدی" />
           </div>
           <div className="form-group">
             <label className="form-label">تعداد کل جلسات دوره</label>
@@ -210,11 +214,25 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
   const [savingTotal, setSavingTotal] = useState(false);
   const [cover, setCover] = useState(group.coverImage || '');
   const [savingCover, setSavingCover] = useState(false);
+  const [teacherName, setTeacherName] = useState(group.teacherName || '');
+  const [savingTeacher, setSavingTeacher] = useState(false);
   const [attendanceSessionId, setAttendanceSessionId] = useState(null);
 
   useEffect(() => { setMemberIds(group.members.map((m) => m.id)); }, [group]);
   useEffect(() => { setTotalSessions(String(group.totalSessions || 8)); }, [group.totalSessions]);
   useEffect(() => { setCover(group.coverImage || ''); }, [group.coverImage]);
+  useEffect(() => { setTeacherName(group.teacherName || ''); }, [group.teacherName]);
+
+  async function saveTeacherName() {
+    setSavingTeacher(true); setMsg('');
+    const res = await fetch(`/api/admin/classes/${group.id}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ teacherName }),
+    });
+    const d = await res.json();
+    setSavingTeacher(false);
+    if (d.ok) { setMsg('نام استاد ذخیره شد.'); onChanged(); }
+    else setMsg(d.error || 'خطا');
+  }
 
   async function saveCover() {
     setSavingCover(true); setMsg('');
@@ -336,6 +354,17 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
                 <button type="button" className="btn btn--dark btn--sm" onClick={saveCover} disabled={savingCover}>
                   {savingCover ? 'در حال ذخیره…' : 'ذخیره عکس'}
                 </button>
+              </div>
+
+              <div>
+                <h3 style={{ fontWeight: 800, marginBottom: 8 }}>نام استاد</h3>
+                <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginTop: 0, marginBottom: 8 }}>در کارت‌های کلاس آنلاین و برنامهٔ کلاسی به هنرجو نشان داده می‌شود.</p>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <input className="form-input" value={teacherName} onChange={(e) => setTeacherName(e.target.value)} placeholder="مثلاً علی محمدی" style={{ maxWidth: 280 }} />
+                  <button type="button" className="btn btn--dark btn--sm" onClick={saveTeacherName} disabled={savingTeacher}>
+                    {savingTeacher ? 'در حال ذخیره…' : 'ذخیره'}
+                  </button>
+                </div>
               </div>
 
               <div>

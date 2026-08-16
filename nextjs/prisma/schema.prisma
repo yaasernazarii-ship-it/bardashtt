@@ -54,6 +54,7 @@ model ClassGroup {
   branch        String // تهران | ساری
   courseTitle   String? // دوره
   coverImage    String? // عکس کلاس؛ در پنل مدیریت و در برنامهٔ هنرجو نمایش داده می‌شود
+  teacherName   String? // نام نمایشیِ استاد این کلاس (متن ساده، مثل ClassEvent.teacher)؛ در کارت کلاس آنلاین به هنرجو نشان داده می‌شود
   totalSessions Int            @default(8) // تعداد کل جلسات این دوره (مبنای محاسبه‌ی درصد پیشرفت هنرجو)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -77,7 +78,19 @@ model ClassSession {
   updatedAt        DateTime     @updatedAt
   attendances      Attendance[]
 
+  // --- کلاس آنلاین زنده (پخش زنده روی همین جلسه) ---
+  liveStatus          String    @default("scheduled") // scheduled | live | finished
+  scheduledEndAt       DateTime? // پایان برنامه‌ریزی‌شدهٔ جلسه (اختیاری)
+  liveStartedAt        DateTime? // زمان واقعیِ شروع پخش زنده
+  liveFinishedAt       DateTime? // زمان واقعیِ پایان پخش زنده
+  liveStartedById      String? // ادمین/ادیتوری که پخش را شروع کرد
+  liveStartedByName    String? // نام او در همان لحظه (کپی، مثل سایر لاگ‌های سیستم)
+  liveFinishedById     String?
+  liveFinishedByName   String?
+  recordingUrl         String? // لینک/کد امبد ویدیوی ضبط‌شدهٔ این جلسه (در صورت وجود)، بعد از پایان کلاس به هنرجو نشان داده می‌شود
+
   @@index([groupId, startsAt])
+  @@index([liveStatus])
 }
 
 model Attendance {

@@ -19,6 +19,7 @@ export async function PATCH(request, { params }) {
     if (typeof b.name === 'string') data.name = b.name.trim().slice(0, 80);
     if (BRANCHES.includes(b.branch)) data.branch = b.branch;
     if (typeof b.courseTitle === 'string') data.courseTitle = b.courseTitle.trim().slice(0, 120) || null;
+    if (typeof b.teacherName === 'string') data.teacherName = b.teacherName.trim().slice(0, 80) || null;
     if (b.coverImage !== undefined) {
       const cover = normalizeUploadUrl(b.coverImage);
       if (cover === false) return Response.json({ ok: false, error: 'عکس کلاس نامعتبر است؛ عکس را از همین فرم آپلود کنید.' }, { status: 400 });
