@@ -37,6 +37,15 @@ export async function issueCertificate(user, {
   gender = null,
   // کد ملیِ تأییدشده در لحظهٔ صدور؛ کد استعلام از روی آن ساخته می‌شود.
   nationalId = null,
+  // بازنویسی‌های صدور دستی. هرکدام خالی بماند، همان مقدارِ پروفایل استفاده می‌شود.
+  // نامِ روی گواهی باید دقیقاً نامِ شناسنامه‌ای باشد و همیشه با نامِ نمایشیِ پروفایل یکی نیست.
+  fullName = null,
+  courseTitle = null,
+  branch = null,
+  // عکسِ انتخابیِ مدیر؛ برای هنرجویی که در پروفایلش عکس نگذاشته است.
+  photoUrl: photoOverride = null,
+  // تاریخ صدور برای گواهیِ دوره‌های گذشته؛ خالی یعنی همین حالا.
+  issuedAt = null,
 } = {}) {
   if (attemptId) {
     const existing = await prisma.certificate.findUnique({ where: { attemptId } });
@@ -46,7 +55,7 @@ export async function issueCertificate(user, {
   const code = normalizeNationalId(nationalId || user.nationalId);
   if (!isValidNationalId(code)) throw new Error('national_id_required');
 
-  const photoUrl = await snapshotPhoto(user.photoUrl);
+  const photoUrl = await snapshotPhoto(photoOverride || user.photoUrl);
 
   try {
     // کد استعلام باید یکتا باشد؛ برای گواهی دوم همان شخص، شمارهٔ ترتیبی بالا می‌رود.
@@ -58,16 +67,17 @@ export async function issueCertificate(user, {
             serial,
             userId: user.id,
             attemptId,
-            fullName: user.displayName || user.username || user.phone,
+            fullName: fullName || user.displayName || user.username || user.phone,
             gender: gender || user.gender || null,
             nationalId: code,
-            courseTitle: user.courseTitle || null,
-            branch: user.branch || null,
+            courseTitle: courseTitle || user.courseTitle || null,
+            branch: branch || user.branch || null,
             photoUrl,
             percent,
             examPercent,
             classScore,
             issuedById,
+            ...(issuedAt ? { issuedAt } : {}),
           },
         });
       } catch (err) {

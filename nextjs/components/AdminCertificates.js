@@ -1,9 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
 const fa = (n) => new Intl.NumberFormat('fa-IR', { useGrouping: false }).format(n ?? 0);
+
+const emptyForm = {
+  userId: '',
+  fullName: '',
+  gender: '',
+  nationalId: '',
+  courseTitle: '',
+  branch: '',
+  percent: '',
+  issuedAt: '',
+  markGraduated: false,
+};
 
 export default function AdminCertificates() {
   const [items, setItems] = useState([]);
@@ -12,18 +24,38 @@ export default function AdminCertificates() {
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
-  const [userId, setUserId] = useState('');
-  const [gender, setGender] = useState('');
-  const [nationalId, setNationalId] = useState('');
-  const [percent, setPercent] = useState('');
+  const [form, setForm] = useState(emptyForm);
+  // عکسِ پروفایلِ هنرجو صرفاً پیش‌فرض است؛ photoUrl عکسی است که مدیر جدا آپلود کرده و بر آن مقدم است.
+  const [profilePhoto, setProfilePhoto] = useState('');
+  const [photoUrl, setPhotoUrl] = useState('');
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const fileRef = useRef(null);
 
-  // با انتخاب هنرجو، جنسیت و کد ملیِ ثبت‌شده در پروفایلش پیشنهاد می‌شود؛ اگر ثبت نشده
-  // باشند مدیر باید خودش پر کند، چون «آقای/خانم» و کد استعلام به آن‌ها وابسته‌اند.
+  const set = (patch) => setForm((f) => ({ ...f, ...patch }));
+
+  // با انتخاب هنرجو، اطلاعات پروفایلش پیشنهاد می‌شود. همه‌شان قابل ویرایش‌اند چون
+  // نامِ روی گواهی باید شناسنامه‌ای باشد و پروفایلِ هنرجویان قدیمی اغلب ناقص است.
   function pickUser(id) {
     const u = users.find((x) => x.id === id);
-    setUserId(id);
-    setGender(u?.gender || '');
-    setNationalId(u?.nationalId || '');
+    setForm({
+      ...emptyForm,
+      userId: id,
+      fullName: u?.displayName || '',
+      gender: u?.gender || '',
+      nationalId: u?.nationalId || '',
+      courseTitle: u?.courseTitle || '',
+      branch: u?.branch || '',
+    });
+    setProfilePhoto(u?.photoUrl || '');
+    setPhotoUrl('');
+    if (fileRef.current) fileRef.current.value = '';
+  }
+
+  function resetForm() {
+    setForm(emptyForm);
+    setProfilePhoto('');
+    setPhotoUrl('');
+    if (fileRef.current) fileRef.current.value = '';
   }
 
   async function load() {
@@ -41,6 +73,27 @@ export default function AdminCertificates() {
 
   useEffect(() => { load(); }, []);
 
+  async function uploadPhoto(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoBusy(true); setError('');
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/admin/certificates/photo', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!data.ok) { setError(data.error || 'آپلود عکس ناموفق بود.'); return; }
+      setPhotoUrl(data.url);
+    } finally {
+      setPhotoBusy(false);
+    }
+  }
+
+  function clearPhoto() {
+    setPhotoUrl('');
+    if (fileRef.current) fileRef.current.value = '';
+  }
+
   async function issue(e) {
     e.preventDefault();
     setBusy(true); setError(''); setNotice('');
@@ -48,12 +101,12 @@ export default function AdminCertificates() {
       const res = await fetch('/api/admin/certificates', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, gender, nationalId, percent }),
+        body: JSON.stringify({ ...form, photoUrl }),
       });
       const data = await res.json();
       if (!data.ok) { setError(data.error || 'صدور ناموفق بود.'); return; }
-      setNotice(`گواهی با کد ${data.item.serial} صادر شد.`);
-      setUserId(''); setGender(''); setNationalId(''); setPercent('');
+      setNotice(`گواهی «${data.item.fullName}» با کد استعلام ${data.item.serial} صادر شد.`);
+      resetForm();
       await load();
     } finally {
       setBusy(false);
@@ -73,6 +126,10 @@ export default function AdminCertificates() {
     setItems((prev) => prev.map((it) => (it.id === c.id ? { ...it, revoked: next } : it)));
   }
 
+  const shownPhoto = photoUrl || profilePhoto;
+  const today = new Date().toISOString().slice(0, 10);
+  const ready = form.userId && form.fullName.trim().length >= 3 && form.gender && form.nationalId.length === 10;
+
   return (
     <div style={{ display: 'grid', gap: 18 }}>
       {error && <div className="alert alert--error">{error}</div>}
@@ -81,42 +138,146 @@ export default function AdminCertificates() {
       <form className="stack-card" onSubmit={issue}>
         <h3 style={{ marginBottom: 6 }}>صدور دستی گواهی</h3>
         <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 14 }}>
-          گواهی هنرجویانی که در آزمون سامانه قبول شوند خودکار صادر می‌شود. این فرم برای هنرجویان دوره‌های قبلی است.
-          نام ثبت‌شده در پروفایل هنرجو روی گواهی درج می‌شود.
+          این فرم کاملاً مستقل از آزمون سامانه است: هیچ آزمونی ساخته یا مصرف نمی‌شود و در روند آزمونِ
+          هنرجو دخالتی ندارد. گواهیِ صادرشده دقیقاً مثل گواهیِ پس از آزمون است — همان کد استعلام،
+          همان QR و همان فایل PDF قابل استعلام.
         </p>
+
         <div className="form-group">
           <label className="form-label">هنرجو</label>
-          <select className="form-input" required value={userId} onChange={(e) => pickUser(e.target.value)}>
+          <select className="form-input" required value={form.userId} onChange={(e) => pickUser(e.target.value)}>
             <option value="">انتخاب کنید…</option>
             {users.map((u) => (
               <option key={u.id} value={u.id}>{u.displayName || u.username || u.phone} — {u.phone}</option>
             ))}
           </select>
+          <p className="form-hint">اطلاعات پروفایلِ هنرجو پیشنهاد می‌شود و همه‌جا قابل ویرایش است.</p>
         </div>
+
+        <div className="form-group">
+          <label className="form-label">نام و نام خانوادگی روی گواهی</label>
+          <input
+            className="form-input" required maxLength={120}
+            placeholder="دقیقاً مطابق شناسنامه"
+            value={form.fullName}
+            onChange={(e) => set({ fullName: e.target.value })}
+          />
+          <p className="form-hint">نامِ نمایشیِ پروفایل همیشه شناسنامه‌ای نیست؛ همین مقدار روی گواهی چاپ می‌شود.</p>
+        </div>
+
         <div className="form-group">
           <label className="form-label">عنوان روی گواهی</label>
-          <select className="form-input" required value={gender} onChange={(e) => setGender(e.target.value)}>
+          <select className="form-input" required value={form.gender} onChange={(e) => set({ gender: e.target.value })}>
             <option value="">انتخاب کنید…</option>
             <option value="male">آقای …</option>
             <option value="female">خانم …</option>
           </select>
-          <p className="form-hint">از پروفایل هنرجو پیشنهاد می‌شود و در همان‌جا هم ذخیره می‌گردد.</p>
+          <p className="form-hint">در پروفایل هنرجو هم ذخیره می‌شود تا صدور بعدی دوباره نپرسد.</p>
         </div>
+
         <div className="form-group">
           <label className="form-label">کد ملی</label>
           <input
             className="form-input" dir="ltr" inputMode="numeric" maxLength={10} required
             placeholder="کد ملی ۱۰ رقمی"
-            value={nationalId}
-            onChange={(e) => setNationalId(e.target.value.replace(/[^\d]/g, ''))}
+            value={form.nationalId}
+            onChange={(e) => set({ nationalId: e.target.value.replace(/[^\d]/g, '') })}
           />
-          <p className="form-hint">کد استعلام گواهی از روی آن ساخته می‌شود: ۱۳۹۷-کد ملی</p>
+          <p className="form-hint">کد استعلام گواهی از روی آن ساخته می‌شود.</p>
         </div>
+
+        <div className="form-group">
+          <label className="form-label">عنوان دوره (اختیاری)</label>
+          <input
+            className="form-input" maxLength={120} placeholder="مثلاً دورهٔ مقدماتی بازیگری"
+            value={form.courseTitle}
+            onChange={(e) => set({ courseTitle: e.target.value })}
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">شعبه (اختیاری)</label>
+          <input
+            className="form-input" maxLength={120} placeholder="مثلاً تهران"
+            value={form.branch}
+            onChange={(e) => set({ branch: e.target.value })}
+          />
+        </div>
+
         <div className="form-group">
           <label className="form-label">نمرهٔ نهایی (اختیاری، از ۱۰۰ — شامل نمرهٔ کلاسی)</label>
-          <input className="form-input" dir="ltr" inputMode="decimal" placeholder="مثل 82.5" value={percent} onChange={(e) => setPercent(e.target.value)} />
+          <input
+            className="form-input" dir="ltr" inputMode="decimal" placeholder="مثل 82.5"
+            value={form.percent}
+            onChange={(e) => set({ percent: e.target.value })}
+          />
+          <p className="form-hint">خالی بگذارید تا گواهی بدون درج نمره صادر شود.</p>
         </div>
-        <button className="btn btn--dark" disabled={busy || !userId || !gender || nationalId.length !== 10}>{busy ? 'در حال صدور…' : 'صدور گواهی'}</button>
+
+        <div className="form-group">
+          <label className="form-label">تاریخ صدور (اختیاری)</label>
+          <input
+            className="form-input" type="date" dir="ltr" max={today}
+            value={form.issuedAt}
+            onChange={(e) => set({ issuedAt: e.target.value })}
+          />
+          <p className="form-hint">برای گواهیِ دوره‌های گذشته. خالی یعنی همین امروز؛ تاریخ آینده پذیرفته نمی‌شود.</p>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">عکس پرسنلی ۳×۴ (اختیاری)</label>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flexWrap: 'wrap' }}>
+            <div className="user-photo user-photo--lg">
+              {shownPhoto
+                // eslint-disable-next-line @next/next/no-img-element
+                ? <img src={shownPhoto} alt="عکس گواهی" />
+                : <span className="user-photo__empty">بدون عکس</span>}
+            </div>
+            <div style={{ flex: 1, minWidth: 210 }}>
+              <input
+                ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp"
+                className="form-input" onChange={uploadPhoto} disabled={photoBusy || !form.userId}
+              />
+              <p className="form-hint">
+                {photoUrl
+                  ? 'عکس آپلودشده روی گواهی چاپ می‌شود.'
+                  : profilePhoto
+                    ? 'عکس پروفایل هنرجو استفاده می‌شود؛ برای جایگزینی فایل تازه انتخاب کنید.'
+                    : 'این هنرجو در پروفایلش عکس ندارد. بدون عکس هم گواهی سالم صادر می‌شود.'}
+              </p>
+              {photoBusy && <span style={{ color: 'var(--muted)', fontSize: '.8rem' }}>در حال پردازش…</span>}
+              {photoUrl && !photoBusy && (
+                <button type="button" className="btn btn--sm btn--outline" onClick={clearPhoto}>
+                  {profilePhoto ? 'بازگشت به عکس پروفایل' : 'حذف عکس'}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label style={{ display: 'flex', gap: 8, alignItems: 'flex-start', cursor: 'pointer' }}>
+            <input
+              type="checkbox" checked={form.markGraduated}
+              onChange={(e) => set({ markGraduated: e.target.checked })}
+            />
+            <span>
+              هنرجو فارغ‌التحصیل شود
+              <span style={{ display: 'block', color: 'var(--muted)', fontSize: '.85rem', marginTop: 2 }}>
+                تقویم کلاس و کلاس آنلاین از داشبورد او برداشته می‌شود؛ اگر هنوز کلاس دارد این را نزنید.
+              </span>
+            </span>
+          </label>
+        </div>
+
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button className="btn btn--dark" disabled={busy || photoBusy || !ready}>
+            {busy ? 'در حال صدور…' : 'صدور گواهی'}
+          </button>
+          {form.userId && (
+            <button type="button" className="btn btn--outline" onClick={resetForm} disabled={busy}>انصراف</button>
+          )}
+        </div>
       </form>
 
       <div className="stack-card">
