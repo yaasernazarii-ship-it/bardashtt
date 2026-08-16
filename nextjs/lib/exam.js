@@ -20,7 +20,7 @@ export const OPTION_COUNT = 4;
 export const CLASS_SCORE_MAX = 20; // سقف نمرهٔ کلاسی
 export const EXAM_WEIGHT = 100 - CLASS_SCORE_MAX; // سهم آزمون از نمرهٔ نهایی
 
-export const SERIAL_PREFIX = 'TB'; // Tak Bardasht
+export const FOUNDING_YEAR = 1397; // سال تأسیس خانواده برداشت
 
 // «آقای/خانم» روی گواهی؛ اگر جنسیت ثبت نشده باشد هیچ عنوانی درج نمی‌شود.
 export function honorific(gender) {
@@ -39,18 +39,11 @@ export function isValidGender(value) {
   return value === 'male' || value === 'female';
 }
 
-// سال جاری هجری شمسی به عدد لاتین (برای ساخت شمارهٔ سریال گواهی).
-export function jalaliYear(date = new Date()) {
-  const parts = new Intl.DateTimeFormat('en-u-ca-persian', {
-    year: 'numeric',
-    timeZone: 'Asia/Tehran',
-  }).formatToParts(date);
-  const y = parts.find((p) => p.type === 'year')?.value || '';
-  return parseInt(y.replace(/[^\d]/g, ''), 10) || 0;
-}
-
-export function buildSerial(year, seq) {
-  return `${SERIAL_PREFIX}-${year}-${String(seq).padStart(4, '0')}`;
+// کد استعلام گواهی: سال تأسیس آموزشگاه + کد ملی هنرجو (مثل ۱۳۹۷-۰۰۲۱۲۳۴۵۶۷).
+// اگر برای یک نفر بیش از یک گواهی صادر شود، شمارهٔ ترتیبی به انتها اضافه می‌شود تا کد یکتا بماند.
+export function buildSerial(nationalId, seq = 1) {
+  const base = `${FOUNDING_YEAR}-${nationalId}`;
+  return seq > 1 ? `${base}-${seq}` : base;
 }
 
 // نرمال‌سازی کد استعلامی که کاربر تایپ می‌کند: حروف بزرگ، بدون فاصله، با خط تیرهٔ استاندارد.

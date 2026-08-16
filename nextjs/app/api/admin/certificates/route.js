@@ -3,6 +3,7 @@ import { getSessionUser, isManager } from '@/lib/auth';
 import { issueCertificate } from '@/lib/certificate';
 import { notifyUsers } from '@/lib/notifications';
 import { parseScore, isValidGender } from '@/lib/exam';
+import { normalizeNationalId, isValidNationalId } from '@/lib/enrollmentData';
 
 function serialize(c) {
   return {
@@ -67,11 +68,17 @@ export async function POST(request) {
     return Response.json({ ok: false, error: 'جنسیت هنرجو مشخص نیست؛ «آقا» یا «خانم» را انتخاب کنید.' }, { status: 400 });
   }
 
-  const cert = await issueCertificate(target, { percent, gender, issuedById: manager.id });
-  // جنسیتِ تأییدشده در پروفایل هم ذخیره می‌شود تا صدورهای بعدی دوباره نپرسد.
+  // کد استعلام از روی کد ملی ساخته می‌شود، پس بدون کد ملیِ معتبر صدور ممکن نیست.
+  const nationalId = normalizeNationalId(body.nationalId || target.nationalId);
+  if (!isValidNationalId(nationalId)) {
+    return Response.json({ ok: false, error: 'کد ملی هنرجو معتبر نیست؛ کد ملی ۱۰ رقمی را وارد کنید.' }, { status: 400 });
+  }
+
+  const cert = await issueCertificate(target, { percent, gender, nationalId, issuedById: manager.id });
+  // جنسیت و کد ملیِ تأییدشده در پروفایل هم ذخیره می‌شود تا صدورهای بعدی دوباره نپرسد.
   await prisma.user.update({
     where: { id: target.id },
-    data: gender ? { graduated: true, gender } : { graduated: true },
+    data: { graduated: true, nationalId, ...(gender ? { gender } : {}) },
   });
   await notifyUsers([target.id], {
     title: 'گواهی‌نامهٔ شما صادر شد',

@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
-import { buildSerial, jalaliYear } from '@/lib/exam';
+import { buildSerial } from '@/lib/exam';
+import { normalizeNationalId, isValidNationalId } from '@/lib/enrollmentData';
 
 // صدور گواهی برای یک کاربر. اطلاعات هویتی در لحظهٔ صدور کپی می‌شود تا تغییر بعدیِ پروفایل،
 // گواهیِ صادرشده را عوض نکند. اگر برای همان تلاشِ آزمون قبلاً گواهی صادر شده باشد، همان برگردانده می‌شود.
@@ -12,19 +13,20 @@ export async function issueCertificate(user, {
   // جنسیتِ انتخاب‌شده در لحظهٔ صدور؛ مبنای درج «آقای/خانم» روی گواهی است و بر
   // مقدار پروفایل مقدم است، چون پروفایلِ هنرجویان قدیمی اغلب ناقص ثبت شده.
   gender = null,
+  // کد ملیِ تأییدشده در لحظهٔ صدور؛ کد استعلام از روی آن ساخته می‌شود.
+  nationalId = null,
 } = {}) {
   if (attemptId) {
     const existing = await prisma.certificate.findUnique({ where: { attemptId } });
     if (existing) return existing;
   }
 
-  const year = jalaliYear();
-  const prefix = buildSerial(year, 0).slice(0, -4); // مثل TB-1404-
+  const code = normalizeNationalId(nationalId || user.nationalId);
+  if (!isValidNationalId(code)) throw new Error('national_id_required');
 
-  // شمارهٔ سریال باید یکتا باشد؛ اگر هم‌زمان دو صدور انجام شود، شماره‌ی بعدی امتحان می‌شود.
-  for (let attempt = 0; attempt < 20; attempt++) {
-    const count = await prisma.certificate.count({ where: { serial: { startsWith: prefix } } });
-    const serial = buildSerial(year, count + 1 + attempt);
+  // کد استعلام باید یکتا باشد؛ برای گواهی دوم همان شخص، شمارهٔ ترتیبی بالا می‌رود.
+  for (let seq = 1; seq <= 20; seq++) {
+    const serial = buildSerial(code, seq);
     try {
       return await prisma.certificate.create({
         data: {
@@ -33,7 +35,7 @@ export async function issueCertificate(user, {
           attemptId,
           fullName: user.displayName || user.username || user.phone,
           gender: gender || user.gender || null,
-          nationalId: user.nationalId || null,
+          nationalId: code,
           courseTitle: user.courseTitle || null,
           branch: user.branch || null,
           percent,

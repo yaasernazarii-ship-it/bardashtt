@@ -78,7 +78,7 @@ export const FORM_GROUPS = [
       { key: 'verify.title', label: 'عنوان صفحه', type: 'text', default: 'استعلام گواهی‌نامه' },
       { key: 'verify.subtitle', label: 'توضیح زیر عنوان', type: 'textarea', default: 'اصالت گواهی‌نامهٔ پایان دورهٔ آموزشگاه سینمایی تک برداشت را با کد درج‌شده روی گواهی بررسی کنید.' },
       { key: 'verify.formTitle', label: 'عنوان کادر جست‌وجو', type: 'text', default: 'کد گواهی‌نامه را وارد کنید' },
-      { key: 'verify.placeholder', label: 'نمونهٔ کد داخل کادر', type: 'text', default: 'مثلاً TB-1404-0001' },
+      { key: 'verify.placeholder', label: 'نمونهٔ کد داخل کادر', type: 'text', default: 'مثلاً ۱۳۹۷-۰۰۲۱۲۳۴۵۶۷' },
       { key: 'verify.submit', label: 'دکمهٔ استعلام', type: 'text', default: 'استعلام' },
       { key: 'verify.checking', label: 'متن دکمه هنگام بررسی', type: 'text', default: 'در حال بررسی…' },
       { key: 'verify.valid', label: 'پیام گواهی معتبر', type: 'text', default: 'این گواهی‌نامه معتبر است.' },

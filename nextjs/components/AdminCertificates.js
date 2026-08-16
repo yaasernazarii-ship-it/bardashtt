@@ -14,13 +14,16 @@ export default function AdminCertificates() {
   const [busy, setBusy] = useState(false);
   const [userId, setUserId] = useState('');
   const [gender, setGender] = useState('');
+  const [nationalId, setNationalId] = useState('');
   const [percent, setPercent] = useState('');
 
-  // با انتخاب هنرجو، جنسیت ثبت‌شده در پروفایلش پیشنهاد می‌شود؛ اگر ثبت نشده باشد
-  // مدیر باید خودش انتخاب کند، چون «آقای/خانم» روی گواهی چاپ می‌شود.
+  // با انتخاب هنرجو، جنسیت و کد ملیِ ثبت‌شده در پروفایلش پیشنهاد می‌شود؛ اگر ثبت نشده
+  // باشند مدیر باید خودش پر کند، چون «آقای/خانم» و کد استعلام به آن‌ها وابسته‌اند.
   function pickUser(id) {
+    const u = users.find((x) => x.id === id);
     setUserId(id);
-    setGender(users.find((u) => u.id === id)?.gender || '');
+    setGender(u?.gender || '');
+    setNationalId(u?.nationalId || '');
   }
 
   async function load() {
@@ -45,12 +48,12 @@ export default function AdminCertificates() {
       const res = await fetch('/api/admin/certificates', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, gender, percent }),
+        body: JSON.stringify({ userId, gender, nationalId, percent }),
       });
       const data = await res.json();
       if (!data.ok) { setError(data.error || 'صدور ناموفق بود.'); return; }
       setNotice(`گواهی با کد ${data.item.serial} صادر شد.`);
-      setUserId(''); setGender(''); setPercent('');
+      setUserId(''); setGender(''); setNationalId(''); setPercent('');
       await load();
     } finally {
       setBusy(false);
@@ -100,10 +103,20 @@ export default function AdminCertificates() {
           <p className="form-hint">از پروفایل هنرجو پیشنهاد می‌شود و در همان‌جا هم ذخیره می‌گردد.</p>
         </div>
         <div className="form-group">
+          <label className="form-label">کد ملی</label>
+          <input
+            className="form-input" dir="ltr" inputMode="numeric" maxLength={10} required
+            placeholder="کد ملی ۱۰ رقمی"
+            value={nationalId}
+            onChange={(e) => setNationalId(e.target.value.replace(/[^\d]/g, ''))}
+          />
+          <p className="form-hint">کد استعلام گواهی از روی آن ساخته می‌شود: ۱۳۹۷-کد ملی</p>
+        </div>
+        <div className="form-group">
           <label className="form-label">نمرهٔ نهایی (اختیاری، از ۱۰۰ — شامل نمرهٔ کلاسی)</label>
           <input className="form-input" dir="ltr" inputMode="decimal" placeholder="مثل 82.5" value={percent} onChange={(e) => setPercent(e.target.value)} />
         </div>
-        <button className="btn btn--dark" disabled={busy || !userId || !gender}>{busy ? 'در حال صدور…' : 'صدور گواهی'}</button>
+        <button className="btn btn--dark" disabled={busy || !userId || !gender || nationalId.length !== 10}>{busy ? 'در حال صدور…' : 'صدور گواهی'}</button>
       </form>
 
       <div className="stack-card">
