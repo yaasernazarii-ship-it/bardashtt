@@ -34,9 +34,20 @@ const VERIFY_BASE = 'https://www.bardashtt.com/verify';
 
 const GOLD = '#b08d3f';
 const GOLD_SOFT = '#d9c48c';
+const GOLD_DEEP = '#8f7130';
 const CREAM = '#fdfaf3';
 const INK = '#191510';
 const MUTED = '#6a6153';
+// زمینهٔ ذغالیِ بیرونی و رنگِ نوارِ فیلم. نوار باید دیده شود ولی نه آن‌قدر که با متن
+// رقابت کند؛ سوراخ‌هایش با رنگی تیره‌تر از خودِ زمینه بریده می‌شوند تا توخالی به نظر برسند.
+const DARK = '#1a1411';
+const FILM = '#392e23';
+const FILM_HOLE = '#14100d';
+
+// پنلِ کرمِ داخلی. همهٔ محتوا داخل این کادر می‌نشیند و حاشیهٔ تیرهٔ دورش قابِ طرح است.
+const PAD_X = 66;
+const PAD_TOP = 42;
+const PAD_BOTTOM = 64;
 
 // ارقام لاتین به فارسی؛ نقطهٔ اعشار هم به جداکنندهٔ فارسی تبدیل می‌شود.
 const fa = (value) => String(value ?? '').replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]).replace(/\./g, '٫');
@@ -140,13 +151,33 @@ function divider(doc, cx, cy, half) {
   diamond(doc, cx, cy, 3.6);
 }
 
-// گل‌آذینِ گوشه: دو کمانِ هم‌مرکز و یک لوزی. sx/sy جهت گوشه را می‌چرخاند.
+// براکتِ گوشهٔ پنل: دو بازوی زاویه‌دار روی لبه‌ها، یکی ضخیم و یکی نازکِ داخلی.
+// sx/sy جهت گوشه را می‌چرخاند. عمداً بدون کمان و لوزیِ داخلی است تا با عکسِ پرسنلیِ
+// گوشهٔ بالا-چپ تداخل نکند.
 function cornerOrnament(doc, x, y, sx, sy) {
   doc.save();
   doc.translate(x, y).scale(sx, sy);
-  doc.path('M 0 46 A 46 46 0 0 1 46 0').lineWidth(1.1).strokeColor(GOLD).stroke();
-  doc.path('M 0 32 A 32 32 0 0 1 32 0').lineWidth(0.5).strokeColor(GOLD_SOFT).stroke();
-  diamond(doc, 27, 27, 3);
+  doc.lineJoin('miter');
+  doc.moveTo(0, 66).lineTo(0, 0).lineTo(66, 0).lineWidth(2.6).strokeColor(GOLD).stroke();
+  doc.moveTo(6, 46).lineTo(6, 6).lineTo(46, 6).lineWidth(0.8).strokeColor(GOLD_SOFT).stroke();
+  doc.restore();
+}
+
+// نوارِ فیلمِ مورب برای زمینهٔ تیره. سوراخ‌های حاشیه بدون ماسک و فقط با پرکردنِ
+// مستطیل‌های تیره بریده می‌شوند. بخشی که زیر پنلِ کرم بیفتد بعداً پوشانده می‌شود.
+function filmStrip(doc, x, y, angle, len, w = 46) {
+  doc.save();
+  doc.translate(x, y).rotate(angle);
+  doc.rect(0, 0, len, w).fillColor(FILM).fill();
+  // دو خطِ باریکِ داخلی، مرزِ ناحیهٔ فریم‌ها روی نوارِ فیلمِ واقعی
+  doc.rect(0, 12.5, len, 0.7).fillColor(FILM_HOLE).fill();
+  doc.rect(0, w - 13.2, len, 0.7).fillColor(FILM_HOLE).fill();
+  const hw = 7.5;
+  const hh = 5;
+  for (let i = 9; i + hw < len; i += 15.5) {
+    doc.roundedRect(i, 3.8, hw, hh, 1.3).fillColor(FILM_HOLE).fill();
+    doc.roundedRect(i, w - 3.8 - hh, hw, hh, 1.3).fillColor(FILM_HOLE).fill();
+  }
   doc.restore();
 }
 
@@ -241,38 +272,61 @@ export async function buildCertificatePdf(cert) {
   const H = doc.page.height;
   const CX = W / 2;
 
-  // زمینه و قاب
-  doc.rect(20, 20, W - 40, H - 40).fillColor(CREAM).fill();
-  doc.rect(20, 20, W - 40, H - 40).lineWidth(2.6).strokeColor(GOLD).stroke();
-  doc.rect(29, 29, W - 58, H - 58).lineWidth(0.6).strokeColor(GOLD_SOFT).stroke();
+  // ── زمینهٔ ذغالی با بافتِ نوارِ فیلم در گوشه‌ها ────────────────
+  const PX = PAD_X;
+  const PY = PAD_TOP;
+  const PW = W - PAD_X * 2;
+  const PH = H - PAD_TOP - PAD_BOTTOM;
 
-  cornerOrnament(doc, 38, 38, 1, 1);
-  cornerOrnament(doc, W - 38, 38, -1, 1);
-  cornerOrnament(doc, 38, H - 38, 1, -1);
-  cornerOrnament(doc, W - 38, H - 38, -1, -1);
+  doc.rect(0, 0, W, H).fillColor(DARK).fill();
+  // بافتِ فیلم مثل طرحِ مرجع در گوشهٔ بالا-چپ و لبهٔ راست می‌نشیند؛ دو نوارِ موازیِ
+  // بالا-چپ حسِ حلقهٔ فیلمِ بازشده را می‌دهد و نوارِ راست تعادلِ قطریِ کادر را می‌سازد.
+  filmStrip(doc, -46, 8, 44, 250);
+  filmStrip(doc, -30, 96, 30, 190, 34);
+  filmStrip(doc, W + 34, 6, 116, 300);
+  filmStrip(doc, W + 26, H - 200, 108, 230, 36);
+  doc.rect(12, 12, W - 24, H - 24).lineWidth(1.7).strokeColor(GOLD_DEEP).stroke();
+  doc.rect(17.5, 17.5, W - 35, H - 35).lineWidth(0.5).strokeColor(GOLD_DEEP).stroke();
 
-  rosette(doc, CX, H / 2 + 6, 168, 58, 18);
+  // پنلِ کرمِ داخلی با قابِ دولایهٔ طلایی
+  doc.rect(PX, PY, PW, PH).fillColor(CREAM).fill();
+  doc.rect(PX, PY, PW, PH).lineWidth(2.8).strokeColor(GOLD).stroke();
+  doc.rect(PX + 7, PY + 7, PW - 14, PH - 14).lineWidth(0.7).strokeColor(GOLD_SOFT).stroke();
+
+  cornerOrnament(doc, PX + 16, PY + 16, 1, 1);
+  cornerOrnament(doc, PX + PW - 16, PY + 16, -1, 1);
+  cornerOrnament(doc, PX + 16, PY + PH - 16, 1, -1);
+  cornerOrnament(doc, PX + PW - 16, PY + PH - 16, -1, -1);
+
+  rosette(doc, CX, PY + PH / 2 + 4, 162, 56, 18);
+
+  // نشانی سایت روی نوارِ تیرهٔ پایین، مثل طرحِ چاپیِ آموزشگاه
+  const urlY = PY + PH + 21;
+  write(doc, 'www.bardashtt.com', CX - 120, urlY, 240, { size: 10.5, color: GOLD_SOFT, align: 'center', raw: true });
+  diamond(doc, CX - 84, urlY + 6, 2.6, GOLD_DEEP);
+  diamond(doc, CX + 84, urlY + 6, 2.6, GOLD_DEEP);
 
   // سربرگ
-  doc.image(LOGO, CX - 30, 46, { height: 64 });
-  if (fs.existsSync(LOGO_TVTO)) doc.image(LOGO_TVTO, W - 178, 50, { height: 58 });
-  // عکس در گوشهٔ بالا-چپ می‌نشیند؛ سمت راستِ سربرگ جای نشانِ فنی و حرفه‌ای است و
-  // مرکز جای نشانِ آموزشگاه. فاصله از گوشه طوری است که به گل‌آذینِ گوشه نخورد.
-  if (photo) drawPhoto(doc, photo, 96, 46);
-  center(doc, SCHOOL_NAME, 120, { size: 13.5, bold: true, color: MUTED });
-  center(doc, 'گواهی‌نامهٔ فارغ‌التحصیلی', 142, { size: 29, bold: true, color: GOLD });
-  divider(doc, CX, 194, 118);
+  doc.image(LOGO, CX - 27, PY + 16, { height: 52 });
+  // نشانِ فنی و حرفه‌ای پایین‌تر از بازوی افقیِ براکتِ گوشه می‌نشیند تا رویش نیفتد.
+  if (fs.existsSync(LOGO_TVTO)) doc.image(LOGO_TVTO, PX + PW - 118, PY + 30, { height: 46 });
+  // عکس در گوشهٔ بالا-چپِ پنل می‌نشیند؛ سمت راستِ سربرگ جای نشانِ فنی و حرفه‌ای است و
+  // مرکز جای نشانِ آموزشگاه. فاصله از گوشه طوری است که به براکتِ گوشه نخورد.
+  if (photo) drawPhoto(doc, photo, PX + 42, PY + 36);
+  center(doc, SCHOOL_NAME, PY + 76, { size: 12.5, bold: true, color: MUTED });
+  center(doc, 'گواهی‌نامهٔ فارغ‌التحصیلی', PY + 95, { size: 26, bold: true, color: GOLD });
+  divider(doc, CX, PY + 140, 112);
 
   // متن اصلی
-  center(doc, 'گواهی می‌شود', 212, { size: 11.5, color: MUTED });
+  center(doc, 'گواهی می‌شود', PY + 154, { size: 11, color: MUTED });
 
   const title = honorific(cert.gender);
   const holder = title ? `${title} ${cert.fullName}` : cert.fullName;
-  center(doc, holder, 236, { size: 25, bold: true, color: INK });
+  center(doc, holder, PY + 172, { size: 23, bold: true, color: INK });
 
   // زیرخطِ نامِ دارنده، به اندازهٔ خودِ نام
-  const nameHalf = Math.min(Math.max(textWidth(doc, holder, 25, true) / 2 + 34, 110), (W - 160) / 2);
-  const underlineY = 276;
+  const nameHalf = Math.min(Math.max(textWidth(doc, holder, 23, true) / 2 + 32, 104), (PW - 120) / 2);
+  const underlineY = PY + 208;
   doc.moveTo(CX - nameHalf, underlineY).lineTo(CX + nameHalf, underlineY).lineWidth(0.8).strokeColor(GOLD_SOFT).stroke();
   diamond(doc, CX - nameHalf, underlineY, 2.4, GOLD_SOFT);
   diamond(doc, CX + nameHalf, underlineY, 2.4, GOLD_SOFT);
@@ -290,16 +344,17 @@ export async function buildCertificatePdf(cert) {
     `با گذراندن ${fa(COURSE_HOURS)} ساعت آموزش عملی و تئوری فارغ‌التحصیل گردیده است.`,
   ].filter(Boolean).join('، ').replace('،،', '،');
 
-  const bodyH = paragraph(doc, body, 296, W - 250, { size: 13, lineHeight: 25 });
+  const bodyY = PY + 224;
+  const bodyH = paragraph(doc, body, bodyY, PW - 130, { size: 12.5, lineHeight: 23.5 });
 
-  divider(doc, CX, 296 + bodyH + 16, 46);
+  divider(doc, CX, bodyY + bodyH + 14, 44);
 
   // ── نوار پایین ───────────────────────────────────────────────
-  const footY = H - 160;
+  const footY = PY + PH - 140;
 
   // راست: شناسهٔ گواهی
-  const infoW = 250;
-  const infoX = W - 58 - infoW;
+  const infoW = 244;
+  const infoX = PX + PW - 28 - infoW;
   let infoY = footY;
   write(doc, `کد استعلام: ${cert.serial}`, infoX, infoY, infoW, { size: 12, bold: true });
   infoY += 21;
@@ -318,7 +373,7 @@ export async function buildCertificatePdf(cert) {
   // چپ: محل مهر و امضا. تصویر امضا و مهر اختیاری است؛ تا وقتی اسکنشان روی سرور
   // قرار نگرفته، فقط خط و عنوانِ محلِ امضا چاپ می‌شود و گواهی دستی مهر می‌خورد.
   const signW = 214;
-  const signX = 58;
+  const signX = PX + 28;
   // امضا و مهر کمی روی خطِ امضا می‌نشینند، همان‌طور که روی کاغذ واقعی زده می‌شوند.
   // مهر ایستاده است (نقشِ خانه + نام + شمارهٔ ثبت)، پس ارتفاعش مبنای اندازه است و کمی
   // بالاتر از خط می‌ایستد تا شمارهٔ ثبتِ پایینِ مهر روی خط نیفتد.
@@ -338,7 +393,7 @@ export async function buildCertificatePdf(cert) {
 
   if (cert.revoked) {
     doc.save();
-    doc.translate(CX, H / 2).rotate(-16);
+    doc.translate(CX, PY + PH / 2).rotate(-16);
     doc.opacity(0.2);
     doc.font(FONT_BOLD).fontSize(74).fillColor('#dc2626');
     doc.text(shape('باطل شد'), -220, -46, { width: 440, align: 'center', features: [], lineBreak: false });
