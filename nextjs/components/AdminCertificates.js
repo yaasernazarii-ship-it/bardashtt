@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import UserPhotoThumb from './UserPhotoThumb';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
 const fa = (n) => new Intl.NumberFormat('fa-IR', { useGrouping: false }).format(n ?? 0);
@@ -29,6 +30,8 @@ export default function AdminCertificates() {
   const [profilePhoto, setProfilePhoto] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
   const [photoBusy, setPhotoBusy] = useState(false);
+  // شناسهٔ گواهی‌ای که همین حالا عکسش در حال تغییر است؛ فقط دکمه‌های همان ردیف قفل می‌شوند.
+  const [rowBusy, setRowBusy] = useState('');
   const fileRef = useRef(null);
 
   const set = (patch) => setForm((f) => ({ ...f, ...patch }));
@@ -111,6 +114,44 @@ export default function AdminCertificates() {
     } finally {
       setBusy(false);
     }
+  }
+
+  // تغییر عکسِ گواهیِ صادرشده. فایل تازه اول آپلود می‌شود و بعد روی همان گواهی می‌نشیند؛
+  // مقدار خالی یعنی عکس برداشته شود. PDF در لحظهٔ دانلود ساخته می‌شود، پس تغییر فوری است.
+  async function changePhoto(c, source) {
+    setRowBusy(c.id); setError(''); setNotice('');
+    try {
+      const res = await fetch(`/api/admin/certificates/${c.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ photoUrl: source }),
+      });
+      const data = await res.json();
+      if (!data.ok) { setError(data.error || 'تغییر عکس ناموفق بود.'); return; }
+      setItems((prev) => prev.map((it) => (it.id === c.id ? { ...it, photoUrl: data.item.photoUrl } : it)));
+      setNotice(`عکس گواهی ${c.serial} به‌روز شد.`);
+    } finally {
+      setRowBusy('');
+    }
+  }
+
+  async function uploadRowPhoto(c, e) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setRowBusy(c.id); setError('');
+    let url = '';
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/admin/certificates/photo', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!data.ok) { setError(data.error || 'آپلود عکس ناموفق بود.'); return; }
+      url = data.url;
+    } finally {
+      setRowBusy('');
+    }
+    if (url) await changePhoto(c, url);
   }
 
   async function toggleRevoke(c) {
@@ -288,20 +329,47 @@ export default function AdminCertificates() {
           <div style={{ display: 'grid', gap: 10 }}>
             {items.map((c) => (
               <div key={c.id} style={{ border: '1px solid var(--border)', borderRadius: 12, padding: 14, opacity: c.revoked ? 0.6 : 1 }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'space-between' }}>
-                  <strong>{c.fullName}</strong>
-                  <span dir="ltr" style={{ fontWeight: 700 }}>{c.serial}</span>
+                <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                  <UserPhotoThumb src={c.photoUrl} name={c.fullName} size={54} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'space-between' }}>
+                      <strong>{c.fullName}</strong>
+                      <span dir="ltr" style={{ fontWeight: 700 }}>{c.serial}</span>
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, color: 'var(--muted)', marginTop: 6 }}>
+                      {c.courseTitle && <span>دوره: {c.courseTitle}</span>}
+                      {c.branch && <span>شعبه: {c.branch}</span>}
+                      {Number.isFinite(c.percent) && <span>نمرهٔ نهایی: {fa(c.percent)} از ۱۰۰</span>}
+                      <span>{dateFmt.format(new Date(c.issuedAt))}</span>
+                      {c.revoked && <span style={{ color: '#dc2626', fontWeight: 700 }}>باطل‌شده</span>}
+                    </div>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, color: 'var(--muted)', marginTop: 6 }}>
-                  {c.courseTitle && <span>دوره: {c.courseTitle}</span>}
-                  {c.branch && <span>شعبه: {c.branch}</span>}
-                  {Number.isFinite(c.percent) && <span>نمرهٔ نهایی: {fa(c.percent)} از ۱۰۰</span>}
-                  <span>{dateFmt.format(new Date(c.issuedAt))}</span>
-                  {c.revoked && <span style={{ color: '#dc2626', fontWeight: 700 }}>باطل‌شده</span>}
-                </div>
-                <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+
+                <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
                   <a className="btn" href={`/api/certificate/${encodeURIComponent(c.serial)}`} target="_blank" rel="noopener noreferrer">مشاهدهٔ PDF</a>
-                  <button className={`btn ${c.revoked ? '' : 'btn--danger'}`} onClick={() => toggleRevoke(c)}>
+                  <label
+                    className="btn btn--outline"
+                    style={{ cursor: rowBusy === c.id ? 'default' : 'pointer', opacity: rowBusy === c.id ? 0.55 : 1 }}
+                  >
+                    {rowBusy === c.id ? 'در حال ثبت…' : c.photoUrl ? 'تغییر عکس' : 'افزودن عکس'}
+                    <input
+                      type="file" accept="image/jpeg,image/png,image/webp" hidden
+                      disabled={rowBusy === c.id}
+                      onChange={(e) => uploadRowPhoto(c, e)}
+                    />
+                  </label>
+                  {c.user?.photoUrl && c.user.photoUrl !== c.photoUrl && (
+                    <button className="btn btn--outline" disabled={rowBusy === c.id} onClick={() => changePhoto(c, c.user.photoUrl)}>
+                      عکس پروفایل هنرجو
+                    </button>
+                  )}
+                  {c.photoUrl && (
+                    <button className="btn btn--outline" disabled={rowBusy === c.id} onClick={() => changePhoto(c, null)}>
+                      حذف عکس
+                    </button>
+                  )}
+                  <button className={`btn ${c.revoked ? '' : 'btn--danger'}`} disabled={rowBusy === c.id} onClick={() => toggleRevoke(c)}>
                     {c.revoked ? 'اعادهٔ اعتبار' : 'ابطال'}
                   </button>
                 </div>

@@ -1,7 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
+import { setCertificatePhoto } from '@/lib/certificate';
 
-// ابطال یا اعادهٔ گواهی. گواهی هرگز حذف نمی‌شود تا استعلامِ کدِ صادرشده همیشه پاسخ داشته باشد.
+// ابطال/اعادهٔ گواهی، یا جایگزینیِ عکسِ روی آن. گواهی هرگز حذف نمی‌شود تا استعلامِ کدِ
+// صادرشده همیشه پاسخ داشته باشد.
 export async function PATCH(request, { params }) {
   const manager = await getSessionUser();
   if (!manager) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
@@ -13,6 +15,23 @@ export async function PATCH(request, { params }) {
     body = await request.json();
   } catch {
     return Response.json({ ok: false, error: 'درخواست نامعتبر است.' }, { status: 400 });
+  }
+
+  // تغییر عکسِ گواهیِ صادرشده: نشانیِ عکسِ تازه از /api/admin/certificates/photo می‌آید و
+  // مقدار خالی یعنی عکس از روی گواهی برداشته شود.
+  if ('photoUrl' in body) {
+    const source = body.photoUrl ? String(body.photoUrl) : null;
+    if (source && !/^\/media\/[A-Za-z0-9._-]+$/.test(source)) {
+      return Response.json({ ok: false, error: 'عکس انتخاب‌شده معتبر نیست.' }, { status: 400 });
+    }
+    let updated;
+    try {
+      updated = await setCertificatePhoto(id, source);
+    } catch {
+      return Response.json({ ok: false, error: 'ثبت عکس ناموفق بود؛ دوباره تلاش کنید.' }, { status: 400 });
+    }
+    if (!updated) return Response.json({ ok: false, error: 'گواهی یافت نشد.' }, { status: 404 });
+    return Response.json({ ok: true, item: { id: updated.id, serial: updated.serial, photoUrl: updated.photoUrl } });
   }
 
   if (typeof body.revoked !== 'boolean') {

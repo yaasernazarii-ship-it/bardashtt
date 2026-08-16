@@ -18,10 +18,32 @@ async function snapshotPhoto(photoUrl) {
   const name = `cert-${Date.now()}-${randomBytes(6).toString('hex')}${ext}`;
   try {
     await copyFile(path.join(UPLOADS, m[1]), path.join(UPLOADS, name));
-    return `/media/${name}`;
   } catch {
     return null;
   }
+  // عکسی که مدیر در فرم آپلود کرده فقط یک فایلِ موقت است و بعد از گرفتنِ کپیِ گواهی
+  // مصرفش تمام می‌شود. عکس پروفایلِ هنرجو (photo-…) هرگز اینجا پاک نمی‌شود.
+  if (m[1].startsWith('certphoto-')) await unlink(path.join(UPLOADS, m[1])).catch(() => {});
+  return `/media/${name}`;
+}
+
+// جایگزینی یا حذفِ عکسِ یک گواهیِ صادرشده. عکس تازه هم مثل لحظهٔ صدور کپیِ مستقلِ خودش را
+// می‌گیرد تا با تغییر بعدیِ پروفایلِ هنرجو عوض نشود، و کپیِ قبلی از دیسک پاک می‌شود.
+// sourceUrl خالی یعنی گواهی بدون عکس شود.
+export async function setCertificatePhoto(id, sourceUrl) {
+  const current = await prisma.certificate.findUnique({ where: { id }, select: { photoUrl: true } });
+  if (!current) return null;
+
+  const photoUrl = sourceUrl ? await snapshotPhoto(sourceUrl) : null;
+  if (sourceUrl && !photoUrl) throw new Error('photo_copy_failed');
+
+  const updated = await prisma.certificate.update({ where: { id }, data: { photoUrl } });
+
+  const old = MEDIA_URL.exec(current.photoUrl || '');
+  if (old && current.photoUrl !== photoUrl) {
+    await unlink(path.join(UPLOADS, old[1])).catch(() => {});
+  }
+  return updated;
 }
 
 // صدور گواهی برای یک کاربر. اطلاعات هویتی در لحظهٔ صدور کپی می‌شود تا تغییر بعدیِ پروفایل،

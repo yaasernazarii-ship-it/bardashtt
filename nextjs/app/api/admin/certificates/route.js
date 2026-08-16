@@ -30,7 +30,8 @@ export async function GET() {
   const items = await prisma.certificate.findMany({
     orderBy: { issuedAt: 'desc' },
     take: 500,
-    include: { user: { select: { id: true, phone: true, username: true, displayName: true } } },
+    // photoUrl پروفایل لازم است تا مدیر بتواند عکسِ گواهی را به عکسِ فعلیِ پروفایل برگرداند.
+    include: { user: { select: { id: true, phone: true, username: true, displayName: true, photoUrl: true } } },
   });
   return Response.json({ ok: true, items: items.map(serialize) });
 }
