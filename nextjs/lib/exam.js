@@ -48,7 +48,7 @@ export function buildSerial(nationalId, seq = 1) {
 
 // نرمال‌سازی کد استعلامی که کاربر تایپ می‌کند: حروف بزرگ، بدون فاصله، با خط تیرهٔ استاندارد.
 export function normalizeSerial(input) {
-  return String(input || '')
+  const cleaned = String(input || '')
     .replace(/[۰-۹]/g, (ch) => String(ch.charCodeAt(0) - 0x06f0))
     .replace(/[٠-٩]/g, (ch) => String(ch.charCodeAt(0) - 0x0660))
     // ترتیب مهم است: اول فاصله‌های ابتدا و انتها حذف می‌شوند، وگرنه به خط تیره تبدیل
@@ -58,6 +58,14 @@ export function normalizeSerial(input) {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
     .toUpperCase();
+
+  // کدی که بدون خط تیره تایپ شده (مثل ۱۳۹۷۰۰۲۱۲۳۴۵۶۷) هم باید پیدا شود؛
+  // خط تیره فقط جداکنندهٔ خواناییِ سال تأسیس از کد ملی است، نه بخشی از هویتِ کد.
+  const joined = cleaned.match(/^(\d{4})(\d{10})(-\d+)?$/);
+  if (joined && joined[1] === String(FOUNDING_YEAR)) {
+    return `${joined[1]}-${joined[2]}${joined[3] || ''}`;
+  }
+  return cleaned;
 }
 
 // انتخاب تصادفی n سوال (Fisher–Yates روی کپیِ آرایه).

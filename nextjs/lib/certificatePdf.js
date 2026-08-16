@@ -17,7 +17,9 @@ const LOGO_TVTO = path.join(process.cwd(), 'assets/cert-logo-tvto.png');
 const SIGNATURE = path.join(process.cwd(), 'assets/cert-signature.png');
 const STAMP = path.join(process.cwd(), 'assets/cert-stamp.png');
 
-const VERIFY_BASE = 'https://bardashtt.com/verify';
+// نشانیِ داخل QR باید همان دامنهٔ رسمی (www) باشد؛ دامنهٔ بدون www با ۳۰۱ به همین‌جا
+// می‌رسد ولی یک پرشِ اضافه دارد و بعضی اسکنرهای داخلِ اپلیکیشن‌ها ریدایرکت را دنبال نمی‌کنند.
+const VERIFY_BASE = 'https://www.bardashtt.com/verify';
 
 const GOLD = '#b08d3f';
 const GOLD_SOFT = '#d9c48c';
