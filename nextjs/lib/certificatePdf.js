@@ -7,7 +7,17 @@ import path from 'node:path';
 import PDFDocument from 'pdfkit';
 import sharp from 'sharp';
 import { shape } from './rtl';
-import { SCHOOL_NAME, SCHOOL_PHONE, COURSE_HOURS, GRADUATION_FIELD, formatScore, honorific } from './exam';
+import {
+  SCHOOL_NAME,
+  SCHOOL_PHONE,
+  SCHOOL_LICENSE,
+  TVTO_NAME,
+  COURSE_HOURS,
+  GRADUATION_BRANCH,
+  GRADUATION_FIELD,
+  formatScore,
+  honorific,
+} from './exam';
 import { qrMatrix } from './qr';
 
 const FONT_REGULAR = path.join(process.cwd(), 'assets/fonts/Vazirmatn-Regular.ttf');
@@ -56,6 +66,66 @@ function center(doc, text, y, { size = 12, bold = false, color = INK } = {}) {
 function textWidth(doc, text, size, bold) {
   doc.font(bold ? FONT_BOLD : FONT_REGULAR).fontSize(size);
   return doc.widthOfString(shape(text), { features: [] });
+}
+
+// فاصلهٔ چسبان: عبارت‌هایی مثل نامِ رشته نباید وسطش به سطر بعد بیفتد. متن با این نویسه
+// به‌هم چسبانده می‌شود، سطربند آن را یک کلمه می‌بیند و پیش از رسم دوباره فاصلهٔ عادی می‌شود.
+const GLUE = '\u00A0';
+const unglue = (s) => String(s).replace(/\u00A0/g, ' ');
+const glue = (s) => String(s).replace(/ /g, GLUE);
+
+// شکستنِ دستیِ بند به سطر. سطربندیِ خودِ pdfkit اینجا کار نمی‌کند، چون متن پیش از رسم
+// با shape() معکوس و چسبانده شده و pdfkit آن را رشته‌ای بی‌معنا می‌بیند؛ اگر خودش
+// بشکند، کلمه‌ها جابه‌جا می‌افتند. پس عرض هر سطر را قبل از shape اندازه می‌گیریم.
+function wrapLines(doc, text, maxWidth, size, bold) {
+  const lines = [];
+  let line = '';
+  for (const word of String(text).split(/[^\S\u00A0]+/).filter(Boolean)) {
+    const candidate = line ? `${line} ${word}` : word;
+    if (line && textWidth(doc, unglue(candidate), size, bold) > maxWidth) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = candidate;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+// سطربندیِ متوازن: اول کمترین تعداد سطرِ ممکن گرفته می‌شود، بعد باریک‌ترین عرضی که باز
+// هم با همان تعداد سطر جا می‌شود. بدون این کار سطر آخر یک‌کلمه‌ای می‌افتد و متنِ
+// وسط‌چینِ گواهی نامتوازن دیده می‌شود.
+function balancedLines(doc, text, maxWidth, size, bold) {
+  const target = wrapLines(doc, text, maxWidth, size, bold).length;
+  // کفِ جست‌وجو نمی‌تواند از پهن‌ترین کلمه (یا عبارتِ چسبان) کمتر باشد، وگرنه سطربند
+  // در عرض‌های خیلی کوچک هم همان تعداد سطر را برمی‌گرداند و نتیجه بی‌معنا می‌شود.
+  const widest = Math.max(
+    ...String(text).split(/[^\S\u00A0]+/).filter(Boolean).map((w) => textWidth(doc, unglue(w), size, bold)),
+  );
+  let lo = Math.ceil(widest);
+  let hi = maxWidth;
+  let best = maxWidth;
+  while (lo <= hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (wrapLines(doc, text, mid, size, bold).length <= target) {
+      best = mid;
+      hi = mid - 1;
+    } else {
+      lo = mid + 1;
+    }
+  }
+  return wrapLines(doc, text, best, size, bold);
+}
+
+// بند وسط‌چینِ چندسطری؛ ارتفاعِ اشغال‌شده برمی‌گردد تا اجزای بعدی زیرش بنشینند.
+function paragraph(doc, text, y, maxWidth, { size = 12.5, bold = false, color = INK, lineHeight = 24 } = {}) {
+  const W = doc.page.width;
+  const lines = balancedLines(doc, text, maxWidth, size, bold);
+  lines.forEach((line, i) => {
+    write(doc, unglue(line), 40, y + i * lineHeight, W - 80, { size, bold, color, align: 'center' });
+  });
+  return lines.length * lineHeight;
 }
 
 // ── اجزای تزئینی ────────────────────────────────────────────────
@@ -207,16 +277,22 @@ export async function buildCertificatePdf(cert) {
   diamond(doc, CX - nameHalf, underlineY, 2.4, GOLD_SOFT);
   diamond(doc, CX + nameHalf, underlineY, 2.4, GOLD_SOFT);
 
-  center(doc, `در ${SCHOOL_NAME} ${fa(COURSE_HOURS)} ساعت آموزش گذرانده`, 296, { size: 13, color: INK });
+  // متنِ اصلیِ گواهی. کد ملی و معدل فقط وقتی ثبت شده باشند در جمله می‌آیند، وگرنه
+  // همان جمله بدون آن بخش روان می‌ماند. فقط نمرهٔ نهایی (جمع آزمون و نمرهٔ کلاسی)
+  // درج می‌شود؛ ریز نمره عمداً نمی‌آید و فقط در پنل مدیریت و کارنامهٔ هنرجو دیده می‌شود.
+  // عبارت‌هایی که وسطشان نباید بشکند (کد ملی، نام آموزشگاه، نام شاخه و رشته) با فاصلهٔ
+  // چسبان بسته می‌شوند تا سطربند آن‌ها را یک واحد ببیند.
+  const body = [
+    cert.nationalId ? `به کد ملی ${fa(cert.nationalId)}` : null,
+    `در ${glue(SCHOOL_NAME)} به شمارهٔ شناسه ${fa(SCHOOL_LICENSE)} زیر نظر ${glue(TVTO_NAME)}`,
+    Number.isFinite(cert.percent) ? `با معدل ${fa(formatScore(cert.percent))} از ۱۰۰` : null,
+    `در ${glue(`شاخهٔ ${GRADUATION_BRANCH}`)} ${glue(`رشتهٔ ${GRADUATION_FIELD}`)}`,
+    `با گذراندن ${fa(COURSE_HOURS)} ساعت آموزش عملی و تئوری فارغ‌التحصیل گردیده است.`,
+  ].filter(Boolean).join('، ').replace('،،', '،');
 
-  // فقط نمرهٔ نهایی (جمع آزمون و نمرهٔ کلاسی) روی گواهی درج می‌شود؛
-  // ریز نمره عمداً نمی‌آید و فقط در پنل مدیریت و کارنامهٔ خود هنرجو دیده می‌شود.
-  const scoreLine = Number.isFinite(cert.percent)
-    ? `و با نمرهٔ ${fa(formatScore(cert.percent))} از ۱۰۰ از رشتهٔ ${GRADUATION_FIELD} فارغ‌التحصیل گردید.`
-    : `از رشتهٔ ${GRADUATION_FIELD} فارغ‌التحصیل گردید.`;
-  center(doc, scoreLine, 322, { size: 13, color: INK });
+  const bodyH = paragraph(doc, body, 296, W - 250, { size: 13, lineHeight: 25 });
 
-  divider(doc, CX, 372, 46);
+  divider(doc, CX, 296 + bodyH + 16, 46);
 
   // ── نوار پایین ───────────────────────────────────────────────
   const footY = H - 160;
@@ -228,14 +304,8 @@ export async function buildCertificatePdf(cert) {
   write(doc, `کد استعلام: ${cert.serial}`, infoX, infoY, infoW, { size: 12, bold: true });
   infoY += 21;
   write(doc, `تاریخ صدور: ${fmtDate(cert.issuedAt)}`, infoX, infoY, infoW, { size: 10.5, color: MUTED });
-  if (cert.nationalId) {
-    infoY += 18;
-    write(doc, `کد ملی: ${fa(cert.nationalId)}`, infoX, infoY, infoW, { size: 10.5, color: MUTED });
-  }
-  if (cert.branch) {
-    infoY += 18;
-    write(doc, `شعبه: ${cert.branch}`, infoX, infoY, infoW, { size: 10.5, color: MUTED });
-  }
+  // کد ملی داخل خودِ متنِ گواهی آمده و شعبه روی برگه درج نمی‌شود؛ هر دو در استعلام
+  // آنلاین و سوابق پنل باقی‌اند.
   infoY += 18;
   write(doc, `تلفن آموزشگاه: ${SCHOOL_PHONE}`, infoX, infoY, infoW, { size: 10.5, color: MUTED });
 
@@ -250,11 +320,13 @@ export async function buildCertificatePdf(cert) {
   const signW = 214;
   const signX = 58;
   // امضا و مهر کمی روی خطِ امضا می‌نشینند، همان‌طور که روی کاغذ واقعی زده می‌شوند.
-  if (fs.existsSync(SIGNATURE)) doc.image(SIGNATURE, signX + 30, footY - 4, { fit: [104, 66] });
+  // مهر ایستاده است (نقشِ خانه + نام + شمارهٔ ثبت)، پس ارتفاعش مبنای اندازه است و کمی
+  // بالاتر از خط می‌ایستد تا شمارهٔ ثبتِ پایینِ مهر روی خط نیفتد.
+  if (fs.existsSync(SIGNATURE)) doc.image(SIGNATURE, signX - 2, footY - 6, { fit: [128, 74] });
   if (fs.existsSync(STAMP)) {
     doc.save();
-    doc.opacity(0.88);
-    doc.image(STAMP, signX + 116, footY - 24, { fit: [92, 92] });
+    doc.opacity(0.9);
+    doc.image(STAMP, signX + 134, footY - 32, { fit: [78, 82] });
     doc.opacity(1);
     doc.restore();
   }

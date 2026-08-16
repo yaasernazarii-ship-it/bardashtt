@@ -6,7 +6,11 @@ export const SCHOOL_PHONE = '۰۲۱۹۱۰۹۰۹۳۴';
 
 // متن گواهی‌نامه: مدت مصوب دوره و عنوان رشته‌ای که هنرجو در آن فارغ‌التحصیل می‌شود.
 export const COURSE_HOURS = 608;
-export const GRADUATION_FIELD = 'بازیگری سینما';
+export const SCHOOL_LICENSE = '105013'; // شمارهٔ شناسهٔ آموزشگاه (همان شمارهٔ ثبتِ روی مهر)
+export const TVTO_NAME = 'سازمان آموزش فنی و حرفه‌ای کشور';
+// رشتهٔ فارغ‌التحصیلی دو سطح دارد: شاخه (دستهٔ کلی) و رشته (عنوان دقیقِ مهارت).
+export const GRADUATION_BRANCH = 'بازیگری سینما';
+export const GRADUATION_FIELD = 'بازی در مقابل دوربین';
 
 export const EXAM_QUESTION_COUNT = 100; // تعداد سوال هر آزمون
 // مهلت هر سوال جداگانه است و مهلت کل آزمون از جمعِ همین‌ها ساخته می‌شود.
