@@ -2,15 +2,18 @@
 // طرح از چند لایه ساخته می‌شود: زمینهٔ کرم، قاب دولایهٔ طلایی، گل‌آذینِ گوشه‌ها،
 // رزتِ کم‌رنگِ پس‌زمینه (همان بافتِ امنیتیِ اسناد رسمی)، متن اصلی، و نوار پایین
 // شامل کد استعلام، QR استعلام آنلاین و محل مهر و امضا.
+import fs from 'node:fs';
 import path from 'node:path';
 import PDFDocument from 'pdfkit';
 import { shape } from './rtl';
-import { SCHOOL_NAME, formatScore, honorific } from './exam';
+import { SCHOOL_NAME, SCHOOL_PHONE, COURSE_HOURS, GRADUATION_FIELD, formatScore, honorific } from './exam';
 import { qrMatrix } from './qr';
 
 const FONT_REGULAR = path.join(process.cwd(), 'assets/fonts/Vazirmatn-Regular.ttf');
 const FONT_BOLD = path.join(process.cwd(), 'assets/fonts/Vazirmatn-Bold.ttf');
 const LOGO = path.join(process.cwd(), 'assets/cert-logo.png');
+// نشان سازمان آموزش فنی و حرفه‌ای؛ تا وقتی فایلش روی سرور نباشد، سربرگ بدون آن کشیده می‌شود.
+const LOGO_TVTO = path.join(process.cwd(), 'assets/cert-logo-tvto.png');
 
 const VERIFY_BASE = 'https://bardashtt.com/verify';
 
@@ -113,9 +116,9 @@ export async function buildCertificatePdf(cert) {
     // همهٔ اجزا با مختصات مطلق چیده می‌شوند؛ حاشیهٔ صفر جلوی صفحهٔ اضافیِ ناخواسته را می‌گیرد.
     margins: { top: 0, bottom: 0, left: 0, right: 0 },
     info: {
-      Title: `گواهی‌نامهٔ پایان دوره — ${cert.serial}`,
+      Title: `گواهی‌نامهٔ فارغ‌التحصیلی — ${cert.serial}`,
       Author: SCHOOL_NAME,
-      Subject: 'گواهی‌نامهٔ پایان دورهٔ آموزشی',
+      Subject: `گواهی‌نامهٔ فارغ‌التحصیلی رشتهٔ ${GRADUATION_FIELD}`,
     },
   });
   const chunks = [];
@@ -140,12 +143,13 @@ export async function buildCertificatePdf(cert) {
 
   // سربرگ
   doc.image(LOGO, CX - 30, 46, { height: 64 });
+  if (fs.existsSync(LOGO_TVTO)) doc.image(LOGO_TVTO, W - 178, 50, { height: 58 });
   center(doc, SCHOOL_NAME, 120, { size: 13.5, bold: true, color: MUTED });
-  center(doc, 'گواهی‌نامهٔ پایان دوره', 142, { size: 29, bold: true, color: GOLD });
+  center(doc, 'گواهی‌نامهٔ فارغ‌التحصیلی', 142, { size: 29, bold: true, color: GOLD });
   divider(doc, CX, 194, 118);
 
   // متن اصلی
-  center(doc, 'بدین‌وسیله گواهی می‌شود که', 212, { size: 11.5, color: MUTED });
+  center(doc, 'گواهی می‌شود', 212, { size: 11.5, color: MUTED });
 
   const title = honorific(cert.gender);
   const holder = title ? `${title} ${cert.fullName}` : cert.fullName;
@@ -158,14 +162,13 @@ export async function buildCertificatePdf(cert) {
   diamond(doc, CX - nameHalf, underlineY, 2.4, GOLD_SOFT);
   diamond(doc, CX + nameHalf, underlineY, 2.4, GOLD_SOFT);
 
-  const course = cert.courseTitle ? `دورهٔ ${cert.courseTitle}` : 'دورهٔ آموزشی بازیگری';
-  center(doc, `${course} را در این آموزشگاه با موفقیت به پایان رسانده`, 296, { size: 13, color: INK });
+  center(doc, `در ${SCHOOL_NAME} ${fa(COURSE_HOURS)} ساعت آموزش گذرانده`, 296, { size: 13, color: INK });
 
   // فقط نمرهٔ نهایی (جمع آزمون و نمرهٔ کلاسی) روی گواهی درج می‌شود؛
   // ریز نمره عمداً نمی‌آید و فقط در پنل مدیریت و کارنامهٔ خود هنرجو دیده می‌شود.
   const scoreLine = Number.isFinite(cert.percent)
-    ? `و در آزمون پایان دوره با نمرهٔ نهایی ${fa(formatScore(cert.percent))} از ۱۰۰ پذیرفته شده است.`
-    : 'و در آزمون پایان دوره پذیرفته شده است.';
+    ? `و با نمرهٔ ${fa(formatScore(cert.percent))} از ۱۰۰ از رشتهٔ ${GRADUATION_FIELD} فارغ‌التحصیل گردید.`
+    : `از رشتهٔ ${GRADUATION_FIELD} فارغ‌التحصیل گردید.`;
   center(doc, scoreLine, 322, { size: 13, color: INK });
 
   divider(doc, CX, 372, 46);
@@ -188,6 +191,8 @@ export async function buildCertificatePdf(cert) {
     infoY += 18;
     write(doc, `شعبه: ${cert.branch}`, infoX, infoY, infoW, { size: 10.5, color: MUTED });
   }
+  infoY += 18;
+  write(doc, `تلفن آموزشگاه: ${SCHOOL_PHONE}`, infoX, infoY, infoW, { size: 10.5, color: MUTED });
 
   // وسط: QR استعلام آنلاین
   const qrBox = 76;

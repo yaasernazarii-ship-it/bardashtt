@@ -11,7 +11,7 @@ export async function GET() {
     select: {
       id: true, phone: true, displayName: true, city: true, role: true, createdAt: true,
       username: true, passwordPlain: true, active: true, branch: true, graduated: true,
-      photoUrl: true,
+      photoUrl: true, gender: true,
     },
   });
 

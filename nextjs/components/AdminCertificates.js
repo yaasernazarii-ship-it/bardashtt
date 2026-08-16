@@ -13,7 +13,15 @@ export default function AdminCertificates() {
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
   const [userId, setUserId] = useState('');
+  const [gender, setGender] = useState('');
   const [percent, setPercent] = useState('');
+
+  // با انتخاب هنرجو، جنسیت ثبت‌شده در پروفایلش پیشنهاد می‌شود؛ اگر ثبت نشده باشد
+  // مدیر باید خودش انتخاب کند، چون «آقای/خانم» روی گواهی چاپ می‌شود.
+  function pickUser(id) {
+    setUserId(id);
+    setGender(users.find((u) => u.id === id)?.gender || '');
+  }
 
   async function load() {
     setLoading(true);
@@ -37,12 +45,12 @@ export default function AdminCertificates() {
       const res = await fetch('/api/admin/certificates', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, percent }),
+        body: JSON.stringify({ userId, gender, percent }),
       });
       const data = await res.json();
       if (!data.ok) { setError(data.error || 'صدور ناموفق بود.'); return; }
       setNotice(`گواهی با کد ${data.item.serial} صادر شد.`);
-      setUserId(''); setPercent('');
+      setUserId(''); setGender(''); setPercent('');
       await load();
     } finally {
       setBusy(false);
@@ -71,11 +79,11 @@ export default function AdminCertificates() {
         <h3 style={{ marginBottom: 6 }}>صدور دستی گواهی</h3>
         <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 14 }}>
           گواهی هنرجویانی که در آزمون سامانه قبول شوند خودکار صادر می‌شود. این فرم برای هنرجویان دوره‌های قبلی است.
-          نام، جنسیت و دورهٔ ثبت‌شده در پروفایل هنرجو روی گواهی درج می‌شود.
+          نام ثبت‌شده در پروفایل هنرجو روی گواهی درج می‌شود.
         </p>
         <div className="form-group">
           <label className="form-label">هنرجو</label>
-          <select className="form-input" required value={userId} onChange={(e) => setUserId(e.target.value)}>
+          <select className="form-input" required value={userId} onChange={(e) => pickUser(e.target.value)}>
             <option value="">انتخاب کنید…</option>
             {users.map((u) => (
               <option key={u.id} value={u.id}>{u.displayName || u.username || u.phone} — {u.phone}</option>
@@ -83,10 +91,19 @@ export default function AdminCertificates() {
           </select>
         </div>
         <div className="form-group">
+          <label className="form-label">عنوان روی گواهی</label>
+          <select className="form-input" required value={gender} onChange={(e) => setGender(e.target.value)}>
+            <option value="">انتخاب کنید…</option>
+            <option value="male">آقای …</option>
+            <option value="female">خانم …</option>
+          </select>
+          <p className="form-hint">از پروفایل هنرجو پیشنهاد می‌شود و در همان‌جا هم ذخیره می‌گردد.</p>
+        </div>
+        <div className="form-group">
           <label className="form-label">نمرهٔ نهایی (اختیاری، از ۱۰۰ — شامل نمرهٔ کلاسی)</label>
           <input className="form-input" dir="ltr" inputMode="decimal" placeholder="مثل 82.5" value={percent} onChange={(e) => setPercent(e.target.value)} />
         </div>
-        <button className="btn btn--dark" disabled={busy || !userId}>{busy ? 'در حال صدور…' : 'صدور گواهی'}</button>
+        <button className="btn btn--dark" disabled={busy || !userId || !gender}>{busy ? 'در حال صدور…' : 'صدور گواهی'}</button>
       </form>
 
       <div className="stack-card">

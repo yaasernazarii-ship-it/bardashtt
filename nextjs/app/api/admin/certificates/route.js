@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { issueCertificate } from '@/lib/certificate';
 import { notifyUsers } from '@/lib/notifications';
-import { parseScore } from '@/lib/exam';
+import { parseScore, isValidGender } from '@/lib/exam';
 
 function serialize(c) {
   return {
@@ -60,8 +60,19 @@ export async function POST(request) {
     return Response.json({ ok: false, error: 'نمرهٔ نهایی باید عددی بین ۰ تا ۱۰۰ با حداکثر یک رقم اعشار باشد.' }, { status: 400 });
   }
 
-  const cert = await issueCertificate(target, { percent, issuedById: manager.id });
-  await prisma.user.update({ where: { id: target.id }, data: { graduated: true } });
+  // «آقای/خانم» روی گواهی درج می‌شود، پس جنسیت باید در لحظهٔ صدور قطعی باشد؛
+  // اگر پروفایل هنرجو خالی است، مدیر آن را در همین فرم انتخاب می‌کند.
+  const gender = isValidGender(body.gender) ? body.gender : null;
+  if (!gender && !isValidGender(target.gender)) {
+    return Response.json({ ok: false, error: 'جنسیت هنرجو مشخص نیست؛ «آقا» یا «خانم» را انتخاب کنید.' }, { status: 400 });
+  }
+
+  const cert = await issueCertificate(target, { percent, gender, issuedById: manager.id });
+  // جنسیتِ تأییدشده در پروفایل هم ذخیره می‌شود تا صدورهای بعدی دوباره نپرسد.
+  await prisma.user.update({
+    where: { id: target.id },
+    data: gender ? { graduated: true, gender } : { graduated: true },
+  });
   await notifyUsers([target.id], {
     title: 'گواهی‌نامهٔ شما صادر شد',
     body: `کد استعلام گواهی شما ${cert.serial} است.`,

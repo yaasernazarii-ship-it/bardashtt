@@ -9,6 +9,9 @@ export async function issueCertificate(user, {
   examPercent = null,
   classScore = null,
   issuedById = null,
+  // جنسیتِ انتخاب‌شده در لحظهٔ صدور؛ مبنای درج «آقای/خانم» روی گواهی است و بر
+  // مقدار پروفایل مقدم است، چون پروفایلِ هنرجویان قدیمی اغلب ناقص ثبت شده.
+  gender = null,
 } = {}) {
   if (attemptId) {
     const existing = await prisma.certificate.findUnique({ where: { attemptId } });
@@ -29,7 +32,7 @@ export async function issueCertificate(user, {
           userId: user.id,
           attemptId,
           fullName: user.displayName || user.username || user.phone,
-          gender: user.gender || null,
+          gender: gender || user.gender || null,
           nationalId: user.nationalId || null,
           courseTitle: user.courseTitle || null,
           branch: user.branch || null,
