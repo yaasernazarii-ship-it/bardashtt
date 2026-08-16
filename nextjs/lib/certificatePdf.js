@@ -322,11 +322,14 @@ export async function buildCertificatePdf(cert) {
   // امضا و مهر کمی روی خطِ امضا می‌نشینند، همان‌طور که روی کاغذ واقعی زده می‌شوند.
   // مهر ایستاده است (نقشِ خانه + نام + شمارهٔ ثبت)، پس ارتفاعش مبنای اندازه است و کمی
   // بالاتر از خط می‌ایستد تا شمارهٔ ثبتِ پایینِ مهر روی خط نیفتد.
-  if (fs.existsSync(SIGNATURE)) doc.image(SIGNATURE, signX - 2, footY - 6, { fit: [128, 74] });
+  // هر دو تصویر تا لبهٔ جوهر کراپ شده‌اند، پس عرضِ واقعیِ هرکدام از نسبتِ خودش درمی‌آید:
+  // امضا حدود ۶۹pt و مهر حدود ۵۶pt. جفتشان با فاصلهٔ کوتاه کنار هم و وسطِ خطِ امضا
+  // می‌نشینند تا مثل کاغذِ واقعی یک بلوکِ به‌هم‌پیوسته دیده شوند، نه دو عنصرِ جدا.
+  if (fs.existsSync(SIGNATURE)) doc.image(SIGNATURE, signX + 38, footY - 6, { fit: [128, 74] });
   if (fs.existsSync(STAMP)) {
     doc.save();
     doc.opacity(0.9);
-    doc.image(STAMP, signX + 134, footY - 32, { fit: [78, 82] });
+    doc.image(STAMP, signX + 121, footY - 32, { fit: [78, 82] });
     doc.opacity(1);
     doc.restore();
   }
