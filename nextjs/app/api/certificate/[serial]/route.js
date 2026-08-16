@@ -3,6 +3,8 @@ import { getSessionUser, isManager } from '@/lib/auth';
 import { normalizeSerial } from '@/lib/exam';
 import { buildCertificatePdf } from '@/lib/certificatePdf';
 
+// ساخت PDF به pdfkit و sharp نیاز دارد؛ هر دو فقط روی Node اجرا می‌شوند.
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // دانلود فایل گواهی. فقط دارندهٔ گواهی و مدیران دسترسی دارند؛

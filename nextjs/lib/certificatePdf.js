@@ -5,6 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import PDFDocument from 'pdfkit';
+import sharp from 'sharp';
 import { shape } from './rtl';
 import { SCHOOL_NAME, SCHOOL_PHONE, COURSE_HOURS, GRADUATION_FIELD, formatScore, honorific } from './exam';
 import { qrMatrix } from './qr';
@@ -113,6 +114,40 @@ function drawQr(doc, payload, x, y, box) {
   }
 }
 
+// ── عکس پرسنلیِ دارنده ──────────────────────────────────────────
+const PHOTO_W = 68; // نسبت ۳×۴ در واحد pt؛ روی A4 حدود ۲٫۴ در ۳٫۲ سانتی‌متر می‌شود
+const PHOTO_H = 90;
+const PHOTO_DPI_SCALE = 4; // رزولوشن چاپ حدود ۲۹۰dpi
+
+// عکس پروفایل به فرمت webp ذخیره می‌شود و pdfkit فقط JPEG و PNG می‌فهمد؛
+// اینجا به JPEG تبدیل و هم‌زمان به نسبت ۳×۴ برش داده می‌شود.
+async function loadPhoto(photoUrl) {
+  const m = /^\/media\/([A-Za-z0-9._-]+)$/.exec(photoUrl || '');
+  if (!m) return null;
+  const file = path.join(process.cwd(), 'uploads', m[1]);
+  if (!fs.existsSync(file)) return null;
+  try {
+    return await sharp(file)
+      .resize(PHOTO_W * PHOTO_DPI_SCALE, PHOTO_H * PHOTO_DPI_SCALE, { fit: 'cover', position: sharp.strategy.attention })
+      .jpeg({ quality: 88 })
+      .toBuffer();
+  } catch {
+    // عکسِ خراب نباید جلوی صدور فایل گواهی را بگیرد؛ گواهی بدون عکس ساخته می‌شود.
+    return null;
+  }
+}
+
+// قاب طلاییِ عکس، هم‌خانوادهٔ قاب اصلی گواهی: یک خط پررنگ و یک خط نازکِ بیرونی.
+function drawPhoto(doc, buf, x, y) {
+  doc.image(buf, x, y, { width: PHOTO_W, height: PHOTO_H });
+  doc.rect(x, y, PHOTO_W, PHOTO_H).lineWidth(1.1).strokeColor(GOLD).stroke();
+  doc.rect(x - 4, y - 4, PHOTO_W + 8, PHOTO_H + 8).lineWidth(0.5).strokeColor(GOLD_SOFT).stroke();
+  diamond(doc, x - 4, y - 4, 2.2, GOLD_SOFT);
+  diamond(doc, x + PHOTO_W + 4, y - 4, 2.2, GOLD_SOFT);
+  diamond(doc, x - 4, y + PHOTO_H + 4, 2.2, GOLD_SOFT);
+  diamond(doc, x + PHOTO_W + 4, y + PHOTO_H + 4, 2.2, GOLD_SOFT);
+}
+
 export async function buildCertificatePdf(cert) {
   const doc = new PDFDocument({
     size: 'A4',
@@ -125,6 +160,9 @@ export async function buildCertificatePdf(cert) {
       Subject: `گواهی‌نامهٔ فارغ‌التحصیلی رشتهٔ ${GRADUATION_FIELD}`,
     },
   });
+  // پیش از شروع رسم خوانده می‌شود تا وسط ساختِ سند await نیفتد.
+  const photo = await loadPhoto(cert.photoUrl);
+
   const chunks = [];
   doc.on('data', (c) => chunks.push(c));
   const done = new Promise((resolve) => doc.on('end', resolve));
@@ -148,6 +186,9 @@ export async function buildCertificatePdf(cert) {
   // سربرگ
   doc.image(LOGO, CX - 30, 46, { height: 64 });
   if (fs.existsSync(LOGO_TVTO)) doc.image(LOGO_TVTO, W - 178, 50, { height: 58 });
+  // عکس در گوشهٔ بالا-چپ می‌نشیند؛ سمت راستِ سربرگ جای نشانِ فنی و حرفه‌ای است و
+  // مرکز جای نشانِ آموزشگاه. فاصله از گوشه طوری است که به گل‌آذینِ گوشه نخورد.
+  if (photo) drawPhoto(doc, photo, 96, 46);
   center(doc, SCHOOL_NAME, 120, { size: 13.5, bold: true, color: MUTED });
   center(doc, 'گواهی‌نامهٔ فارغ‌التحصیلی', 142, { size: 29, bold: true, color: GOLD });
   divider(doc, CX, 194, 118);
