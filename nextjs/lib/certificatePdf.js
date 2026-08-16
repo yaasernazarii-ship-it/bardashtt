@@ -208,11 +208,12 @@ export async function buildCertificatePdf(cert) {
   // قرار نگرفته، فقط خط و عنوانِ محلِ امضا چاپ می‌شود و گواهی دستی مهر می‌خورد.
   const signW = 214;
   const signX = 58;
-  if (fs.existsSync(SIGNATURE)) doc.image(SIGNATURE, signX + 20, footY + 6, { fit: [112, 46] });
+  // امضا و مهر کمی روی خطِ امضا می‌نشینند، همان‌طور که روی کاغذ واقعی زده می‌شوند.
+  if (fs.existsSync(SIGNATURE)) doc.image(SIGNATURE, signX + 30, footY - 4, { fit: [104, 66] });
   if (fs.existsSync(STAMP)) {
     doc.save();
     doc.opacity(0.88);
-    doc.image(STAMP, signX + signW - 74, footY - 6, { fit: [70, 70] });
+    doc.image(STAMP, signX + 116, footY - 24, { fit: [92, 92] });
     doc.opacity(1);
     doc.restore();
   }
