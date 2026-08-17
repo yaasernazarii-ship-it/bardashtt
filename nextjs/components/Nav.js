@@ -21,10 +21,11 @@ const FALLBACK_LINKS = [
     ],
   },
   { href: '/actors', label: 'بازیگران' },
-  { href: '/gallery', label: 'گالری' },
   {
     label: 'آثار',
     children: [
+      { href: '/gallery', label: 'گالری دوره‌ها' },
+      { type: 'sep' },
       { href: '/works/output', label: 'خروجی خانواده برداشت' },
       { type: 'sep' },
       { href: '/works/advertising', label: 'تولیدات تبلیغاتی' },
