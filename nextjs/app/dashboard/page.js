@@ -359,6 +359,23 @@ export default async function DashboardPage() {
                 <Link href="/dashboard/profile" className="dash-card__link">تکمیل پروفایل →</Link>
               </div>
             </div>
+            {/* هنرجوی در حال تحصیل تحت پوشش بیمهٔ حوادث آموزشگاه است؛ راه استفاده از آن باید در دسترسش باشد. */}
+            {user.role === 'student' && (
+              <div className="dash-cards" style={{ marginTop: 14 }}>
+                <Link href="/dashboard/insurance" className="dash-card" style={{ display: 'block' }}>
+                  <h3 className="dash-card__title">
+                    <Icon name="shield" size={16} /> بیمهٔ من
+                    {!user.graduated && <span className="tag tag--green" style={{ marginRight: 8 }}>فعال</span>}
+                  </h3>
+                  <p className="dash-card__text">
+                    {user.graduated
+                      ? 'اطلاعات بیمه‌نامهٔ دورهٔ تحصیل و روش پیگیری پرونده.'
+                      : 'در طول دوره تحت پوشش بیمهٔ حوادث آموزشگاه هستید؛ کارت بیمه و روش استفاده از آن اینجاست.'}
+                  </p>
+                  <span className="dash-card__link">مشاهده بیمه →</span>
+                </Link>
+              </div>
+            )}
           </>
         )}
       </main>

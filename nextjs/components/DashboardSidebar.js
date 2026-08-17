@@ -10,6 +10,7 @@ const STUDENT_ITEMS = [
   { key: 'live-classes', href: '/dashboard/live-classes', icon: 'video', label: 'کلاس‌های آنلاین من' },
   { key: 'enrollment', href: '/dashboard/enrollment', icon: 'graduationCap', label: 'ثبت‌نام من' },
   { key: 'exam', href: '/dashboard/exam', icon: 'check', label: 'آزمون و گواهی‌نامه' },
+  { key: 'insurance', href: '/dashboard/insurance', icon: 'shield', label: 'بیمهٔ من' },
   { key: 'orders', href: '/dashboard/orders', icon: 'book', label: 'سفارش‌های من' },
   { key: 'resume', href: '/dashboard/resume', icon: 'fileText', label: 'رزومه بازیگری' },
   { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل' },
@@ -62,6 +63,8 @@ function itemsForRole(role, graduated, manager) {
     if ((it.key === 'schedule' || it.key === 'live-classes') && graduated) return false;
     // آزمون فارغ‌التحصیلی فقط برای هنرجوست، نه عضو عادی.
     if (it.key === 'exam' && role !== 'student') return false;
+    // بیمهٔ هنرجویی هم فقط برای هنرجوست؛ عضو عادی هنوز پوششی ندارد.
+    if (it.key === 'insurance' && role !== 'student') return false;
     return true;
   });
 }
