@@ -302,6 +302,21 @@ const PATHS = {
     </>
   ),
   checkMark: <polyline points="20 6 9 17 4 12" />,
+  heart: (
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+  ),
+  flag: (
+    <>
+      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+      <line x1="4" y1="22" x2="4" y2="15" />
+    </>
+  ),
+  trash: (
+    <>
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    </>
+  ),
 };
 
 export const ICON_NAMES = Object.keys(PATHS);

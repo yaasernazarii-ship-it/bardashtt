@@ -29,6 +29,8 @@ model User {
   courseTitle  String? // دوره‌ای که هنرجو در آن است
   classGroupId String? // کلاس/گروه هنرجو
   classGroup   ClassGroup?  @relation(fields: [classGroupId], references: [id])
+  socialTrusted Boolean     @default(false) // «انتشار بدون بررسی» در شبکهٔ اجتماعی؛ مدیر برای کاربران مورد اعتماد روشن می‌کند
+  socialBlocked Boolean     @default(false) // محرومیت از انتشار در شبکهٔ اجتماعی (بقیهٔ پنل دست‌نخورده می‌ماند)
   scheduleSeenAt DateTime? // آخرین باری که هنرجو برنامه‌اش را دید (برای نوتیفیکیشن)
   notificationsReadAt DateTime? // آخرین باری که کاربر اعلان‌هایش را دید (برای شمارش خوانده‌نشده‌ها)
   staffReportsSeenAt DateTime? // آخرین باری که ادمین/ادیتور تابلوی گزارش کار تیمی را باز کرد (مبنای شمارش خوانده‌نشده)
@@ -44,6 +46,10 @@ model User {
   examAttempts ExamAttempt[] // تلاش‌های آزمون فارغ‌التحصیلی
   examPermits  ExamPermit[] // اجازه‌های شرکت در آزمون که مدیر/ادیتور صادر کرده
   certificates Certificate[] // گواهی‌نامه‌های صادرشده
+  socialPosts  SocialPost[]    // پست‌ها و استوری‌های شبکهٔ اجتماعی
+  socialLikes  SocialLike[]
+  socialComments SocialComment[]
+  socialReports SocialReport[]  // گزارش‌های تخلفی که این کاربر ثبت کرده
 
   @@index([classGroupId])
 }
@@ -653,4 +659,82 @@ model StaffChatRead {
 
   @@unique([threadId, userId])
   @@index([userId])
+}
+
+// ── شبکهٔ اجتماعی برداشت ───────────────────────────────────────────────
+// یک محتوای کاربرساخته: «پست» (ماندگار) یا «استوری» (۲۴ ساعته).
+// هیچ رکوردی بدون تأیید مدیر عمومی نمی‌شود؛ فیلتر نمایش همیشه روی status و expiresAt است،
+// پس حتی اگر پاک‌سازیِ فایل‌ها هم اجرا نشود، محتوای منقضی برای کسی دیده نمی‌شود.
+model SocialPost {
+  id             String    @id @default(cuid())
+  authorId       String
+  author         User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  kind           String    @default("post") // post | story
+  imageUrl       String? // عکسِ آپلودی (/media/…)؛ برای استوری اجباری است
+  aparatUrl      String? // ویدیوی آپارات (فقط پست) — ویدیو روی سرور خودمان ذخیره نمی‌شود
+  caption        String?
+  status         String    @default("pending") // pending | published | rejected
+  rejectReason   String?
+  reviewedById   String?
+  reviewedByName String? // نام مدیر در همان لحظه (کپی، مثل بقیهٔ لاگ‌های سیستم)
+  reviewedAt     DateTime?
+  publishedAt    DateTime? // لحظهٔ تأیید؛ مبنای ترتیب فید
+  expiresAt      DateTime? // فقط استوری: publishedAt + ۲۴ ساعت
+  likeCount      Int       @default(0)
+  commentCount   Int       @default(0)
+  reportCount    Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  likes          SocialLike[]
+  comments       SocialComment[]
+  reports        SocialReport[]
+
+  @@index([kind, status, publishedAt])
+  @@index([status, createdAt])
+  @@index([authorId, status])
+  @@index([expiresAt])
+}
+
+model SocialLike {
+  id        String     @id @default(cuid())
+  postId    String
+  post      SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+
+  @@unique([postId, userId])
+  @@index([userId])
+}
+
+model SocialComment {
+  id         String     @id @default(cuid())
+  postId     String
+  post       SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body       String
+  createdAt  DateTime   @default(now())
+  reports    SocialReport[]
+
+  @@index([postId, createdAt])
+  @@index([authorId])
+}
+
+// گزارش تخلفِ کاربران روی یک پست یا کامنت. عمداً بدون رابطه به گزارش‌دهندهٔ حذف‌شده نمی‌ماند
+// چون reporter اختیاری است و با حذف حساب، خودِ گزارش هم بی‌معنا می‌شود.
+model SocialReport {
+  id         String         @id @default(cuid())
+  postId     String?
+  post       SocialPost?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  commentId  String?
+  comment    SocialComment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  reporterId String?
+  reporter   User?          @relation(fields: [reporterId], references: [id], onDelete: SetNull)
+  reason     String
+  status     String         @default("open") // open | done
+  createdAt  DateTime       @default(now())
+
+  @@index([status, createdAt])
+  @@index([postId])
 }

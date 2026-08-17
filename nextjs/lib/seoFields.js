@@ -47,6 +47,14 @@ export const SEO_PAGES = [
     description: 'گالری تصاویر کلاس‌ها، اردوها و فعالیت‌های خانواده برداشت.',
   },
   {
+    key: 'community',
+    name: 'شبکهٔ اجتماعی برداشت',
+    path: '/community',
+    title: 'شبکه اجتماعی برداشت',
+    description:
+      'فضای اجتماعی هنرجویان و فیلم‌سازان خانواده برداشت؛ تمرین‌ها، پشت‌صحنه‌ها و کارهای تازهٔ بازیگران را ببینید.',
+  },
+  {
     key: 'blog',
     name: 'مقاله‌ها',
     path: '/blog',
@@ -154,7 +162,7 @@ export const SEO_PAGES = [
 export const SEO_PAGE_BY_KEY = new Map(SEO_PAGES.map((p) => [p.key, p]));
 
 // صفحه‌ها را به دو گروه تقسیم می‌کنیم تا فهرست پنل بیش از حد بلند نشود.
-const MAIN_KEYS = new Set(['home', 'about', 'courses', 'faq', 'gallery', 'blog', 'news', 'actors', 'register', 'auth']);
+const MAIN_KEYS = new Set(['home', 'about', 'courses', 'faq', 'gallery', 'community', 'blog', 'news', 'actors', 'register', 'auth']);
 
 function fieldsFor(page) {
   const titleHint = page.absoluteTitle

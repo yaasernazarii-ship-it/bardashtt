@@ -12,6 +12,7 @@ const STUDENT_ITEMS = [
   { key: 'enrollment', href: '/dashboard/enrollment', icon: 'graduationCap', label: 'ثبت‌نام من' },
   { key: 'exam', href: '/dashboard/exam', icon: 'check', label: 'آزمون و گواهی‌نامه' },
   { key: 'insurance', href: '/dashboard/insurance', icon: 'shield', label: 'بیمهٔ من' },
+  { key: 'social', href: '/dashboard/social', icon: 'users', label: 'شبکهٔ اجتماعی' },
   { key: 'orders', href: '/dashboard/orders', icon: 'book', label: 'سفارش‌های من' },
   { key: 'resume', href: '/dashboard/resume', icon: 'fileText', label: 'رزومه بازیگری' },
   { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل' },
@@ -24,6 +25,7 @@ const FILMMAKER_ITEMS = [
   { key: 'dashboard', href: '/dashboard', icon: 'home', label: 'داشبورد' },
   { key: 'actors', href: '/actors', icon: 'masks', label: 'بانک بازیگران' },
   { key: 'shortlist', href: '/dashboard/shortlist', icon: 'trophy', label: 'لیست کوتاه من' },
+  { key: 'social', href: '/dashboard/social', icon: 'users', label: 'شبکهٔ اجتماعی' },
   { key: 'requests', href: '/dashboard/requests', icon: 'clipboard', label: 'درخواست‌های ست تایم' },
   { key: 'orders', href: '/dashboard/orders', icon: 'book', label: 'سفارش‌های من' },
   { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل' },
@@ -48,6 +50,7 @@ const MANAGER_ITEMS = [
   { key: 'bookings', href: '/dashboard/admin/bookings', icon: 'clapperboard', label: 'درخواست‌های ست تایم' },
   { key: 'support', href: '/dashboard/admin/support', icon: 'chat', label: 'پشتیبانی آنلاین' },
   { key: 'posts', href: '/dashboard/admin/posts', icon: 'edit', label: 'محتوا و انتشار' },
+  { key: 'social-admin', href: '/dashboard/admin/social', icon: 'users', label: 'شبکهٔ اجتماعی' },
   { key: 'courses-admin', href: '/dashboard/admin/courses', icon: 'graduationCap', label: 'فروش دوره' },
   { key: 'books-admin', href: '/dashboard/admin/books', icon: 'book', label: 'فروش کتاب' },
   { key: 'content', href: '/dashboard/admin/content', icon: 'fileText', label: 'متن صفحات' },
@@ -66,6 +69,8 @@ function itemsForRole(role, graduated, manager) {
     if (it.key === 'exam' && role !== 'student') return false;
     // بیمهٔ هنرجویی هم فقط برای هنرجوست؛ عضو عادی هنوز پوششی ندارد.
     if (it.key === 'insurance' && role !== 'student') return false;
+    // انتشار در شبکهٔ اجتماعی مخصوص هنرجو و فیلم‌ساز است؛ عضو عادی فقط تماشاگر است.
+    if (it.key === 'social' && role !== 'student') return false;
     return true;
   });
 }

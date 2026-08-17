@@ -1,0 +1,215 @@
+'use client';
+
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import Icon from './Icon';
+
+const STATUS = {
+  pending: { label: 'در انتظار بررسی مدیر', cls: 'cm-badge--wait' },
+  published: { label: 'منتشر شده', cls: 'cm-badge--ok' },
+  rejected: { label: 'تأیید نشد', cls: 'cm-badge--no' },
+};
+
+async function uploadSocialImage(file, kind) {
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('kind', kind);
+  let res;
+  try {
+    res = await fetch('/api/social/upload', { method: 'POST', body: fd });
+  } catch {
+    return { ok: false, error: 'ارتباط با سرور برقرار نشد.' };
+  }
+  try {
+    return await res.json();
+  } catch {
+    return { ok: false, error: res.status === 413 ? 'حجم عکس بیشتر از حد مجاز است.' : `آپلود ناموفق بود (${res.status}).` };
+  }
+}
+
+export default function SocialComposer() {
+  const [kind, setKind] = useState('post');
+  const [imageUrl, setImageUrl] = useState('');
+  const [aparatUrl, setAparatUrl] = useState('');
+  const [caption, setCaption] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [okMsg, setOkMsg] = useState('');
+  const [items, setItems] = useState([]);
+  const [canPost, setCanPost] = useState(true);
+  const [needsReview, setNeedsReview] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  async function load() {
+    const res = await fetch('/api/social/posts?scope=mine');
+    const data = await res.json();
+    if (data.ok) {
+      setItems(data.items);
+      setCanPost(data.canPost);
+      setNeedsReview(data.needsReview);
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => { load(); }, []);
+
+  async function pick(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true); setError('');
+    const data = await uploadSocialImage(file, kind);
+    setUploading(false);
+    if (data.ok) setImageUrl(data.url);
+    else setError(data.error || 'آپلود ناموفق بود.');
+  }
+
+  async function submit(e) {
+    e.preventDefault();
+    setError(''); setOkMsg('');
+    if (kind === 'story' && !imageUrl) { setError('برای استوری یک عکس انتخاب کنید.'); return; }
+    if (kind === 'post' && !imageUrl && !aparatUrl.trim()) { setError('یک عکس بگذارید یا لینک ویدیوی آپارات را وارد کنید.'); return; }
+    setBusy(true);
+    const res = await fetch('/api/social/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kind, imageUrl: imageUrl || null, aparatUrl: kind === 'post' ? aparatUrl : '', caption }),
+    });
+    const data = await res.json();
+    setBusy(false);
+    if (!data.ok) { setError(data.error || 'ثبت ناموفق بود.'); return; }
+    setImageUrl(''); setAparatUrl(''); setCaption('');
+    setItems((prev) => [data.item, ...prev]);
+    setOkMsg(data.review
+      ? 'ثبت شد. پس از تأیید مدیریت روی صفحهٔ شبکهٔ اجتماعی منتشر می‌شود.'
+      : 'منتشر شد.');
+  }
+
+  async function remove(id) {
+    if (!window.confirm('این مطلب حذف شود؟')) return;
+    const res = await fetch(`/api/social/posts/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.ok) setItems((prev) => prev.filter((p) => p.id !== id));
+  }
+
+  if (!loading && !canPost) {
+    return (
+      <div className="alert alert--error">
+        حساب شما در حال حاضر اجازهٔ انتشار در شبکهٔ اجتماعی ندارد. اگر فکر می‌کنید اشتباهی رخ داده، با پشتیبانی تماس بگیرید.
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <form onSubmit={submit} className="form-shell" style={{ marginBottom: 26 }}>
+        <div className="cm-kind">
+          <button type="button" className={kind === 'post' ? 'active' : undefined} onClick={() => setKind('post')}>
+            <Icon name="image" size={16} /> پست
+          </button>
+          <button type="button" className={kind === 'story' ? 'active' : undefined} onClick={() => setKind('story')}>
+            <Icon name="sparkles" size={16} /> استوری ۲۴ ساعته
+          </button>
+        </div>
+
+        <p className="cm-hint">
+          {kind === 'post'
+            ? 'پست روی صفحهٔ شبکهٔ اجتماعی می‌ماند. می‌توانید عکس بگذارید، لینک ویدیوی آپارات بدهید، یا هر دو.'
+            : 'استوری فقط ۲۴ ساعت پس از تأیید دیده می‌شود و بعد خودکار پاک می‌شود. فقط عکس.'}
+        </p>
+
+        {error && <div className="alert alert--error" style={{ marginBottom: 12 }}>{error}</div>}
+        {okMsg && <div className="alert alert--success" style={{ marginBottom: 12 }}>{okMsg}</div>}
+
+        <div className="form-group">
+          <label className="form-label">عکس {kind === 'story' ? '(اجباری)' : '(اختیاری)'} — حداکثر ۸ مگابایت</label>
+          <input type="file" accept="image/*" className="form-input" onChange={pick} />
+          {uploading && <span className="cm-muted">در حال آپلود…</span>}
+        </div>
+
+        {imageUrl && (
+          <div className="cm-preview">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={imageUrl} alt="پیش‌نمایش" />
+            <button type="button" onClick={() => setImageUrl('')} aria-label="حذف عکس"><Icon name="close" size={14} /></button>
+          </div>
+        )}
+
+        {kind === 'post' && (
+          <div className="form-group">
+            <label className="form-label">لینک ویدیوی آپارات (اختیاری)</label>
+            <input
+              className="form-input"
+              dir="ltr"
+              value={aparatUrl}
+              onChange={(e) => setAparatUrl(e.target.value)}
+              placeholder="https://www.aparat.com/v/..."
+            />
+            <span className="cm-muted">ویدیو روی سرور ما ذخیره نمی‌شود؛ فقط لینک آپارات نمایش داده می‌شود.</span>
+          </div>
+        )}
+
+        <div className="form-group">
+          <label className="form-label">متن (اختیاری)</label>
+          <textarea
+            className="form-input"
+            rows={3}
+            maxLength={600}
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            placeholder="چند خط دربارهٔ این کار…"
+          />
+        </div>
+
+        <button className="btn btn--dark" type="submit" disabled={busy || uploading}>
+          {busy ? 'در حال ثبت…' : needsReview ? 'ارسال برای بررسی' : 'انتشار'}
+        </button>
+        {needsReview && (
+          <p className="cm-muted" style={{ marginTop: 10 }}>
+            هر مطلب پیش از نمایش عمومی توسط مدیریت بررسی می‌شود.
+          </p>
+        )}
+      </form>
+
+      <h2 className="heading" style={{ fontSize: '1.1rem', marginBottom: 14 }}>مطالب من</h2>
+      {loading ? (
+        <p className="cm-muted">در حال بارگذاری…</p>
+      ) : items.length === 0 ? (
+        <p className="cm-muted">هنوز مطلبی نفرستاده‌اید.</p>
+      ) : (
+        <ul className="cm-mine">
+          {items.map((p) => {
+            const st = STATUS[p.status] || STATUS.pending;
+            return (
+              <li key={p.id}>
+                <span className="cm-mine__thumb">
+                  {p.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={p.imageUrl} alt="" />
+                  ) : (
+                    <Icon name="video" size={20} />
+                  )}
+                </span>
+                <div className="cm-mine__body">
+                  <span className={`cm-badge ${st.cls}`}>{st.label}</span>
+                  <span className="cm-mine__kind">{p.kind === 'story' ? 'استوری' : 'پست'}</span>
+                  {p.caption && <p>{p.caption}</p>}
+                  {p.status === 'rejected' && p.rejectReason && (
+                    <p className="cm-mine__reason">دلیل: {p.rejectReason}</p>
+                  )}
+                </div>
+                <button type="button" className="cm-iconbtn" onClick={() => remove(p.id)} aria-label="حذف">
+                  <Icon name="trash" size={16} />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      <p style={{ marginTop: 20 }}>
+        <Link href="/community" className="btn btn--hero-secondary">دیدن صفحهٔ شبکهٔ اجتماعی</Link>
+      </p>
+    </div>
+  );
+}

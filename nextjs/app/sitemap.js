@@ -22,6 +22,7 @@ const staticRoutes = [
   '/blog/amoozesh-bazigari-raygan-shoroe',
   ...BLOG_CATEGORY_VALUES.map((c) => `/blog/category/${c}`),
   '/certificate',
+  '/community',
   '/faq',
   '/gallery',
   '/insurance',
