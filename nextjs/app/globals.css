@@ -737,21 +737,61 @@ body.nav-open {
 .auth-form { width: 100%; max-width: 420px; }
 
 /* ── DASHBOARD LAYOUT ───────────────────── */
-.dash-layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
-.sidebar { background: var(--white); border-left: 1px solid var(--border); padding: 28px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
-.sidebar-logo { padding: 0 24px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-.sidebar-logo a { font-size: 1.05rem; font-weight: 900; color: var(--dark); }
+.dash-layout { display: grid; grid-template-columns: 264px 1fr; min-height: 100vh; }
+/* سایدبار پنل تیره است تا محتوای روشنِ سمت راست جلو بیاید و منو با صفحه قاطی نشود. */
+.sidebar {
+  background: linear-gradient(180deg, #1F1F1F 0%, #191919 55%, #141414 100%);
+  border-left: 1px solid rgba(255,255,255,.06);
+  padding: 22px 0 0; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+.sidebar-logo { padding: 0 22px 18px; text-align: center; }
+.sidebar-logo a { font-size: 1.05rem; font-weight: 900; color: var(--gold); }
 .sidebar-logo span { color: var(--gold); }
+/* بخشِ باز/بستهٔ سایدبار: پروفایل + منو + پاورقی. در دسکتاپ همیشه باز است. */
+.sidebar-panel { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+
+/* کارت پروفایل بالای منو */
+.sidebar-profile { text-align: center; padding: 4px 20px 20px; border-bottom: 1px solid rgba(255,255,255,.07); margin-bottom: 14px; }
+.sidebar-profile__avatar {
+  width: 86px; height: 86px; border-radius: 50%; margin: 0 auto 12px;
+  overflow: hidden; background: #2B2B2B; color: rgba(255,255,255,.45);
+  border: 2px solid var(--gold); box-shadow: 0 0 0 4px rgba(255,215,0,.10);
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+}
+.sidebar-profile__avatar:hover { box-shadow: 0 0 0 5px rgba(255,215,0,.18); }
+.sidebar-profile__avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sidebar-profile__name { font-size: .98rem; font-weight: 800; color: #fff; margin: 0; }
+.sidebar-profile__role { font-size: .75rem; color: rgba(255,255,255,.45); margin: 5px 0 0; }
+
 .sidebar-menu { list-style: none; }
-.sidebar-menu li a { display:flex;align-items:center;gap:12px;padding:11px 24px;font-size:0.9rem;font-weight:500;color:var(--muted);transition:var(--transition);border-left:3px solid transparent; }
-.sidebar-menu li a:hover { background:var(--surface);color:var(--dark); }
-.sidebar-menu li a.active { background:rgba(196,146,42,0.06);color:var(--dark);font-weight:600;border-left-color:var(--gold); }
-.sidebar-menu .sep { font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--light);padding:20px 24px 8px; }
+.sidebar-menu li a { display:flex;align-items:center;gap:12px;padding:11px 22px;font-size:0.88rem;font-weight:500;color:rgba(255,255,255,.6);transition:var(--transition);border-inline-start:3px solid transparent; }
+.sidebar-menu li a:hover { background:rgba(255,255,255,.05);color:#fff; }
+.sidebar-menu li a.active { background:linear-gradient(90deg, rgba(255,215,0,.15), rgba(255,215,0,.02));color:#fff;font-weight:700;border-inline-start-color:var(--gold); }
+.sidebar-menu li a.active .sidebar-menu__ico { color: var(--gold); }
+.sidebar-menu .sep { font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:20px 22px 8px; }
+
+/* پاورقی سایدبار: جعبهٔ پشتیبانی + خروج */
+.sidebar-foot { margin-top: auto; padding: 18px 16px 0; }
+.sidebar-support { background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 14px 12px; text-align: center; }
+.sidebar-support__label { font-size: .72rem; color: rgba(255,255,255,.45); }
+.sidebar-support__phone { display: block; font-size: 1rem; font-weight: 800; color: var(--gold); margin: 6px 0 10px; }
+.sidebar-support__chat { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; color: rgba(255,255,255,.62); }
+.sidebar-support__chat:hover { color: #fff; }
+.sidebar-logout {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; margin-top: 14px; padding: 14px 10px;
+  background: transparent; border: 0; border-top: 1px solid rgba(255,255,255,.07);
+  font: inherit; font-size: .85rem; color: rgba(255,255,255,.5); cursor: pointer;
+  transition: var(--transition);
+}
+.sidebar-logout:hover { color: #fff; }
 /* نوار موبایلِ داشبورد؛ به‌صورت پیش‌فرض (دسکتاپ) پنهان است و فقط در media query موبایل ظاهر می‌شود */
-.sidebar-mobilebar { display: none; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--white); }
-.sidebar-mobilebar__logo { font-size: 1rem; font-weight: 900; color: var(--dark); }
+.sidebar-mobilebar { display: none; align-items: center; justify-content: space-between; padding: 12px 16px; background: transparent; }
+.sidebar-mobilebar__logo { font-size: 1rem; font-weight: 900; color: var(--gold); }
 .sidebar-mobilebar__logo span { color: var(--gold); }
-.sidebar-toggle { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 700; color: var(--dark); background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 8px 16px; cursor: pointer; }
+.sidebar-toggle { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 700; color: #fff; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); border-radius: 100px; padding: 8px 16px; cursor: pointer; }
 .sidebar-toggle__ico { font-size: 1.1rem; line-height: 1; }
 
 /* زنگ اعلان در ناوبری */
@@ -786,6 +826,43 @@ body.nav-open {
 }
 .dash-head__title { font-size: 1.35rem; font-weight: 700; line-height: 1.35; color: var(--dark); margin: 0; }
 .dash-head__sub { color: var(--muted); font-size: 0.9rem; margin: 4px 0 0; }
+
+/* ── خوش‌آمدِ داشبورد هنرجو ─────────────────
+   به‌جای سرصفحهٔ اداری، یک سلامِ شخصی وسط صفحه. */
+.dash-welcome { text-align: center; margin-bottom: 26px; }
+.dash-welcome__title {
+  font-size: clamp(1.45rem, 3.4vw, 2rem); font-weight: 800; line-height: 1.5;
+  color: var(--dark); margin: 0;
+}
+.dash-welcome__sub { color: var(--muted); font-size: 0.92rem; margin: 10px 0 0; }
+
+/* ── کارت‌های آمارِ بالای داشبورد ───────────── */
+.dash-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.dash-stat {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 20px; padding: 18px 16px;
+  box-shadow: 0 2px 12px rgba(27,27,27,.035);
+  transition: var(--transition);
+}
+a.dash-stat:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(27,27,27,.09); }
+.dash-stat__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.dash-stat__ico { width: 40px; height: 40px; border-radius: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.dash-stat__label { font-size: .78rem; font-weight: 600; color: var(--muted); text-align: start; }
+.dash-stat__value { font-size: 1.65rem; font-weight: 800; color: var(--dark); line-height: 1.25; }
+.dash-stat__hint { font-size: .74rem; color: var(--light); margin: 5px 0 0; }
+.dash-stat__ico--green { background: #E8F8F0; color: #1E9E63; }
+.dash-stat__ico--amber { background: #FFF4E3; color: #D3861F; }
+.dash-stat__ico--blue  { background: #E9F1FE; color: #2F6BD8; }
+.dash-stat__ico--gold  { background: #FFF7D6; color: #B58A00; }
+.dash-stat__value--green { color: #1E9E63; }
+.dash-stat__value--muted { color: var(--light); }
+
+/* نوار پیشرفت دوره */
+.dash-progress { height: 8px; border-radius: 100px; background: var(--surface); border: 1px solid var(--border); overflow: hidden; margin-top: 10px; }
+.dash-progress__bar { height: 100%; border-radius: 100px; background: linear-gradient(90deg, #FFE066 0%, var(--gold) 100%); }
+
+/* پاورقیِ داخل پنل */
+.dash-foot { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--border); text-align: center; color: var(--light); font-size: .78rem; }
 
 /* عکس پرسنلی ۳×۴ کاربر (سرصفحهٔ داشبورد و صفحهٔ پروفایل) */
 .dash-head__id { display: flex; align-items: center; gap: 14px; }
@@ -933,15 +1010,18 @@ body.nav-open {
   /* در موبایل سایدبار پنهان نمی‌شود؛ به یک نوار بالای صفحه با منوی بازشونده تبدیل می‌شود */
   .sidebar {
     position: sticky; top: 0; height: auto; z-index: 40;
-    padding: 0; border-left: 0; border-bottom: 1px solid var(--border);
+    padding: 0; border-left: 0; border-bottom: 1px solid rgba(255,255,255,.08);
   }
   .sidebar-logo { display: none; }
   .sidebar-mobilebar { display: flex; }
-  .sidebar-menu {
-    display: none; padding: 8px 0 12px;
-    max-height: calc(100svh - 60px); overflow-y: auto;
+  .sidebar-panel {
+    display: none; padding: 4px 0 12px;
+    max-height: calc(100svh - 62px); overflow-y: auto;
   }
-  .sidebar-menu--open { display: block; }
+  .sidebar-panel--open { display: flex; }
+  .sidebar-profile { padding-top: 10px; margin-bottom: 10px; }
+  .sidebar-profile__avatar { width: 66px; height: 66px; }
+  .sidebar-foot { padding-top: 12px; }
   .main-area { padding: 16px 14px calc(92px + env(safe-area-inset-bottom)); }
   .auth-wrap { grid-template-columns: 1fr; }
   .auth-visual { display: none; }

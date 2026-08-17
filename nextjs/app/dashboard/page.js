@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { countChatUnread } from '@/lib/staffChat';
-import LogoutButton from '@/components/LogoutButton';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import Icon from '@/components/Icon';
 
@@ -101,7 +100,6 @@ async function ManagerDashboard({ user }) {
             <p className="dash-head__sub">خوش آمدید {name} — شما با نقش «{roleLabel}» وارد شده‌اید. از کارت‌های زیر یا منوی کنار صفحه به بخش‌های پنل بروید.</p>
           </div>
         </div>
-        <LogoutButton />
       </div>
 
       {/* بنر پخش زنده؛ فقط وقتی حداقل یک جلسه هم‌اکنون در حال برگزاری است نمایش داده می‌شود. */}
@@ -188,7 +186,6 @@ async function FilmmakerDashboard({ user }) {
             <p className="dash-head__sub">خوش آمدید {name}؛ از اینجا به بانک بازیگران خانواده برداشت دسترسی دارید.</p>
           </div>
         </div>
-        <LogoutButton />
       </div>
 
       {profileIncomplete && (
@@ -296,6 +293,69 @@ async function StudentResumeNudge({ user }) {
   return null;
 }
 
+// نوارِ آمارِ بالای داشبورد هنرجو: چهار عددی که هنرجو بیشتر از همه دنبالشان است.
+// همهٔ اعداد واقعی‌اند و از حضور و غیاب و جلسه‌های کلاسِ خودش می‌آیند؛ فرمول پیشرفت
+// دقیقاً همان چیزی است که در /api/my/schedule استفاده می‌شود تا دو جا دو عدد ندهند.
+async function StudentStats({ user }) {
+  const groupId = user.classGroupId;
+
+  const [group, presentCount, upcoming] = await Promise.all([
+    groupId ? prisma.classGroup.findUnique({ where: { id: groupId }, select: { totalSessions: true } }) : null,
+    groupId ? prisma.attendance.count({ where: { userId: user.id, status: 'present', session: { groupId } } }) : 0,
+    groupId ? prisma.classSession.count({ where: { groupId, startsAt: { gt: new Date() } } }) : 0,
+  ]);
+
+  const totalSessions = group?.totalSessions || 8;
+  const computedProgress = totalSessions ? Math.min(100, Math.round((presentCount / totalSessions) * 100)) : 0;
+  const progress = user.progressOverride ?? computedProgress;
+  const covered = !user.graduated;
+  const fa = (n) => n.toLocaleString('fa-IR');
+
+  return (
+    <div className="dash-stats">
+      <Link href="/dashboard/insurance" className="dash-stat">
+        <div className="dash-stat__head">
+          <span className={`dash-stat__ico ${covered ? 'dash-stat__ico--green' : 'dash-stat__ico--gold'}`}>
+            <Icon name="shield" size={20} />
+          </span>
+          <span className="dash-stat__label">وضعیت بیمه</span>
+        </div>
+        <div className={`dash-stat__value ${covered ? 'dash-stat__value--green' : 'dash-stat__value--muted'}`}>
+          {covered ? 'فعال' : 'غیرفعال'}
+        </div>
+        <p className="dash-stat__hint">{covered ? 'تا پایان دوره' : 'دوره به پایان رسیده'}</p>
+      </Link>
+
+      <div className="dash-stat">
+        <div className="dash-stat__head">
+          <span className="dash-stat__ico dash-stat__ico--gold"><Icon name="calendar" size={20} /></span>
+          <span className="dash-stat__label">جلسات تکمیل‌شده</span>
+        </div>
+        <div className="dash-stat__value">{fa(presentCount)}</div>
+        <p className="dash-stat__hint">از {fa(totalSessions)} جلسه</p>
+      </div>
+
+      <Link href="/dashboard/live-classes" className="dash-stat">
+        <div className="dash-stat__head">
+          <span className="dash-stat__ico dash-stat__ico--blue"><Icon name="video" size={20} /></span>
+          <span className="dash-stat__label">کلاس‌های پیش رو</span>
+        </div>
+        <div className="dash-stat__value">{fa(upcoming)}</div>
+        <p className="dash-stat__hint">{upcoming > 0 ? 'جلسهٔ باقی‌مانده' : 'جلسه‌ای ثبت نشده'}</p>
+      </Link>
+
+      <div className="dash-stat">
+        <div className="dash-stat__head">
+          <span className="dash-stat__ico dash-stat__ico--amber"><Icon name="sparkles" size={20} /></span>
+          <span className="dash-stat__label">پیشرفت دوره</span>
+        </div>
+        <div className="dash-stat__value">٪{fa(progress)}</div>
+        <div className="dash-progress"><div className="dash-progress__bar" style={{ width: `${progress}%` }} /></div>
+      </div>
+    </div>
+  );
+}
+
 // یادآوری برای هنرجو: اگر همین حالا جلسه‌ای از کلاس خودش در حال پخش زنده است، بالای داشبورد نشانش بده.
 async function LiveNowNudge({ user }) {
   if (!user.classGroupId || user.graduated) return null;
@@ -322,6 +382,13 @@ export default async function DashboardPage() {
   if (!user) redirect('/auth');
 
   const name = user.displayName || 'هنرجوی گرامی';
+  // در سلامِ داشبورد فقط نام کوچک را می‌آوریم؛ صمیمی‌تر از نام کاملِ اداری است.
+  const firstName = name.split(' ')[0];
+  const welcomeSub = user.role !== 'student'
+    ? 'از اینجا ثبت‌نام و حسابت را دنبال کن.'
+    : user.graduated
+      ? 'دوره‌ات را کامل کرده‌ای؛ گواهی‌نامه و رزومه‌ات همیشه اینجاست.'
+      : 'امروز یک قدم به هنرمند شدن نزدیک‌تری ✨';
 
   return (
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
@@ -333,17 +400,12 @@ export default async function DashboardPage() {
           <FilmmakerDashboard user={user} />
         ) : (
           <>
-            <div className="dash-head">
-              <div className="dash-head__id">
-                <UserPhoto user={user} />
-                <div>
-                  <h1 className="dash-head__title">داشبورد هنرجو</h1>
-                  <p className="dash-head__sub">خوش آمدید {name}؛ وضعیت آموزشی شما اینجاست.</p>
-                </div>
-              </div>
-              <LogoutButton />
+            <div className="dash-welcome">
+              <h1 className="dash-welcome__title">👋 خوش آمدی، {firstName}</h1>
+              <p className="dash-welcome__sub">{welcomeSub}</p>
             </div>
             <LiveNowNudge user={user} />
+            {user.role === 'student' && <StudentStats user={user} />}
             {user.role === 'student' && <StudentResumeNudge user={user} />}
             <div className="dash-cards" style={{ gridTemplateColumns: user.graduated ? undefined : '2fr 1fr' }}>
               {!user.graduated && (
@@ -376,6 +438,7 @@ export default async function DashboardPage() {
                 </Link>
               </div>
             )}
+            <p className="dash-foot">© خانواده برداشت — تمام حقوق محفوظ است.</p>
           </>
         )}
       </main>

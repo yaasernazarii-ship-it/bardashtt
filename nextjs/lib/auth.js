@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { randomBytes } from 'crypto';
 import { cookies, headers } from 'next/headers';
 import { prisma } from './prisma';
@@ -60,7 +61,9 @@ export async function createSession(userId, { remember = true } = {}) {
   return token;
 }
 
-export async function getSessionUser() {
+// در طول یک درخواست فقط یک‌بار اجرا می‌شود؛ صفحه و سایدبارِ پنل هر دو کاربر را لازم دارند
+// و بدون cache هر بار یک کوئری نشست تکرار می‌شد.
+export const getSessionUser = cache(async function getSessionUser() {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;
   if (!token) return null;
@@ -82,7 +85,7 @@ export async function getSessionUser() {
     } catch { /* تمدید نشست حیاتی نیست */ }
   }
   return session.user;
-}
+});
 
 export async function destroySession() {
   const store = await cookies();

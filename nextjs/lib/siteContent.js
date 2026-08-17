@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { prisma } from '@/lib/prisma';
 import { SEO_GROUPS } from '@/lib/seoFields';
 import { FORM_GROUPS } from '@/lib/formFields';
@@ -479,7 +480,9 @@ export function splitLines(value) {
 }
 
 // بارگذاری همهٔ متن‌ها از دیتابیس و برگرداندن تابع t(key) با fallback به پیش‌فرض.
-export async function loadContent() {
+// با cache()ِ ری‌اکت در طول یک درخواست فقط یک‌بار از دیتابیس خوانده می‌شود؛ چون سایدبارِ پنل
+// هم متن لازم دارد، بدون این کار هر صفحهٔ پنل دو بار کل جدول را می‌خواند.
+export const loadContent = cache(async function loadContent() {
   let rows = [];
   try {
     rows = await prisma.siteContent.findMany();
@@ -491,4 +494,4 @@ export async function loadContent() {
     if (map.has(key)) return map.get(key);
     return defaultFor(key);
   };
-}
+});

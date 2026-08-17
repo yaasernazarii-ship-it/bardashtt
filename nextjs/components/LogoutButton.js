@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-export default function LogoutButton({ className = 'btn btn--outline' }) {
+export default function LogoutButton({ className = 'btn btn--outline', children }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -16,7 +16,7 @@ export default function LogoutButton({ className = 'btn btn--outline' }) {
 
   return (
     <button type="button" className={className} onClick={logout} disabled={loading}>
-      {loading ? '…' : 'خروج'}
+      {loading ? '…' : (children || 'خروج')}
     </button>
   );
 }

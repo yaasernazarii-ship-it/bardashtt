@@ -1,122 +1,40 @@
-'use client';
+import { getSessionUser } from '@/lib/auth';
+import { loadContent } from '@/lib/siteContent';
+import DashboardNav from './DashboardNav';
 
-import Link from 'next/link';
-import { useState } from 'react';
-import Icon from './Icon';
-
-const STUDENT_ITEMS = [
-  { key: 'dashboard', href: '/dashboard', icon: 'home', label: 'داشبورد' },
-  { key: 'schedule', href: '/dashboard/schedule', icon: 'calendar', label: 'برنامه و تقویم من' },
-  { key: 'live-classes', href: '/dashboard/live-classes', icon: 'video', label: 'کلاس‌های آنلاین من' },
-  { key: 'enrollment', href: '/dashboard/enrollment', icon: 'graduationCap', label: 'ثبت‌نام من' },
-  { key: 'exam', href: '/dashboard/exam', icon: 'check', label: 'آزمون و گواهی‌نامه' },
-  { key: 'insurance', href: '/dashboard/insurance', icon: 'shield', label: 'بیمهٔ من' },
-  { key: 'orders', href: '/dashboard/orders', icon: 'book', label: 'سفارش‌های من' },
-  { key: 'resume', href: '/dashboard/resume', icon: 'fileText', label: 'رزومه بازیگری' },
-  { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل' },
-  { key: 'courses', href: '/courses', icon: 'clapperboard', label: 'دوره‌ها' },
-];
-
-// منوی اختصاصیِ فیلمساز. این پنل عمداً هیچ آیتم آموزشی (دوره، ثبت‌نام، تقویم، آزمون، رزومهٔ هنرجویی)
-// ندارد؛ فیلمساز مخاطبِ آموزش نیست و داشبوردش فقط حول کارِ خودش می‌چرخد: بانک بازیگران و پیگیری ست تایم.
-const FILMMAKER_ITEMS = [
-  { key: 'dashboard', href: '/dashboard', icon: 'home', label: 'داشبورد' },
-  { key: 'actors', href: '/actors', icon: 'masks', label: 'بانک بازیگران' },
-  { key: 'shortlist', href: '/dashboard/shortlist', icon: 'trophy', label: 'لیست کوتاه من' },
-  { key: 'requests', href: '/dashboard/requests', icon: 'clipboard', label: 'درخواست‌های ست تایم' },
-  { key: 'orders', href: '/dashboard/orders', icon: 'book', label: 'سفارش‌های من' },
-  { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل' },
-];
-
-// ادمین/ادیتور منوی هنرجویی (تقویم، ثبت‌نام من، آزمون، رزومه) را نمی‌بینند؛
-// فقط خانهٔ مدیریت و پروفایل خودشان، تا مسیر ورود به پنل گم نشود.
-const MANAGER_PERSONAL_ITEMS = [
-  { key: 'dashboard', href: '/dashboard', icon: 'home', label: 'خانهٔ مدیریت' },
-  { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل من' },
-];
-
-const MANAGER_ITEMS = [
-  { key: 'reports', href: '/dashboard/admin/reports', icon: 'users', label: 'گزارش و گفت‌وگوی تیم' },
-  { key: 'enrollments', href: '/dashboard/admin/enrollments', icon: 'clipboard', label: 'بررسی ثبت‌نام‌ها' },
-  { key: 'signups', href: '/dashboard/admin/signups', icon: 'check', label: 'تأیید حساب‌ها' },
-  { key: 'classes', href: '/dashboard/admin/classes', icon: 'calendar', label: 'کلاس‌ها و تقویم' },
-  { key: 'live-classes', href: '/dashboard/admin/live-classes', icon: 'video', label: 'کلاس‌های آنلاین' },
-  { key: 'exam-admin', href: '/dashboard/admin/exam', icon: 'check', label: 'آزمون و بانک سوال' },
-  { key: 'certificates', href: '/dashboard/admin/certificates', icon: 'fileText', label: 'گواهی‌نامه‌ها' },
-  { key: 'payments', href: '/dashboard/admin/payments', icon: 'creditCard', label: 'پرداخت‌ها و شهریه' },
-  { key: 'bookings', href: '/dashboard/admin/bookings', icon: 'clapperboard', label: 'درخواست‌های ست تایم' },
-  { key: 'support', href: '/dashboard/admin/support', icon: 'chat', label: 'پشتیبانی آنلاین' },
-  { key: 'posts', href: '/dashboard/admin/posts', icon: 'edit', label: 'محتوا و انتشار' },
-  { key: 'courses-admin', href: '/dashboard/admin/courses', icon: 'graduationCap', label: 'فروش دوره' },
-  { key: 'books-admin', href: '/dashboard/admin/books', icon: 'book', label: 'فروش کتاب' },
-  { key: 'content', href: '/dashboard/admin/content', icon: 'fileText', label: 'متن صفحات' },
-  { key: 'links', href: '/dashboard/admin/links', icon: 'link', label: 'لینک صفحات' },
-  { key: 'admin', href: '/dashboard/admin', icon: 'settings', label: 'کاربران' },
-  { key: 'audit', href: '/dashboard/admin/audit', icon: 'clipboard', label: 'گزارش تغییرات' },
-];
-
-function itemsForRole(role, graduated, manager) {
-  if (manager) return MANAGER_PERSONAL_ITEMS;
-  if (role === 'filmmaker') return FILMMAKER_ITEMS;
-  return STUDENT_ITEMS.filter((it) => {
-    // هنرجوی فارغ‌التحصیل تقویم کلاس و کلاس آنلاین را در منو نمی‌بیند.
-    if ((it.key === 'schedule' || it.key === 'live-classes') && graduated) return false;
-    // آزمون فارغ‌التحصیلی فقط برای هنرجوست، نه عضو عادی.
-    if (it.key === 'exam' && role !== 'student') return false;
-    // بیمهٔ هنرجویی هم فقط برای هنرجوست؛ عضو عادی هنوز پوششی ندارد.
-    if (it.key === 'insurance' && role !== 'student') return false;
-    return true;
-  });
+// عنوانِ زیرِ نام کاربر در سایدبار — همان چیزی که کاربر خودش را با آن می‌شناسد.
+function subtitleFor(user) {
+  if (!user) return '';
+  if (user.role === 'admin') return 'مدیر سامانه';
+  if (user.role === 'editor') return 'ادیتور';
+  if (user.role === 'filmmaker') return user.company || 'فیلم‌ساز';
+  if (user.role === 'student') {
+    if (user.graduated) return user.courseTitle ? `فارغ‌التحصیل ${user.courseTitle}` : 'فارغ‌التحصیل';
+    return user.courseTitle ? `هنرجوی ${user.courseTitle}` : 'هنرجو';
+  }
+  return 'کاربر';
 }
 
-export default function DashboardSidebar({ active, role, isAdmin = false, isManager = false, graduated = false }) {
-  const showManager = isAdmin || isManager;
-  const visibleItems = itemsForRole(role, graduated, showManager);
-  const [open, setOpen] = useState(false);
-  const close = () => setOpen(false);
+// این کامپوننت عمداً سروری است تا بتواند نام/عکس کاربر و شمارهٔ پشتیبانی را
+// خودش بخواند؛ به این ترتیب هیچ‌کدام از صفحه‌های پنل لازم نیست پراپ اضافه بدهند
+// و سایدبار در همهٔ صفحه‌ها یک‌شکل می‌ماند. بخش تعاملی در DashboardNav است.
+export default async function DashboardSidebar(props) {
+  const [user, t] = await Promise.all([getSessionUser(), loadContent()]);
+
+  const profile = user
+    ? {
+        name: user.displayName || user.username || 'کاربر',
+        subtitle: subtitleFor(user),
+        photoUrl: user.photoUrl || null,
+      }
+    : null;
 
   return (
-    <aside className="sidebar">
-      {/* نوار موبایل: لوگو + دکمهٔ منو (فقط در گوشی دیده می‌شود) */}
-      <div className="sidebar-mobilebar">
-        <Link href="/" className="sidebar-mobilebar__logo" onClick={close}>خانواده <span>برداشت</span></Link>
-        <button
-          type="button"
-          className="sidebar-toggle"
-          aria-expanded={open}
-          aria-controls="dash-menu"
-          onClick={() => setOpen((o) => !o)}
-        >
-          <span className="sidebar-toggle__ico"><Icon name={open ? 'close' : 'menu'} size={20} /></span>
-          <span>منو</span>
-        </button>
-      </div>
-
-      <div className="sidebar-logo"><Link href="/">خانواده <span>برداشت</span></Link></div>
-
-      <ul id="dash-menu" className={`sidebar-menu${open ? ' sidebar-menu--open' : ''}`}>
-        {visibleItems.map((it) => (
-          <li key={it.key}>
-            <Link className={active === it.key ? 'active' : undefined} href={it.href} onClick={close}>
-              <Icon name={it.icon} size={18} className="sidebar-menu__ico" />{it.label}
-            </Link>
-          </li>
-        ))}
-        {showManager && (
-          <>
-            <li className="sep">مدیریت</li>
-            {MANAGER_ITEMS.map((it) => (
-              <li key={it.key}>
-                <Link className={active === it.key ? 'active' : undefined} href={it.href} onClick={close}>
-                  <Icon name={it.icon} size={18} className="sidebar-menu__ico" />{it.label}
-                </Link>
-              </li>
-            ))}
-          </>
-        )}
-        <li className="sep">سایت</li>
-        <li><Link href="/" onClick={close}>بازگشت به سایت</Link></li>
-      </ul>
-    </aside>
+    <DashboardNav
+      {...props}
+      profile={profile}
+      supportPhone={t('nav.support.phoneHref')}
+      supportPhoneText={t('nav.support.phoneText')}
+    />
   );
 }
