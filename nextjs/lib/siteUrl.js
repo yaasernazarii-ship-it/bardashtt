@@ -5,6 +5,7 @@ import { headers } from 'next/headers';
 // و به‌عنوان نسخهٔ ترجیحیِ یکتا برای `.ir` تا از دوگانگیِ apex/www در تگ‌های سئو جلوگیری شود؛
 // خودِ nginx برای `.ir` ریدایرکتی بین apex و www نمی‌زند، فقط تگ canonical یکی را ترجیح می‌دهد).
 const IR_HOSTS = new Set(['bardashtt.ir', 'www.bardashtt.ir']);
+const VERIFICATION_HOST = 'bardashtt.ir.bardashtt.com';
 const COM_URL = 'https://www.bardashtt.com';
 const IR_URL = 'https://www.bardashtt.ir';
 
@@ -14,5 +15,5 @@ const IR_URL = 'https://www.bardashtt.ir';
 export async function siteUrl() {
   const h = await headers();
   const host = (h.get('host') || '').split(':')[0].toLowerCase();
-  return IR_HOSTS.has(host) ? IR_URL : COM_URL;
+  return host === VERIFICATION_HOST ? 'https://bardashtt.ir.bardashtt.com' : (IR_HOSTS.has(host) ? IR_URL : COM_URL);
 }

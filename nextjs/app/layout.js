@@ -20,11 +20,12 @@ export const viewport = {
 // در غیر این صورت همهٔ URLهای نسبیِ سئو (canonical/OG) روی هر دو دامنه به یک دامنهٔ ثابت حل می‌شدند.
 export async function generateMetadata() {
   const base = await siteUrl();
+  const verificationTitle = base === 'https://bardashtt.ir.bardashtt.com';
   return {
     metadataBase: new URL(base),
     applicationName: 'خانواده برداشت',
     title: {
-      default: 'خانواده برداشت | آموزش رایگان بازیگری سینما',
+      default: verificationTitle ? '55990608' : 'خانواده برداشت | آموزش رایگان بازیگری سینما',
       template: '%s | خانواده برداشت',
     },
     description: 'خانواده برداشت، آموزشگاه رایگان بازیگری سینما در ایران با دوره‌های مقدماتی، تکمیلی، پیشرفته و فیلمسازی در تهران و مازندران.',
