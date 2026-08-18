@@ -1,6 +1,7 @@
 import { Vazirmatn } from 'next/font/google';
 import './globals.css';
 import BookPromo from '@/components/BookPromo';
+import { siteUrl } from '@/lib/siteUrl';
 
 const vazirmatn = Vazirmatn({
   subsets: ['arabic'],
@@ -15,29 +16,35 @@ export const viewport = {
   viewportFit: 'cover',
 };
 
-export const metadata = {
-  metadataBase: new URL('https://www.bardashtt.com'),
-  applicationName: 'خانواده برداشت',
-  title: {
-    default: 'خانواده برداشت | آموزش رایگان بازیگری سینما',
-    template: '%s | خانواده برداشت',
-  },
-  description: 'خانواده برداشت، آموزشگاه رایگان بازیگری سینما در ایران با دوره‌های مقدماتی، تکمیلی، پیشرفته و فیلمسازی در تهران و مازندران.',
-  keywords: ['آموزشگاه بازیگری رایگان', 'دوره بازیگری سینما', 'کلاس بازیگری ایران', 'خانواده برداشت', 'یاسر نظری', 'آموزش بازیگری تهران'],
-  alternates: { canonical: '/' },
-  openGraph: {
-    type: 'website',
-    locale: 'fa_IR',
-    siteName: 'خانواده برداشت',
-    url: '/',
-    title: 'خانواده برداشت | آموزش رایگان بازیگری سینما',
-    description: 'آموزش رایگان و حرفه‌ای بازیگری سینما برای کشف و پرورش استعدادهای هنری.',
-  },
-  twitter: { card: 'summary_large_image' },
-  robots: { index: true, follow: true },
-};
+// metadataBase باید بر اساس دامنهٔ همان درخواست باشد (siteUrl())، نه یک مقدار ثابت؛
+// در غیر این صورت همهٔ URLهای نسبیِ سئو (canonical/OG) روی هر دو دامنه به یک دامنهٔ ثابت حل می‌شدند.
+export async function generateMetadata() {
+  const base = await siteUrl();
+  return {
+    metadataBase: new URL(base),
+    applicationName: 'خانواده برداشت',
+    title: {
+      default: 'خانواده برداشت | آموزش رایگان بازیگری سینما',
+      template: '%s | خانواده برداشت',
+    },
+    description: 'خانواده برداشت، آموزشگاه رایگان بازیگری سینما در ایران با دوره‌های مقدماتی، تکمیلی، پیشرفته و فیلمسازی در تهران و مازندران.',
+    keywords: ['آموزشگاه بازیگری رایگان', 'دوره بازیگری سینما', 'کلاس بازیگری ایران', 'خانواده برداشت', 'یاسر نظری', 'آموزش بازیگری تهران'],
+    alternates: { canonical: '/' },
+    openGraph: {
+      type: 'website',
+      locale: 'fa_IR',
+      siteName: 'خانواده برداشت',
+      url: '/',
+      title: 'خانواده برداشت | آموزش رایگان بازیگری سینما',
+      description: 'آموزش رایگان و حرفه‌ای بازیگری سینما برای کشف و پرورش استعدادهای هنری.',
+    },
+    twitter: { card: 'summary_large_image' },
+    robots: { index: true, follow: true },
+  };
+}
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const base = await siteUrl();
   return (
     <html lang="fa" dir="rtl" translate="no" className={vazirmatn.className}>
       <head>
@@ -49,7 +56,7 @@ export default function RootLayout({ children }) {
               '@context': 'https://schema.org',
               '@type': 'EducationalOrganization',
               name: 'خانواده برداشت',
-              url: 'https://www.bardashtt.com',
+              url: base,
               telephone: '+982191090934',
             }),
           }}

@@ -5,8 +5,6 @@
 // Next.js آن را فقط به صفحه‌های «فرزند» اضافه می‌کند، نه به صفحهٔ اصلی. بنابراین عنوان
 // صفحهٔ اصلی کامل نوشته می‌شود و بقیهٔ صفحه‌ها پسوند را خودکار می‌گیرند.
 
-export const SITE_URL = 'https://www.bardashtt.com';
-
 export const SEO_PAGES = [
   {
     key: 'home',

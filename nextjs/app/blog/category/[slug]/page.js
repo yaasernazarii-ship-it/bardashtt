@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import SectionPosts from '@/components/SectionPosts';
 import { BLOG_CATEGORIES } from '@/lib/blogCategories';
-import { SITE_URL, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
+import { breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
+import { siteUrl } from '@/lib/siteUrl';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,7 +12,8 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const category = BLOG_CATEGORIES.find((c) => c.value === slug);
   if (!category) return { title: 'دسته یافت نشد' };
-  const url = `${SITE_URL}/blog/category/${category.value}`;
+  const site = await siteUrl();
+  const url = `${site}/blog/category/${category.value}`;
   const title = `${category.label} | مقاله‌های خانواده برداشت`;
   const description = `مطالب آموزشی و تحلیلی دربارهٔ ${category.label} — مقاله‌های خانواده برداشت.`;
   return {
@@ -28,10 +30,11 @@ export default async function BlogCategoryPage({ params }) {
   const category = BLOG_CATEGORIES.find((c) => c.value === slug);
   if (!category) notFound();
 
-  const url = `${SITE_URL}/blog/category/${category.value}`;
+  const site = await siteUrl();
+  const url = `${site}/blog/category/${category.value}`;
   const breadcrumbLd = breadcrumbJsonLd([
-    { name: 'خانه', url: SITE_URL },
-    { name: 'مقاله‌ها', url: `${SITE_URL}/blog` },
+    { name: 'خانه', url: site },
+    { name: 'مقاله‌ها', url: `${site}/blog` },
     { name: category.label, url },
   ]);
 

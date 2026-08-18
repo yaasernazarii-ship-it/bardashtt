@@ -7,6 +7,7 @@ import Icon from '@/components/Icon';
 import ActorBooking from '@/components/ActorBooking';
 import ShortlistButton from '@/components/ShortlistButton';
 import { embedSrc } from '@/lib/embed';
+import { siteUrl } from '@/lib/siteUrl';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }) {
   return {
     title: `${actor.fullName} | بانک بازیگران`,
     description: actor.headline || `رزومه بازیگری ${actor.fullName} در خانواده برداشت.`,
-    alternates: { canonical: `https://www.bardashtt.com/actors/${id}` },
+    alternates: { canonical: `${await siteUrl()}/actors/${id}` },
   };
 }
 

@@ -1,21 +1,24 @@
-const SITE_URL = 'https://www.bardashtt.com';
-const DEFAULT_IMAGE = `${SITE_URL}/imgg.png`;
+import { siteUrl } from './siteUrl';
 
-// schema.org Article — برای صفحهٔ جزئیات مطلب (وبلاگ/اخبار)
-export function articleJsonLd({ title, description, url, image, datePublished, dateModified }) {
+export { siteUrl };
+
+// schema.org Article — برای صفحهٔ جزئیات مطلب (وبلاگ/اخبار).
+// image باید از قبل توسط فراخواننده (با siteUrl() همان درخواست) مطلق ساخته شده باشد.
+// site: آدرس پایهٔ همان درخواست (siteUrl()) — فقط برای ساختِ لوگوی سازمان در publisher.
+export function articleJsonLd({ title, description, url, image, datePublished, dateModified, site }) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: title,
     description: description || undefined,
-    image: image ? [image] : [DEFAULT_IMAGE],
+    image: [image],
     datePublished: datePublished ? new Date(datePublished).toISOString() : undefined,
     dateModified: dateModified ? new Date(dateModified).toISOString() : (datePublished ? new Date(datePublished).toISOString() : undefined),
     author: { '@type': 'Organization', name: 'خانواده برداشت' },
     publisher: {
       '@type': 'Organization',
       name: 'خانواده برداشت',
-      logo: { '@type': 'ImageObject', url: DEFAULT_IMAGE },
+      logo: { '@type': 'ImageObject', url: `${site}/imgg.png` },
     },
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     url,
@@ -54,5 +57,3 @@ export function jsonLdScript(data) {
   // escape '<' تا اگر متنِ عنوان/توضیحات حاوی «</script>» بود، از تگ اسکریپت خارج نشود.
   return { __html: JSON.stringify(data).replace(/</g, '\\u003c') };
 }
-
-export { SITE_URL, DEFAULT_IMAGE };

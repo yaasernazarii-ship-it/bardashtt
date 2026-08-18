@@ -5,14 +5,16 @@ import { getSessionUser, isManager } from '@/lib/auth';
 import { countChatUnread } from '@/lib/staffChat';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import Icon from '@/components/Icon';
+import { siteUrl } from '@/lib/siteUrl';
 
 // پنل شخصی — نه محتوای عمومی دارد و نه باید در نتایج جست‌وجو بیاید.
-// canonical هم حذف شده چون قبلاً به‌اشتباه به صفحهٔ اصلی اشاره می‌کرد.
-export const metadata = {
-  title: 'داشبورد',
-  robots: { index: false, follow: false },
-  alternates: { canonical: 'https://www.bardashtt.com/dashboard' },
-};
+export async function generateMetadata() {
+  return {
+    title: 'داشبورد',
+    robots: { index: false, follow: false },
+    alternates: { canonical: `${await siteUrl()}/dashboard` },
+  };
+}
 
 // عکس ۳×۴ کاربر در سرصفحهٔ پنل؛ اگر عکسی ثبت نشده باشد دعوت به آپلود نمایش داده می‌شود.
 function UserPhoto({ user }) {

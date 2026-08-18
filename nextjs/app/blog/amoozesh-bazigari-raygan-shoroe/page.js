@@ -1,34 +1,42 @@
 import Link from 'next/link';
 import PageLayout from '@/components/PageLayout';
-import { SITE_URL, articleJsonLd, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
+import { articleJsonLd, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
+import { siteUrl } from '@/lib/siteUrl';
 
 const TITLE = 'آموزش بازیگری رایگان؛ از کجا شروع کنیم؟ راهنمای کامل ورود به دنیای بازیگری سینما';
 const DESCRIPTION = 'دوست داری بازیگری سینما رو یاد بگیری اما نمی‌دونی از کجا شروع کنی؟ در این مقاله مسیر آموزش بازیگری رایگان و حرفه‌ای رو قدم به قدم بهت نشون می‌دیم.';
-const URL = `${SITE_URL}/blog/amoozesh-bazigari-raygan-shoroe`;
 const PUBLISHED = '2026-07-30T08:00:00+03:30';
 
-export const metadata = {
-  title: TITLE,
-  description: DESCRIPTION,
-  alternates: { canonical: URL },
-  openGraph: {
-    type: 'article',
+export const dynamic = 'force-dynamic';
+
+export async function generateMetadata() {
+  const site = await siteUrl();
+  const url = `${site}/blog/amoozesh-bazigari-raygan-shoroe`;
+  return {
     title: TITLE,
     description: DESCRIPTION,
-    url: URL,
-    publishedTime: PUBLISHED,
-  },
-  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
-};
+    alternates: { canonical: url },
+    openGraph: {
+      type: 'article',
+      title: TITLE,
+      description: DESCRIPTION,
+      url,
+      publishedTime: PUBLISHED,
+    },
+    twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
+  };
+}
 
-const articleLd = articleJsonLd({ title: TITLE, description: DESCRIPTION, url: URL, datePublished: PUBLISHED });
-const breadcrumbLd = breadcrumbJsonLd([
-  { name: 'خانه', url: SITE_URL },
-  { name: 'مقاله‌ها', url: `${SITE_URL}/blog` },
-  { name: TITLE },
-]);
-
-export default function BlogPostPage() {
+export default async function BlogPostPage() {
+  const site = await siteUrl();
+  const url = `${site}/blog/amoozesh-bazigari-raygan-shoroe`;
+  const image = `${site}/imgg.png`;
+  const articleLd = articleJsonLd({ title: TITLE, description: DESCRIPTION, url, image, site, datePublished: PUBLISHED });
+  const breadcrumbLd = breadcrumbJsonLd([
+    { name: 'خانه', url: site },
+    { name: 'مقاله‌ها', url: `${site}/blog` },
+    { name: TITLE },
+  ]);
   return (
     <PageLayout>
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(articleLd)} />

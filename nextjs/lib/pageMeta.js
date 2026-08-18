@@ -1,15 +1,18 @@
 import { loadContent } from '@/lib/siteContent';
-import { SEO_PAGE_BY_KEY, SITE_URL } from '@/lib/seoFields';
+import { SEO_PAGE_BY_KEY } from '@/lib/seoFields';
+import { siteUrl } from '@/lib/siteUrl';
 
 // ساخت متادیتای صفحه از روی مقادیر ذخیره‌شده در پنل، با fallback به پیش‌فرض‌ها.
 // در هر صفحه به‌جای «export const metadata» از این تابع داخل generateMetadata استفاده می‌شود
 // تا مدیر بتواند عنوان و توضیح گوگل را بدون تغییر کد عوض کند.
 //
-// نکته: canonical همیشه نسخهٔ www است تا با ریدایرکت ۳۰۱ سرور هم‌راستا بماند.
+// نکته: canonical بر اساس دامنهٔ همان درخواست ساخته می‌شود (siteUrl()) — `.com` روی
+// bardashtt.com و `.ir` روی bardashtt.ir، بدون ارجاع متقابل بین دو دامنه.
 export async function pageMetadata(pageKey, extra = {}) {
   const page = SEO_PAGE_BY_KEY.get(pageKey);
   if (!page) return extra;
 
+  const site = await siteUrl();
   const t = await loadContent();
   const title = (t(`seo.${pageKey}.title`) || page.title).trim();
   const description = (t(`seo.${pageKey}.description`) || page.description).trim();
@@ -17,8 +20,8 @@ export async function pageMetadata(pageKey, extra = {}) {
   // هر مقداری جز «خیر»/«نه»/«خاموش» یعنی صفحه در گوگل نمایش داده شود.
   const indexRaw = (t(`seo.${pageKey}.index`) || '').trim();
   const allowIndex = !['خیر', 'نه', 'خاموش', 'no', 'false'].includes(indexRaw.toLowerCase());
-  const url = `${SITE_URL}${page.path}`;
-  const ogImage = image ? (image.startsWith('http') ? image : `${SITE_URL}${image}`) : undefined;
+  const url = `${site}${page.path}`;
+  const ogImage = image ? (image.startsWith('http') ? image : `${site}${image}`) : undefined;
 
   return {
     title,

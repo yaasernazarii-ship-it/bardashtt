@@ -6,7 +6,8 @@ import BuyCourseButton from '@/components/BuyCourseButton';
 import Icon from '@/components/Icon';
 import { getSessionUser } from '@/lib/auth';
 import { courseBySlug, userHasCourseAccess } from '@/lib/onlineCourses';
-import { SITE_URL, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
+import { breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
+import { siteUrl } from '@/lib/siteUrl';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +15,8 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const course = await courseBySlug(slug);
   if (!course) return { title: 'دوره یافت نشد' };
-  const url = `${SITE_URL}/online-learning/${course.slug}`;
+  const site = await siteUrl();
+  const url = `${site}/online-learning/${course.slug}`;
   return {
     title: `${course.title} | دورهٔ آنلاین خانواده برداشت`,
     description: course.description ? String(course.description).slice(0, 160) : undefined,
@@ -24,7 +26,7 @@ export async function generateMetadata({ params }) {
       title: course.title,
       description: course.description ? String(course.description).slice(0, 160) : undefined,
       url,
-      images: course.coverImage ? [{ url: `${SITE_URL}${course.coverImage}` }] : undefined,
+      images: course.coverImage ? [{ url: `${site}${course.coverImage}` }] : undefined,
     },
   };
 }
@@ -44,11 +46,12 @@ export default async function CourseDetailPage({ params }) {
   const lessons = canWatch ? ((await courseBySlug(slug, { withLessons: true }))?.lessons || []) : [];
   const lessonCount = course._count.lessons;
 
-  const url = `${SITE_URL}/online-learning/${course.slug}`;
+  const site = await siteUrl();
+  const url = `${site}/online-learning/${course.slug}`;
   const priceLabel = course.price > 0 ? `${course.price.toLocaleString('fa-IR')} تومان` : 'رایگان';
   const breadcrumbLd = breadcrumbJsonLd([
-    { name: 'خانه', url: SITE_URL },
-    { name: 'یادگیری آنلاین', url: `${SITE_URL}/online-learning` },
+    { name: 'خانه', url: site },
+    { name: 'یادگیری آنلاین', url: `${site}/online-learning` },
     { name: course.title, url },
   ]);
 

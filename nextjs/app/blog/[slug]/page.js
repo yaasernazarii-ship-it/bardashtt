@@ -3,7 +3,8 @@ import { notFound, redirect } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import { livePostBySlug } from '@/lib/content';
 import { aparatEmbedUrl } from '@/lib/aparat';
-import { SITE_URL, DEFAULT_IMAGE, articleJsonLd, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
+import { articleJsonLd, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
+import { siteUrl } from '@/lib/siteUrl';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,8 +14,9 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const post = await livePostBySlug(slug, 'blog');
   if (!post) return { title: 'مطلب یافت نشد' };
-  const url = `${SITE_URL}/blog/${post.slug}`;
-  const image = post.coverImage ? `${SITE_URL}${post.coverImage}` : DEFAULT_IMAGE;
+  const site = await siteUrl();
+  const url = `${site}/blog/${post.slug}`;
+  const image = post.coverImage ? `${site}${post.coverImage}` : `${site}/imgg.png`;
   return {
     title: post.title,
     description: post.excerpt || undefined,
@@ -42,20 +44,22 @@ export default async function BlogPostPage({ params }) {
 
   const embed = aparatEmbedUrl(post.aparatUrl);
   const paragraphs = post.body.split(/\n{2,}/).map((s) => s.trim()).filter(Boolean);
-  const url = `${SITE_URL}/blog/${post.slug}`;
-  const image = post.coverImage ? `${SITE_URL}${post.coverImage}` : undefined;
+  const site = await siteUrl();
+  const url = `${site}/blog/${post.slug}`;
+  const image = post.coverImage ? `${site}${post.coverImage}` : `${site}/imgg.png`;
 
   const articleLd = articleJsonLd({
     title: post.title,
     description: post.excerpt,
     url,
     image,
+    site,
     datePublished: post.publishAt || post.createdAt,
     dateModified: post.updatedAt,
   });
   const breadcrumbLd = breadcrumbJsonLd([
-    { name: 'خانه', url: SITE_URL },
-    { name: 'مقاله‌ها', url: `${SITE_URL}/blog` },
+    { name: 'خانه', url: site },
+    { name: 'مقاله‌ها', url: `${site}/blog` },
     { name: post.title },
   ]);
 

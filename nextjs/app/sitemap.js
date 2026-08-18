@@ -2,12 +2,12 @@ import { BLOG_CATEGORY_VALUES } from '@/lib/blogCategories';
 import { livePosts } from '@/lib/content';
 import { liveCourses } from '@/lib/onlineCourses';
 import { prisma } from '@/lib/prisma';
+import { siteUrl } from '@/lib/siteUrl';
 
 // نقشهٔ سایت در هر درخواست دوباره از دیتابیس خوانده می‌شود تا مطالبِ تازهٔ پنل
-// بدون نیاز به بیلد مجدد بلافاصله برای گوگل قابل کشف باشند.
+// بدون نیاز به بیلد مجدد بلافاصله برای گوگل قابل کشف باشند؛ همچنین باعث می‌شود
+// baseUrl بر اساس دامنهٔ همان درخواست (siteUrl()) ساخته شود، نه یک مقدار ثابت.
 export const dynamic = 'force-dynamic';
-
-const baseUrl = 'https://www.bardashtt.com';
 
 // صفحات عمومیِ ثابت. صفحات خصوصی/ورود (dashboard، profile، auth) عمداً اینجا نیستند
 // چون در robots.txt مسدودند و حضورشان در نقشهٔ سایت خطای «URL مسدودشده» در سرچ‌کنسول می‌سازد.
@@ -41,6 +41,7 @@ const SR_SECTIONS = ['social-responsibility', 'sr-podcast', 'sr-photo', 'sr-vide
 
 export default async function sitemap() {
   const now = new Date();
+  const baseUrl = await siteUrl();
 
   // محتوای پویا که ادمین از پنل می‌سازد؛ خودکار وارد نقشهٔ سایت می‌شود تا گوگل تازه‌ها را زود کشف کند.
   const [blogPosts, newsPosts, srPosts, courses] = await Promise.all([

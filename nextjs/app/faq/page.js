@@ -3,7 +3,8 @@ import PageLayout from '@/components/PageLayout';
 import Accordion from '@/components/Accordion';
 import OpenChatButton from '@/components/OpenChatButton';
 import { loadContent, splitLines } from '@/lib/siteContent';
-import { SITE_URL, faqJsonLd, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
+import { faqJsonLd, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
+import { siteUrl } from '@/lib/siteUrl';
 import { pageMetadata } from '@/lib/pageMeta';
 
 export async function generateMetadata() {
@@ -21,9 +22,9 @@ function parseItems(value) {
   });
 }
 
-const breadcrumbLd = breadcrumbJsonLd([{ name: 'خانه', url: SITE_URL }, { name: 'سوالات متداول' }]);
-
 export default async function FaqPage() {
+  const site = await siteUrl();
+  const breadcrumbLd = breadcrumbJsonLd([{ name: 'خانه', url: site }, { name: 'سوالات متداول' }]);
   const t = await loadContent();
   const groups = [
     { title: t('faq.g1.title'), tag: 'tag--gold', items: parseItems(t('faq.g1.items')) },
