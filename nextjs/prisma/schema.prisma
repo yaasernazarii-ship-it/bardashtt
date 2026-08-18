@@ -551,10 +551,14 @@ model BookOrder {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  reminderSmsClaimedAt DateTime? // قفل موقت هنگام تلاش برای ارسال یادآوری (ضد race-condition)؛ اگر ارسال ناموفق شود پاک می‌شود
+  reminderSmsSentAt    DateTime? // زمان ارسال موفقِ پیامک یادآوریِ سبد رهاشده؛ فقط پس از موفقیت واقعی ثبت می‌شود
+
   @@index([bookId])
   @@index([status])
   @@index([phone])
   @@index([gatewayTrackId])
+  @@index([reminderSmsSentAt])
 }
 
 // گزارش تغییرات مدیریتی: چه کسی، کِی، چه چیزی را عوض کرد.

@@ -388,6 +388,15 @@ export const CONTENT_GROUPS = [
     ],
   },
   {
+    id: 'bookOrderReminderSms',
+    title: 'پیامک یادآوری سبد رهاشدهٔ کتاب (Abandoned Checkout)',
+    fields: [
+      { key: 'bookOrderReminderSms.enabled', label: 'ارسال یادآوری (برای خاموش‌کردن بنویسید: خاموش)', type: 'text', default: 'روشن' },
+      { key: 'bookOrderReminderSms.delayMinutes', label: 'فاصلهٔ زمانی تا ارسال یادآوری (دقیقه)', type: 'text', default: '60' },
+      { key: 'bookOrderReminderSms.text', label: 'متن پیامک یادآوری — می‌توانید از {نام} {عنوان} {تعداد} {مبلغ} استفاده کنید', type: 'textarea', default: '{نام} عزیز، سفارش کتاب «{عنوان}» شما هنوز تکمیل نشده.\nمبلغ: {مبلغ} تومان\nبرای تکمیل خرید به سایت مراجعه کنید.\nخانواده برداشت' },
+    ],
+  },
+  {
     id: 'aboutMedia',
     title: 'عکس‌ها و اسلایدشوی صفحهٔ «دربارهٔ ما»',
     fields: [
