@@ -4,7 +4,7 @@ import DashboardSidebar from '@/components/DashboardSidebar';
 import SocialComposer from '@/components/SocialComposer';
 import { canUseSocial } from '@/lib/social';
 
-export const metadata = { title: 'شبکهٔ اجتماعی من' };
+export const metadata = { title: 'برداشتگرام من' };
 
 export default async function DashboardSocialPage() {
   const user = await getSessionUser();
@@ -23,7 +23,7 @@ export default async function DashboardSocialPage() {
       />
       <main className="main-area">
         <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
-          <h1 className="dash-head__title">شبکهٔ اجتماعی برداشت</h1>
+          <h1 className="dash-head__title">برداشتگرام</h1>
           <p className="dash-head__sub">
             کارت را اینجا منتشر کن: عکسِ تمرین، پشت‌صحنه، معرفی نقش یا لینک ویدیوی آپارات.
             «پست» ماندگار است و «استوری» ۲۴ ساعت بعد از انتشار خودکار پاک می‌شود.

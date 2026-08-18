@@ -409,10 +409,10 @@ export const CONTENT_GROUPS = [
   },
   {
     id: 'community',
-    title: 'شبکهٔ اجتماعی برداشت',
+    title: 'برداشتگرام',
     fields: [
       { key: 'community.tag', label: 'برچسب بالای عنوان', type: 'text', default: 'خانواده برداشت' },
-      { key: 'community.title', label: 'عنوان صفحه', type: 'text', default: 'شبکهٔ اجتماعی برداشت' },
+      { key: 'community.title', label: 'عنوان صفحه', type: 'text', default: 'برداشتگرام' },
       {
         key: 'community.subtitle',
         label: 'زیرعنوان صفحه',

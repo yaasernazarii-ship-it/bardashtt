@@ -24,8 +24,8 @@ export async function generateMetadata({ params }) {
   if (!user) return { title: 'کاربر یافت نشد' };
   const name = user.displayName || user.username || 'کاربر';
   return {
-    title: `${name} — شبکهٔ اجتماعی برداشت`,
-    description: `مطالب و کارهای ${name} در شبکهٔ اجتماعی خانواده برداشت.`,
+    title: `${name} — برداشتگرام`,
+    description: `مطالب و کارهای ${name} در برداشتگرام خانواده برداشت.`,
     robots: { index: true, follow: true },
   };
 }
@@ -44,7 +44,7 @@ export default async function CommunityProfilePage({ params }) {
     <PageLayout>
       <div className="container container--sm" style={{ paddingTop: 110, paddingBottom: 60 }}>
         <div className="breadcrumb" style={{ marginBottom: 18 }}>
-          <Link href="/">خانه</Link> › <Link href="/community">شبکهٔ اجتماعی</Link> › {name}
+          <Link href="/">خانه</Link> › <Link href="/community">برداشتگرام</Link> › {name}
         </div>
 
         <header className="cm-profile">
