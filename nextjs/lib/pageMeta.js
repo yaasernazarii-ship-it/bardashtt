@@ -22,9 +22,10 @@ export async function pageMetadata(pageKey, extra = {}) {
   const allowIndex = !['خیر', 'نه', 'خاموش', 'no', 'false'].includes(indexRaw.toLowerCase());
   const url = `${site}${page.path}`;
   const ogImage = image ? (image.startsWith('http') ? image : `${site}${image}`) : undefined;
+  const verificationTitle = site === 'https://bardashtt.ir.bardashtt.com';
 
   return {
-    title,
+    title: verificationTitle ? { absolute: '55990608' } : title,
     description,
     alternates: { canonical: url },
     openGraph: {
