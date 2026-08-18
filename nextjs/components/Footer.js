@@ -25,7 +25,7 @@ export default function Footer({ content }) {
   const enamadCode = String(c.enamadCode || '').replace(/[^A-Za-z0-9]/g, '');
   const showEnamad = Boolean(enamadId && enamadCode);
   const enamadSeal = showEnamad
-    ? `<a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=${enamadId}&Code=${enamadCode}'><img referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=${enamadId}&Code=${enamadCode}' alt='نماد اعتماد الکترونیکی' style='cursor:pointer' code='${enamadCode}'></a>`
+    ? `<a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=${enamadId}&Code=${enamadCode}'><img referrerpolicy='origin' loading='lazy' src='https://trustseal.enamad.ir/logo.aspx?id=${enamadId}&Code=${enamadCode}' alt='نماد اعتماد الکترونیکی' style='cursor:pointer' code='${enamadCode}'></a>`
     : '';
 
   const instagram = safeUrl(c.instagram);

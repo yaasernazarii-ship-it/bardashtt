@@ -92,7 +92,7 @@ export default async function AboutPage() {
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 40, maxWidth: 780, marginInline: 'auto' }}>
             <span className="tag tag--gold">{t('about.intro.eyebrow')}</span>
-            <h2 className="heading" style={{ marginTop: 14 }}>{t('about.intro.heading')}</h2>
+            <h1 className="heading" style={{ marginTop: 14 }}>{t('about.intro.heading')}</h1>
             <div className="line line--center" />
             <p style={{ color: 'var(--muted)', lineHeight: 2, marginTop: 18 }}>
               {t('about.intro.lead')}
