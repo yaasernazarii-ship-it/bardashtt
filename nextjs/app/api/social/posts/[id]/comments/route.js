@@ -1,6 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { getSessionUser, isManager } from '@/lib/auth';
-import { notifyUsers } from '@/lib/notifications';
+import { getSocialIdentity } from '@/lib/socialAuth';
 import { AUTHOR_SELECT, MAX_COMMENT, authorCard, canUseSocial } from '@/lib/social';
 
 export const dynamic = 'force-dynamic';
@@ -17,8 +16,9 @@ function serialize(c, viewer, manager) {
 
 export async function GET(request, { params }) {
   const { id } = await params;
-  const viewer = await getSessionUser();
-  const manager = isManager(viewer);
+  const identity = await getSocialIdentity();
+  const viewer = identity.account;
+  const manager = identity.canModerate;
   const items = await prisma.socialComment.findMany({
     where: { postId: id },
     orderBy: { createdAt: 'asc' },
@@ -29,7 +29,8 @@ export async function GET(request, { params }) {
 }
 
 export async function POST(request, { params }) {
-  const user = await getSessionUser();
+  const identity = await getSocialIdentity();
+  const user = identity.account;
   if (!user) return Response.json({ ok: false, error: 'برای گذاشتن نظر وارد شوید.' }, { status: 401 });
   if (!canUseSocial(user)) return Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 });
 
@@ -45,9 +46,9 @@ export async function POST(request, { params }) {
 
   const post = await prisma.socialPost.findUnique({
     where: { id },
-    select: { id: true, status: true, authorId: true, kind: true },
+    select: { id: true, authorId: true, kind: true },
   });
-  if (!post || post.status !== 'published') {
+  if (!post) {
     return Response.json({ ok: false, error: 'مطلب یافت نشد.' }, { status: 404 });
   }
 
@@ -67,14 +68,5 @@ export async function POST(request, { params }) {
     prisma.socialPost.update({ where: { id }, data: { commentCount: { increment: 1 } } }),
   ]);
 
-  if (post.authorId !== user.id) {
-    await notifyUsers([post.authorId], {
-      title: 'نظر تازه روی مطلب شما',
-      body: `${user.displayName || user.username || 'یک کاربر'}: ${text.slice(0, 80)}`,
-      href: '/community',
-      kind: 'system',
-    });
-  }
-
-  return Response.json({ ok: true, item: serialize(comment, user, isManager(user)) });
+  return Response.json({ ok: true, item: serialize(comment, user, false) });
 }

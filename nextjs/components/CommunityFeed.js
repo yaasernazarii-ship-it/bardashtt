@@ -193,7 +193,7 @@ function Comments({ postId, canPost, onCountChange }) {
           <button className="btn btn--dark" type="submit" disabled={busy}>{busy ? '…' : 'ارسال'}</button>
         </form>
       ) : (
-        <p className="cm-muted">برای گذاشتن نظر باید هنرجو یا فیلم‌ساز خانواده برداشت باشید.</p>
+        <p className="cm-muted">برای گذاشتن نظر در برداشتگرام ثبت‌نام یا وارد حساب خود شوید.</p>
       )}
       {error && <div className="alert alert--error" style={{ marginTop: 10 }}>{error}</div>}
     </div>
@@ -346,7 +346,7 @@ export default function CommunityFeed({ handle = null, showStories = true }) {
   return (
     <div className="cm-wrap">
       {canPost && (
-        <Link href="/dashboard/social" className="cm-compose-cta">
+        <Link href="/community/create" className="cm-compose-cta">
           <Icon name="plus" size={18} /> ثبت پست یا استوری تازه
         </Link>
       )}

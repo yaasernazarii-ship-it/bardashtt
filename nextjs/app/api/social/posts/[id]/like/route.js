@@ -1,17 +1,17 @@
 import { prisma } from '@/lib/prisma';
-import { getSessionUser } from '@/lib/auth';
+import { getSocialIdentity } from '@/lib/socialAuth';
 import { canUseSocial } from '@/lib/social';
 
 // لایک/برداشتن لایک. شمارنده روی خودِ پست نگه داشته می‌شود تا فید برای شمردن
 // لایک‌ها مجبور به کوئری اضافه نباشد.
 export async function POST(request, { params }) {
-  const user = await getSessionUser();
+  const user = (await getSocialIdentity()).account;
   if (!user) return Response.json({ ok: false, error: 'برای پسندیدن وارد شوید.' }, { status: 401 });
   if (!canUseSocial(user)) return Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 });
 
   const { id } = await params;
-  const post = await prisma.socialPost.findUnique({ where: { id }, select: { id: true, status: true } });
-  if (!post || post.status !== 'published') {
+  const post = await prisma.socialPost.findUnique({ where: { id }, select: { id: true } });
+  if (!post) {
     return Response.json({ ok: false, error: 'مطلب یافت نشد.' }, { status: 404 });
   }
 

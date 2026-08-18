@@ -2,7 +2,7 @@ import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { randomBytes } from 'crypto';
 import sharp from 'sharp';
-import { getSessionUser } from '@/lib/auth';
+import { getSocialIdentity } from '@/lib/socialAuth';
 import { canUseSocial } from '@/lib/social';
 import { isLocked, recordFailure } from '@/lib/rateLimit';
 
@@ -15,7 +15,7 @@ const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/heic', 
 const HOURLY_UPLOADS = 30;
 
 export async function POST(request) {
-  const user = await getSessionUser();
+  const user = (await getSocialIdentity()).account;
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
   if (!canUseSocial(user)) {
     return Response.json({ ok: false, error: 'حساب شما اجازهٔ انتشار در شبکهٔ اجتماعی ندارد.' }, { status: 403 });

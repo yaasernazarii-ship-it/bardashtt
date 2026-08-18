@@ -1,8 +1,7 @@
 import { prisma } from '@/lib/prisma';
-import { getSessionUser, isManager } from '@/lib/auth';
+import { getSocialIdentity } from '@/lib/socialAuth';
 import { normalizeUploadUrl } from '@/lib/uploadUrl';
 import { aparatEmbedUrl } from '@/lib/aparat';
-import { notifyUsers } from '@/lib/notifications';
 import {
   AUTHOR_SELECT,
   DAILY_POST_LIMIT,
@@ -10,7 +9,6 @@ import {
   STORY_TTL_MS,
   authorCard,
   canUseSocial,
-  needsReview,
   scheduleCleanup,
   serializePost,
   visibleWhere,
@@ -33,11 +31,12 @@ async function likedSet(viewer, ids) {
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const scope = searchParams.get('scope') || 'feed';
-  const viewer = await getSessionUser();
-  const canModerate = isManager(viewer);
+  const identity = await getSocialIdentity();
+  const viewer = identity.account;
+  const canModerate = identity.canModerate;
   scheduleCleanup();
 
-  // «نوشته‌های من»: همهٔ حالت‌ها (در انتظار بررسی، منتشرشده، ردشده) فقط برای خودِ نویسنده.
+  // «نوشته‌های من»: هرچه خودِ نویسنده فرستاده، از تازه به قدیم.
   if (scope === 'mine') {
     if (!viewer) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
     const items = await prisma.socialPost.findMany({
@@ -49,7 +48,6 @@ export async function GET(request) {
     return Response.json({
       ok: true,
       canPost: canUseSocial(viewer),
-      needsReview: needsReview(viewer),
       items: items.map((p) => serializePost(p, { isOwner: true, canModerate })),
     });
   }
@@ -82,7 +80,7 @@ export async function GET(request) {
   const where = { kind: 'post', ...visibleWhere() };
   if (scope === 'user') {
     const handle = (searchParams.get('handle') || '').trim();
-    const author = await prisma.user.findFirst({
+    const author = await prisma.socialAccount.findFirst({
       where: { OR: [{ username: handle }, { id: handle }] },
       select: { id: true },
     });
@@ -115,10 +113,11 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const user = await getSessionUser();
+  const identity = await getSocialIdentity();
+  const user = identity.account;
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
   if (!canUseSocial(user)) {
-    return Response.json({ ok: false, error: 'انتشار در شبکهٔ اجتماعی فقط برای هنرجویان و فیلم‌سازان است.' }, { status: 403 });
+    return Response.json({ ok: false, error: 'حساب برداشتگرام شما اجازهٔ انتشار ندارد.' }, { status: 403 });
   }
 
   let body;
@@ -155,7 +154,6 @@ export async function POST(request) {
     return Response.json({ ok: false, error: `در هر ۲۴ ساعت حداکثر ${DAILY_POST_LIMIT} مطلب می‌توانید بفرستید.` }, { status: 429 });
   }
 
-  const review = needsReview(user);
   const now = new Date();
   const post = await prisma.socialPost.create({
     data: {
@@ -164,30 +162,11 @@ export async function POST(request) {
       imageUrl,
       aparatUrl,
       caption,
-      status: review ? 'pending' : 'published',
-      ...(review
-        ? {}
-        : {
-            publishedAt: now,
-            expiresAt: kind === 'story' ? new Date(now.getTime() + STORY_TTL_MS) : null,
-          }),
+      publishedAt: now,
+      expiresAt: kind === 'story' ? new Date(now.getTime() + STORY_TTL_MS) : null,
     },
     include: { author: { select: AUTHOR_SELECT } },
   });
 
-  // مدیرها در همان زنگولهٔ اعلانِ پنل خبردار می‌شوند که چیزی منتظر بررسی است.
-  if (review) {
-    const managers = await prisma.user.findMany({
-      where: { role: { in: ['admin', 'editor'] }, active: true },
-      select: { id: true },
-    });
-    await notifyUsers(managers.map((m) => m.id), {
-      title: 'محتوای تازه در شبکهٔ اجتماعی',
-      body: `${user.displayName || user.username || 'یک کاربر'} یک ${kind === 'story' ? 'استوری' : 'پست'} فرستاده و منتظر بررسی است.`,
-      href: '/dashboard/admin/social',
-      kind: 'system',
-    });
-  }
-
-  return Response.json({ ok: true, review, item: serializePost(post, { isOwner: true }) });
+  return Response.json({ ok: true, item: serializePost(post, { isOwner: true }) });
 }

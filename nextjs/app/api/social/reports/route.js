@@ -1,10 +1,10 @@
 import { prisma } from '@/lib/prisma';
-import { getSessionUser } from '@/lib/auth';
+import { getSocialIdentity } from '@/lib/socialAuth';
 
 // گزارش تخلف. هر کاربرِ واردشده (حتی عضو عادی که اجازهٔ انتشار ندارد) می‌تواند گزارش بدهد،
 // چون گزارش دادن ابزارِ محافظت است نه انتشار.
 export async function POST(request) {
-  const user = await getSessionUser();
+  const user = (await getSocialIdentity()).account;
   if (!user) return Response.json({ ok: false, error: 'برای گزارش تخلف وارد شوید.' }, { status: 401 });
 
   let body;

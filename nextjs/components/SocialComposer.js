@@ -4,12 +4,6 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Icon from './Icon';
 
-const STATUS = {
-  pending: { label: 'در انتظار بررسی مدیر', cls: 'cm-badge--wait' },
-  published: { label: 'منتشر شده', cls: 'cm-badge--ok' },
-  rejected: { label: 'تأیید نشد', cls: 'cm-badge--no' },
-};
-
 async function uploadSocialImage(file, kind) {
   const fd = new FormData();
   fd.append('file', file);
@@ -38,7 +32,6 @@ export default function SocialComposer() {
   const [okMsg, setOkMsg] = useState('');
   const [items, setItems] = useState([]);
   const [canPost, setCanPost] = useState(true);
-  const [needsReview, setNeedsReview] = useState(true);
   const [loading, setLoading] = useState(true);
 
   async function load() {
@@ -47,7 +40,6 @@ export default function SocialComposer() {
     if (data.ok) {
       setItems(data.items);
       setCanPost(data.canPost);
-      setNeedsReview(data.needsReview);
     }
     setLoading(false);
   }
@@ -80,9 +72,7 @@ export default function SocialComposer() {
     if (!data.ok) { setError(data.error || 'ثبت ناموفق بود.'); return; }
     setImageUrl(''); setAparatUrl(''); setCaption('');
     setItems((prev) => [data.item, ...prev]);
-    setOkMsg(data.review
-      ? 'ثبت شد. پس از تأیید مدیریت روی صفحهٔ شبکهٔ اجتماعی منتشر می‌شود.'
-      : 'منتشر شد.');
+    setOkMsg('منتشر شد.');
   }
 
   async function remove(id) {
@@ -95,7 +85,7 @@ export default function SocialComposer() {
   if (!loading && !canPost) {
     return (
       <div className="alert alert--error">
-        حساب شما در حال حاضر اجازهٔ انتشار در شبکهٔ اجتماعی ندارد. اگر فکر می‌کنید اشتباهی رخ داده، با پشتیبانی تماس بگیرید.
+        حساب شما در حال حاضر اجازهٔ انتشار در برداشتگرام ندارد. اگر فکر می‌کنید اشتباهی رخ داده، با پشتیبانی تماس بگیرید.
       </div>
     );
   }
@@ -114,8 +104,8 @@ export default function SocialComposer() {
 
         <p className="cm-hint">
           {kind === 'post'
-            ? 'پست روی صفحهٔ شبکهٔ اجتماعی می‌ماند. می‌توانید عکس بگذارید، لینک ویدیوی آپارات بدهید، یا هر دو.'
-            : 'استوری فقط ۲۴ ساعت پس از تأیید دیده می‌شود و بعد خودکار پاک می‌شود. فقط عکس.'}
+            ? 'پست همین لحظه روی برداشتگرام منتشر می‌شود. می‌توانید عکس بگذارید، لینک ویدیوی آپارات بدهید، یا هر دو.'
+            : 'استوری همین لحظه منتشر می‌شود، از آن پس ۲۴ ساعت دیده می‌شود و سپس عکس و اطلاعات آن خودکار از سرور پاک می‌شود.'}
         </p>
 
         {error && <div className="alert alert--error" style={{ marginBottom: 12 }}>{error}</div>}
@@ -162,13 +152,8 @@ export default function SocialComposer() {
         </div>
 
         <button className="btn btn--dark" type="submit" disabled={busy || uploading}>
-          {busy ? 'در حال ثبت…' : needsReview ? 'ارسال برای بررسی' : 'انتشار'}
+          {busy ? 'در حال ثبت…' : 'انتشار'}
         </button>
-        {needsReview && (
-          <p className="cm-muted" style={{ marginTop: 10 }}>
-            هر مطلب پیش از نمایش عمومی توسط مدیریت بررسی می‌شود.
-          </p>
-        )}
       </form>
 
       <h2 className="heading" style={{ fontSize: '1.1rem', marginBottom: 14 }}>مطالب من</h2>
@@ -178,37 +163,30 @@ export default function SocialComposer() {
         <p className="cm-muted">هنوز مطلبی نفرستاده‌اید.</p>
       ) : (
         <ul className="cm-mine">
-          {items.map((p) => {
-            const st = STATUS[p.status] || STATUS.pending;
-            return (
-              <li key={p.id}>
-                <span className="cm-mine__thumb">
-                  {p.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.imageUrl} alt="" />
-                  ) : (
-                    <Icon name="video" size={20} />
-                  )}
-                </span>
-                <div className="cm-mine__body">
-                  <span className={`cm-badge ${st.cls}`}>{st.label}</span>
-                  <span className="cm-mine__kind">{p.kind === 'story' ? 'استوری' : 'پست'}</span>
-                  {p.caption && <p>{p.caption}</p>}
-                  {p.status === 'rejected' && p.rejectReason && (
-                    <p className="cm-mine__reason">دلیل: {p.rejectReason}</p>
-                  )}
-                </div>
-                <button type="button" className="cm-iconbtn" onClick={() => remove(p.id)} aria-label="حذف">
-                  <Icon name="trash" size={16} />
-                </button>
-              </li>
-            );
-          })}
+          {items.map((p) => (
+            <li key={p.id}>
+              <span className="cm-mine__thumb">
+                {p.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={p.imageUrl} alt="" />
+                ) : (
+                  <Icon name="video" size={20} />
+                )}
+              </span>
+              <div className="cm-mine__body">
+                <span className="cm-mine__kind">{p.kind === 'story' ? 'استوری' : 'پست'}</span>
+                {p.caption && <p>{p.caption}</p>}
+              </div>
+              <button type="button" className="cm-iconbtn" onClick={() => remove(p.id)} aria-label="حذف">
+                <Icon name="trash" size={16} />
+              </button>
+            </li>
+          ))}
         </ul>
       )}
 
       <p style={{ marginTop: 20 }}>
-        <Link href="/community" className="btn btn--hero-secondary">دیدن صفحهٔ شبکهٔ اجتماعی</Link>
+        <Link href="/community" className="btn btn--hero-secondary">دیدن صفحهٔ برداشتگرام</Link>
       </p>
     </div>
   );
