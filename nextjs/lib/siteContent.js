@@ -393,7 +393,7 @@ export const CONTENT_GROUPS = [
     fields: [
       { key: 'bookOrderReminderSms.enabled', label: 'ارسال یادآوری (برای خاموش‌کردن بنویسید: خاموش)', type: 'text', default: 'روشن' },
       { key: 'bookOrderReminderSms.delayMinutes', label: 'فاصلهٔ زمانی تا ارسال یادآوری (دقیقه)', type: 'text', default: '60' },
-      { key: 'bookOrderReminderSms.text', label: 'متن پیامک یادآوری — می‌توانید از {نام} {عنوان} {تعداد} {مبلغ} استفاده کنید', type: 'textarea', default: '{نام} عزیز، سفارش کتاب «{عنوان}» شما هنوز تکمیل نشده.\nمبلغ: {مبلغ} تومان\nبرای تکمیل خرید به سایت مراجعه کنید.\nخانواده برداشت' },
+      { key: 'bookOrderReminderSms.text', label: 'متن پیامک یادآوری — می‌توانید از {نام} {عنوان} {تعداد} {مبلغ} {لینک} استفاده کنید', type: 'textarea', default: '{نام} عزیز، سفارش کتاب «{عنوان}» شما هنوز تکمیل نشده.\nمبلغ: {مبلغ} تومان\nبرای تکمیل خرید کلیک کنید:\n{لینک}\nخانواده برداشت' },
     ],
   },
   {

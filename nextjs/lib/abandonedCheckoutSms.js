@@ -9,12 +9,13 @@
 // دقیقاً با تعریفِ گروه «bookOrderReminderSms» در lib/siteContent.js هماهنگ نگه داشته شود.
 import { sendTextSms, isTextSmsConfigured } from './sms.js';
 import { prisma } from './prisma.js';
+import { zibalRequest, isZibalConfigured } from './zibal.js';
 
 const SETTING_DEFAULTS = {
   'bookOrderReminderSms.enabled': 'روشن',
   'bookOrderReminderSms.delayMinutes': '60',
   'bookOrderReminderSms.text':
-    '{نام} عزیز، سفارش کتاب «{عنوان}» شما هنوز تکمیل نشده.\nمبلغ: {مبلغ} تومان\nبرای تکمیل خرید به سایت مراجعه کنید.\nخانواده برداشت',
+    '{نام} عزیز، سفارش کتاب «{عنوان}» شما هنوز تکمیل نشده.\nمبلغ: {مبلغ} تومان\nبرای تکمیل خرید کلیک کنید:\n{لینک}\nخانواده برداشت',
 };
 
 async function readSetting(key) {
@@ -29,6 +30,7 @@ const PLACEHOLDERS = {
   '{عنوان}': 'title',
   '{تعداد}': 'quantity',
   '{مبلغ}': 'amount',
+  '{لینک}': 'link',
 };
 
 function fillTemplate(template, vars) {
@@ -107,11 +109,46 @@ export async function sendAbandonedCheckoutReminders() {
     }
 
     try {
+      // trackId قدیمیِ سفارش ممکن است تا این لحظه نزد زیبال منقضی شده باشد؛ برای اطمینان از سالم‌بودنِ
+      // لینکِ داخل پیامک، یک تراکنشِ تازه ساخته و gatewayTrackId سفارش را به آن به‌روزرسانی می‌کنیم
+      // (همان الگویِ چک‌اوتِ اول در app/api/books/[slug]/order/route.js). callback پرداخت با همین
+      // trackId جدید سفارش را پیدا می‌کند، پس این کار زیرساخت verify/callback را دست‌نخورده نگه می‌دارد.
+      if (!isZibalConfigured()) {
+        console.error('abandoned checkout sms: zibal not configured, skip', order.id);
+        await prisma.bookOrder.updateMany({
+          where: { id: order.id, status: 'new', reminderSmsSentAt: null },
+          data: { reminderSmsClaimedAt: null },
+        });
+        summary.failed++;
+        continue;
+      }
+
+      const gw = await zibalRequest({
+        amountToman: order.amount,
+        orderId: order.id,
+        description: `تکمیل خرید کتاب ${order.book?.title || ''}`,
+        mobile: order.phone,
+      });
+      if (!gw.ok) {
+        console.error('abandoned checkout sms: zibal request failed', order.id, gw.error);
+        await prisma.bookOrder.updateMany({
+          where: { id: order.id, status: 'new', reminderSmsSentAt: null },
+          data: { reminderSmsClaimedAt: null },
+        });
+        summary.failed++;
+        continue;
+      }
+      await prisma.bookOrder.update({
+        where: { id: order.id },
+        data: { gatewayTrackId: gw.trackId },
+      });
+
       const text = fillTemplate(template, {
         name: String(order.name || '').trim(),
         title: String(order.book?.title || '').trim(),
         quantity: order.quantity ? money(order.quantity) : '',
         amount: money(order.amount),
+        link: gw.startUrl,
       });
 
       if (!text) {
