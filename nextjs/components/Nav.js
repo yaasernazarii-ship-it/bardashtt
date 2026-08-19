@@ -10,17 +10,17 @@ import Icon from './Icon';
 const FALLBACK_LINKS = [
   { href: '/', label: 'خانه' },
   { href: '/about', label: 'درباره ما' },
-  { href: '/courses', label: 'دوره‌ها' },
+  { href: '/courses', label: 'دوره جامع حضوری' },
+  { href: '/online-learning', label: 'آموزش جامع غیر حضوری' },
+  { href: '/actors', label: 'بازیگران' },
   {
-    label: 'آموزش',
+    label: 'برداشت من',
     children: [
-      { href: '/online-learning', label: 'یادگیری آنلاین' },
-      { href: '/certificate', label: 'آزمون فارغ‌التحصیلی' },
+      { href: '/community', label: 'برداشتگرام' },
+      { href: '/dashboard', label: 'حساب کاربری' },
       { href: '/verify', label: 'استعلام گواهینامه' },
-      { href: '/dashboard', label: 'داشبورد هنرجو' },
     ],
   },
-  { href: '/actors', label: 'بازیگران' },
   {
     label: 'آثار',
     children: [

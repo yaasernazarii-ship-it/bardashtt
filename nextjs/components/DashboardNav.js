@@ -16,7 +16,7 @@ const STUDENT_ITEMS = [
   { key: 'orders', href: '/dashboard/orders', icon: 'book', label: 'سفارش‌های من' },
   { key: 'resume', href: '/dashboard/resume', icon: 'fileText', label: 'رزومه بازیگری' },
   { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل' },
-  { key: 'courses', href: '/courses', icon: 'clapperboard', label: 'دوره‌ها' },
+  { key: 'courses', href: '/courses', icon: 'clapperboard', label: 'دوره جامع حضوری' },
 ];
 
 // منوی اختصاصیِ فیلمساز. این پنل عمداً هیچ آیتم آموزشی (دوره، ثبت‌نام، تقویم، آزمون، رزومهٔ هنرجویی)

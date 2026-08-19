@@ -5,7 +5,7 @@ import Icon from './Icon';
 
 const items = [
   { ico: 'home', label: 'خانه', href: '/' },
-  { ico: 'graduationCap', label: 'دوره‌ها', href: '/courses', accent: true },
+  { ico: 'graduationCap', label: 'دوره جامع حضوری', href: '/courses', accent: true },
   { ico: 'phone', label: 'تماس', href: 'tel:02191090934' },
 ];
 

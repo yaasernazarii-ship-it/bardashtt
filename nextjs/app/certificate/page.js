@@ -20,7 +20,7 @@ export default async function CertificatePage() {
   const t = await loadContent();
   const steps = parsePairs(t('certificate.steps'));
   return (
-    <SimplePage title={t('certificate.title')} subtitle={t('certificate.subtitle')} tag={t('certificate.tag')} slides={splitLines(t('certificate.slides'))}>
+    <SimplePage title={t('certificate.title')} subtitle={t('certificate.subtitle')} tag={t('certificate.tag')} slides={splitLines(t('certificate.slides'))} cta={false}>
       <div className="split-layout">
         <div className="stack-card">
           <h2 className="subheading" style={{ marginBottom: 12 }}>{t('certificate.heading')}</h2>
