@@ -129,7 +129,7 @@ export const CONTENT_GROUPS = [
   },
   {
     id: 'courses',
-    title: 'صفحهٔ دوره‌ها',
+    title: 'صفحهٔ دورهٔ جامع حضوری',
     fields: [
       { key: 'courses.title', label: 'عنوان', type: 'text', default: 'مسیر آموزشی خانواده برداشت' },
       { key: 'courses.subtitle', label: 'زیرعنوان', type: 'text', default: '۵ مرحله برای تبدیل علاقه به مهارت حرفه‌ای' },
@@ -218,7 +218,7 @@ export const CONTENT_GROUPS = [
   },
   {
     id: 'onlineLearning',
-    title: 'یادگیری آنلاین',
+    title: 'صفحهٔ دورهٔ جامع غیر حضوری (یادگیری آنلاین)',
     fields: [
       { key: 'online.tag', label: 'برچسب', type: 'text', default: 'آموزش آنلاین' },
       { key: 'online.title', label: 'عنوان', type: 'text', default: 'یادگیری آنلاین' },
@@ -452,8 +452,9 @@ export const CONTENT_GROUPS = [
         default: [
           'خانه | /',
           'درباره ما | /about',
-          'دوره جامع حضوری | /courses',
-          'آموزش جامع غیر حضوری | /online-learning',
+          'دوره‌های جامع',
+          '- دوره جامع حضوری | /courses',
+          '- دوره جامع غیر حضوری | /online-learning',
           'بازیگران | /actors',
           'برداشت من',
           '- برداشتگرام | /community',
@@ -479,7 +480,7 @@ export const CONTENT_GROUPS = [
       { key: 'nav.support.callLabel', label: 'عنوان گزینهٔ تماس', type: 'text', default: 'تماس با ما' },
       { key: 'nav.support.phoneText', label: 'شمارهٔ نمایشی تماس', type: 'text', default: '021-91090934' },
       { key: 'nav.support.phoneHref', label: 'شمارهٔ تماس برای دکمهٔ شماره‌گیری (فقط رقم)', type: 'text', default: '02191090934' },
-      { key: 'nav.btn.login', label: 'دکمهٔ ورود', type: 'text', default: 'ورود' },
+      { key: 'nav.btn.login', label: 'دکمهٔ ورود', type: 'text', default: 'حساب کاربری' },
       { key: 'nav.btn.dashboard', label: 'دکمهٔ داشبورد (کاربر واردشده)', type: 'text', default: 'داشبورد' },
       { key: 'nav.btn.logout', label: 'دکمهٔ خروج', type: 'text', default: 'خروج' },
       { key: 'nav.drawer.title', label: 'عنوان منوی موبایل', type: 'text', default: 'منوی سایت' },

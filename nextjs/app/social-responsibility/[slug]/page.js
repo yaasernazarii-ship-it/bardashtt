@@ -11,8 +11,8 @@ export const dynamic = 'force-dynamic';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Tehran' });
 
-// زیربخش‌های صفحهٔ مسئولیت اجتماعی (آگاهی‌سازی، پادکست، عکس، ویدئو) همگی صفحهٔ جزئیاتِ مشترک دارند.
-const SR_SECTIONS = ['social-responsibility', 'sr-podcast', 'sr-photo', 'sr-video'];
+// زیربخش‌های صفحهٔ مسئولیت اجتماعی (آگاهی‌سازی، پادکست) همگی صفحهٔ جزئیاتِ مشترک دارند.
+const SR_SECTIONS = ['social-responsibility', 'sr-podcast'];
 
 async function findPost(rawKey) {
   const key = decodeSlug(rawKey);

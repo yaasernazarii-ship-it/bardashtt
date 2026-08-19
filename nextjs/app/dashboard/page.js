@@ -60,7 +60,7 @@ const MANAGER_GROUPS = [
     title: 'فروش و مالی',
     cards: [
       { href: '/dashboard/admin/payments', title: 'پرداخت‌ها و شهریه', text: 'وضعیت پرداخت‌ها و اقساط شهریه.' },
-      { href: '/dashboard/admin/courses', title: 'فروش دوره', text: 'دوره‌های آنلاین و دسترسی خریداران.' },
+      { href: '/dashboard/admin/courses', title: 'فروش دورهٔ جامع غیر حضوری', text: 'دوره‌های آنلاین و دسترسی خریداران.' },
       { href: '/dashboard/admin/books', title: 'فروش کتاب', text: 'کتاب‌ها و سفارش‌های ثبت‌شده.' },
       { href: '/dashboard/admin/bookings', title: 'درخواست‌های ست تایم', text: 'درخواست فیلم‌سازان از بانک بازیگران.' },
     ],

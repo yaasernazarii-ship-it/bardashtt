@@ -10,8 +10,13 @@ import Icon from './Icon';
 const FALLBACK_LINKS = [
   { href: '/', label: 'خانه' },
   { href: '/about', label: 'درباره ما' },
-  { href: '/courses', label: 'دوره جامع حضوری' },
-  { href: '/online-learning', label: 'آموزش جامع غیر حضوری' },
+  {
+    label: 'دوره‌های جامع',
+    children: [
+      { href: '/courses', label: 'دوره جامع حضوری' },
+      { href: '/online-learning', label: 'دوره جامع غیر حضوری' },
+    ],
+  },
   { href: '/actors', label: 'بازیگران' },
   {
     label: 'برداشت من',
@@ -46,7 +51,7 @@ const FALLBACK_TEXT = {
   callLabel: 'تماس با ما',
   phoneText: '021-91090934',
   phoneHref: '02191090934',
-  btnLogin: 'ورود',
+  btnLogin: 'حساب کاربری',
   btnDashboard: 'داشبورد',
   btnLogout: 'خروج',
   drawerTitle: 'منوی سایت',

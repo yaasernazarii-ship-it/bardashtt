@@ -37,7 +37,7 @@ const staticRoutes = [
 ];
 
 // زیربخش‌های مسئولیت اجتماعی که همگی صفحهٔ جزئیاتِ /social-responsibility/[slug] دارند.
-const SR_SECTIONS = ['social-responsibility', 'sr-podcast', 'sr-photo', 'sr-video'];
+const SR_SECTIONS = ['social-responsibility', 'sr-podcast'];
 
 export default async function sitemap() {
   const now = new Date();

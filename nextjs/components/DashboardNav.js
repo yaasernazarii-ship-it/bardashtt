@@ -51,7 +51,7 @@ const MANAGER_ITEMS = [
   { key: 'support', href: '/dashboard/admin/support', icon: 'chat', label: 'پشتیبانی آنلاین' },
   { key: 'posts', href: '/dashboard/admin/posts', icon: 'edit', label: 'محتوا و انتشار' },
   { key: 'social-admin', href: '/dashboard/admin/social', icon: 'users', label: 'برداشتگرام' },
-  { key: 'courses-admin', href: '/dashboard/admin/courses', icon: 'graduationCap', label: 'فروش دوره' },
+  { key: 'courses-admin', href: '/dashboard/admin/courses', icon: 'graduationCap', label: 'فروش دورهٔ جامع غیر حضوری' },
   { key: 'books-admin', href: '/dashboard/admin/books', icon: 'book', label: 'فروش کتاب' },
   { key: 'content', href: '/dashboard/admin/content', icon: 'fileText', label: 'متن صفحات' },
   { key: 'links', href: '/dashboard/admin/links', icon: 'link', label: 'لینک صفحات' },

@@ -5,8 +5,6 @@ export const SECTIONS = [
   { value: 'blog', label: 'مقاله‌ها', kind: 'article', path: '/blog' },
   { value: 'social-responsibility', label: 'مسئولیت اجتماعی ← آگاهی‌سازی', kind: 'article', path: '/social-responsibility' },
   { value: 'sr-podcast', label: 'مسئولیت اجتماعی ← پادکست', kind: 'article', path: '/social-responsibility' },
-  { value: 'sr-photo', label: 'مسئولیت اجتماعی ← عکس', kind: 'article', path: '/social-responsibility' },
-  { value: 'sr-video', label: 'مسئولیت اجتماعی ← ویدئو', kind: 'article', path: '/social-responsibility' },
   { value: 'works-advertising', label: 'آثار ← تولیدات تبلیغاتی', kind: 'media', path: '/works/advertising' },
   { value: 'works-output', label: 'آثار ← خروجی خانواده برداشت', kind: 'media', path: '/works/output' },
   { value: 'works-resume', label: 'آثار ← پشتوانه علمی و هنری', kind: 'media', path: '/works/resume' },

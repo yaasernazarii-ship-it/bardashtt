@@ -34,30 +34,6 @@ export default async function SocialResponsibilityPage() {
       ),
     },
     {
-      key: 'photo',
-      icon: 'image', label: 'عکس',
-      content: (
-        <SectionPosts
-          section="sr-photo"
-          variant="article"
-          hrefBase="/social-responsibility"
-          empty={emptyMsg('هنوز عکسی منتشر نشده است.')}
-        />
-      ),
-    },
-    {
-      key: 'video',
-      icon: 'clapperboard', label: 'ویدئو',
-      content: (
-        <SectionPosts
-          section="sr-video"
-          variant="article"
-          hrefBase="/social-responsibility"
-          empty={emptyMsg('هنوز ویدئویی منتشر نشده است.')}
-        />
-      ),
-    },
-    {
       key: 'awareness',
       icon: 'pencil', label: 'آگاهی‌سازی',
       content: (
