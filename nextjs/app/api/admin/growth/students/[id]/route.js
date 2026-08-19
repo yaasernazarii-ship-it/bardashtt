@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { ok, fail } from '@/lib/growthApi';
-import { getHabitStats, getLastActivity } from '@/lib/growth';
+import { getHabitStats, getActivityOverviewMap } from '@/lib/growth';
 
 export async function GET(request, { params }) {
   const user = await getSessionUser();
@@ -18,7 +18,7 @@ export async function GET(request, { params }) {
   });
   if (!student) return fail('هنرجو یافت نشد.', 404);
 
-  const [goals, habits, tasks, assignments, journalEntries, assessments, notes, lastActivityAt] = await Promise.all([
+  const [goals, habits, tasks, assignments, journalEntries, assessments, notes, overview] = await Promise.all([
     prisma.growthGoal.findMany({
       where: { userId: id },
       include: { milestones: { orderBy: { order: 'asc' } } },
@@ -35,8 +35,9 @@ export async function GET(request, { params }) {
     prisma.journalEntry.findMany({ where: { userId: id, visibility: 'shared' }, orderBy: { createdAt: 'desc' } }),
     prisma.assessment.findMany({ where: { userId: id }, include: { items: true }, orderBy: { createdAt: 'desc' } }),
     prisma.mentorNote.findMany({ where: { userId: id }, orderBy: { createdAt: 'desc' } }),
-    getLastActivity(id),
+    getActivityOverviewMap([id]),
   ]);
+  const activity = overview[id] || { activityScore: 0, lastActivityAt: null, status: 'inactive' };
 
   let habitLogs = [];
   if (habits.length) {
@@ -50,7 +51,9 @@ export async function GET(request, { params }) {
 
   return ok({
     student,
-    lastActivityAt: lastActivityAt ? lastActivityAt.toISOString() : null,
+    lastActivityAt: activity.lastActivityAt ? activity.lastActivityAt.toISOString() : null,
+    activityScore: activity.activityScore,
+    status: activity.status,
     goals: goals.map((g) => ({
       id: g.id, title: g.title, description: g.description, priority: g.priority,
       status: g.status, progress: g.progress,
@@ -68,6 +71,7 @@ export async function GET(request, { params }) {
     tasks: tasks.map((t) => ({
       id: t.id, title: t.title, status: t.status, priority: t.priority,
       dueDate: t.dueDate ? t.dueDate.toISOString() : null,
+      completedAt: t.completedAt ? t.completedAt.toISOString() : null,
     })),
     assignments: assignments.map((a) => ({
       id: a.id, title: a.title, description: a.description, status: a.status,

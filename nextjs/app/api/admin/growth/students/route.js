@@ -44,11 +44,16 @@ export async function GET(request) {
     status: overview[s.id]?.status ?? 'inactive',
   }));
 
+  const statusCounts = { active: 0, needs_attention: 0, inactive: 0 };
+  for (const s of list) {
+    if (statusCounts[s.status] != null) statusCounts[s.status] += 1;
+  }
+
   if (status) list = list.filter((s) => s.status === status);
 
   const total = list.length;
   const skip = (page - 1) * pageSize;
   const pageItems = list.slice(skip, skip + pageSize);
 
-  return ok({ students: pageItems, page, pageSize, total });
+  return ok({ students: pageItems, page, pageSize, total, statusCounts });
 }
