@@ -16,6 +16,7 @@ const STUDENT_ITEMS = [
   { key: 'orders', href: '/dashboard/orders', icon: 'book', label: 'سفارش‌های من' },
   { key: 'resume', href: '/dashboard/resume', icon: 'fileText', label: 'رزومه بازیگری' },
   { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل' },
+  { key: 'growth', href: '/dashboard/growth', icon: 'flag', label: 'مسیر رشد' },
   { key: 'courses', href: '/courses', icon: 'clapperboard', label: 'دوره جامع حضوری' },
 ];
 

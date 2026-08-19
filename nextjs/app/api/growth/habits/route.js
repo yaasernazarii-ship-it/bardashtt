@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { getSessionUser } from '@/lib/auth';
 import { ok, fail, cleanTitle, cleanText, cleanEnum, cleanPositiveInt, cleanDate } from '@/lib/growthApi';
 import { HABIT_FREQUENCY_TYPES } from '@/lib/growthConfig';
-import { getHabitStats } from '@/lib/growth';
+import { getHabitStats, tehranDateKey } from '@/lib/growth';
 
 function normalizeFrequencyConfig(frequencyType, input) {
   const cfg = input && typeof input === 'object' ? input : {};
@@ -46,9 +46,14 @@ export async function GET(request) {
   const logsByHabit = {};
   for (const l of logs) (logsByHabit[l.habitId] ||= []).push(l);
 
+  const todayKey = tehranDateKey(new Date());
   const result = habits.map((h) => ({
     ...serializeBase(h),
-    stats: getHabitStats(h, logsByHabit[h.id] || []),
+    stats: {
+      ...getHabitStats(h, logsByHabit[h.id] || []),
+      todayLogged: (logsByHabit[h.id] || []).some((log) => log.logDate === todayKey),
+      recentActivity: (logsByHabit[h.id] || []).reduce((map, log) => ({ ...map, [log.logDate]: (map[log.logDate] || 0) + 1 }), {}),
+    },
   }));
   return ok({ habits: result });
 }
