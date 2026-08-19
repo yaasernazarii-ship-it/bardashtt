@@ -54,9 +54,9 @@ export const SEO_PAGES = [
   },
   {
     key: 'blog',
-    name: 'مقاله‌ها',
+    name: 'مجله برداشت',
     path: '/blog',
-    title: 'مقاله‌ها',
+    title: 'مجله برداشت',
     description: 'مطالب آموزشی و تحلیلی درباره بازیگری و سینما.',
   },
   {

@@ -39,7 +39,7 @@ const FALLBACK_LINKS = [
     ],
   },
   { href: '/news', label: 'اخبار' },
-  { href: '/blog', label: 'مقاله‌ها' },
+  { href: '/blog', label: 'مجله برداشت' },
   { href: '/social-responsibility', label: 'مسئولیت اجتماعی' },
 ];
 

@@ -34,7 +34,7 @@ export const SITE_LINKS = [
   { path: '/works/advertising', title: 'تولیدات تبلیغاتی' },
   { path: '/works/resume', title: 'پشتوانه علمی و هنری' },
   { path: '/social-responsibility', title: 'مسئولیت اجتماعی' },
-  { path: '/blog', title: 'مقاله‌ها' },
+  { path: '/blog', title: 'مجله برداشت' },
   { path: '/online-learning', title: 'دوره جامع غیر حضوری' },
   { path: '/certificate', title: 'آزمون فارغ‌التحصیلی' },
   { path: '/verify', title: 'استعلام گواهینامه' },

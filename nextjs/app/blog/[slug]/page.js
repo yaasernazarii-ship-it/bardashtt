@@ -59,7 +59,7 @@ export default async function BlogPostPage({ params }) {
   });
   const breadcrumbLd = breadcrumbJsonLd([
     { name: 'خانه', url: site },
-    { name: 'مقاله‌ها', url: `${site}/blog` },
+    { name: 'مجله برداشت', url: `${site}/blog` },
     { name: post.title },
   ]);
 
@@ -69,10 +69,10 @@ export default async function BlogPostPage({ params }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(breadcrumbLd)} />
       <div className="page-header">
         <div className="page-header__inner">
-          <div className="page-header__tag">مقاله‌ها</div>
+          <div className="page-header__tag">مجله برداشت</div>
           <h1>{post.title}</h1>
           <p>{dateFmt.format(new Date(post.publishAt || post.createdAt))}</p>
-          <div className="breadcrumb"><Link href="/">خانه</Link> › <Link href="/blog">مقاله‌ها</Link> › {post.title}</div>
+          <div className="breadcrumb"><Link href="/">خانه</Link> › <Link href="/blog">مجله برداشت</Link> › {post.title}</div>
         </div>
       </div>
       <section style={{ background: 'var(--bg)' }}>
@@ -95,7 +95,7 @@ export default async function BlogPostPage({ params }) {
             ))}
           </article>
           <div style={{ textAlign: 'center', marginTop: 28 }}>
-            <Link href="/blog" className="btn btn--ghost">← بازگشت به مقاله‌ها</Link>
+            <Link href="/blog" className="btn btn--ghost">← بازگشت به مجله برداشت</Link>
           </div>
         </div>
       </section>

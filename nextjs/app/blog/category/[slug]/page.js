@@ -14,8 +14,8 @@ export async function generateMetadata({ params }) {
   if (!category) return { title: 'دسته یافت نشد' };
   const site = await siteUrl();
   const url = `${site}/blog/category/${category.value}`;
-  const title = `${category.label} | مقاله‌های خانواده برداشت`;
-  const description = `مطالب آموزشی و تحلیلی دربارهٔ ${category.label} — مقاله‌های خانواده برداشت.`;
+  const title = `${category.label} | مجله برداشت`;
+  const description = `مطالب آموزشی و تحلیلی دربارهٔ ${category.label} — مجله برداشت.`;
   return {
     title,
     description,
@@ -34,7 +34,7 @@ export default async function BlogCategoryPage({ params }) {
   const url = `${site}/blog/category/${category.value}`;
   const breadcrumbLd = breadcrumbJsonLd([
     { name: 'خانه', url: site },
-    { name: 'مقاله‌ها', url: `${site}/blog` },
+    { name: 'مجله برداشت', url: `${site}/blog` },
     { name: category.label, url },
   ]);
 
@@ -43,11 +43,11 @@ export default async function BlogCategoryPage({ params }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(breadcrumbLd)} />
       <div className="page-header">
         <div className="page-header__inner">
-          <div className="page-header__tag">مقاله‌ها</div>
+          <div className="page-header__tag">مجله برداشت</div>
           <h1>{category.label}</h1>
           <p>مطالب آموزشی و تحلیلی دربارهٔ {category.label}</p>
           <div className="breadcrumb">
-            <Link href="/">خانه</Link> › <Link href="/blog">مقاله‌ها</Link> › {category.label}
+            <Link href="/">خانه</Link> › <Link href="/blog">مجله برداشت</Link> › {category.label}
           </div>
         </div>
       </div>
@@ -72,7 +72,7 @@ export default async function BlogCategoryPage({ params }) {
             empty={<p style={{ color: 'var(--muted)' }}>هنوز مطلبی در دستهٔ «{category.label}» منتشر نشده است.</p>}
           />
           <div style={{ textAlign: 'center', marginTop: 28 }}>
-            <Link href="/blog" className="btn btn--ghost">← بازگشت به همهٔ مقاله‌ها</Link>
+            <Link href="/blog" className="btn btn--ghost">← بازگشت به مجله برداشت</Link>
           </div>
         </div>
       </section>

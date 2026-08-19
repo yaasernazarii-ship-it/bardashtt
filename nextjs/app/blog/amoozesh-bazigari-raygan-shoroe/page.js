@@ -34,7 +34,7 @@ export default async function BlogPostPage() {
   const articleLd = articleJsonLd({ title: TITLE, description: DESCRIPTION, url, image, site, datePublished: PUBLISHED });
   const breadcrumbLd = breadcrumbJsonLd([
     { name: 'خانه', url: site },
-    { name: 'مقاله‌ها', url: `${site}/blog` },
+    { name: 'مجله برداشت', url: `${site}/blog` },
     { name: TITLE },
   ]);
   return (
@@ -47,7 +47,7 @@ export default async function BlogPostPage() {
           <h1>آموزش بازیگری رایگان؛ از کجا شروع کنیم؟</h1>
           <p>راهنمای کامل ورود به دنیای بازیگری سینما</p>
           <div className="breadcrumb">
-            <Link href="/">خانه</Link> › <Link href="/blog">مقاله‌ها</Link> › آموزش بازیگری رایگان؛ از کجا شروع کنیم؟
+            <Link href="/">خانه</Link> › <Link href="/blog">مجله برداشت</Link> › آموزش بازیگری رایگان؛ از کجا شروع کنیم؟
           </div>
         </div>
       </div>
@@ -137,7 +137,7 @@ export default async function BlogPostPage() {
             </p>
           </article>
           <div style={{ textAlign: 'center', marginTop: 28 }}>
-            <Link href="/blog" className="btn btn--ghost">← بازگشت به مقاله‌ها</Link>
+            <Link href="/blog" className="btn btn--ghost">← بازگشت به مجله برداشت</Link>
           </div>
         </div>
       </section>

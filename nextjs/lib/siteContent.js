@@ -233,10 +233,10 @@ export const CONTENT_GROUPS = [
   },
   {
     id: 'blog',
-    title: 'مقاله‌ها',
+    title: 'مجله برداشت',
     fields: [
       { key: 'blog.tag', label: 'برچسب', type: 'text', default: 'مطالب آموزشی' },
-      { key: 'blog.title', label: 'عنوان', type: 'text', default: 'مقاله‌ها' },
+      { key: 'blog.title', label: 'عنوان', type: 'text', default: 'مجله برداشت' },
       { key: 'blog.subtitle', label: 'زیرعنوان', type: 'text', default: 'مطالب آموزشی درباره بازیگری و سینما' },
       { key: 'blog.slides', label: 'اسلایدشوی بالای صفحه (افزودن/حذف/جابه‌جایی عکس؛ خالی = بدون اسلایدشو)', type: 'images', default: '' },
     ],
@@ -469,7 +469,7 @@ export const CONTENT_GROUPS = [
           '- ---',
           '- پشتوانه علمی و هنری | /works/resume',
           'اخبار | /news',
-          'مقاله‌ها | /blog',
+          'مجله برداشت | /blog',
           'مسئولیت اجتماعی | /social-responsibility',
         ].join('\n'),
       },
