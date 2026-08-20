@@ -62,16 +62,67 @@ function HabitList({ habits, onToggle }) {
   </div>)}</div>;
 }
 
+// ===================== تقویم استمرار =====================
+
+const WEEKDAY_HEADS = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
+const WEEKDAY_ORDER = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+// روز هفته و شمارهٔ روز را هم به وقت تهران می‌گیریم تا تقویم برای هنرجوی خارج از ایران هم درست بچیند.
+const tehranWeekday = (date) => WEEKDAY_ORDER.indexOf(new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Tehran', weekday: 'short' }).format(date));
+const tehranDayNumber = (date) => new Intl.DateTimeFormat('fa-IR', { timeZone: 'Asia/Tehran', day: 'numeric' }).format(date);
+
+// اسکلت روزهای اخیر؛ محتوای هر روز را صداکننده پر می‌کند.
+function buildDayCells(count = 35) {
+  const now = Date.now();
+  return Array.from({ length: count }, (_, index) => {
+    const date = new Date(now - (count - 1 - index) * 86400000);
+    return { key: tehranKey(date), weekday: tehranWeekday(date), dayNumber: tehranDayNumber(date) };
+  });
+}
+
+// تقویم استمرار: هر خانه یک روز است، با کلیک روی آن ریز فعالیت‌های همان روز نشان داده می‌شود.
+function ActivityCalendar({ days, label, emptyText }) {
+  const [picked, setPicked] = useState(null);
+  const todayKey = tehranKey();
+  const selected = days.find((d) => d.key === picked) || days[days.length - 1];
+  const pad = days.length ? days[0].weekday : 0;
+
+  return <>
+    <div className="growth-heatmap" role="grid" aria-label={label}>
+      {WEEKDAY_HEADS.map((w) => <span key={w} className="growth-heatmap__wd">{w}</span>)}
+      {Array.from({ length: pad }, (_, i) => <span key={`pad-${i}`} className="growth-heatmap__pad" />)}
+      {days.map((day) => (
+        <button
+          key={day.key}
+          type="button"
+          onClick={() => setPicked(day.key)}
+          title={`${dateText(day.key)} — ${fa(day.total)} فعالیت`}
+          aria-label={`${dateText(day.key)}، ${fa(day.total)} فعالیت`}
+          aria-pressed={selected?.key === day.key}
+          className={`growth-heatmap__cell growth-heatmap__cell--${Math.min(day.total, 4)}${day.key === todayKey ? ' is-today' : ''}${selected?.key === day.key ? ' is-selected' : ''}`}
+        >
+          {day.dayNumber}
+        </button>
+      ))}
+    </div>
+    <div className="growth-heatmap__legend"><span>کم‌کار</span><i className="growth-heatmap__cell growth-heatmap__cell--0" /><i className="growth-heatmap__cell growth-heatmap__cell--1" /><i className="growth-heatmap__cell growth-heatmap__cell--2" /><i className="growth-heatmap__cell growth-heatmap__cell--3" /><i className="growth-heatmap__cell growth-heatmap__cell--4" /><span>پرکار</span></div>
+    {selected && <div className="growth-day-detail">
+      <strong>{dateText(selected.key)}{selected.key === todayKey ? ' · امروز' : ''}</strong>
+      {selected.items.length
+        ? <ul>{selected.items.map((item, index) => <li key={`${selected.key}-${index}`}><span className="growth-dot" /><span>{item.title}</span><small>{item.type}</small></li>)}</ul>
+        : <p className="growth-meta">{emptyText}</p>}
+    </div>}
+  </>;
+}
+
 function Heatmap({ habits }) {
-  const days = useMemo(() => {
-    const now = Date.now();
-    return Array.from({ length: 35 }, (_, index) => {
-      const key = tehranKey(new Date(now - (34 - index) * 86400000));
-      const count = habits.reduce((sum, h) => sum + (h.stats?.recentActivity?.[key] || 0), 0);
-      return { key, count };
-    });
-  }, [habits]);
-  return <div className="growth-heatmap" aria-label="تقویم استمرار">{days.map((day) => <span key={day.key} title={`${fa(day.count)} فعالیت در ${dateText(day.key)}`} className={`growth-heatmap__cell growth-heatmap__cell--${Math.min(day.count, 4)}`} />)}</div>;
+  const days = useMemo(() => buildDayCells(35).map((cell) => {
+    const items = (habits || [])
+      .filter((h) => h.stats?.recentActivity?.[cell.key])
+      .map((h) => ({ type: 'عادت', title: h.title }));
+    return { ...cell, total: items.length, items };
+  }), [habits]);
+
+  return <ActivityCalendar days={days} label="تقویم استمرار" emptyText="در این روز عادتی ثبت نشده است." />;
 }
 
 export default function GrowthClient({ mode = 'dashboard', goalId = null }) {
@@ -445,42 +496,42 @@ function AssignmentsPage({ assignments }) {
 
 function CalendarPage({ habits, tasks, assignments, entries }) {
   const days = useMemo(() => {
-    const now = Date.now();
-    const keys = Array.from({ length: 35 }, (_, index) => tehranKey(new Date(now - (34 - index) * 86400000)));
-    const map = Object.fromEntries(keys.map((k) => [k, { habit: 0, task: 0, journal: 0, assignment: 0 }]));
+    const cells = buildDayCells(35);
+    const map = Object.fromEntries(cells.map((c) => [c.key, []]));
 
     for (const h of habits || []) {
-      for (const [key, count] of Object.entries(h.stats?.recentActivity || {})) {
-        if (map[key]) map[key].habit += count;
+      for (const key of Object.keys(h.stats?.recentActivity || {})) {
+        if (map[key]) map[key].push({ type: 'عادت', title: h.title });
       }
     }
     for (const t of tasks || []) {
       if (t.status === 'done' && t.completedAt) {
         const key = tehranKey(new Date(t.completedAt));
-        if (map[key]) map[key].task += 1;
+        if (map[key]) map[key].push({ type: 'کار انجام‌شده', title: t.title });
       }
     }
     for (const e of entries || []) {
       const key = tehranKey(new Date(e.createdAt));
-      if (map[key]) map[key].journal += 1;
+      if (map[key]) map[key].push({ type: 'یادداشت', title: (e.content || '').slice(0, 60) || 'یادداشت روزانه' });
     }
     for (const a of assignments || []) {
       for (const s of a.submissions || []) {
         const key = tehranKey(new Date(s.submittedAt));
-        if (map[key]) map[key].assignment += 1;
+        if (map[key]) map[key].push({ type: 'ارسال تمرین', title: a.title });
       }
     }
 
-    return keys.map((key) => ({ key, ...map[key], total: map[key].habit + map[key].task + map[key].journal + map[key].assignment }));
+    return cells.map((cell) => ({ ...cell, items: map[cell.key], total: map[cell.key].length }));
   }, [habits, tasks, assignments, entries]);
+
+  const totalActivity = days.reduce((sum, d) => sum + d.total, 0);
+  const activeDays = days.filter((d) => d.total > 0).length;
 
   return <>
     <div className="growth-page-title"><div><h1>تقویم فعالیت</h1><p>روند استمرار و فعالیت‌های ۳۵ روز اخیرت — عادت، کار، یادداشت و تمرین.</p></div></div>
     <Section title="فعالیت ۳۵ روز اخیر">
-      <div className="growth-heatmap" aria-label="تقویم فعالیت">
-        {days.map((day) => <span key={day.key} title={`${dateText(day.key)} — عادت ${fa(day.habit)}، کار ${fa(day.task)}، یادداشت ${fa(day.journal)}، تمرین ${fa(day.assignment)}`} className={`growth-heatmap__cell growth-heatmap__cell--${Math.min(day.total, 4)}`} />)}
-      </div>
-      <p className="growth-meta">هر خانه یک روز (به وقت تهران) است؛ برای دیدن جزئیات نشانگر را روی خانه نگه دار.</p>
+      <ActivityCalendar days={days} label="تقویم فعالیت" emptyText="در این روز فعالیتی ثبت نشده است." />
+      <p className="growth-meta">{fa(activeDays)} روز فعال از ۳۵ روز · مجموع {fa(totalActivity)} فعالیت. روی هر روز بزن تا ریز فعالیت‌های همان روز را ببینی.</p>
     </Section>
   </>;
 }
