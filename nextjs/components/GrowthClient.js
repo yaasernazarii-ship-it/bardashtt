@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Icon from './Icon';
+import ShamsiDateField from './ShamsiDateField';
 
 const fa = (n) => Number(n || 0).toLocaleString('fa-IR');
 const dateText = (value) => (value ? new Intl.DateTimeFormat('fa-IR', { dateStyle: 'medium' }).format(new Date(value)) : '—');
@@ -210,7 +211,7 @@ function GoalsPage({ goals, action }) {
       <textarea placeholder="توضیح کوتاه (اختیاری)" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
       <div className="growth-form-row">
         <select value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value })}><option value="low">اولویت کم</option><option value="medium">اولویت متوسط</option><option value="high">اولویت زیاد</option></select>
-        <input type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} />
+        <ShamsiDateField value={form.endDate} onChange={(endDate) => setForm({ ...form, endDate })} label="تاریخ پایان (شمسی)" />
         <button className="btn btn--gold">+ ساخت هدف</button>
       </div>
     </form>
@@ -247,8 +248,8 @@ function GoalEditForm({ goal, action, onDone }) {
     <textarea placeholder="توضیح" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
     <div className="growth-form-row">
       <select value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value })}><option value="low">اولویت کم</option><option value="medium">اولویت متوسط</option><option value="high">اولویت زیاد</option></select>
-      <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} title="تاریخ شروع" />
-      <input type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} title="تاریخ پایان" />
+      <ShamsiDateField value={form.startDate} onChange={(startDate) => setForm({ ...form, startDate })} label="تاریخ شروع (شمسی)" />
+      <ShamsiDateField value={form.endDate} onChange={(endDate) => setForm({ ...form, endDate })} label="تاریخ پایان (شمسی)" />
     </div>
     <button className="btn btn--gold">ذخیرهٔ تغییرات</button>
   </form>;
@@ -308,7 +309,7 @@ function GoalDetail({ goal, action }) {
       </div>
       <form className="growth-form-row growth-inline-form" onSubmit={addTask}>
         <input placeholder="عنوان کار جدید" value={taskForm.title} onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })} />
-        <input type="date" value={taskForm.dueDate} onChange={(e) => setTaskForm({ ...taskForm, dueDate: e.target.value })} />
+        <ShamsiDateField value={taskForm.dueDate} onChange={(dueDate) => setTaskForm({ ...taskForm, dueDate })} label="مهلت (شمسی)" />
         <button className="btn btn--gold">افزودن کار</button>
       </form>
     </Section>
@@ -332,7 +333,7 @@ function MilestoneEditForm({ milestone, action, onDone }) {
     <textarea placeholder="توضیح" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
     <div className="growth-form-row">
       <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}><option value="pending">در انتظار</option><option value="in_progress">در حال انجام</option><option value="done">انجام شده</option></select>
-      <input type="date" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} />
+      <ShamsiDateField value={form.dueDate} onChange={(dueDate) => setForm({ ...form, dueDate })} label="مهلت (شمسی)" />
       <input type="number" min="0" max="100" value={form.progress} onChange={(e) => setForm({ ...form, progress: e.target.value })} title="درصد پیشرفت" />
       <button className="btn btn--gold">ذخیره</button>
     </div>
