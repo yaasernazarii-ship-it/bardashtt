@@ -12,6 +12,7 @@ const STUDENT_ITEMS = [
   { key: 'enrollment', href: '/dashboard/enrollment', icon: 'graduationCap', label: 'ثبت‌نام من' },
   { key: 'exam', href: '/dashboard/exam', icon: 'check', label: 'آزمون و گواهی‌نامه' },
   { key: 'insurance', href: '/dashboard/insurance', icon: 'shield', label: 'بیمهٔ من' },
+  { key: 'groups', href: '/dashboard/groups', icon: 'chat', label: 'گروه‌های گفت‌وگو' },
   { key: 'social', href: '/dashboard/social', icon: 'users', label: 'برداشتگرام' },
   { key: 'orders', href: '/dashboard/orders', icon: 'book', label: 'سفارش‌های من' },
   { key: 'resume', href: '/dashboard/resume', icon: 'fileText', label: 'رزومه بازیگری' },
@@ -42,6 +43,7 @@ const MANAGER_PERSONAL_ITEMS = [
 const MANAGER_ITEMS = [
   { key: 'growth-admin', href: '/dashboard/admin/growth', icon: 'flag', label: 'مسیر رشد هنرجویان' },
   { key: 'reports', href: '/dashboard/admin/reports', icon: 'users', label: 'گزارش و گفت‌وگوی تیم' },
+  { key: 'chat-groups', href: '/dashboard/admin/chat-groups', icon: 'chat', label: 'گروه‌های گفت‌وگوی هنرجویان' },
   { key: 'enrollments', href: '/dashboard/admin/enrollments', icon: 'clipboard', label: 'بررسی ثبت‌نام‌ها' },
   { key: 'signups', href: '/dashboard/admin/signups', icon: 'check', label: 'تأیید حساب‌ها' },
   { key: 'classes', href: '/dashboard/admin/classes', icon: 'calendar', label: 'کلاس‌ها و تقویم' },
@@ -73,6 +75,8 @@ function itemsForRole(role, graduated, manager) {
     if (it.key === 'insurance' && role !== 'student') return false;
     // انتشار در برداشتگرام مخصوص هنرجو و فیلم‌ساز است؛ عضو عادی فقط تماشاگر است.
     if (it.key === 'social' && role !== 'student') return false;
+    // گروه‌های گفت‌وگو فقط برای هنرجوست؛ عضو عادی اصلاً به این فضا راه ندارد.
+    if (it.key === 'groups' && role !== 'student') return false;
     return true;
   });
 }

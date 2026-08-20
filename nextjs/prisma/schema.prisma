@@ -950,3 +950,61 @@ model MentorNote {
 
   @@index([userId])
 }
+
+// ===================== گروه‌های گفت‌وگوی هنرجویان =====================
+// فضای گفت‌وگوی گروهی که فقط مدیر آن را می‌سازد و اعضایش را خودش انتخاب می‌کند.
+// هیچ کاربری نمی‌تواند خودش عضو شود؛ عضویت فقط هنرجوی فعال است و غیرهنرجو حتی وجود گروه را نمی‌بیند.
+// مثل بقیهٔ ماژول‌های تازه، userId فقط String است و relation دیتابیسی به User اضافه نمی‌شود.
+
+model ChatGroup {
+  id            String             @id @default(cuid())
+  name          String
+  description   String? // معرفیِ کوتاه گروه؛ در پروفایل گروه به اعضا نشان داده می‌شود
+  photoUrl      String? // عکس گروه (آپلود مدیر)
+  active        Boolean            @default(true) // گروه بسته‌شده: اعضا می‌بینند ولی پیام تازه نمی‌فرستند
+  createdById   String?
+  lastMessageAt DateTime           @default(now())
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  members       ChatGroupMember[]
+  messages      ChatGroupMessage[]
+  reads         ChatGroupRead[]
+
+  @@index([lastMessageAt])
+}
+
+model ChatGroupMember {
+  id        String    @id @default(cuid())
+  groupId   String
+  group     ChatGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime  @default(now())
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
+
+model ChatGroupMessage {
+  id         String    @id @default(cuid())
+  groupId    String
+  group      ChatGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  authorId   String
+  authorName String
+  authorRole String // student | admin | editor
+  body       String
+  createdAt  DateTime  @default(now())
+
+  @@index([groupId, createdAt])
+}
+
+// آخرین باری که هر عضو گروه را باز کرده؛ مبنای شمارندهٔ خوانده‌نشده.
+model ChatGroupRead {
+  id         String    @id @default(cuid())
+  groupId    String
+  group      ChatGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId     String
+  lastReadAt DateTime  @default(now())
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
