@@ -301,31 +301,35 @@ async function StudentResumeNudge({ user }) {
 async function StudentStats({ user }) {
   const groupId = user.classGroupId;
 
-  const [group, presentCount, upcoming] = await Promise.all([
+  const [group, presentCount, upcoming, activeGoals, openTasks] = await Promise.all([
     groupId ? prisma.classGroup.findUnique({ where: { id: groupId }, select: { totalSessions: true } }) : null,
     groupId ? prisma.attendance.count({ where: { userId: user.id, status: 'present', session: { groupId } } }) : 0,
     groupId ? prisma.classSession.count({ where: { groupId, startsAt: { gt: new Date() } } }) : 0,
+    prisma.growthGoal.count({ where: { userId: user.id, status: 'active' } }),
+    prisma.growthTask.count({ where: { userId: user.id, status: 'pending' } }),
   ]);
 
   const totalSessions = group?.totalSessions || 8;
   const computedProgress = totalSessions ? Math.min(100, Math.round((presentCount / totalSessions) * 100)) : 0;
   const progress = user.progressOverride ?? computedProgress;
-  const covered = !user.graduated;
   const fa = (n) => n.toLocaleString('fa-IR');
 
   return (
     <div className="dash-stats">
-      <Link href="/dashboard/insurance" className="dash-stat">
+      {/* جای مربعِ بیمه را مسیر رشد گرفته است؛ بیمه از منوی کناری در دسترس می‌ماند. */}
+      <Link href="/dashboard/growth" className="dash-stat">
         <div className="dash-stat__head">
-          <span className={`dash-stat__ico ${covered ? 'dash-stat__ico--green' : 'dash-stat__ico--gold'}`}>
-            <Icon name="shield" size={20} />
+          <span className={`dash-stat__ico ${activeGoals ? 'dash-stat__ico--green' : 'dash-stat__ico--gold'}`}>
+            <Icon name="flag" size={20} />
           </span>
-          <span className="dash-stat__label">وضعیت بیمه</span>
+          <span className="dash-stat__label">مسیر رشد</span>
         </div>
-        <div className={`dash-stat__value ${covered ? 'dash-stat__value--green' : 'dash-stat__value--muted'}`}>
-          {covered ? 'فعال' : 'غیرفعال'}
+        <div className={`dash-stat__value ${activeGoals ? 'dash-stat__value--green' : 'dash-stat__value--muted'}`}>
+          {fa(activeGoals)}
         </div>
-        <p className="dash-stat__hint">{covered ? 'تا پایان دوره' : 'دوره به پایان رسیده'}</p>
+        <p className="dash-stat__hint">
+          {activeGoals ? `هدف فعال · ${fa(openTasks)} کار باز` : 'هنوز هدفی ثبت نشده'}
+        </p>
       </Link>
 
       <div className="dash-stat">
@@ -423,20 +427,20 @@ export default async function DashboardPage() {
                 <Link href="/dashboard/profile" className="dash-card__link">تکمیل پروفایل →</Link>
               </div>
             </div>
-            {/* مسیر رشدِ هنرجو کارِ روزمرهٔ اوست؛ جای آن روی صفحهٔ اصلی داشبورد است. بیمه در منوی کناری در دسترس می‌ماند. */}
+            {/* هنرجوی در حال تحصیل تحت پوشش بیمهٔ حوادث آموزشگاه است؛ راه استفاده از آن باید در دسترسش باشد. */}
             {user.role === 'student' && (
               <div className="dash-cards" style={{ marginTop: 14 }}>
-                <Link href="/dashboard/growth" className="dash-card" style={{ display: 'block' }}>
+                <Link href="/dashboard/insurance" className="dash-card" style={{ display: 'block' }}>
                   <h3 className="dash-card__title">
-                    <Icon name="flag" size={16} /> مسیر رشد
+                    <Icon name="shield" size={16} /> بیمهٔ من
                     {!user.graduated && <span className="tag tag--green" style={{ marginRight: 8 }}>فعال</span>}
                   </h3>
                   <p className="dash-card__text">
                     {user.graduated
-                      ? 'اهداف، عادت‌ها و کارنامهٔ مسیر رشد تو در طول دوره اینجاست.'
-                      : 'اهداف، عادت‌ها، تکالیف و ژورنال تمرینت اینجاست؛ هر روز یک قدم جلوتر.'}
+                      ? 'اطلاعات بیمه‌نامهٔ دورهٔ تحصیل و روش پیگیری پرونده.'
+                      : 'در طول دوره تحت پوشش بیمهٔ حوادث آموزشگاه هستید؛ کارت بیمه و روش استفاده از آن اینجاست.'}
                   </p>
-                  <span className="dash-card__link">ورود به مسیر رشد →</span>
+                  <span className="dash-card__link">مشاهده بیمه →</span>
                 </Link>
               </div>
             )}
