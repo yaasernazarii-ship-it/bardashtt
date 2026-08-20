@@ -423,20 +423,20 @@ export default async function DashboardPage() {
                 <Link href="/dashboard/profile" className="dash-card__link">تکمیل پروفایل →</Link>
               </div>
             </div>
-            {/* هنرجوی در حال تحصیل تحت پوشش بیمهٔ حوادث آموزشگاه است؛ راه استفاده از آن باید در دسترسش باشد. */}
+            {/* مسیر رشدِ هنرجو کارِ روزمرهٔ اوست؛ جای آن روی صفحهٔ اصلی داشبورد است. بیمه در منوی کناری در دسترس می‌ماند. */}
             {user.role === 'student' && (
               <div className="dash-cards" style={{ marginTop: 14 }}>
-                <Link href="/dashboard/insurance" className="dash-card" style={{ display: 'block' }}>
+                <Link href="/dashboard/growth" className="dash-card" style={{ display: 'block' }}>
                   <h3 className="dash-card__title">
-                    <Icon name="shield" size={16} /> بیمهٔ من
+                    <Icon name="flag" size={16} /> مسیر رشد
                     {!user.graduated && <span className="tag tag--green" style={{ marginRight: 8 }}>فعال</span>}
                   </h3>
                   <p className="dash-card__text">
                     {user.graduated
-                      ? 'اطلاعات بیمه‌نامهٔ دورهٔ تحصیل و روش پیگیری پرونده.'
-                      : 'در طول دوره تحت پوشش بیمهٔ حوادث آموزشگاه هستید؛ کارت بیمه و روش استفاده از آن اینجاست.'}
+                      ? 'اهداف، عادت‌ها و کارنامهٔ مسیر رشد تو در طول دوره اینجاست.'
+                      : 'اهداف، عادت‌ها، تکالیف و ژورنال تمرینت اینجاست؛ هر روز یک قدم جلوتر.'}
                   </p>
-                  <span className="dash-card__link">مشاهده بیمه →</span>
+                  <span className="dash-card__link">ورود به مسیر رشد →</span>
                 </Link>
               </div>
             )}
