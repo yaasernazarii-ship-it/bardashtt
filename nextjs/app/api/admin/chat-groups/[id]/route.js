@@ -119,14 +119,11 @@ export async function PATCH(request, { params }) {
   return Response.json({ ok: true, group: serializeGroup(updated) });
 }
 
-// حذف کامل گروه با همهٔ پیام‌ها و عضویت‌ها (Cascade). عمداً فقط ادمین، نه ادیتور.
+// حذف کامل گروه با همهٔ پیام‌ها و عضویت‌ها (Cascade). ادیتور هم مثل مدیر سامانه اجازه دارد.
 export async function DELETE(request, { params }) {
   const { id } = await params;
   const { user, error } = await requireManager();
   if (error) return error;
-  if (user.role !== 'admin') {
-    return Response.json({ ok: false, error: 'حذف گروه فقط از عهدهٔ مدیر سامانه برمی‌آید.' }, { status: 403 });
-  }
 
   const group = await prisma.chatGroup.findUnique({ where: { id } });
   if (!group) return Response.json({ ok: false, error: 'گروه پیدا نشد.' }, { status: 404 });

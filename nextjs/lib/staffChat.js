@@ -100,8 +100,8 @@ export function serializeMessage(m, viewer, thread) {
     authorRole: m.authorRole,
     createdAt: m.createdAt.toISOString(),
     mine: m.authorId === viewer.id,
-    // حذف پیام: نویسندهٔ خودش همیشه؛ ادمین فقط در گفت‌وگوی گروهی (نه در خصوصیِ دیگران).
-    canDelete: m.authorId === viewer.id || (viewer.role === 'admin' && thread.kind === 'group'),
+    // حذف پیام: نویسندهٔ خودش همیشه؛ کادر مدیریت فقط در گفت‌وگوی گروهی (نه در خصوصیِ دیگران).
+    canDelete: m.authorId === viewer.id || thread.kind === 'group',
   };
 }
 

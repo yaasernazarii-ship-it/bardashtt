@@ -1,13 +1,12 @@
 import { prisma } from '@/lib/prisma';
-import { getSessionUser } from '@/lib/auth';
+import { getSessionUser, isManager } from '@/lib/auth';
 import { logAction } from '@/lib/audit';
 
-// بازگشاییِ جلسهٔ پایان‌یافته — عمداً فقط مدیر سیستم (role === 'admin')، نه ادیتور،
-// تا استاد نتواند به‌صورت تصادفی کلاسِ تمام‌شده را دوباره باز کند.
+// بازگشاییِ جلسهٔ پایان‌یافته — در اختیار کادر مدیریت (مدیر و ادیتور) است و در audit ثبت می‌شود.
 export async function POST(request, { params }) {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
-  if (user.role !== 'admin') return Response.json({ ok: false, error: 'فقط مدیر سیستم می‌تواند جلسهٔ پایان‌یافته را بازگشایی کند.' }, { status: 403 });
+  if (!isManager(user)) return Response.json({ ok: false, error: 'این کار فقط از عهدهٔ کادر مدیریت برمی‌آید.' }, { status: 403 });
 
   const { id } = await params;
   const session = await prisma.classSession.findUnique({

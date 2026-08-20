@@ -73,7 +73,7 @@ export function serializeReport(r, viewer) {
     edited: r.updatedAt.getTime() - r.createdAt.getTime() > 1000,
     // اجازه‌ها را سرور تعیین می‌کند؛ کلاینت فقط دکمه را نشان می‌دهد و باز هم در سرور بررسی می‌شود.
     canEdit: !!viewer && r.authorId === viewer.id,
-    canDelete: !!viewer && (r.authorId === viewer.id || viewer.role === 'admin'),
+    canDelete: !!viewer,
     comments: (r.comments || []).map((c) => ({
       id: c.id,
       body: c.body,
@@ -81,7 +81,7 @@ export function serializeReport(r, viewer) {
       authorName: c.authorName,
       authorRole: c.authorRole,
       createdAt: c.createdAt.toISOString(),
-      canDelete: !!viewer && (c.authorId === viewer.id || viewer.role === 'admin'),
+      canDelete: !!viewer,
     })),
   };
 }

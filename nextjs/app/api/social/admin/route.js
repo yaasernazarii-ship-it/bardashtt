@@ -67,7 +67,7 @@ export async function GET(request) {
 
   return Response.json({
     ok: true,
-    isAdmin: user.role === 'admin',
+    isAdmin: isManager(user),
     accounts: accounts.map((a) => ({
       id: a.id,
       phone: a.phone,
@@ -134,11 +134,11 @@ export async function PATCH(request) {
   return Response.json({ ok: true, account: { id: target.id, blocked: target.blocked, active: target.active } });
 }
 
-// حذف کامل و غیرقابل‌بازگشت یک حساب — فقط ادمین (نه ادیتور)، تا حذف اشتباهی پیش نیاید.
+// حذف کامل و غیرقابل‌بازگشت یک حساب — در اختیار کادر مدیریت (مدیر و ادیتور).
 export async function DELETE(request) {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
-  if (user.role !== 'admin') return Response.json({ ok: false, error: 'فقط ادمین می‌تواند حساب را برای همیشه حذف کند.' }, { status: 403 });
+  if (!isManager(user)) return Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 });
 
   let body;
   try {

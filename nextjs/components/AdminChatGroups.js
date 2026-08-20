@@ -20,7 +20,7 @@ const EMPTY_FORM = { name: '', description: '', photoUrl: '' };
 
 // مدیریت گروه‌های گفت‌وگوی هنرجویان: ساخت گروه، انتخاب اعضا، نام و عکس گروه، و خودِ گفت‌وگو.
 // همهٔ بررسی‌های دسترسی در سرور انجام می‌شود؛ این‌جا فقط نمایش است.
-export default function AdminChatGroups({ canDelete = false }) {
+export default function AdminChatGroups() {
   const [groups, setGroups] = useState([]);
   const [selected, setSelected] = useState(null);
   const [tab, setTab] = useState('chat'); // chat | members | settings | new
@@ -503,11 +503,9 @@ export default function AdminChatGroups({ canDelete = false }) {
                     <button type="button" className="btn btn--ghost btn--sm" onClick={toggleActive} disabled={busy}>
                       {detail.group.active ? 'بستن گروه' : 'باز کردن گروه'}
                     </button>
-                    {canDelete && (
-                      <button type="button" className="growth-text-button" style={{ color: '#DC2626' }} onClick={removeGroup} disabled={busy}>
-                        حذف کامل گروه
-                      </button>
-                    )}
+                    <button type="button" className="growth-text-button" style={{ color: '#DC2626' }} onClick={removeGroup} disabled={busy}>
+                      حذف کامل گروه
+                    </button>
                   </div>
                   <p className="cg-hint">
                     گروهِ بسته برای اعضا قابل خواندن است ولی پیام تازه پذیرفته نمی‌شود. حذف گروه همهٔ پیام‌ها را برای همیشه پاک می‌کند.

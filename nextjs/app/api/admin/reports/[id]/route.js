@@ -113,7 +113,7 @@ export async function POST(request, { params }) {
   return Response.json({ ok: true, report: serializeReport(updated, user) });
 }
 
-// حذف گزارش: نویسنده یا ادمین. حذف یک پاسخ با ?comment=<شناسه> انجام می‌شود (نویسندهٔ پاسخ یا ادمین).
+// حذف گزارش: نویسنده یا کادر مدیریت. حذف یک پاسخ با ?comment=<شناسه> انجام می‌شود.
 export async function DELETE(request, { params }) {
   const { user, error } = await guard();
   if (error) return error;
@@ -123,9 +123,6 @@ export async function DELETE(request, { params }) {
   if (commentId) {
     const comment = await prisma.staffReportComment.findUnique({ where: { id: commentId } });
     if (!comment || comment.reportId !== id) return Response.json({ ok: false, error: 'پاسخ پیدا نشد.' }, { status: 404 });
-    if (comment.authorId !== user.id && user.role !== 'admin') {
-      return Response.json({ ok: false, error: 'فقط نویسندهٔ پاسخ یا مدیر می‌تواند آن را حذف کند.' }, { status: 403 });
-    }
     await prisma.staffReportComment.delete({ where: { id: commentId } });
     const updated = await prisma.staffReport.findUnique({ where: { id }, include: withComments });
     return Response.json({ ok: true, report: updated ? serializeReport(updated, user) : null });
@@ -133,10 +130,6 @@ export async function DELETE(request, { params }) {
 
   const report = await prisma.staffReport.findUnique({ where: { id }, select: { id: true, title: true, authorId: true } });
   if (!report) return Response.json({ ok: false, error: 'گزارش پیدا نشد.' }, { status: 404 });
-  if (report.authorId !== user.id && user.role !== 'admin') {
-    return Response.json({ ok: false, error: 'فقط نویسندهٔ گزارش یا مدیر می‌تواند آن را حذف کند.' }, { status: 403 });
-  }
-
   await prisma.staffReport.delete({ where: { id } });
   await logAction(user, { action: 'staffReport.delete', targetType: 'staffReport', targetId: id, summary: `حذف گزارش کار «${report.title}»` });
   return Response.json({ ok: true });

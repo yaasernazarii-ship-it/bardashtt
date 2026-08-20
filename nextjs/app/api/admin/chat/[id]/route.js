@@ -126,7 +126,7 @@ export async function DELETE(request, { params }) {
   const message = await prisma.staffChatMessage.findUnique({ where: { id: messageId } });
   if (!message || message.threadId !== id) return Response.json({ ok: false, error: 'پیام پیدا نشد.' }, { status: 404 });
 
-  const allowed = message.authorId === user.id || (user.role === 'admin' && thread.kind === 'group');
+  const allowed = message.authorId === user.id || thread.kind === 'group';
   if (!allowed) return Response.json({ ok: false, error: 'فقط فرستندهٔ پیام می‌تواند آن را حذف کند.' }, { status: 403 });
 
   await prisma.staffChatMessage.delete({ where: { id: messageId } });

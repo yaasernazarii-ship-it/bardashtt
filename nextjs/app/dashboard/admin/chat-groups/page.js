@@ -21,8 +21,7 @@ export default async function AdminChatGroupsPage() {
             برای هر دوره یک گروه بسازید، نام و عکس گروه را تعیین کنید و خودتان انتخاب کنید چه هنرجویانی عضو آن باشند.
           </p>
         </div>
-        {/* حذف کامل گروه فقط از عهدهٔ ادمین برمی‌آید؛ ادیتور می‌تواند گروه را ببندد. */}
-        <AdminChatGroups canDelete={user.role === 'admin'} />
+        <AdminChatGroups />
       </main>
     </div>
   );
