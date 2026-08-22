@@ -1,6 +1,7 @@
 import { Vazirmatn } from 'next/font/google';
 import './globals.css';
 import BookPromo from '@/components/BookPromo';
+import PwaRegistration from '@/components/PwaRegistration';
 import { siteUrl } from '@/lib/siteUrl';
 
 const vazirmatn = Vazirmatn({
@@ -13,6 +14,8 @@ const vazirmatn = Vazirmatn({
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
+  themeColor: '#1b1b1b',
+  colorScheme: 'light',
   viewportFit: 'cover',
 };
 
@@ -24,6 +27,13 @@ export async function generateMetadata() {
   return {
     metadataBase: new URL(base),
     applicationName: 'خانواده برداشت',
+    manifest: '/manifest.webmanifest',
+    appleWebApp: {
+      capable: true,
+      title: 'خانواده برداشت',
+      statusBarStyle: 'black-translucent',
+    },
+    formatDetection: { telephone: false },
     title: {
       default: verificationTitle ? '55990608' : 'خانواده برداشت | آموزش رایگان بازیگری سینما',
       template: '%s | خانواده برداشت',
@@ -64,6 +74,7 @@ export default async function RootLayout({ children }) {
         />
       </head>
       <body>
+        <PwaRegistration />
         {children}
         <BookPromo />
       </body>
