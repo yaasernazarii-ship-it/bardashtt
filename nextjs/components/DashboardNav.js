@@ -67,8 +67,8 @@ function itemsForRole(role, graduated, manager) {
   if (manager) return MANAGER_PERSONAL_ITEMS;
   if (role === 'filmmaker') return FILMMAKER_ITEMS;
   return STUDENT_ITEMS.filter((it) => {
-    // هنرجوی فارغ‌التحصیل تقویم کلاس و کلاس آنلاین را در منو نمی‌بیند.
-    if ((it.key === 'schedule' || it.key === 'live-classes') && graduated) return false;
+    // بخش‌های وابسته به حضور فعال در دوره برای فارغ‌التحصیل کاربردی ندارند.
+    if (graduated && ['schedule', 'live-classes', 'insurance', 'courses'].includes(it.key)) return false;
     // آزمون فارغ‌التحصیلی فقط برای هنرجوست، نه عضو عادی.
     if (it.key === 'exam' && role !== 'student') return false;
     // بیمهٔ هنرجویی هم فقط برای هنرجوست؛ عضو عادی هنوز پوششی ندارد.

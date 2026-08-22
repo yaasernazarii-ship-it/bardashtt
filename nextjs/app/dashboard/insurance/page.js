@@ -33,6 +33,8 @@ function Field({ label, value }) {
 export default async function MyInsurancePage() {
   const user = await getSessionUser();
   if (!user) redirect('/auth?next=/dashboard/insurance');
+  // پوشش بیمه فقط در بازهٔ حضور فعال هنرجو در دوره است.
+  if (user.role === 'student' && user.graduated) redirect('/dashboard');
   // بیمه مخصوص هنرجوست؛ فیلمساز رابطهٔ آموزشی با آموزشگاه ندارد.
   if (user.role === 'filmmaker') redirect('/dashboard');
 
