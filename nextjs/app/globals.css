@@ -2147,11 +2147,12 @@ summary:focus-visible {
    ساختار گفت‌وگو همان .staff-chat است؛ این کلاس‌ها فقط برای پنل اعضا و تنظیمات گروه‌اند. */
 .cg-new {
   display: flex; align-items: center; justify-content: center; gap: 7px;
-  font: inherit; font-size: .85rem; font-weight: 700; color: var(--dark);
-  background: var(--white); border: none; border-bottom: 1px solid var(--border);
-  padding: 13px 14px; cursor: pointer; width: 100%; flex: none;
+  font: inherit; font-size: .86rem; font-weight: 800; color: var(--dark);
+  background: var(--gold); border: none; border-bottom: 1px solid var(--border);
+  padding: 14px; cursor: pointer; width: 100%; flex: none;
 }
-.cg-new:hover { background: var(--blue-soft); }
+.cg-new:hover { filter: brightness(1.05); }
+.cg-new.is-active { box-shadow: inset 0 -3px 0 var(--dark); }
 .cg-tabs { display: flex; gap: 4px; margin-right: auto; flex: none; }
 .cg-tabs .staff-tab { padding: 6px 13px; font-size: .8rem; }
 .cg-panel { flex: 1; overflow-y: auto; min-height: 0; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
@@ -2167,27 +2168,53 @@ summary:focus-visible {
 .cg-filters { display: grid; grid-template-columns: 1fr 200px; gap: 8px; }
 .cg-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .cg-list {
-  display: grid; gap: 2px; max-height: 260px; overflow-y: auto;
-  border: 1px solid var(--border); border-radius: 12px; padding: 6px; background: var(--surface);
+  display: grid; gap: 4px; max-height: 320px; overflow-y: auto;
+  border: 1px solid var(--border); border-radius: 12px; padding: 8px; background: var(--surface);
 }
+.cg-list--pick { max-height: 46vh; }
+/* در تب اعضا و تنظیمات، پنل به قدِ محتوا باز می‌شود تا فهرست‌ها نصفه و تودرتو اسکرول نشوند */
+.staff-chat--panel { height: auto; min-height: 460px; }
+.staff-chat--panel .cg-panel { overflow: visible; }
+.cg-section {
+  border: 1px solid var(--border); border-radius: 16px; background: var(--white);
+  padding: 16px; display: flex; flex-direction: column; gap: 10px;
+}
+.cg-section__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.cg-count {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 100px;
+  padding: 3px 10px; font-size: .76rem; color: var(--muted); white-space: nowrap;
+}
+.cg-bar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 10px 12px;
+}
+.cg-bar__count { font-size: .84rem; font-weight: 700; color: var(--dark); margin-inline-end: auto; }
 .cg-row {
   display: flex; align-items: center; gap: 10px;
   padding: 8px 10px; border-radius: 9px; background: var(--white);
 }
 .cg-row--pick { cursor: pointer; }
 .cg-row--pick:hover { background: var(--blue-soft); }
+.cg-row--pick input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--gold); flex: none; cursor: pointer; }
+.cg-row--pick.is-picked { background: var(--blue-soft); box-shadow: inset 0 0 0 1px var(--gold); }
 .cg-row__main { display: grid; gap: 2px; min-width: 0; flex: 1; }
 .cg-row__main strong { font-size: .87rem; color: var(--dark); }
 .cg-row__main small { font-size: .74rem; color: var(--muted); }
 .cg-remove {
-  background: none; border: none; cursor: pointer; color: var(--light); padding: 4px; line-height: 1;
+  display: inline-flex; align-items: center; gap: 5px; flex: none;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 9px;
+  cursor: pointer; color: var(--muted); padding: 5px 9px; font: inherit; font-size: .76rem;
 }
-.cg-remove:hover { color: #DC2626; }
+.cg-remove:hover { color: #DC2626; border-color: #DC2626; }
 @media (max-width: 860px) {
   /* در گوشی، تب‌های گروه به خط بعدِ سربرگ می‌روند تا نام گروه فشرده نشود */
   .staff-chat__head { flex-wrap: wrap; }
   .cg-tabs { width: 100%; margin: 8px 0 0; }
+  .cg-tabs .staff-tab { flex: 1; text-align: center; }
   .cg-filters { grid-template-columns: 1fr; }
+  .cg-panel { padding: 14px; }
+  .cg-section { padding: 13px; }
+  .cg-bar__count { width: 100%; margin: 0; }
 }
 
 

@@ -291,10 +291,10 @@ export default function AdminChatGroups() {
       {error && <div className="alert alert--error" style={{ marginBottom: 12 }}>{error}</div>}
       {notice && <div className="alert alert--success" style={{ marginBottom: 12 }}>{notice}</div>}
 
-      <div className="staff-chat">
+      <div className={`staff-chat${tab === 'chat' ? '' : ' staff-chat--panel'}`}>
         <aside className="staff-chat__side">
-          <button type="button" className="cg-new" onClick={startNew}>
-            <Icon name="plus" size={16} /> گروه تازه
+          <button type="button" className={`cg-new${tab === 'new' ? ' is-active' : ''}`} onClick={startNew}>
+            <Icon name="plus" size={16} /> ساخت گروه تازه
           </button>
           {groups.map((g) => (
             <button
@@ -317,15 +317,16 @@ export default function AdminChatGroups() {
             </button>
           ))}
           {groups.length === 0 && (
-            <p className="staff-chat__empty-side">هنوز گروهی ساخته نشده. با دکمهٔ «گروه تازه» اولین گروه را بسازید.</p>
+            <p className="staff-chat__empty-side">هنوز گروهی ساخته نشده. با دکمهٔ «ساخت گروه تازه» شروع کنید.</p>
           )}
         </aside>
 
         <section className="staff-chat__main">
           {tab === 'new' ? (
             <form className="cg-panel" onSubmit={createGroup}>
-              <h3 style={{ margin: '0 0 4px' }}>گروه تازه</h3>
-              <p className="cg-hint">نام و عکس گروه همان چیزی است که هنرجویان می‌بینند. بعد از ساخت، اعضا را انتخاب می‌کنید.</p>
+              <section className="cg-section">
+              <div className="cg-section__head"><h4 className="cg-title">ساخت گروه تازه</h4><span className="cg-count">گام ۱ از ۲</span></div>
+              <p className="cg-hint">نام و عکس گروه همان چیزی است که هنرجویان می‌بینند. بعد از ساخت، در گام دوم اعضا را انتخاب می‌کنید.</p>
               <label className="cg-field">
                 <span>نام گروه</span>
                 <input value={form.name} maxLength={60} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="مثلاً دورهٔ بازیگری ۱۴۰۵ — تهران" />
@@ -344,10 +345,12 @@ export default function AdminChatGroups() {
                   <button type="button" className="growth-text-button" onClick={() => setForm({ ...form, photoUrl: '' })}>حذف عکس</button>
                 )}
               </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button type="submit" className="btn btn--gold btn--sm" disabled={!form.name.trim() || busy}>ساخت گروه</button>
+              <div className="cg-bar">
+                <span className="cg-bar__count">{form.name.trim() ? 'آمادهٔ ساخت' : 'اول نام گروه را بنویسید'}</span>
                 <button type="button" className="btn btn--ghost btn--sm" onClick={() => setTab('chat')}>انصراف</button>
+                <button type="submit" className="btn btn--gold btn--sm" disabled={!form.name.trim() || busy}>ساخت گروه و رفتن به انتخاب اعضا</button>
               </div>
+              </section>
             </form>
           ) : !detail ? (
             <p className="staff-chat__note">{groups.length === 0 ? 'اولین گروه را بسازید.' : 'یک گروه را انتخاب کنید.'}</p>
@@ -412,74 +415,93 @@ export default function AdminChatGroups() {
 
               {tab === 'members' && (
                 <div className="cg-panel">
-                  <h4 className="cg-title">اعضای گروه ({detail.members.length.toLocaleString('fa-IR')})</h4>
-                  <div className="cg-list">
-                    {detail.members.length === 0 && <p className="cg-hint">هنوز عضوی اضافه نشده است.</p>}
-                    {detail.members.map((p) => (
-                      <div key={p.id} className="cg-row">
-                        <GroupAvatar name={p.name} photoUrl={p.photoUrl} size={32} />
-                        <span className="cg-row__main">
-                          <strong>{p.name}</strong>
-                          <small>
-                            {p.inactive ? 'دیگر هنرجوی فعال نیست' : [p.courseTitle, p.classGroupName, p.branch].filter(Boolean).join(' · ') || 'هنرجو'}
-                          </small>
-                        </span>
-                        <button type="button" className="cg-remove" onClick={() => removeMember(p)} disabled={busy} title="حذف از گروه">
-                          <Icon name="trash" size={15} />
-                        </button>
+                  <section className="cg-section">
+                    <div className="cg-section__head">
+                      <h4 className="cg-title">اعضای این گروه</h4>
+                      <span className="cg-count">{detail.members.length.toLocaleString('fa-IR')} نفر</span>
+                    </div>
+                    {detail.members.length === 0 ? (
+                      <p className="cg-hint">هنوز کسی عضو این گروه نیست. از کادر پایین هنرجو را انتخاب و اضافه کنید.</p>
+                    ) : (
+                      <div className="cg-list">
+                        {detail.members.map((p) => (
+                          <div key={p.id} className="cg-row">
+                            <GroupAvatar name={p.name} photoUrl={p.photoUrl} size={32} />
+                            <span className="cg-row__main">
+                              <strong>{p.name}</strong>
+                              <small>
+                                {p.inactive ? 'دیگر هنرجوی فعال نیست' : [p.courseTitle, p.classGroupName, p.branch].filter(Boolean).join(' · ') || 'هنرجو'}
+                              </small>
+                            </span>
+                            <button type="button" className="cg-remove" onClick={() => removeMember(p)} disabled={busy} title="حذف از گروه">
+                              <Icon name="trash" size={15} /> حذف
+                            </button>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-
-                  <h4 className="cg-title">افزودن هنرجو</h4>
-                  <div className="cg-filters">
-                    <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="جست‌وجوی نام، دوره یا کلاس" />
-                    <select value={classFilter} onChange={(e) => setClassFilter(e.target.value)}>
-                      <option value="">همهٔ کلاس‌ها</option>
-                      {(detail.classGroups || []).map((c) => (
-                        <option key={c.id} value={c.id}>{c.name}{c.branch ? ` — ${c.branch}` : ''}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="cg-actions">
-                    <button
-                      type="button"
-                      className="growth-text-button"
-                      onClick={() => setPicked(candidates.map((p) => p.id))}
-                      disabled={candidates.length === 0}
-                    >
-                      انتخاب همهٔ {candidates.length.toLocaleString('fa-IR')} نفرِ فهرست
-                    </button>
-                    {picked.length > 0 && (
-                      <button type="button" className="growth-text-button" onClick={() => setPicked([])}>پاک‌کردن انتخاب</button>
                     )}
-                    <button type="button" className="btn btn--gold btn--sm" onClick={addMembers} disabled={picked.length === 0 || busy}>
-                      افزودن {picked.length.toLocaleString('fa-IR')} نفر به گروه
-                    </button>
-                  </div>
-                  <div className="cg-list">
-                    {candidates.length === 0 && <p className="cg-hint">هنرجویی برای افزودن پیدا نشد.</p>}
-                    {candidates.map((p) => (
-                      <label key={p.id} className="cg-row cg-row--pick">
-                        <input
-                          type="checkbox"
-                          checked={picked.includes(p.id)}
-                          onChange={(e) => setPicked((cur) => (e.target.checked ? [...cur, p.id] : cur.filter((x) => x !== p.id)))}
-                        />
-                        <GroupAvatar name={p.name} photoUrl={p.photoUrl} size={32} />
-                        <span className="cg-row__main">
-                          <strong>{p.name}</strong>
-                          <small>{[p.courseTitle, p.classGroupName, p.branch, p.graduated ? 'فارغ‌التحصیل' : null].filter(Boolean).join(' · ') || 'هنرجو'}</small>
-                        </span>
+                  </section>
+
+                  <section className="cg-section">
+                    <div className="cg-section__head">
+                      <h4 className="cg-title">افزودن هنرجو به گروه</h4>
+                      <span className="cg-count">{candidates.length.toLocaleString('fa-IR')} هنرجوی قابل افزودن</span>
+                    </div>
+                    <p className="cg-hint">۱) هنرجویان را در فهرست زیر تیک بزنید. ۲) دکمهٔ «افزودن به گروه» را بزنید. فقط هنرجویان فعال دیده می‌شوند.</p>
+                    <div className="cg-filters">
+                      <label className="cg-field">
+                        <span>جست‌وجو</span>
+                        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="نام هنرجو، دوره یا کلاس" />
                       </label>
-                    ))}
-                  </div>
+                      <label className="cg-field">
+                        <span>فیلتر کلاس</span>
+                        <select value={classFilter} onChange={(e) => setClassFilter(e.target.value)}>
+                          <option value="">همهٔ کلاس‌ها</option>
+                          {(detail.classGroups || []).map((c) => (
+                            <option key={c.id} value={c.id}>{c.name}{c.branch ? ` — ${c.branch}` : ''}</option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                    <div className="cg-list cg-list--pick">
+                      {candidates.length === 0 && <p className="cg-hint">هنرجویی با این جست‌وجو پیدا نشد.</p>}
+                      {candidates.map((p) => (
+                        <label key={p.id} className={`cg-row cg-row--pick${picked.includes(p.id) ? ' is-picked' : ''}`}>
+                          <input
+                            type="checkbox"
+                            checked={picked.includes(p.id)}
+                            onChange={(e) => setPicked((cur) => (e.target.checked ? [...cur, p.id] : cur.filter((x) => x !== p.id)))}
+                          />
+                          <GroupAvatar name={p.name} photoUrl={p.photoUrl} size={32} />
+                          <span className="cg-row__main">
+                            <strong>{p.name}</strong>
+                            <small>{[p.courseTitle, p.classGroupName, p.branch, p.graduated ? 'فارغ‌التحصیل' : null].filter(Boolean).join(' · ') || 'هنرجو'}</small>
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                    <div className="cg-bar">
+                      <span className="cg-bar__count">
+                        {picked.length > 0 ? `${picked.length.toLocaleString('fa-IR')} نفر انتخاب شده` : 'هنوز کسی انتخاب نشده'}
+                      </span>
+                      <button type="button" className="growth-text-button" onClick={() => setPicked(candidates.map((p) => p.id))} disabled={candidates.length === 0}>
+                        انتخاب همه
+                      </button>
+                      {picked.length > 0 && (
+                        <button type="button" className="growth-text-button" onClick={() => setPicked([])}>پاک‌کردن انتخاب</button>
+                      )}
+                      <button type="button" className="btn btn--gold btn--sm" onClick={addMembers} disabled={picked.length === 0 || busy}>
+                        افزودن به گروه
+                      </button>
+                    </div>
+                  </section>
                 </div>
               )}
 
               {tab === 'settings' && (
                 <form className="cg-panel" onSubmit={saveGroup}>
-                  <h4 className="cg-title">پروفایل گروه</h4>
+                  <section className="cg-section">
+                  <div className="cg-section__head"><h4 className="cg-title">پروفایل گروه</h4><span className="cg-count">{detail.group.active ? 'باز' : 'بسته'}</span></div>
                   <label className="cg-field">
                     <span>نام گروه</span>
                     <input value={form.name} maxLength={60} onChange={(e) => setForm({ ...form, name: e.target.value })} />
@@ -510,6 +532,7 @@ export default function AdminChatGroups() {
                   <p className="cg-hint">
                     گروهِ بسته برای اعضا قابل خواندن است ولی پیام تازه پذیرفته نمی‌شود. حذف گروه همهٔ پیام‌ها را برای همیشه پاک می‌کند.
                   </p>
+                  </section>
                 </form>
               )}
             </>
