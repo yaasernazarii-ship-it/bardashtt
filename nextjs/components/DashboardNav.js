@@ -132,7 +132,7 @@ export default function DashboardNav({
   };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar${showManager ? ' sidebar--manager' : ''}`}>
       {/* نوار موبایل: لوگو + دکمهٔ منو (فقط در گوشی دیده می‌شود) */}
       <div className="sidebar-mobilebar">
         <Link href="/" className="sidebar-mobilebar__logo" onClick={close}>خانواده <span>برداشت</span></Link>

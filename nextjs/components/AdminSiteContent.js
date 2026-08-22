@@ -105,11 +105,11 @@ export default function AdminSiteContent() {
   if (loading) return <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p>;
 
   return (
-    <form onSubmit={save}>
+    <form onSubmit={save} className="admin-content-editor">
       {error && <div className="alert alert--error" style={{ marginBottom: 12 }}>{error}</div>}
       {okMsg && <div className="alert alert--success" style={{ marginBottom: 12 }}>{okMsg}</div>}
 
-      <div className="form-group">
+      <div className="admin-content-editor__search">
         <input
           className="form-input"
           type="search"
@@ -128,7 +128,7 @@ export default function AdminSiteContent() {
         const open = q ? true : openIds.includes(g.id);
         const dirty = g.fields.filter((f) => values[f.key] !== initial[f.key]).length;
         return (
-        <div key={g.id} className="form-shell" style={{ marginBottom: 14 }}>
+        <div key={g.id} className="form-shell admin-content-group" style={{ marginBottom: 12 }}>
           <button
             type="button"
             onClick={() => toggle(g.id)}
@@ -141,7 +141,7 @@ export default function AdminSiteContent() {
           </button>
           {open && <div style={{ marginTop: 16 }} />}
           {open && g.fields.map((f) => (
-            <div className="form-group" key={f.key}>
+            <div className={`form-group admin-content-field${['textarea', 'list', 'image', 'images'].includes(f.type) ? ' admin-content-field--wide' : ''}`} key={f.key}>
               <label className="form-label">{f.label}</label>
               {f.type === 'image' ? (
                 <div>
@@ -202,7 +202,7 @@ export default function AdminSiteContent() {
         );
       })}
 
-      <div style={{ position: 'sticky', bottom: 0, background: 'var(--bg)', padding: '12px 0', display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="admin-content-savebar">
         <button className="btn btn--dark" type="submit" disabled={saving || changedKeys.length === 0}>
           {saving ? 'در حال ذخیره…' : 'ذخیره تغییرات'}
         </button>

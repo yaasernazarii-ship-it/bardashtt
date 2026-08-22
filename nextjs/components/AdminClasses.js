@@ -53,6 +53,9 @@ export default function AdminClasses() {
   const [error, setError] = useState('');
   const [newGroup, setNewGroup] = useState(emptyGroup);
   const [openId, setOpenId] = useState(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [rosterOpen, setRosterOpen] = useState(false);
+  const [query, setQuery] = useState('');
 
   async function load() {
     setLoading(true);
@@ -74,18 +77,39 @@ export default function AdminClasses() {
     const d = await res.json();
     if (!d.ok) { setError(d.error || 'خطا.'); return; }
     setNewGroup(emptyGroup);
+    setCreateOpen(false);
     load();
   }
 
   if (loading) return <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p>;
 
+  const needle = query.trim().toLowerCase();
+  const visibleGroups = groups.filter((group) => !needle || [group.name, group.branch, group.courseTitle, group.teacherName]
+    .filter(Boolean).join(' ').toLowerCase().includes(needle));
+  const totalSessions = groups.reduce((sum, group) => sum + Number(group._count?.sessions || 0), 0);
+  const totalMembers = groups.reduce((sum, group) => sum + Number(group.members?.length || 0), 0);
+
   return (
-    <div>
+    <div className="admin-operation-page admin-classes">
       {error && <div className="alert alert--error" style={{ marginBottom: 16 }}>{error}</div>}
 
+      <div className="admin-stat-grid admin-stat-grid--classes">
+        <div className="admin-stat"><strong>{groups.length.toLocaleString('fa-IR')}</strong><span>کلاس فعال</span></div>
+        <div className="admin-stat admin-stat--success"><strong>{totalMembers.toLocaleString('fa-IR')}</strong><span>عضویت در کلاس‌ها</span></div>
+        <div className="admin-stat admin-stat--warning"><strong>{totalSessions.toLocaleString('fa-IR')}</strong><span>جلسه ثبت‌شده</span></div>
+        <div className="admin-stat"><strong>{students.length.toLocaleString('fa-IR')}</strong><span>هنرجوی در حال تحصیل</span></div>
+      </div>
+
+      <div className="admin-list-toolbar">
+        <label className="admin-search"><span aria-hidden="true">⌕</span><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="جست‌وجوی کلاس، شعبه، دوره یا استاد…" /></label>
+        <span className="admin-list-toolbar__count">{visibleGroups.length.toLocaleString('fa-IR')} کلاس</span>
+        <button type="button" className="btn btn--outline btn--sm" onClick={() => setRosterOpen((value) => !value)}>{rosterOpen ? 'بستن هنرجویان' : 'فهرست هنرجویان'}</button>
+        <button type="button" className="btn btn--dark btn--sm" onClick={() => setCreateOpen((value) => !value)}>{createOpen ? 'بستن فرم' : '+ کلاس جدید'}</button>
+      </div>
+
       {/* ساخت کلاس جدید */}
-      <form onSubmit={createGroup} className="form-shell" style={{ marginBottom: 24 }}>
-        <h2 className="heading" style={{ fontSize: '1.1rem', marginBottom: 14 }}>افزودن کلاس جدید</h2>
+      {createOpen && <form onSubmit={createGroup} className="form-shell admin-create-panel" style={{ marginBottom: 16 }}>
+        <div className="admin-create-panel__head"><div><h2>افزودن کلاس جدید</h2><p>مشخصات اصلی کلاس را ثبت کنید؛ جلسات پس از ساخت کلاس اضافه می‌شوند.</p></div><button type="button" className="btn btn--ghost btn--sm" onClick={() => setCreateOpen(false)}>بستن</button></div>
         <div className="cal-form-grid">
           <div className="form-group">
             <label className="form-label">نام کلاس *</label>
@@ -113,18 +137,18 @@ export default function AdminClasses() {
           <ClassCoverPicker value={newGroup.coverImage} onChange={(url) => setNewGroup({ ...newGroup, coverImage: url })} />
         </div>
         <button className="btn btn--dark" type="submit">افزودن کلاس</button>
-      </form>
+      </form>}
 
       {/* فهرست اسامیِ هنرجویانِ در حال تحصیل، جدا به تفکیک شعبه */}
-      <StudentRoster students={students} />
+      {rosterOpen && <StudentRoster students={students} />}
 
       {groups.length === 0 ? (
-        <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 28, textAlign: 'center' }}>
-          <p style={{ color: 'var(--muted)' }}>هنوز کلاسی ساخته نشده است.</p>
-        </div>
+        <div className="su-empty">هنوز کلاسی ساخته نشده است.</div>
+      ) : visibleGroups.length === 0 ? (
+        <div className="su-empty">کلاسی مطابق جست‌وجوی شما پیدا نشد.</div>
       ) : (
-        <div style={{ display: 'grid', gap: 14 }}>
-          {groups.map((g) => (
+        <div className="admin-class-list">
+          {visibleGroups.map((g) => (
             <GroupCard key={g.id} group={g} students={students}
               open={openId === g.id} onToggle={() => setOpenId(openId === g.id ? null : g.id)}
               onChanged={load} />
@@ -148,7 +172,7 @@ function StudentRoster({ students }) {
   const others = students.filter((s) => !s.branch && match(s));
 
   return (
-    <div className="form-shell" style={{ marginBottom: 24 }}>
+    <div className="form-shell admin-roster" style={{ marginBottom: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
         <h2 className="heading" style={{ fontSize: '1.1rem', margin: 0 }}>فهرست هنرجویان (به تفکیک شعبه)</h2>
         <input className="form-input" placeholder="جستجوی نام هنرجو…" value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 280 }} />
@@ -315,24 +339,24 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
   }
 
   return (
-    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px' }}>
-        <button type="button" onClick={onToggle} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 12, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'right' }}>
+    <div className={`admin-class-card${open ? ' is-open' : ''}`}>
+      <div className="admin-class-card__head">
+        <button type="button" onClick={onToggle} className="admin-class-card__toggle" aria-expanded={open}>
           {group.coverImage && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={group.coverImage} alt="" style={{ width: 52, height: 40, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} />
+            <img src={group.coverImage} alt="" className="admin-class-card__cover" />
           )}
-          <span style={{ fontWeight: 800 }}>{group.name}</span>
-          <span style={{ background: 'var(--surface)', borderRadius: 999, padding: '3px 10px', fontSize: '.78rem', color: 'var(--muted)' }}>{group.branch}</span>
-          {group.courseTitle && <span style={{ fontSize: '.78rem', color: 'var(--muted)' }}>· {group.courseTitle}</span>}
-          <span style={{ fontSize: '.78rem', color: 'var(--muted)' }}>· {group.members.length} هنرجو · {group._count.sessions} جلسه</span>
-          <span style={{ marginRight: 'auto', color: 'var(--muted)' }}>{open ? '▲' : '▼'}</span>
+          <span className="admin-class-card__identity"><strong>{group.name}</strong><small>{group.courseTitle || 'بدون عنوان دوره'}{group.teacherName ? ` · استاد ${group.teacherName}` : ''}</small></span>
+          <span className="admin-class-card__branch">{group.branch}</span>
+          <span className="admin-class-card__metric"><strong>{group.members.length.toLocaleString('fa-IR')}</strong><small>هنرجو</small></span>
+          <span className="admin-class-card__metric"><strong>{group._count.sessions.toLocaleString('fa-IR')}</strong><small>جلسه</small></span>
+          <span className={`admin-class-card__chev${open ? ' is-open' : ''}`} aria-hidden="true">⌄</span>
         </button>
         <button type="button" className="btn btn--sm btn--danger" onClick={deleteGroup}>حذف</button>
       </div>
 
       {open && (
-        <div style={{ borderTop: '1px dashed var(--border)', padding: 16 }}>
+        <div className="admin-class-card__body">
           {msg && <div className="alert alert--info">{msg}</div>}
 
           <div className="tab-list" role="tablist">
@@ -444,8 +468,8 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
                 </ul>
               )}
 
-            <form onSubmit={submitSession} style={{ background: 'var(--surface)', borderRadius: 12, padding: 14, display: 'grid', gap: 10 }}>
-              <div style={{ fontWeight: 700, fontSize: '.9rem' }}>{editingSession ? 'ویرایش جلسه' : 'افزودن جلسه جدید'}</div>
+            <form onSubmit={submitSession} className="admin-session-editor">
+              <div className="admin-session-editor__head"><strong>{editingSession ? 'ویرایش جلسه' : 'افزودن جلسه جدید'}</strong><span>عنوان و زمان برای ثبت کافی است.</span></div>
               <div className="cal-form-grid">
                 <div className="form-group">
                   <label className="form-label">عنوان جلسه *</label>
@@ -456,23 +480,27 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
                   <input className="form-input" type="datetime-local" value={sForm.startsAt} onChange={(e) => setSForm({ ...sForm, startsAt: e.target.value })} />
                 </div>
               </div>
-              <div className="form-group">
-                <label className="form-label">چارت درسی این جلسه</label>
-                <textarea className="form-input" rows={2} value={sForm.chartDescription} onChange={(e) => setSForm({ ...sForm, chartDescription: e.target.value })} placeholder="سرفصل‌ها و توضیحات درسی این جلسه" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">ابزار لازم</label>
-                <textarea className="form-input" rows={2} value={sForm.tools} onChange={(e) => setSForm({ ...sForm, tools: e.target.value })} placeholder="ابزاری که هنرجو باید همراه بیاورد" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">تمرین و اتود</label>
-                <textarea className="form-input" rows={2} value={sForm.homework} onChange={(e) => setSForm({ ...sForm, homework: e.target.value })} placeholder="تمرین یا اتودی که باید برای این جلسه آماده باشد" />
-              </div>
-              <div style={{ display: 'flex', gap: 8 }}>
+              <details className="admin-session-options" open={Boolean(sForm.chartDescription || sForm.tools || sForm.homework)}>
+                <summary>جزئیات اختیاری جلسه</summary>
+                <div className="admin-session-options__grid">
+                  <div className="form-group">
+                    <label className="form-label">چارت درسی این جلسه</label>
+                    <textarea className="form-input" rows={2} value={sForm.chartDescription} onChange={(e) => setSForm({ ...sForm, chartDescription: e.target.value })} placeholder="سرفصل‌ها و توضیحات درسی این جلسه" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">ابزار لازم</label>
+                    <textarea className="form-input" rows={2} value={sForm.tools} onChange={(e) => setSForm({ ...sForm, tools: e.target.value })} placeholder="ابزاری که هنرجو باید همراه بیاورد" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">تمرین و اتود</label>
+                    <textarea className="form-input" rows={2} value={sForm.homework} onChange={(e) => setSForm({ ...sForm, homework: e.target.value })} placeholder="تمرین یا اتودی که باید برای این جلسه آماده باشد" />
+                  </div>
+                </div>
+              </details>
+              <div className="admin-session-editor__actions">
                 <button className="btn btn--dark btn--sm" type="submit" disabled={busy}>{busy ? 'در حال ذخیره…' : editingSession ? 'ذخیره تغییرات' : 'افزودن جلسه'}</button>
                 {editingSession && <button type="button" className="btn btn--outline btn--sm" onClick={() => { setSForm(emptySession); setEditingSession(null); }}>انصراف</button>}
               </div>
-              <p style={{ fontSize: '.75rem', color: 'var(--muted)', margin: 0 }}>پس از ذخیره، به هنرجویان این کلاس نشان «به‌روزرسانی شد» نمایش داده می‌شود.</p>
             </form>
           </div>
 

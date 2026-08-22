@@ -36,6 +36,8 @@ export default function AdminPayments() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [openPayId, setOpenPayId] = useState('');
   const [filter, setFilter] = useState('all');
+  const [query, setQuery] = useState('');
+  const [createOpen, setCreateOpen] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -106,7 +108,7 @@ export default function AdminPayments() {
     setSaving(false);
     if (!d.ok) { setError(d.error || 'خطا.'); return; }
     setMsg(`پرداخت برای ${money(d.count || form.userIds.length)} هنرجو ثبت شد و در پنلشان نمایش داده می‌شود.`);
-    setForm(emptyForm); setStudentQuery('');
+    setForm(emptyForm); setStudentQuery(''); setCreateOpen(false);
     load();
   }
 
@@ -134,21 +136,45 @@ export default function AdminPayments() {
     catch { window.prompt('این لینک را برای هنرجو بفرستید:', url); }
   }
 
-  const visiblePayments = filter === 'all' ? payments : payments.filter((p) => p.status === filter);
+  const counts = {
+    all: payments.length,
+    pending: payments.filter((p) => p.status === 'pending').length,
+    paid: payments.filter((p) => p.status === 'paid').length,
+    canceled: payments.filter((p) => p.status === 'canceled').length,
+  };
+  const paidTotal = payments.filter((p) => p.status === 'paid').reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  const needle = query.trim().toLowerCase();
+  const visiblePayments = payments.filter((p) => {
+    if (filter !== 'all' && p.status !== filter) return false;
+    if (!needle) return true;
+    return [p.user?.displayName, p.user?.phone, p.user?.username, p.title, p.courseTitle]
+      .filter(Boolean).join(' ').toLowerCase().includes(needle);
+  });
 
   if (loading) return <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p>;
 
   return (
-    <div>
+    <div className="admin-operation-page admin-payments">
       {error && <div className="alert alert--error" style={{ marginBottom: 16 }}>{error}</div>}
       {msg && <div className="alert alert--success" style={{ marginBottom: 16 }}>{msg}</div>}
 
-      {/* فرم ساخت پرداخت / ارتقای دوره */}
-      <form onSubmit={submit} className="form-shell" style={{ marginBottom: 24 }}>
-        <h2 className="heading" style={{ fontSize: '1.1rem', marginBottom: 6 }}>ثبت پرداخت جدید</h2>
-        <p style={{ color: 'var(--muted)', fontSize: '.85rem', marginTop: 0, marginBottom: 16 }}>
-          شهریهٔ یک دوره، یا هزینهٔ جدا (بیمه و پلاتو، لوکیشن و تغذیهٔ اردو، یا افیشِ متفرقه). مبلغ و «بابت» را خودتان تعیین می‌کنید.
-        </p>
+      <div className="admin-stat-grid admin-stat-grid--payments">
+        <button type="button" className={`admin-stat ${filter === 'all' ? 'is-active' : ''}`} onClick={() => setFilter('all')}><strong>{counts.all.toLocaleString('fa-IR')}</strong><span>همه پرداخت‌ها</span></button>
+        <button type="button" className={`admin-stat admin-stat--warning ${filter === 'pending' ? 'is-active' : ''}`} onClick={() => setFilter('pending')}><strong>{counts.pending.toLocaleString('fa-IR')}</strong><span>در انتظار پرداخت</span></button>
+        <button type="button" className={`admin-stat admin-stat--success ${filter === 'paid' ? 'is-active' : ''}`} onClick={() => setFilter('paid')}><strong>{counts.paid.toLocaleString('fa-IR')}</strong><span>پرداخت‌شده</span></button>
+        <div className="admin-stat admin-stat--money"><strong>{money(paidTotal)}</strong><span>مجموع وصول‌شده (تومان)</span></div>
+      </div>
+
+      <div className="admin-list-toolbar">
+        <label className="admin-search"><span>⌕</span><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="جست‌وجوی هنرجو، موبایل، بابت یا دوره…" /></label>
+        <span className="admin-list-toolbar__count">{visiblePayments.length.toLocaleString('fa-IR')} مورد</span>
+        <button type="button" className="btn btn--dark btn--sm" onClick={() => setCreateOpen((value) => !value)}>{createOpen ? 'بستن فرم' : '+ ثبت پرداخت جدید'}</button>
+      </div>
+
+      {/* فرم فقط هنگام نیاز باز می‌شود تا فهرست روزانه شلوغ نباشد. */}
+      {createOpen && (
+      <form onSubmit={submit} className="form-shell admin-create-panel" style={{ marginBottom: 16 }}>
+        <div className="admin-create-panel__head"><div><h2>ثبت پرداخت جدید</h2><p>هنرجو، بابت و مبلغ را مشخص کنید.</p></div><button type="button" className="btn btn--ghost btn--sm" onClick={() => setCreateOpen(false)}>بستن</button></div>
 
         <div className="cal-form-grid">
           <div className="form-group">
@@ -236,15 +262,9 @@ export default function AdminPayments() {
 
         <button className="btn btn--dark" type="submit" disabled={saving}>{saving ? 'در حال ثبت…' : 'ثبت پرداخت'}</button>
       </form>
+      )}
 
       {/* فهرست پرداخت‌ها */}
-      <div className="pay-filters" role="tablist" aria-label="فیلتر وضعیت پرداخت">
-        {[['all', 'همه'], ['pending', 'در انتظار'], ['paid', 'پرداخت‌شده'], ['canceled', 'لغوشده']].map(([k, l]) => (
-          <button key={k} type="button" role="tab" aria-selected={filter === k}
-            className={`pay-chip ${filter === k ? 'is-active' : ''}`} onClick={() => setFilter(k)}>{l}</button>
-        ))}
-      </div>
-
       {visiblePayments.length === 0 ? (
         <div className="pay-empty">
           <div className="pay-empty__icon" aria-hidden="true">
