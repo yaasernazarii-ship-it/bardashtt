@@ -79,21 +79,21 @@ export default async function HomePage() {
 
       {/* تماس */}
       <div id="contact" className="contact-row">
-        <div className="contact-cell">
+        <a className="contact-cell" href={`tel:${t('contact.phone')}`} aria-label={`تماس با شماره ${t('contact.phone')}`}>
           <div className="ico"><Icon name="phone" size={26} /></div>
           <div className="lbl">تماس مستقیم</div>
-          <a href={`tel:${t('contact.phone')}`}>{t('contact.phone')}</a>
-        </div>
-        <div className="contact-cell">
+          <span className="contact-value">{t('contact.phone')}</span>
+        </a>
+        <a className="contact-cell" href={t('contact.instagramUrl')} target="_blank" rel="noopener noreferrer" aria-label="مشاهده صفحه اینستاگرام">
           <div className="ico"><Icon name="instagram" size={26} /></div>
           <div className="lbl">اینستاگرام</div>
-          <a href={t('contact.instagramUrl')} target="_blank" rel="noopener noreferrer">{t('contact.instagram')}</a>
-        </div>
-        <div className="contact-cell">
+          <span className="contact-value">{t('contact.instagram')}</span>
+        </a>
+        <a className="contact-cell" href={t('contact.baleUrl')} target="_blank" rel="noopener noreferrer" aria-label="مشاهده کانال بله">
           <div className="ico"><Icon name="chat" size={26} /></div>
           <div className="lbl">کانال بله</div>
-          <a href={t('contact.baleUrl')} target="_blank" rel="noopener noreferrer">{t('contact.bale')}</a>
-        </div>
+          <span className="contact-value">{t('contact.bale')}</span>
+        </a>
       </div>
     </PageLayout>
   );

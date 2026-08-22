@@ -249,13 +249,13 @@
 .active-dot::before { content: ''; width: 7px; height: 7px; background: #22C55E; border-radius: 50%; animation: pulse 2s infinite; }
 
 .contact-row { display: grid; grid-template-columns: repeat(3,1fr); background: linear-gradient(135deg, #1B1B1B 0%, #232323 100%); }
-.contact-cell { padding: 44px 28px; text-align: center; border-left: 1px solid rgba(255,255,255,.06); transition: background .2s; }
+.contact-cell { display: block; padding: 44px 28px; text-align: center; border-left: 1px solid rgba(255,255,255,.06); transition: background .2s; cursor: pointer; }
 .contact-cell:last-child { border-left: none; }
 .contact-cell:hover { background: rgba(255,255,255,.03); }
 .contact-cell .ico { margin-bottom: 12px; color: var(--gold); display: inline-flex; }
 .contact-cell .lbl { font-size: .7rem; font-weight: 700; color: rgba(255,255,255,.3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
-.contact-cell a { font-size: 1rem; font-weight: 700; color: #fff; transition: color .2s; }
-.contact-cell a:hover { color: var(--gold-lt); }
+.contact-cell .contact-value { font-size: 1rem; font-weight: 700; color: #fff; transition: color .2s; }
+.contact-cell:hover .contact-value { color: var(--gold-lt); }
 
 @media(min-width:1024px) {
   .home-hero__inner { grid-template-columns: minmax(0,1fr) minmax(360px,.82fr); }
