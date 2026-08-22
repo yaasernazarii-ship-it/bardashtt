@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { logAction } from '@/lib/audit';
 import { AUTHOR_SELECT, authorCard, removeUploadFile, scheduleCleanup, serializePost, visibleWhere } from '@/lib/social';
+import { OFFICIAL_SOCIAL_USERNAME } from '@/lib/socialAuth';
 
 export const dynamic = 'force-dynamic';
 
@@ -76,6 +77,7 @@ export async function GET(request) {
       photoUrl: a.photoUrl,
       active: a.active,
       blocked: a.blocked,
+      official: a.username === OFFICIAL_SOCIAL_USERNAME,
       postCount: a._count.posts,
       createdAt: a.createdAt,
     })),
@@ -113,6 +115,10 @@ export async function PATCH(request) {
   if (typeof body.active === 'boolean') data.active = body.active;
   if (!userId || Object.keys(data).length === 0) {
     return Response.json({ ok: false, error: 'درخواست نامعتبر است.' }, { status: 400 });
+  }
+  const official = await prisma.socialAccount.findUnique({ where: { id: userId }, select: { username: true } });
+  if (official?.username === OFFICIAL_SOCIAL_USERNAME) {
+    return Response.json({ ok: false, error: 'حساب رسمی برداشت قابل تعلیق یا مسدودسازی نیست.' }, { status: 403 });
   }
 
   const target = await prisma.socialAccount.update({
@@ -160,6 +166,9 @@ export async function DELETE(request) {
     },
   });
   if (!target) return Response.json({ ok: false, error: 'حساب یافت نشد.' }, { status: 404 });
+  if (target.username === OFFICIAL_SOCIAL_USERNAME) {
+    return Response.json({ ok: false, error: 'حساب رسمی برداشت قابل حذف نیست.' }, { status: 403 });
+  }
 
   // حذف رکورد حساب؛ پست‌ها، نشست‌ها، لایک‌ها و نظرهای همین حساب با Cascade خودکار پاک می‌شوند.
   await prisma.socialAccount.delete({ where: { id: userId } });

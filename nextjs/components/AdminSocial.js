@@ -144,33 +144,35 @@ export default function AdminSocial() {
                   </div>
                   <div className="cm-adm__body">
                     <strong>{a.displayName}</strong>
-                    <span className="cm-muted"> · @{a.username} · {a.phone}</span>
+                    <span className="cm-muted"> · @{a.username}{a.official ? ' · حساب رسمی' : ` · ${a.phone}`}</span>
                     <p className="cm-muted">
                       {a.postCount.toLocaleString('fa-IR')} مطلب · عضویت از {new Date(a.createdAt).toLocaleDateString('fa-IR')}
                       {!a.active && <span className="cm-badge cm-badge--no" style={{ marginRight: 8 }}>تعلیق‌شده</span>}
                       {a.blocked && <span className="cm-badge cm-badge--no" style={{ marginRight: 8 }}>محروم از انتشار</span>}
                     </p>
-                    <div className="cm-adm__member">
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={a.blocked}
-                          disabled={busy === a.id}
-                          onChange={(e) => setMember(a.id, { blocked: e.target.checked })}
-                        />
-                        محرومیت از انتشار پست/استوری
-                      </label>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={!a.active}
-                          disabled={busy === a.id}
-                          onChange={(e) => setMember(a.id, { active: !e.target.checked })}
-                        />
-                        تعلیق کامل حساب (امکان ورود ندارد)
-                      </label>
-                    </div>
-                    {data.isAdmin && (
+                    {!a.official && (
+                      <div className="cm-adm__member">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={a.blocked}
+                            disabled={busy === a.id}
+                            onChange={(e) => setMember(a.id, { blocked: e.target.checked })}
+                          />
+                          محرومیت از انتشار پست/استوری
+                        </label>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={!a.active}
+                            disabled={busy === a.id}
+                            onChange={(e) => setMember(a.id, { active: !e.target.checked })}
+                          />
+                          تعلیق کامل حساب (امکان ورود ندارد)
+                        </label>
+                      </div>
+                    )}
+                    {data.isAdmin && !a.official && (
                       <div className="cm-adm__actions">
                         <button
                           type="button"
