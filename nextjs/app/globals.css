@@ -1816,6 +1816,51 @@ summary:focus-visible {
   .su-actions .btn, .su-password-field .btn { width: 100%; }
 }
 
+/* بررسی ثبت‌نام دوره‌ها — جزئیات تست، تحلیل و ویدیو */
+.enrollment-review .su-row__course,
+.enrollment-review .su-row__actor {
+  overflow: hidden; color: var(--body); font-size: .78rem; text-overflow: ellipsis; white-space: nowrap;
+}
+.enrollment-review .su-row__actor { color: var(--muted); }
+.enrollment-review__analysis {
+  background: color-mix(in srgb, var(--gold-soft) 36%, var(--white));
+  border-color: color-mix(in srgb, var(--gold) 30%, var(--border));
+}
+.enrollment-review__answers {
+  margin-top: 12px; padding: 16px; background: var(--white);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+}
+.enrollment-review__answer-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.enrollment-review__answer-grid > div {
+  display: grid; gap: 7px; padding: 11px 13px; background: var(--surface);
+  border-radius: 9px;
+}
+.enrollment-review__answer-grid span { color: var(--muted); font-size: .7rem; line-height: 1.7; }
+.enrollment-review__answer-grid strong { color: var(--dark); font-size: .8rem; }
+.enrollment-review__video {
+  display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 13px 15px;
+  color: var(--dark); background: #EFF6FF; border: 1px solid #BFDBFE;
+  border-radius: var(--radius-sm); transition: var(--transition);
+}
+.enrollment-review__video:hover { border-color: #60A5FA; box-shadow: 0 6px 18px rgba(37,99,235,.09); transform: translateY(-1px); }
+.enrollment-review__video-icon {
+  flex: none; width: 40px; height: 40px; display: grid; place-items: center;
+  color: #1D4ED8; background: var(--white); border-radius: 10px;
+}
+.enrollment-review__video > span:nth-child(2) { display: grid; gap: 3px; min-width: 0; }
+.enrollment-review__video strong { color: #1E3A8A; font-size: .84rem; }
+.enrollment-review__video small { color: #64748B; font-size: .7rem; }
+.enrollment-review__video-open { margin-inline-start: auto; color: #1D4ED8; font-size: .74rem; font-weight: 800; white-space: nowrap; }
+.enrollment-review__approval { border-inline-start: 3px solid var(--gold); }
+
+@media (max-width: 820px) {
+  .enrollment-review__answer-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .enrollment-review__video { align-items: flex-start; }
+  .enrollment-review__video-open { display: none; }
+}
+
 .import-box {
   background: var(--blue-soft); border: 1px solid rgba(27,27,27,.08);
   border-radius: 16px; padding: 16px; margin-bottom: 20px;
