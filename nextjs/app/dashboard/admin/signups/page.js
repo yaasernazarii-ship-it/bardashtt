@@ -3,7 +3,7 @@ import { getSessionUser, isManager } from '@/lib/auth';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import AdminSignups from '@/components/AdminSignups';
 
-export const metadata = { title: 'تأیید حساب‌ها' };
+export const metadata = { title: 'درخواست عضویت و ساخت حساب' };
 
 export default async function AdminSignupsPage() {
   const user = await getSessionUser();
@@ -15,8 +15,8 @@ export default async function AdminSignupsPage() {
       <DashboardSidebar active="signups" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} />
       <main className="main-area">
         <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
-          <h1 className="dash-head__title">تأیید حساب‌های کاربری</h1>
-          <p className="dash-head__sub">درخواست‌های عضویت هنرجویان را ببینید و در صورت تأیید، برای هر نفر نام کاربری و رمز عبور بسازید تا با آن وارد شوند.</p>
+          <h1 className="dash-head__title">درخواست عضویت و ساخت حساب</h1>
+          <p className="dash-head__sub">مشخصات و مدارک درخواست‌های عضویت را بررسی کنید و پس از تأیید، نام کاربری و رمز ورود بسازید.</p>
         </div>
         <AdminSignups />
       </main>

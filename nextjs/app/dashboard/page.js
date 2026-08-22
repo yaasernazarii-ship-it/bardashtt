@@ -37,39 +37,43 @@ function UserPhoto({ user }) {
 // نه داشبورد هنرجو. هر بخش پنل یک کارت با توضیح کوتاه دارد.
 const MANAGER_GROUPS = [
   {
-    title: 'هنرجویان و کلاس‌ها',
+    title: 'هنرجویان و آموزش', icon: 'graduationCap',
     cards: [
-      { href: '/dashboard/admin/signups', title: 'تأیید حساب‌ها', text: 'درخواست‌های عضویت جدید را بررسی و تأیید کنید.' },
-      { href: '/dashboard/admin/enrollments', title: 'بررسی ثبت‌نام‌ها', text: 'فرم‌های ثبت‌نام دوره و ویدیوهای ارسالی.' },
-      { href: '/dashboard/admin/classes', title: 'کلاس‌ها و تقویم', text: 'جلسه‌ها، حضور و غیاب و تقویم آموزشی.' },
-      { href: '/dashboard/admin/live-classes', title: 'کلاس‌های آنلاین', text: 'شروع و پایان پخش زندهٔ جلسات.' },
-      { href: '/dashboard/admin/exam', title: 'آزمون و بانک سوال', text: 'اجازهٔ آزمون هنرجویان و سؤال‌های آزمون پایان دوره.' },
-      { href: '/dashboard/admin/certificates', title: 'گواهی‌نامه‌ها', text: 'صدور و پیگیری گواهی پایان دوره.' },
-      { href: '/dashboard/admin/support', title: 'پشتیبانی آنلاین', text: 'پاسخ به گفتگوهای زندهٔ کاربران سایت.' },
+      { href: '/dashboard/admin', icon: 'users', title: 'کاربران', text: 'پرونده، نقش و دسترسی کاربران' },
+      { href: '/dashboard/admin/signups', icon: 'check', title: 'درخواست عضویت و ساخت حساب', text: 'بررسی مدارک و ساخت اطلاعات ورود' },
+      { href: '/dashboard/admin/enrollments', icon: 'clipboard', title: 'ثبت‌نام دوره و تست بازیگری', text: 'بررسی تست، تحلیل و ویدیوی معرفی' },
+      { href: '/dashboard/admin/classes', icon: 'calendar', title: 'کلاس‌ها و تقویم', text: 'جلسه‌ها، تقویم و حضور و غیاب' },
+      { href: '/dashboard/admin/live-classes', icon: 'video', title: 'کلاس‌های آنلاین', text: 'مدیریت پخش زنده و ضبط جلسات' },
+      { href: '/dashboard/admin/exam', icon: 'check', title: 'آزمون و بانک سؤال', text: 'مجوزها، سؤال‌ها و نتایج آزمون' },
+      { href: '/dashboard/admin/certificates', icon: 'fileText', title: 'گواهی‌نامه‌ها', text: 'صدور و پیگیری گواهی پایان دوره' },
+      { href: '/dashboard/admin/growth', icon: 'flag', title: 'مسیر رشد هنرجویان', text: 'پیگیری هدف‌ها، تمرین‌ها و استمرار' },
     ],
   },
   {
-    title: 'محتوای سایت',
+    title: 'مالی و فروش', icon: 'creditCard',
     cards: [
-      { href: '/dashboard/admin/posts', title: 'محتوا و انتشار', text: 'مطالب بلاگ، اخبار و گالری تصاویر.' },
-      { href: '/dashboard/admin/content', title: 'متن صفحات', text: 'ویرایش متن‌های سایت، منو، فوتر و تنظیمات گوگل.' },
-      { href: '/dashboard/admin/links', title: 'لینک صفحات', text: 'نشانی‌ها و لینک‌های داخلی سایت.' },
+      { href: '/dashboard/admin/payments', icon: 'creditCard', title: 'پرداخت‌ها و شهریه', text: 'پرداخت‌ها، اقساط و مانده حساب' },
+      { href: '/dashboard/admin/courses', icon: 'graduationCap', title: 'فروش دوره‌های غیرحضوری', text: 'دوره‌ها، درس‌ها و دسترسی خریداران' },
+      { href: '/dashboard/admin/books', icon: 'book', title: 'فروش کتاب', text: 'کتاب‌ها، سفارش‌ها و ارسال' },
+      { href: '/dashboard/admin/bookings', icon: 'clapperboard', title: 'درخواست‌های ست‌تایم', text: 'پیگیری درخواست فیلم‌سازان' },
     ],
   },
   {
-    title: 'فروش و مالی',
+    title: 'ارتباطات', icon: 'chat',
     cards: [
-      { href: '/dashboard/admin/payments', title: 'پرداخت‌ها و شهریه', text: 'وضعیت پرداخت‌ها و اقساط شهریه.' },
-      { href: '/dashboard/admin/courses', title: 'فروش دورهٔ جامع غیر حضوری', text: 'دوره‌های آنلاین و دسترسی خریداران.' },
-      { href: '/dashboard/admin/books', title: 'فروش کتاب', text: 'کتاب‌ها و سفارش‌های ثبت‌شده.' },
-      { href: '/dashboard/admin/bookings', title: 'درخواست‌های ست تایم', text: 'درخواست فیلم‌سازان از بانک بازیگران.' },
+      { href: '/dashboard/admin/support', icon: 'chat', title: 'پشتیبانی آنلاین', text: 'پیام‌ها و درخواست‌های کاربران' },
+      { href: '/dashboard/admin/chat-groups', icon: 'users', title: 'گفت‌وگوی هنرجویان', text: 'گروه‌ها و پیام‌های خصوصی' },
+      { href: '/dashboard/admin/reports', icon: 'clipboard', title: 'گزارش و گفت‌وگوی تیم', text: 'کارهای مشترک مدیر و ادیتور' },
+      { href: '/dashboard/admin/social', icon: 'users', title: 'برداشتگرام', text: 'انتشار رسمی و نظارت بر محتوا' },
     ],
   },
   {
-    title: 'مدیریت سیستم',
+    title: 'محتوا و سایت', icon: 'edit',
     cards: [
-      { href: '/dashboard/admin', title: 'کاربران', text: 'نقش، نام کاربری و رمز عبور کاربران را تعیین کنید.' },
-      { href: '/dashboard/admin/audit', title: 'گزارش تغییرات', text: 'چه کسی، چه زمانی و چه چیزی را تغییر داده است.' },
+      { href: '/dashboard/admin/posts', icon: 'edit', title: 'محتوا و انتشار', text: 'وبلاگ، اخبار و گالری' },
+      { href: '/dashboard/admin/content', icon: 'fileText', title: 'متن صفحات', text: 'ویرایش محتوای ثابت سایت' },
+      { href: '/dashboard/admin/links', icon: 'link', title: 'لینک صفحات', text: 'دسترسی و کپی نشانی صفحات' },
+      { href: '/dashboard/admin/audit', icon: 'clipboard', title: 'گزارش تغییرات', text: 'سابقه اقدامات مدیران' },
     ],
   },
 ];
@@ -78,10 +82,14 @@ async function ManagerDashboard({ user }) {
   const name = user.displayName || 'همکار گرامی';
   const roleLabel = user.role === 'admin' ? 'مدیر' : 'ادیتور';
 
-  // تابلوی گزارش کار تیمی: چند مورد از آخرین بازدیدِ همین مدیر تازه است، چند کار به خودش ارجاع شده،
-  // چند کار باز مانده و چند پیام گفت‌وگوی تیمی خوانده نشده است.
+  // وضعیت کارهای روزانهٔ مدیریت در یک درخواست موازی جمع می‌شود تا خانهٔ مدیریت
+  // بدون ورود به تک‌تک صفحه‌ها موارد نیازمند رسیدگی را نشان دهد.
   const seenAt = user.staffReportsSeenAt || new Date(0);
-  const [newReports, newComments, openReports, myOpenTasks, latestReport, chatUnread, liveCount] = await Promise.all([
+  const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const [
+    newReports, newComments, openReports, myOpenTasks, latestReport, chatUnread, liveCount,
+    pendingSignups, pendingEnrollments, supportSummary, pendingPayments, newBookings, upcomingClasses,
+  ] = await Promise.all([
     prisma.staffReport.count({ where: { createdAt: { gt: seenAt }, authorId: { not: user.id } } }),
     prisma.staffReportComment.count({ where: { createdAt: { gt: seenAt }, authorId: { not: user.id } } }),
     prisma.staffReport.count({ where: { status: 'open' } }),
@@ -89,62 +97,105 @@ async function ManagerDashboard({ user }) {
     prisma.staffReport.findFirst({ orderBy: { createdAt: 'desc' }, select: { title: true, authorName: true } }),
     countChatUnread(user),
     prisma.classSession.count({ where: { liveStatus: 'live' } }),
+    prisma.signupRequest.count({ where: { status: 'pending' } }),
+    prisma.enrollment.count({ where: { status: 'submitted' } }),
+    prisma.supportConversation.aggregate({ _sum: { adminUnread: true }, where: { status: 'open' } }),
+    prisma.payment.count({ where: { status: 'pending' } }),
+    prisma.bookingRequest.count({ where: { status: 'new' } }),
+    prisma.classSession.count({ where: { startsAt: { gte: new Date(), lte: nextWeek } } }),
   ]);
   const unread = newReports + newComments;
+  const supportUnread = supportSummary._sum.adminUnread || 0;
+  const urgentTasks = [
+    { href: '/dashboard/admin/signups', icon: 'check', value: pendingSignups, title: 'درخواست عضویت', text: 'نیازمند بررسی و ساخت حساب', tone: 'gold' },
+    { href: '/dashboard/admin/enrollments', icon: 'clipboard', value: pendingEnrollments, title: 'ثبت‌نام دوره', text: 'تست و ویدیوی در انتظار بررسی', tone: 'blue' },
+    { href: '/dashboard/admin/support', icon: 'chat', value: supportUnread, title: 'پیام پشتیبانی', text: 'پیام خوانده‌نشدهٔ کاربران', tone: 'red' },
+    { href: '/dashboard/admin/payments', icon: 'creditCard', value: pendingPayments, title: 'پرداخت در انتظار', text: 'شهریه و پرداخت‌های تعیین تکلیف‌نشده', tone: 'green' },
+  ];
 
   return (
-    <>
-      <div className="dash-head">
+    <div className="manager-home">
+      <div className="dash-head manager-home__head">
         <div className="dash-head__id">
           {user.photoUrl && <UserPhoto user={user} />}
           <div>
             <h1 className="dash-head__title">خانهٔ مدیریت</h1>
-            <p className="dash-head__sub">خوش آمدید {name} — شما با نقش «{roleLabel}» وارد شده‌اید. از کارت‌های زیر یا منوی کنار صفحه به بخش‌های پنل بروید.</p>
+            <p className="dash-head__sub">خوش آمدید {name} — وضعیت کارهای روزانه و مسیرهای اصلی پنل در یک نگاه.</p>
           </div>
         </div>
+        <span className="manager-home__role">{roleLabel} سامانه</span>
       </div>
 
-      {/* بنر پخش زنده؛ فقط وقتی حداقل یک جلسه هم‌اکنون در حال برگزاری است نمایش داده می‌شود. */}
       {liveCount > 0 && (
-        <Link href="/dashboard/admin/live-classes" className="dash-hero" style={{ marginBottom: 14, border: '2px solid #DC2626' }}>
-          <div className="dash-hero__label" style={{ color: '#F87171', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span className="live-dot" /> اکنون در حال پخش
-          </div>
-          <h2 className="dash-hero__title"><Icon name="video" size={22} /> {liveCount.toLocaleString('fa-IR')} کلاس آنلاین اکنون در حال برگزاری است</h2>
-          <p className="dash-hero__cta">مشاهدهٔ کلاس‌های آنلاین →</p>
+        <Link href="/dashboard/admin/live-classes" className="manager-live-alert">
+          <span className="live-dot" />
+          <strong>{liveCount.toLocaleString('fa-IR')} کلاس آنلاین اکنون در حال برگزاری است</strong>
+          <span>ورود به مدیریت پخش ←</span>
         </Link>
       )}
 
-      {/* دفترِ کار مشترک مدیر و ادیتور؛ فقط همین دو نقش این بخش را می‌بینند. */}
-      <Link href="/dashboard/admin/reports" className="dash-hero" style={{ marginBottom: 26 }}>
-        <div className="dash-hero__label">فقط مدیر و ادیتور</div>
-        <h2 className="dash-hero__title">
-          <Icon name="users" size={22} /> گزارش کار و گفت‌وگوی تیمی
-          {unread > 0 && <span className="tag tag--gold" style={{ marginRight: 8 }}>{unread.toLocaleString('fa-IR')} مورد تازه</span>}
-          {chatUnread > 0 && <span className="tag tag--gold" style={{ marginRight: 8 }}>{chatUnread.toLocaleString('fa-IR')} پیام نخوانده</span>}
-        </h2>
-        <p className="dash-hero__cta">
-          {latestReport
-            ? `${openReports.toLocaleString('fa-IR')} کار باز${myOpenTasks > 0 ? ` (${myOpenTasks.toLocaleString('fa-IR')} ارجاع به شما)` : ''} · آخرین گزارش: «${latestReport.title}» از ${latestReport.authorName} →`
-            : 'اولین گزارش کار را ثبت کنید یا با همکارتان گفت‌وگو را شروع کنید →'}
-        </p>
+      <section className="manager-home__section">
+        <div className="manager-home__section-head">
+          <div><span className="manager-home__eyebrow">اولویت امروز</span><h2>کارهای نیازمند رسیدگی</h2></div>
+          <span>با انتخاب هر کارت مستقیم وارد همان بخش شوید.</span>
+        </div>
+        <div className="manager-task-grid">
+          {urgentTasks.map((task) => (
+            <Link key={task.href} href={task.href} className={`manager-task manager-task--${task.tone}`}>
+              <span className="manager-task__icon"><Icon name={task.icon} size={20} /></span>
+              <span className="manager-task__content"><strong>{task.title}</strong><small>{task.text}</small></span>
+              <b>{task.value.toLocaleString('fa-IR')}</b>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <div className="manager-overview">
+        <Link href="/dashboard/admin/classes"><Icon name="calendar" size={18} /><span><strong>{upcomingClasses.toLocaleString('fa-IR')}</strong> کلاس در هفت روز آینده</span></Link>
+        <Link href="/dashboard/admin/bookings"><Icon name="clapperboard" size={18} /><span><strong>{newBookings.toLocaleString('fa-IR')}</strong> درخواست جدید ست‌تایم</span></Link>
+        <Link href="/dashboard/admin/reports"><Icon name="users" size={18} /><span><strong>{openReports.toLocaleString('fa-IR')}</strong> کار باز تیمی{myOpenTasks > 0 ? ` · ${myOpenTasks.toLocaleString('fa-IR')} ارجاع به شما` : ''}</span></Link>
+      </div>
+
+      <Link href="/dashboard/admin/reports" className="manager-team-card">
+        <span className="manager-team-card__icon"><Icon name="users" size={22} /></span>
+        <span className="manager-team-card__content">
+          <strong>گزارش کار و گفت‌وگوی تیم</strong>
+          <small>{latestReport ? `آخرین گزارش: «${latestReport.title}» از ${latestReport.authorName}` : 'اولین گزارش کار را ثبت کنید یا گفت‌وگو را شروع کنید.'}</small>
+        </span>
+        <span className="manager-team-card__badges">
+          {unread > 0 && <b>{unread.toLocaleString('fa-IR')} مورد تازه</b>}
+          {chatUnread > 0 && <b>{chatUnread.toLocaleString('fa-IR')} پیام</b>}
+        </span>
+        <span className="manager-team-card__arrow">←</span>
       </Link>
 
-      {MANAGER_GROUPS.map((group) => (
-        <section key={group.title} style={{ marginBottom: 26 }}>
-          <h2 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--dark)', margin: '0 0 12px' }}>{group.title}</h2>
-          <div className="dash-cards">
-            {group.cards.map((card) => (
-              <Link key={card.href} href={card.href} className="dash-card" style={{ display: 'block' }}>
-                <h3 className="dash-card__title">{card.title}</h3>
-                <p className="dash-card__text">{card.text}</p>
-                <span className="dash-card__link">ورود به بخش →</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-      ))}
-    </>
+      <section className="manager-home__section manager-tools">
+        <div className="manager-home__section-head">
+          <div><span className="manager-home__eyebrow">دسترسی سریع</span><h2>همهٔ ابزارهای مدیریت</h2></div>
+          <span>بخش‌ها براساس نوع کار دسته‌بندی شده‌اند.</span>
+        </div>
+        <div className="manager-groups">
+          {MANAGER_GROUPS.map((group, groupIndex) => (
+            <details key={group.title} className="manager-group" open={groupIndex === 0}>
+              <summary>
+                <span className="manager-group__icon"><Icon name={group.icon} size={19} /></span>
+                <span><strong>{group.title}</strong><small>{group.cards.length.toLocaleString('fa-IR')} ابزار مدیریتی</small></span>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
+              </summary>
+              <div className="manager-tool-grid">
+                {group.cards.map((card) => (
+                  <Link key={card.href} href={card.href} className="manager-tool">
+                    <span className="manager-tool__icon"><Icon name={card.icon} size={18} /></span>
+                    <span><strong>{card.title}</strong><small>{card.text}</small></span>
+                    <span className="manager-tool__arrow">←</span>
+                  </Link>
+                ))}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+    </div>
   );
 }
 

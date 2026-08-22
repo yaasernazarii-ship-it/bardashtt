@@ -771,6 +771,21 @@ body.nav-open {
 .sidebar-menu li a.active { background:linear-gradient(90deg, rgba(255,215,0,.15), rgba(255,215,0,.02));color:#fff;font-weight:700;border-inline-start-color:var(--gold); }
 .sidebar-menu li a.active .sidebar-menu__ico { color: var(--gold); }
 .sidebar-menu .sep { font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:20px 22px 8px; }
+.sidebar-group { margin: 2px 10px; }
+.sidebar-group__toggle {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px;
+  color: rgba(255,255,255,.62); background: transparent; border: 0; border-radius: 9px;
+  font: inherit; font-size: .82rem; font-weight: 700; text-align: start; cursor: pointer;
+  transition: var(--transition);
+}
+.sidebar-group__toggle:hover, .sidebar-group.is-active > .sidebar-group__toggle { color: #fff; background: rgba(255,255,255,.055); }
+.sidebar-group.is-active > .sidebar-group__toggle .sidebar-menu__ico { color: var(--gold); }
+.sidebar-group__chev { flex: none; margin-inline-start: auto; color: rgba(255,255,255,.35); transition: transform .18s ease; }
+.sidebar-group__chev.is-open { transform: rotate(180deg); }
+.sidebar-group__items { list-style: none; margin: 3px 0 7px; padding: 0; }
+.sidebar-menu .sidebar-group__items li a { padding: 9px 20px 9px 12px; font-size: .8rem; border-radius: 8px; border-inline-start: 0; }
+.sidebar-menu .sidebar-group__items li a.active { background: rgba(255,215,0,.11); box-shadow: inset -2px 0 0 var(--gold); }
+.sidebar-menu .sidebar-group__items .sidebar-menu__ico { opacity: .72; }
 
 /* پاورقی سایدبار: جعبهٔ پشتیبانی + خروج */
 .sidebar-foot { margin-top: auto; padding: 18px 16px 0; }
@@ -901,6 +916,65 @@ a.dash-stat:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(27
 .dash-hero__title { font-size: 1.25rem; font-weight: 700; margin: 8px 0 6px; }
 .dash-hero__cta { color: var(--gold-lt); font-size: 0.9rem; margin: 0; }
 
+/* خانهٔ مدیریت: کارهای فوری، وضعیت روز و ابزارهای دسته‌بندی‌شده */
+.manager-home { display: grid; gap: 20px; }
+.manager-home__head { margin-bottom: 0; }
+.manager-home__role { padding: 6px 11px; color: #745C00; background: var(--gold-soft); border: 1px solid color-mix(in srgb, var(--gold) 32%, transparent); border-radius: 100px; font-size: .72rem; font-weight: 800; }
+.manager-live-alert { display: flex; align-items: center; gap: 10px; padding: 12px 15px; color: #991B1B; background: #FEF2F2; border: 1px solid #FECACA; border-radius: var(--radius-sm); font-size: .82rem; }
+.manager-live-alert > span:last-child { margin-inline-start: auto; font-weight: 750; }
+.manager-home__section { padding: 0; }
+.manager-home__section-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 11px; }
+.manager-home__section-head h2 { margin: 2px 0 0; color: var(--dark); font-size: 1rem; font-weight: 850; }
+.manager-home__section-head > span { color: var(--muted); font-size: .72rem; }
+.manager-home__eyebrow { color: var(--muted); font-size: .67rem; font-weight: 700; }
+.manager-task-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+.manager-task { position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; padding: 14px; overflow: hidden; color: var(--body); background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); transition: var(--transition); }
+.manager-task::after { content: ''; position: absolute; inset-inline: 0; bottom: 0; height: 3px; background: var(--dark); }
+.manager-task:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.07); }
+.manager-task--gold::after { background: #F59E0B; }
+.manager-task--blue::after { background: #3B82F6; }
+.manager-task--red::after { background: #EF4444; }
+.manager-task--green::after { background: #22C55E; }
+.manager-task__icon { flex: none; width: 38px; height: 38px; display: grid; place-items: center; color: var(--dark); background: var(--surface); border-radius: 10px; }
+.manager-task__content { display: grid; gap: 3px; min-width: 0; }
+.manager-task__content strong { overflow: hidden; color: var(--dark); font-size: .78rem; text-overflow: ellipsis; white-space: nowrap; }
+.manager-task__content small { overflow: hidden; color: var(--muted); font-size: .65rem; text-overflow: ellipsis; white-space: nowrap; }
+.manager-task > b { margin-inline-start: auto; color: var(--dark); font-size: 1.35rem; font-weight: 900; }
+.manager-overview { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+.manager-overview a { display: flex; align-items: center; gap: 9px; padding: 11px 13px; color: var(--body); background: color-mix(in srgb, var(--surface) 68%, var(--white)); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: .75rem; transition: var(--transition); }
+.manager-overview a:hover { background: var(--white); border-color: color-mix(in srgb, var(--gold) 45%, var(--border)); }
+.manager-overview svg { color: var(--gold); }
+.manager-overview strong { color: var(--dark); font-size: .9rem; }
+.manager-team-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; color: var(--body); background: var(--dark); border-radius: var(--radius-sm); transition: var(--transition); }
+.manager-team-card:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(0,0,0,.14); }
+.manager-team-card__icon { flex: none; width: 42px; height: 42px; display: grid; place-items: center; color: var(--gold); background: rgba(255,255,255,.07); border-radius: 11px; }
+.manager-team-card__content { display: grid; gap: 4px; min-width: 0; }
+.manager-team-card__content strong { color: #fff; font-size: .86rem; }
+.manager-team-card__content small { overflow: hidden; color: rgba(255,255,255,.5); font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
+.manager-team-card__badges { display: flex; gap: 6px; margin-inline-start: auto; }
+.manager-team-card__badges b { padding: 4px 8px; color: #1F1F1F; background: var(--gold); border-radius: 100px; font-size: .66rem; white-space: nowrap; }
+.manager-team-card__arrow { color: rgba(255,255,255,.5); }
+.manager-groups { display: grid; gap: 9px; }
+.manager-group { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.manager-group[open] { border-color: color-mix(in srgb, var(--gold) 34%, var(--border)); box-shadow: 0 6px 20px rgba(0,0,0,.035); }
+.manager-group summary { display: flex; align-items: center; gap: 11px; padding: 13px 15px; cursor: pointer; list-style: none; user-select: none; }
+.manager-group summary::-webkit-details-marker { display: none; }
+.manager-group summary:hover { background: var(--surface); }
+.manager-group summary > span:nth-child(2) { display: grid; gap: 2px; }
+.manager-group summary strong { color: var(--dark); font-size: .84rem; }
+.manager-group summary small { color: var(--muted); font-size: .67rem; }
+.manager-group summary > svg { margin-inline-start: auto; color: var(--muted); transition: transform .18s ease; }
+.manager-group[open] summary > svg { transform: rotate(180deg); }
+.manager-group__icon { flex: none; width: 35px; height: 35px; display: grid; place-items: center; color: #745C00; background: var(--gold-soft); border-radius: 9px; }
+.manager-tool-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; padding: 0 13px 13px; border-top: 1px solid var(--border); }
+.manager-tool { display: flex; align-items: center; gap: 10px; min-width: 0; margin-top: 9px; padding: 11px 12px; color: var(--body); background: var(--surface); border: 1px solid transparent; border-radius: 9px; transition: var(--transition); }
+.manager-tool:hover { background: var(--white); border-color: var(--border); }
+.manager-tool__icon { flex: none; width: 34px; height: 34px; display: grid; place-items: center; color: var(--dark); background: var(--white); border: 1px solid var(--border); border-radius: 9px; }
+.manager-tool > span:nth-child(2) { display: grid; gap: 3px; min-width: 0; }
+.manager-tool strong { overflow: hidden; color: var(--dark); font-size: .78rem; text-overflow: ellipsis; white-space: nowrap; }
+.manager-tool small { overflow: hidden; color: var(--muted); font-size: .66rem; text-overflow: ellipsis; white-space: nowrap; }
+.manager-tool__arrow { margin-inline-start: auto; color: var(--muted); }
+
 /* پلیر کلاس آنلاین زنده — نسبت تصویر ۱۶:۹ و کاملاً Responsive */
 .live-player { position: relative; width: 100%; border-radius: var(--radius-sm); overflow: hidden; background: #000; box-shadow: 0 20px 50px rgba(0,0,0,.22); }
 .live-player__ratio { display: block; width: 100%; padding-top: 56.25%; }
@@ -908,9 +982,24 @@ a.dash-stat:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(27
 
 .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #DC2626; display: inline-block; animation: pulse 1.4s infinite; }
 
+@media (max-width: 1100px) {
+  .manager-task-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .manager-overview { grid-template-columns: 1fr; }
+}
 @media (max-width: 767px) {
   .dash-head__title { font-size: 1.2rem; }
   .dash-cards { grid-template-columns: 1fr; }
+  .manager-home { gap: 16px; }
+  .manager-home__section-head { align-items: flex-start; }
+  .manager-home__section-head > span { display: none; }
+  .manager-task-grid { grid-template-columns: 1fr; }
+  .manager-live-alert { align-items: flex-start; flex-wrap: wrap; }
+  .manager-live-alert > span:last-child { width: 100%; margin: 0 18px 0 0; }
+  .manager-team-card { align-items: flex-start; flex-wrap: wrap; }
+  .manager-team-card__content { flex: 1; }
+  .manager-team-card__badges { width: 100%; margin: 0 54px 0 0; }
+  .manager-team-card__arrow { display: none; }
+  .manager-tool-grid { grid-template-columns: 1fr; }
 }
 
 /* ── RESPONSIVE ───────────────────────────

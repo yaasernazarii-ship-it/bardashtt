@@ -40,27 +40,52 @@ const MANAGER_PERSONAL_ITEMS = [
   { key: 'profile', href: '/dashboard/profile', icon: 'user', label: 'پروفایل من' },
 ];
 
-const MANAGER_ITEMS = [
-  { key: 'growth-admin', href: '/dashboard/admin/growth', icon: 'flag', label: 'مسیر رشد هنرجویان' },
-  { key: 'reports', href: '/dashboard/admin/reports', icon: 'users', label: 'گزارش و گفت‌وگوی تیم' },
-  { key: 'chat-groups', href: '/dashboard/admin/chat-groups', icon: 'chat', label: 'گروه‌های گفت‌وگوی هنرجویان' },
-  { key: 'enrollments', href: '/dashboard/admin/enrollments', icon: 'clipboard', label: 'بررسی ثبت‌نام‌ها' },
-  { key: 'signups', href: '/dashboard/admin/signups', icon: 'check', label: 'تأیید حساب‌ها' },
-  { key: 'classes', href: '/dashboard/admin/classes', icon: 'calendar', label: 'کلاس‌ها و تقویم' },
-  { key: 'live-classes', href: '/dashboard/admin/live-classes', icon: 'video', label: 'کلاس‌های آنلاین' },
-  { key: 'exam-admin', href: '/dashboard/admin/exam', icon: 'check', label: 'آزمون و بانک سوال' },
-  { key: 'certificates', href: '/dashboard/admin/certificates', icon: 'fileText', label: 'گواهی‌نامه‌ها' },
-  { key: 'payments', href: '/dashboard/admin/payments', icon: 'creditCard', label: 'پرداخت‌ها و شهریه' },
-  { key: 'bookings', href: '/dashboard/admin/bookings', icon: 'clapperboard', label: 'درخواست‌های ست تایم' },
-  { key: 'support', href: '/dashboard/admin/support', icon: 'chat', label: 'پشتیبانی آنلاین' },
-  { key: 'posts', href: '/dashboard/admin/posts', icon: 'edit', label: 'محتوا و انتشار' },
-  { key: 'social-admin', href: '/dashboard/admin/social', icon: 'users', label: 'برداشتگرام' },
-  { key: 'courses-admin', href: '/dashboard/admin/courses', icon: 'graduationCap', label: 'فروش دورهٔ جامع غیر حضوری' },
-  { key: 'books-admin', href: '/dashboard/admin/books', icon: 'book', label: 'فروش کتاب' },
-  { key: 'content', href: '/dashboard/admin/content', icon: 'fileText', label: 'متن صفحات' },
-  { key: 'links', href: '/dashboard/admin/links', icon: 'link', label: 'لینک صفحات' },
-  { key: 'admin', href: '/dashboard/admin', icon: 'settings', label: 'کاربران' },
-  { key: 'audit', href: '/dashboard/admin/audit', icon: 'clipboard', label: 'گزارش تغییرات' },
+const MANAGER_GROUPS = [
+  {
+    key: 'students', label: 'هنرجویان و آموزش', icon: 'graduationCap',
+    items: [
+      { key: 'admin', href: '/dashboard/admin', icon: 'users', label: 'کاربران' },
+      { key: 'signups', href: '/dashboard/admin/signups', icon: 'check', label: 'درخواست عضویت و ساخت حساب' },
+      { key: 'enrollments', href: '/dashboard/admin/enrollments', icon: 'clipboard', label: 'ثبت‌نام دوره و تست بازیگری' },
+      { key: 'classes', href: '/dashboard/admin/classes', icon: 'calendar', label: 'کلاس‌ها و تقویم' },
+      { key: 'live-classes', href: '/dashboard/admin/live-classes', icon: 'video', label: 'کلاس‌های آنلاین' },
+      { key: 'exam-admin', href: '/dashboard/admin/exam', icon: 'check', label: 'آزمون و بانک سؤال' },
+      { key: 'certificates', href: '/dashboard/admin/certificates', icon: 'fileText', label: 'گواهی‌نامه‌ها' },
+      { key: 'growth-admin', href: '/dashboard/admin/growth', icon: 'flag', label: 'مسیر رشد هنرجویان' },
+    ],
+  },
+  {
+    key: 'finance', label: 'مالی و فروش', icon: 'creditCard',
+    items: [
+      { key: 'payments', href: '/dashboard/admin/payments', icon: 'creditCard', label: 'پرداخت‌ها و شهریه' },
+      { key: 'courses-admin', href: '/dashboard/admin/courses', icon: 'graduationCap', label: 'فروش دوره‌های غیرحضوری' },
+      { key: 'books-admin', href: '/dashboard/admin/books', icon: 'book', label: 'فروش کتاب' },
+      { key: 'bookings', href: '/dashboard/admin/bookings', icon: 'clapperboard', label: 'درخواست‌های ست‌تایم' },
+    ],
+  },
+  {
+    key: 'communications', label: 'ارتباطات', icon: 'chat',
+    items: [
+      { key: 'support', href: '/dashboard/admin/support', icon: 'chat', label: 'پشتیبانی آنلاین' },
+      { key: 'chat-groups', href: '/dashboard/admin/chat-groups', icon: 'users', label: 'گفت‌وگوی هنرجویان' },
+      { key: 'reports', href: '/dashboard/admin/reports', icon: 'clipboard', label: 'گزارش و گفت‌وگوی تیم' },
+      { key: 'social-admin', href: '/dashboard/admin/social', icon: 'users', label: 'برداشتگرام' },
+    ],
+  },
+  {
+    key: 'content', label: 'محتوا و سایت', icon: 'edit',
+    items: [
+      { key: 'posts', href: '/dashboard/admin/posts', icon: 'edit', label: 'محتوا و انتشار' },
+      { key: 'content', href: '/dashboard/admin/content', icon: 'fileText', label: 'متن صفحات' },
+      { key: 'links', href: '/dashboard/admin/links', icon: 'link', label: 'لینک صفحات' },
+    ],
+  },
+  {
+    key: 'monitoring', label: 'نظارت و تنظیمات', icon: 'settings',
+    items: [
+      { key: 'audit', href: '/dashboard/admin/audit', icon: 'clipboard', label: 'گزارش تغییرات' },
+    ],
+  },
 ];
 
 function itemsForRole(role, graduated, manager) {
@@ -93,8 +118,18 @@ export default function DashboardNav({
 }) {
   const showManager = isAdmin || isManager;
   const visibleItems = itemsForRole(role, graduated, showManager);
+  const activeManagerGroup = MANAGER_GROUPS.find((group) => group.items.some((item) => item.key === active))?.key;
   const [open, setOpen] = useState(false);
+  const [openManagerGroups, setOpenManagerGroups] = useState(() => new Set([activeManagerGroup || 'students']));
   const close = () => setOpen(false);
+  const toggleManagerGroup = (key) => {
+    setOpenManagerGroups((previous) => {
+      const next = new Set(previous);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   return (
     <aside className="sidebar">
@@ -143,13 +178,34 @@ export default function DashboardNav({
           {showManager && (
             <>
               <li className="sep">مدیریت</li>
-              {MANAGER_ITEMS.map((it) => (
-                <li key={it.key}>
-                  <Link className={active === it.key ? 'active' : undefined} href={it.href} onClick={close}>
-                    <Icon name={it.icon} size={18} className="sidebar-menu__ico" />{it.label}
-                  </Link>
-                </li>
-              ))}
+              {MANAGER_GROUPS.map((group) => {
+                const expanded = openManagerGroups.has(group.key);
+                const groupActive = group.key === activeManagerGroup;
+                return (
+                  <li key={group.key} className={`sidebar-group${groupActive ? ' is-active' : ''}`}>
+                    <button type="button" className="sidebar-group__toggle" aria-expanded={expanded}
+                      onClick={() => toggleManagerGroup(group.key)}>
+                      <Icon name={group.icon} size={18} className="sidebar-menu__ico" />
+                      <span>{group.label}</span>
+                      <svg className={`sidebar-group__chev${expanded ? ' is-open' : ''}`} width="15" height="15" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </button>
+                    {expanded && (
+                      <ul className="sidebar-group__items">
+                        {group.items.map((item) => (
+                          <li key={item.key}>
+                            <Link className={active === item.key ? 'active' : undefined} href={item.href} onClick={close}>
+                              <Icon name={item.icon} size={16} className="sidebar-menu__ico" />{item.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
             </>
           )}
           <li className="sep">سایت</li>
