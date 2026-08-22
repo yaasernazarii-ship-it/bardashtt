@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSessionUser, isManager } from '@/lib/auth';
 import DashboardSidebar from '@/components/DashboardSidebar';
-import StudentChatGroups from '@/components/StudentChatGroups';
+import StudentChatHub from '@/components/StudentChatHub';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'گروه‌های گفت‌وگو' };
@@ -14,6 +14,7 @@ export default async function StudentGroupsPage({ searchParams }) {
 
   const sp = await searchParams;
   const initialGroupId = typeof sp?.g === 'string' ? sp.g : '';
+  const initialChatId = typeof sp?.d === 'string' ? sp.d : '';
 
   return (
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
@@ -22,10 +23,10 @@ export default async function StudentGroupsPage({ searchParams }) {
         <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
           <h1 className="dash-head__title">گروه‌های گفت‌وگو</h1>
           <p className="dash-head__sub">
-            گفت‌وگوی هنرجویان هر دوره در گروه خودشان. عضویت گروه‌ها را مدیر آموزشگاه تعیین می‌کند.
+            گفت‌وگوی گروهی و خصوصی با هنرجویانی که مدیر در گروه‌های مشترک قرار داده است.
           </p>
         </div>
-        <StudentChatGroups initialGroupId={initialGroupId} />
+        <StudentChatHub initialGroupId={initialGroupId} initialChatId={initialChatId} />
       </main>
     </div>
   );

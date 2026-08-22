@@ -1008,3 +1008,43 @@ model ChatGroupRead {
   @@unique([groupId, userId])
   @@index([userId])
 }
+
+// گفت‌وگوی خصوصی دو هنرجو که دست‌کم در یک گروه مدیریت‌شده عضو مشترک هستند.
+// شناسه‌های userA و userB همیشه به ترتیب الفبایی ذخیره می‌شوند تا برای هر دو نفر فقط یک گفت‌وگو ساخته شود.
+model DirectChat {
+  id            String              @id @default(cuid())
+  userAId       String
+  userBId       String
+  lastMessageAt DateTime            @default(now())
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  messages      DirectChatMessage[]
+  reads         DirectChatRead[]
+
+  @@unique([userAId, userBId])
+  @@index([userAId, lastMessageAt])
+  @@index([userBId, lastMessageAt])
+}
+
+model DirectChatMessage {
+  id         String     @id @default(cuid())
+  chatId     String
+  chat       DirectChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  authorId   String
+  authorName String
+  body       String
+  createdAt  DateTime   @default(now())
+
+  @@index([chatId, createdAt])
+}
+
+model DirectChatRead {
+  id         String     @id @default(cuid())
+  chatId     String
+  chat       DirectChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  userId     String
+  lastReadAt DateTime   @default(now())
+
+  @@unique([chatId, userId])
+  @@index([userId])
+}

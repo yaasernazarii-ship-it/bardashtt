@@ -2206,6 +2206,44 @@ summary:focus-visible {
   cursor: pointer; color: var(--muted); padding: 5px 9px; font: inherit; font-size: .76rem;
 }
 .cg-remove:hover { color: #DC2626; border-color: #DC2626; }
+
+/* مرکز گفت‌وگوی گروهی و خصوصی */
+.chat-hub-tabs {
+  display: inline-flex; gap: 5px; padding: 5px; margin-bottom: 14px;
+  border: 1px solid var(--border); border-radius: 13px; background: var(--white);
+}
+.chat-hub-tabs button {
+  border: 0; border-radius: 9px; background: transparent; color: var(--muted);
+  padding: 9px 17px; font: inherit; font-size: .84rem; font-weight: 700; cursor: pointer;
+}
+.chat-hub-tabs button.is-active { background: var(--dark); color: #fff; }
+.cg-privacy-note, .cg-admin-monitor {
+  display: flex; align-items: center; gap: 9px; margin-bottom: 12px;
+  border: 1px solid #e5c84c; border-radius: 12px; background: #fff9dc;
+  padding: 10px 13px; color: var(--dark); font-size: .8rem; line-height: 1.8;
+}
+.cg-admin-monitor { align-items: flex-start; flex-direction: column; gap: 2px; }
+.cg-admin-monitor span { color: var(--muted); }
+.cg-direct-side { gap: 0; }
+.cg-direct-label {
+  padding: 9px 13px; background: var(--white); border-bottom: 1px solid var(--border);
+  color: var(--muted); font-size: .72rem; font-weight: 800; flex: none;
+}
+.cg-direct-search { padding: 9px; border-bottom: 1px solid var(--border); flex: none; }
+.cg-direct-search input {
+  width: 100%; border: 1px solid var(--border); border-radius: 9px; background: var(--white);
+  padding: 9px 10px; color: var(--dark); font: inherit; font-size: .8rem;
+}
+.cg-private-empty { text-align: center; padding: 38px 20px; }
+.cg-private-empty h3 { margin: 10px 0 4px; }
+.cg-private-empty p { margin: 0; color: var(--muted); }
+.cg-admin-pair { display: flex; }
+.cg-admin-pair > * + * { margin-inline-start: -9px; }
+.cg-monitor-foot {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 12px; border-top: 1px solid var(--border); background: var(--white);
+  color: var(--muted); font-size: .76rem;
+}
 @media (max-width: 860px) {
   /* در گوشی، تب‌های گروه به خط بعدِ سربرگ می‌روند تا نام گروه فشرده نشود */
   .staff-chat__head { flex-wrap: wrap; }
@@ -2223,8 +2261,15 @@ summary:focus-visible {
 @media(max-width:700px){.growth-head,.growth-page-title{display:block}.growth-head .btn,.growth-page-title .tag{display:inline-flex;margin-top:14px}.growth-grid{grid-template-columns:1fr}.growth-section:nth-child(1){grid-column:auto}.growth-form-row,.growth-inline-form{display:grid}.growth-heatmap{max-width:none}.growth-section{padding:14px}}
 @media (max-width: 860px) {
   .staff-chat {
+    grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr);
     height: clamp(360px, calc(100vh - 230px), 640px);
   }
+  .chat-hub-tabs { display: flex; }
+  .chat-hub-tabs button { flex: 1; padding-inline: 9px; }
+  .cg-privacy-note { align-items: flex-start; }
+  .cg-direct-side .cg-direct-label { display: none; }
+  .cg-direct-side .cg-direct-search { min-width: 190px; }
+  .cg-monitor-foot { text-align: center; }
   .staff-chat__side {
     flex: none; flex-direction: row; overflow-x: auto; overflow-y: hidden;
     border-left: none; border-bottom: 1px solid var(--border);

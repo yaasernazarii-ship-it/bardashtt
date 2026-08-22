@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSessionUser, isManager } from '@/lib/auth';
 import DashboardSidebar from '@/components/DashboardSidebar';
-import AdminChatGroups from '@/components/AdminChatGroups';
+import AdminChatHub from '@/components/AdminChatHub';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'گروه‌های گفت‌وگوی هنرجویان' };
@@ -18,10 +18,10 @@ export default async function AdminChatGroupsPage() {
         <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
           <h1 className="dash-head__title">گروه‌های گفت‌وگوی هنرجویان</h1>
           <p className="dash-head__sub">
-            برای هر دوره یک گروه بسازید، نام و عکس گروه را تعیین کنید و خودتان انتخاب کنید چه هنرجویانی عضو آن باشند.
+            گروه‌ها و اعضا را مدیریت کنید و همهٔ پیام‌های خصوصی میان هنرجویان را زیر نظر داشته باشید.
           </p>
         </div>
-        <AdminChatGroups />
+        <AdminChatHub />
       </main>
     </div>
   );
