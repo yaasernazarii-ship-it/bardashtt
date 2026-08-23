@@ -227,7 +227,7 @@ function StudentRoster({ students }) {
 }
 
 const TABS = [
-  { id: 'sessions', label: 'جلسات و تقویم' },
+  { id: 'sessions', label: 'جلسات، ابزار و تمرین' },
   { id: 'members', label: 'هنرجویان' },
   { id: 'attendance', label: 'حضور و غیاب' },
   { id: 'progress', label: 'پیشرفت هنرجویان' },
@@ -252,7 +252,7 @@ function GroupCard({ group, students, open, onToggle, onBack, onChanged }) {
   const [courseTitle, setCourseTitle] = useState(group.courseTitle || '');
   const [teacherName, setTeacherName] = useState(group.teacherName || '');
   const [attendanceSessionId, setAttendanceSessionId] = useState(null);
-  const [sessionFormOpen, setSessionFormOpen] = useState(false);
+  const [sessionFormOpen, setSessionFormOpen] = useState(true);
   const [settingsSaving, setSettingsSaving] = useState(false);
 
   useEffect(() => { setMemberIds(group.members.map((m) => m.id)); }, [group]);
@@ -420,12 +420,19 @@ function GroupCard({ group, students, open, onToggle, onBack, onChanged }) {
           {/* جلسات، تقویم و ثبت جلسه در فضای عملیاتی واحد */}
           <div className={`tab-panel${tab === 'sessions' ? ' active' : ''}`}>
             <div className="admin-class-section-head">
-              <div><h3>جلسات و تقویم</h3><p>جلسه‌های ثبت‌شده را ببینید یا یک جلسه جدید اضافه کنید.</p></div>
-              <button type="button" className="btn btn--dark btn--sm" onClick={() => { setSForm(emptySession); setEditingSession(null); setSessionFormOpen((value) => !value); }}>{sessionFormOpen && !editingSession ? 'بستن فرم' : '+ ثبت جلسه جدید'}</button>
+              <div><h3>جلسات، ابزار و تمرین</h3><p>برای هر جلسه زمان، محتوای آموزشی، ابزار موردنیاز و تمرین یا اتود را همین‌جا ثبت کنید.</p></div>
+              <button type="button" className="btn btn--dark btn--sm" onClick={() => { setSForm(emptySession); setEditingSession(null); setSessionFormOpen((value) => !value); }}>{sessionFormOpen && !editingSession ? 'بستن فرم ثبت جلسه' : '+ ثبت جلسه و برنامه آن'}</button>
             </div>
 
+            {!sessionFormOpen && (
+              <button type="button" className="admin-session-program-callout" onClick={() => { setSForm(emptySession); setEditingSession(null); setSessionFormOpen(true); }}>
+                <strong>ثبت ابزار، تمرین و اتود برای جلسه</strong>
+                <span>برای واردکردن نیازهای هر جلسه، فرم ثبت برنامه جلسه را باز کنید.</span>
+              </button>
+            )}
+
             {sessionFormOpen && <form onSubmit={submitSession} className="admin-session-editor">
-              <div className="admin-session-editor__head"><strong>{editingSession ? 'ویرایش جلسه' : 'جلسه جدید'}</strong><span>عنوان و زمان برای ثبت کافی است.</span></div>
+              <div className="admin-session-editor__head"><strong>{editingSession ? 'ویرایش زمان و برنامه جلسه' : 'ثبت زمان و برنامه جلسه جدید'}</strong><span>اطلاعات این فرم پس از ذخیره در برنامه هنرجویان نمایش داده می‌شود.</span></div>
               <div className="cal-form-grid">
                 <div className="form-group"><label className="form-label">عنوان جلسه *</label><input className="form-input" value={sForm.title} onChange={(e) => setSForm({ ...sForm, title: e.target.value })} placeholder="مثلاً جلسه سوم: بیان و بدن" /></div>
                 <div className="form-group"><label className="form-label">تاریخ و ساعت *</label><input className="form-input" type="datetime-local" value={sForm.startsAt} onChange={(e) => setSForm({ ...sForm, startsAt: e.target.value })} /></div>
@@ -454,7 +461,14 @@ function GroupCard({ group, students, open, onToggle, onBack, onChanged }) {
                       const d = new Date(s.startsAt);
                       return <li key={s.id} className={editingSession === s.id ? 'is-editing' : ''}>
                         <span className="admin-session-list__number">{(i + 1).toLocaleString('fa-IR')}</span>
-                        <button type="button" className="admin-session-list__main" onClick={() => startEditSession(s)}><strong>{s.title}</strong><small>{dateFmt.format(d)} · {timeFmt.format(d)}</small></button>
+                        <button type="button" className="admin-session-list__main" onClick={() => startEditSession(s)}>
+                          <strong>{s.title}</strong>
+                          <small>{dateFmt.format(d)} · {timeFmt.format(d)}</small>
+                          <span className="admin-session-list__program">
+                            <em className={s.tools ? 'is-complete' : ''}>{s.tools ? 'ابزار ثبت شده' : 'ابزار ثبت نشده'}</em>
+                            <em className={s.homework ? 'is-complete' : ''}>{s.homework ? 'تمرین و اتود ثبت شده' : 'تمرین و اتود ثبت نشده'}</em>
+                          </span>
+                        </button>
                         <button type="button" className="admin-session-list__delete" onClick={() => deleteSession(s.id)} aria-label={`حذف ${s.title}`}>حذف</button>
                       </li>;
                     })}
