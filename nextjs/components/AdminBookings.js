@@ -1,18 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Icon from './Icon';
+import { useEffect, useMemo, useState } from 'react';
 
-const STATUS_LABEL = { new: 'جدید', contacted: 'در حال پیگیری', done: 'انجام‌شده', rejected: 'ردشده' };
-const STATUS_TAG = { new: 'tag--gold', contacted: 'tag--dark', done: 'tag--dark', rejected: 'tag--dark' };
+const STATUS = {
+  new: { label: 'جدید', className: 'booking-status--new' },
+  contacted: { label: 'در حال پیگیری', className: 'booking-status--contacted' },
+  done: { label: 'انجام‌شده', className: 'booking-status--done' },
+  rejected: { label: 'ردشده', className: 'booking-status--rejected' },
+};
+
+const dateFmt = new Intl.DateTimeFormat('fa-IR', {
+  year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+});
 
 export default function AdminBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [busyId, setBusyId] = useState('');
-  // پیش‌نویس پاسخ برای هر درخواست؛ کلید = شناسهٔ درخواست.
   const [drafts, setDrafts] = useState({});
+  const [filter, setFilter] = useState('all');
+  const [query, setQuery] = useState('');
+  const [openId, setOpenId] = useState('');
 
   async function load() {
     const res = await fetch('/api/bookings');
@@ -32,78 +41,98 @@ export default function AdminBookings() {
     });
     const data = await res.json();
     setBusyId('');
-    if (data.ok) load();
+    if (data.ok) await load();
     else setError(data.error || 'عملیات انجام نشد.');
+    return data.ok;
   }
-
-  const setStatus = (id, status) => patch(id, { status });
 
   async function sendReply(id) {
     const reply = (drafts[id] || '').trim();
     if (!reply) return;
-    await patch(id, { reply });
-    setDrafts((d) => ({ ...d, [id]: '' }));
+    if (await patch(id, { reply })) setDrafts((current) => ({ ...current, [id]: '' }));
   }
+
+  const counts = useMemo(() => ({
+    all: bookings.length,
+    new: bookings.filter((item) => item.status === 'new').length,
+    contacted: bookings.filter((item) => item.status === 'contacted').length,
+    done: bookings.filter((item) => item.status === 'done').length,
+  }), [bookings]);
+
+  const visible = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return bookings.filter((item) => {
+      if (filter !== 'all' && item.status !== filter) return false;
+      if (!needle) return true;
+      return [item.actorName, item.name, item.phone, item.message, item.reply]
+        .filter(Boolean).join(' ').toLowerCase().includes(needle);
+    });
+  }, [bookings, filter, query]);
 
   if (loading) return <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p>;
 
   return (
-    <div>
-      {error && <div className="alert alert--error" style={{ marginBottom: 12 }}>{error}</div>}
-      {bookings.length === 0 && <p style={{ color: 'var(--muted)' }}>هنوز درخواست ست تایمی ثبت نشده است.</p>}
+    <div className="admin-operation-page admin-bookings">
+      {error && <div className="alert alert--error">{error}</div>}
 
-      <div style={{ display: 'grid', gap: 14 }}>
-        {bookings.map((b) => (
-          <div key={b.id} className="form-shell" style={{ margin: 0 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
-              <strong style={{ fontSize: '1.05rem' }} className="icon-inline"><Icon name="masks" size={17} /> {b.actorName}</strong>
-              <span className={`tag ${STATUS_TAG[b.status] || 'tag--dark'}`}>{STATUS_LABEL[b.status] || b.status}</span>
-            </div>
-            <div style={{ color: 'var(--muted)', fontSize: '.9rem', lineHeight: 2 }}>
-              <div>نام درخواست‌دهنده: {b.name}</div>
-              <div>شماره تماس: <a href={`tel:${b.phone}`} dir="ltr">{b.phone}</a></div>
-              {b.createdAt && <div>تاریخ: <span dir="ltr">{new Date(b.createdAt).toLocaleString('fa-IR')}</span></div>}
-            </div>
-            <div style={{ marginTop: 10, background: 'var(--surface)', borderRadius: 10, padding: 12, whiteSpace: 'pre-line', lineHeight: 2 }}>
-              {b.message}
-            </div>
-            {/* پاسخ پشتیبانی — این متن را خودِ فیلمساز در «درخواست‌های ست تایم» داشبوردش می‌بیند و اعلان می‌گیرد. */}
-            <div style={{ marginTop: 14 }}>
-              {b.reply && (
-                <div style={{ marginBottom: 10, padding: '8px 10px', borderRadius: 8, background: '#eaf7f0', border: '1px solid #bfe5d0', fontSize: '.88rem', lineHeight: 2, whiteSpace: 'pre-line' }}>
-                  <b>پاسخ فعلی (قابل مشاهده برای فیلمساز):</b>
-                  <div>{b.reply}</div>
-                </div>
-              )}
-              <label className="form-label">{b.reply ? 'ویرایش پاسخ' : 'پاسخ به فیلمساز'}</label>
-              <textarea
-                className="form-input"
-                rows={2}
-                value={drafts[b.id] ?? ''}
-                onChange={(e) => setDrafts((d) => ({ ...d, [b.id]: e.target.value }))}
-                placeholder="مثلاً: با بازیگر هماهنگ شد؛ جلسه پنج‌شنبه ساعت ۱۶ در دفتر."
-              />
-              <button
-                type="button"
-                className="btn btn--outline btn--sm"
-                style={{ marginTop: 8 }}
-                disabled={busyId === b.id || !(drafts[b.id] || '').trim()}
-                onClick={() => sendReply(b.id)}
-              >
-                ارسال پاسخ و اعلان
-              </button>
-            </div>
-
-            <div style={{ display: 'flex', gap: 8, marginTop: 14, flexWrap: 'wrap' }}>
-              <a className="btn btn--gold" href={`tel:${b.phone}`}>تماس تلفنی</a>
-              <a className="btn btn--outline" href={`https://wa.me/98${String(b.phone).replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer">واتساپ</a>
-              {b.status !== 'contacted' && <button className="btn btn--outline" disabled={busyId === b.id} onClick={() => setStatus(b.id, 'contacted')}>در حال پیگیری</button>}
-              {b.status !== 'done' && <button className="btn btn--dark" disabled={busyId === b.id} onClick={() => setStatus(b.id, 'done')}>انجام شد</button>}
-              {b.status !== 'rejected' && <button className="btn btn--ghost" disabled={busyId === b.id} onClick={() => setStatus(b.id, 'rejected')}>رد</button>}
-            </div>
-          </div>
-        ))}
+      <div className="admin-stat-grid">
+        <button type="button" className={`admin-stat ${filter === 'all' ? 'is-active' : ''}`} onClick={() => setFilter('all')}><strong>{counts.all.toLocaleString('fa-IR')}</strong><span>همه درخواست‌ها</span></button>
+        <button type="button" className={`admin-stat admin-stat--warning ${filter === 'new' ? 'is-active' : ''}`} onClick={() => setFilter('new')}><strong>{counts.new.toLocaleString('fa-IR')}</strong><span>درخواست جدید</span></button>
+        <button type="button" className={`admin-stat ${filter === 'contacted' ? 'is-active' : ''}`} onClick={() => setFilter('contacted')}><strong>{counts.contacted.toLocaleString('fa-IR')}</strong><span>در حال پیگیری</span></button>
+        <button type="button" className={`admin-stat admin-stat--success ${filter === 'done' ? 'is-active' : ''}`} onClick={() => setFilter('done')}><strong>{counts.done.toLocaleString('fa-IR')}</strong><span>انجام‌شده</span></button>
       </div>
+
+      <div className="admin-list-toolbar">
+        <label className="admin-search"><span aria-hidden="true">⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="جست‌وجوی بازیگر، درخواست‌دهنده، موبایل یا متن…" /></label>
+        <span className="admin-list-toolbar__count">{visible.length.toLocaleString('fa-IR')} درخواست</span>
+        <select className="form-input booking-filter" value={filter} onChange={(event) => setFilter(event.target.value)} aria-label="فیلتر وضعیت">
+          <option value="all">همه وضعیت‌ها</option>
+          <option value="new">جدید</option>
+          <option value="contacted">در حال پیگیری</option>
+          <option value="done">انجام‌شده</option>
+          <option value="rejected">ردشده</option>
+        </select>
+      </div>
+
+      {visible.length === 0 ? <div className="su-empty">درخواستی مطابق فیلتر فعلی وجود ندارد.</div> : (
+        <div className="booking-table">
+          <div className="booking-table__head" aria-hidden="true"><span>بازیگر و درخواست‌دهنده</span><span>تماس</span><span>تاریخ ثبت</span><span>وضعیت</span><span>جزئیات</span></div>
+          {visible.map((booking) => {
+            const open = openId === booking.id;
+            const status = STATUS[booking.status] || STATUS.new;
+            return (
+              <article key={booking.id} className={`booking-row${open ? ' is-open' : ''}`}>
+                <div className="booking-row__summary">
+                  <button type="button" className="booking-row__identity" onClick={() => setOpenId(open ? '' : booking.id)} aria-expanded={open}>
+                    <strong>{booking.actorName}</strong><small>درخواست از {booking.name}</small>
+                  </button>
+                  <a className="booking-row__phone" href={`tel:${booking.phone}`} dir="ltr">{booking.phone}</a>
+                  <time className="booking-row__date" dateTime={booking.createdAt}>{booking.createdAt ? dateFmt.format(new Date(booking.createdAt)) : '—'}</time>
+                  <span className={`booking-status ${status.className}`}>{status.label}</span>
+                  <button type="button" className="booking-row__expand" onClick={() => setOpenId(open ? '' : booking.id)} aria-expanded={open} aria-label={open ? 'بستن جزئیات' : 'نمایش جزئیات'}>⌄</button>
+                </div>
+
+                {open && <div className="booking-detail">
+                  <section className="booking-detail__message"><span>متن درخواست</span><p>{booking.message}</p></section>
+                  <section className="booking-detail__reply">
+                    {booking.reply && <div className="booking-current-reply"><span>پاسخ فعلی</span><p>{booking.reply}</p></div>}
+                    <label className="form-label" htmlFor={`reply-${booking.id}`}>{booking.reply ? 'ویرایش پاسخ به فیلمساز' : 'پاسخ به فیلمساز'}</label>
+                    <textarea id={`reply-${booking.id}`} className="form-input" rows={2} value={drafts[booking.id] ?? ''} onChange={(event) => setDrafts((current) => ({ ...current, [booking.id]: event.target.value }))} placeholder="نتیجه هماهنگی یا زمان پیشنهادی را بنویسید…" />
+                    <button type="button" className="btn btn--dark btn--sm" disabled={busyId === booking.id || !(drafts[booking.id] || '').trim()} onClick={() => sendReply(booking.id)}>ارسال پاسخ و اعلان</button>
+                  </section>
+                  <div className="booking-detail__actions">
+                    <a className="btn btn--outline btn--sm" href={`tel:${booking.phone}`}>تماس</a>
+                    <a className="btn btn--outline btn--sm" href={`https://wa.me/98${String(booking.phone).replace(/^0/, '')}`} target="_blank" rel="noopener noreferrer">واتساپ</a>
+                    {booking.status !== 'contacted' && <button type="button" className="btn btn--outline btn--sm" disabled={busyId === booking.id} onClick={() => patch(booking.id, { status: 'contacted' })}>در حال پیگیری</button>}
+                    {booking.status !== 'done' && <button type="button" className="btn btn--dark btn--sm" disabled={busyId === booking.id} onClick={() => patch(booking.id, { status: 'done' })}>انجام شد</button>}
+                    {booking.status !== 'rejected' && <button type="button" className="btn btn--ghost btn--sm" disabled={busyId === booking.id} onClick={() => patch(booking.id, { status: 'rejected' })}>رد درخواست</button>}
+                  </div>
+                </div>}
+              </article>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

@@ -217,15 +217,16 @@ function StudentRoster({ students }) {
 }
 
 const TABS = [
-  { id: 'settings', label: 'تنظیمات کلاس' },
   { id: 'sessions', label: 'جلسات و تقویم' },
+  { id: 'members', label: 'هنرجویان' },
   { id: 'attendance', label: 'حضور و غیاب' },
   { id: 'progress', label: 'پیشرفت هنرجویان' },
+  { id: 'settings', label: 'تنظیمات کلاس' },
 ];
 
 function GroupCard({ group, students, open, onToggle, onChanged }) {
   const branchStudents = students.filter((s) => !s.branch || s.branch === group.branch);
-  const [tab, setTab] = useState('settings');
+  const [tab, setTab] = useState('sessions');
   const [memberQuery, setMemberQuery] = useState('');
   const [memberIds, setMemberIds] = useState(group.members.map((m) => m.id));
   const [savingMembers, setSavingMembers] = useState(false);
@@ -235,48 +236,26 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
   const [totalSessions, setTotalSessions] = useState(String(group.totalSessions || 8));
-  const [savingTotal, setSavingTotal] = useState(false);
   const [cover, setCover] = useState(group.coverImage || '');
-  const [savingCover, setSavingCover] = useState(false);
   const [teacherName, setTeacherName] = useState(group.teacherName || '');
-  const [savingTeacher, setSavingTeacher] = useState(false);
   const [attendanceSessionId, setAttendanceSessionId] = useState(null);
+  const [sessionFormOpen, setSessionFormOpen] = useState(false);
+  const [settingsSaving, setSettingsSaving] = useState(false);
 
   useEffect(() => { setMemberIds(group.members.map((m) => m.id)); }, [group]);
   useEffect(() => { setTotalSessions(String(group.totalSessions || 8)); }, [group.totalSessions]);
   useEffect(() => { setCover(group.coverImage || ''); }, [group.coverImage]);
   useEffect(() => { setTeacherName(group.teacherName || ''); }, [group.teacherName]);
 
-  async function saveTeacherName() {
-    setSavingTeacher(true); setMsg('');
+  async function saveSettings() {
+    setSettingsSaving(true); setMsg('');
     const res = await fetch(`/api/admin/classes/${group.id}`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ teacherName }),
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ teacherName, coverImage: cover, totalSessions }),
     });
     const d = await res.json();
-    setSavingTeacher(false);
-    if (d.ok) { setMsg('نام استاد ذخیره شد.'); onChanged(); }
-    else setMsg(d.error || 'خطا');
-  }
-
-  async function saveCover() {
-    setSavingCover(true); setMsg('');
-    const res = await fetch(`/api/admin/classes/${group.id}`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ coverImage: cover }),
-    });
-    const d = await res.json();
-    setSavingCover(false);
-    if (d.ok) { setMsg('عکس کلاس ذخیره شد.'); onChanged(); }
-    else setMsg(d.error || 'خطا');
-  }
-
-  async function saveTotalSessions() {
-    setSavingTotal(true); setMsg('');
-    const res = await fetch(`/api/admin/classes/${group.id}`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ totalSessions }),
-    });
-    const d = await res.json();
-    setSavingTotal(false);
-    if (d.ok) { setMsg('تعداد کل جلسات ذخیره شد.'); onChanged(); }
+    setSettingsSaving(false);
+    if (d.ok) { setMsg('تنظیمات کلاس ذخیره شد.'); onChanged(); }
     else setMsg(d.error || 'خطا');
   }
 
@@ -320,7 +299,7 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
     const d = await res.json();
     setBusy(false);
     if (!d.ok) { setMsg(d.error || 'خطا در ذخیره جلسه.'); return; }
-    setSForm(emptySession); setEditingSession(null);
+    setSForm(emptySession); setEditingSession(null); setSessionFormOpen(false);
     loadSessions(); onChanged();
   }
 
@@ -329,6 +308,7 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
     const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
     setSForm({ title: s.title || '', startsAt: local, chartDescription: s.chartDescription || '', tools: s.tools || '', homework: s.homework || '' });
     setEditingSession(s.id);
+    setSessionFormOpen(true);
   }
 
   async function deleteSession(id) {
@@ -352,7 +332,6 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
           <span className="admin-class-card__metric"><strong>{group._count.sessions.toLocaleString('fa-IR')}</strong><small>جلسه</small></span>
           <span className={`admin-class-card__chev${open ? ' is-open' : ''}`} aria-hidden="true">⌄</span>
         </button>
-        <button type="button" className="btn btn--sm btn--danger" onClick={deleteGroup}>حذف</button>
       </div>
 
       {open && (
@@ -368,140 +347,111 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
             ))}
           </div>
 
-          {/* تب ۱: تنظیمات کلاس (تعداد جلسات + تخصیص هنرجویان) */}
+          {/* تنظیمات کم‌استفاده در یک فرم فشرده و با یک دکمه ذخیره می‌شوند. */}
           <div className={`tab-panel${tab === 'settings' ? ' active' : ''}`}>
-            <div style={{ display: 'grid', gap: 22 }}>
-              <div>
-                <h3 style={{ fontWeight: 800, marginBottom: 8 }}>عکس کلاس</h3>
-                <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginTop: 0, marginBottom: 8 }}>این عکس در فهرست کلاس‌های پنل و در صفحهٔ «برنامهٔ کلاسی» هنرجویانِ همین کلاس نمایش داده می‌شود.</p>
-                <ClassCoverPicker value={cover} onChange={setCover} label="" />
-                <button type="button" className="btn btn--dark btn--sm" onClick={saveCover} disabled={savingCover}>
-                  {savingCover ? 'در حال ذخیره…' : 'ذخیره عکس'}
+            <div className="admin-class-settings">
+              <div className="admin-class-settings__fields">
+                <div className="form-group">
+                  <label className="form-label">نام استاد</label>
+                  <input className="form-input" value={teacherName} onChange={(e) => setTeacherName(e.target.value)} placeholder="مثلاً علی محمدی" />
+                  <p className="form-hint">در برنامه کلاسی و کلاس آنلاین نمایش داده می‌شود.</p>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">تعداد کل جلسات دوره</label>
+                  <input className="form-input" type="number" min={1} max={100} value={totalSessions} onChange={(e) => setTotalSessions(e.target.value)} />
+                  <p className="form-hint">مبنای محاسبه خودکار پیشرفت هنرجویان است.</p>
+                </div>
+              </div>
+              <div className="admin-class-settings__cover">
+                <ClassCoverPicker value={cover} onChange={setCover} label="تصویر کلاس" />
+              </div>
+              <div className="admin-class-settings__actions">
+                <button type="button" className="btn btn--dark btn--sm" onClick={saveSettings} disabled={settingsSaving}>
+                  {settingsSaving ? 'در حال ذخیره…' : 'ذخیره تغییرات کلاس'}
                 </button>
+                <button type="button" className="btn btn--danger btn--sm" onClick={deleteGroup}>حذف کامل کلاس</button>
               </div>
+            </div>
+          </div>
 
-              <div>
-                <h3 style={{ fontWeight: 800, marginBottom: 8 }}>نام استاد</h3>
-                <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginTop: 0, marginBottom: 8 }}>در کارت‌های کلاس آنلاین و برنامهٔ کلاسی به هنرجو نشان داده می‌شود.</p>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <input className="form-input" value={teacherName} onChange={(e) => setTeacherName(e.target.value)} placeholder="مثلاً علی محمدی" style={{ maxWidth: 280 }} />
-                  <button type="button" className="btn btn--dark btn--sm" onClick={saveTeacherName} disabled={savingTeacher}>
-                    {savingTeacher ? 'در حال ذخیره…' : 'ذخیره'}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <h3 style={{ fontWeight: 800, marginBottom: 8 }}>تعداد کل جلسات دوره</h3>
-                <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginTop: 0, marginBottom: 8 }}>مبنای محاسبه‌ی خودکار درصد پیشرفت هنرجویان این کلاس (پیش‌فرض ۸ جلسه).</p>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <input className="form-input" type="number" min={1} max={100} value={totalSessions}
-                    onChange={(e) => setTotalSessions(e.target.value)} style={{ maxWidth: 120 }} />
-                  <button type="button" className="btn btn--dark btn--sm" onClick={saveTotalSessions} disabled={savingTotal}>
-                    {savingTotal ? 'در حال ذخیره…' : 'ذخیره'}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <h3 style={{ fontWeight: 800, marginBottom: 8 }}>هنرجویان این کلاس ({group.branch})</h3>
-                {branchStudents.length === 0 ? (
-                  <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>هنرجوی تأییدشده‌ای در شعبه‌ی {group.branch} وجود ندارد.</p>
-                ) : (
-                  <>
-                  <input className="form-input" placeholder="جستجوی نام هنرجو برای انتخاب…" value={memberQuery}
-                    onChange={(e) => setMemberQuery(e.target.value)} style={{ maxWidth: 320, marginBottom: 8 }} />
-                  <div style={{ display: 'grid', gap: 6, gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', maxHeight: 220, overflowY: 'auto', padding: 4 }}>
+          {/* انتخاب هنرجویان در تب مستقل قرار دارد تا تنظیمات روزمره شلوغ نشود. */}
+          <div className={`tab-panel${tab === 'members' ? ' active' : ''}`}>
+            <div className="admin-class-members">
+              <div className="admin-class-section-head"><div><h3>هنرجویان این کلاس</h3><p>هنرجویان شعبه {group.branch} را جست‌وجو و انتخاب کنید.</p></div><strong>{memberIds.length.toLocaleString('fa-IR')} نفر انتخاب‌شده</strong></div>
+              {branchStudents.length === 0 ? (
+                <p className="su-empty">هنرجوی تأییدشده‌ای در شعبه {group.branch} وجود ندارد.</p>
+              ) : (
+                <>
+                  <input className="form-input admin-class-members__search" placeholder="جست‌وجوی نام، نام کاربری یا موبایل…" value={memberQuery} onChange={(e) => setMemberQuery(e.target.value)} />
+                  <div className="admin-class-members__grid">
                     {branchStudents.filter((s) => {
                       const mq = memberQuery.trim().toLowerCase();
                       return !mq || [s.displayName, s.username, s.phone].some((v) => (v || '').toLowerCase().includes(mq));
                     }).map((s) => {
                       const inOther = s.classGroupId && s.classGroupId !== group.id && !memberIds.includes(s.id);
                       return (
-                        <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '.85rem', padding: '6px 8px', borderRadius: 8, background: 'var(--surface)', cursor: 'pointer' }}>
+                        <label key={s.id} className={`admin-class-member${memberIds.includes(s.id) ? ' is-selected' : ''}`}>
                           <input type="checkbox" checked={memberIds.includes(s.id)} onChange={() => toggleMember(s.id)} />
-                          <UserPhotoThumb src={s.photoUrl} name={s.displayName || s.phone} size={26} />
-                          <span>{s.displayName || s.phone}{s.username ? ` (${s.username})` : ''}</span>
-                          {inOther && <span style={{ marginRight: 'auto', fontSize: '.68rem', color: '#B45309' }}>در کلاس دیگر</span>}
+                          <UserPhotoThumb src={s.photoUrl} name={s.displayName || s.phone} size={30} />
+                          <span><strong>{s.displayName || s.phone}</strong><small>{s.username || s.phone}</small></span>
+                          {inOther && <em>در کلاس دیگر</em>}
                         </label>
                       );
                     })}
                   </div>
-                  </>
-                )}
-                <button type="button" className="btn btn--dark btn--sm" style={{ marginTop: 10 }} onClick={saveMembers} disabled={savingMembers}>
-                  {savingMembers ? 'در حال ذخیره…' : 'ذخیره هنرجویان'}
-                </button>
-              </div>
+                </>
+              )}
+              <button type="button" className="btn btn--dark btn--sm" onClick={saveMembers} disabled={savingMembers}>{savingMembers ? 'در حال ذخیره…' : 'ذخیره هنرجویان کلاس'}</button>
             </div>
           </div>
 
-          {/* تب ۲: جلسات و تقویم */}
+          {/* جلسات، تقویم و ثبت جلسه در فضای عملیاتی واحد */}
           <div className={`tab-panel${tab === 'sessions' ? ' active' : ''}`}>
-            {sessions && sessions.length > 0 && (
-              <div style={{ marginBottom: 18 }}>
-                <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginBottom: 8 }}>تقویم شمسی این کلاس (همان چیزی که هنرجو می‌بیند):</p>
-                <ShamsiCalendar sessions={sessions} selectedId={editingSession}
-                  onSelectDay={(list) => startEditSession(list[0])} />
-              </div>
-            )}
+            <div className="admin-class-section-head">
+              <div><h3>جلسات و تقویم</h3><p>جلسه‌های ثبت‌شده را ببینید یا یک جلسه جدید اضافه کنید.</p></div>
+              <button type="button" className="btn btn--dark btn--sm" onClick={() => { setSForm(emptySession); setEditingSession(null); setSessionFormOpen((value) => !value); }}>{sessionFormOpen && !editingSession ? 'بستن فرم' : '+ ثبت جلسه جدید'}</button>
+            </div>
 
-            <h3 style={{ fontWeight: 800, marginBottom: 8, fontSize: '.95rem' }}>فهرست جلسات</h3>
-            {sessions === null ? <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>در حال بارگذاری جلسات…</p>
-              : sessions.length === 0 ? <p style={{ color: 'var(--muted)', fontSize: '.85rem' }}>هنوز جلسه‌ای ثبت نشده است.</p>
-              : (
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 8, marginBottom: 18 }}>
-                  {sessions.map((s, i) => {
-                    const d = new Date(s.startsAt);
-                    return (
-                      <li key={s.id} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <span style={{ fontWeight: 800, color: 'var(--muted)' }}>{i + 1}</span>
-                        <span style={{ flex: 1 }}>
-                          <span style={{ display: 'block', fontWeight: 700 }}>{s.title}</span>
-                          <span style={{ display: 'block', color: 'var(--muted)', fontSize: '.78rem' }}>{dateFmt.format(d)} — {timeFmt.format(d)}</span>
-                        </span>
-                        <button type="button" className="btn btn--sm btn--outline" onClick={() => startEditSession(s)}>ویرایش</button>
-                        <button type="button" className="btn btn--sm btn--danger" onClick={() => deleteSession(s.id)}>حذف</button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-
-            <form onSubmit={submitSession} className="admin-session-editor">
-              <div className="admin-session-editor__head"><strong>{editingSession ? 'ویرایش جلسه' : 'افزودن جلسه جدید'}</strong><span>عنوان و زمان برای ثبت کافی است.</span></div>
+            {sessionFormOpen && <form onSubmit={submitSession} className="admin-session-editor">
+              <div className="admin-session-editor__head"><strong>{editingSession ? 'ویرایش جلسه' : 'جلسه جدید'}</strong><span>عنوان و زمان برای ثبت کافی است.</span></div>
               <div className="cal-form-grid">
-                <div className="form-group">
-                  <label className="form-label">عنوان جلسه *</label>
-                  <input className="form-input" value={sForm.title} onChange={(e) => setSForm({ ...sForm, title: e.target.value })} placeholder="جلسه اول: آشنایی" />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">تاریخ و ساعت *</label>
-                  <input className="form-input" type="datetime-local" value={sForm.startsAt} onChange={(e) => setSForm({ ...sForm, startsAt: e.target.value })} />
-                </div>
+                <div className="form-group"><label className="form-label">عنوان جلسه *</label><input className="form-input" value={sForm.title} onChange={(e) => setSForm({ ...sForm, title: e.target.value })} placeholder="مثلاً جلسه سوم: بیان و بدن" /></div>
+                <div className="form-group"><label className="form-label">تاریخ و ساعت *</label><input className="form-input" type="datetime-local" value={sForm.startsAt} onChange={(e) => setSForm({ ...sForm, startsAt: e.target.value })} /></div>
               </div>
               <details className="admin-session-options" open={Boolean(sForm.chartDescription || sForm.tools || sForm.homework)}>
                 <summary>جزئیات اختیاری جلسه</summary>
                 <div className="admin-session-options__grid">
-                  <div className="form-group">
-                    <label className="form-label">چارت درسی این جلسه</label>
-                    <textarea className="form-input" rows={2} value={sForm.chartDescription} onChange={(e) => setSForm({ ...sForm, chartDescription: e.target.value })} placeholder="سرفصل‌ها و توضیحات درسی این جلسه" />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">ابزار لازم</label>
-                    <textarea className="form-input" rows={2} value={sForm.tools} onChange={(e) => setSForm({ ...sForm, tools: e.target.value })} placeholder="ابزاری که هنرجو باید همراه بیاورد" />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">تمرین و اتود</label>
-                    <textarea className="form-input" rows={2} value={sForm.homework} onChange={(e) => setSForm({ ...sForm, homework: e.target.value })} placeholder="تمرین یا اتودی که باید برای این جلسه آماده باشد" />
-                  </div>
+                  <div className="form-group"><label className="form-label">چارت درسی</label><textarea className="form-input" rows={2} value={sForm.chartDescription} onChange={(e) => setSForm({ ...sForm, chartDescription: e.target.value })} /></div>
+                  <div className="form-group"><label className="form-label">ابزار لازم</label><textarea className="form-input" rows={2} value={sForm.tools} onChange={(e) => setSForm({ ...sForm, tools: e.target.value })} /></div>
+                  <div className="form-group"><label className="form-label">تمرین و اتود</label><textarea className="form-input" rows={2} value={sForm.homework} onChange={(e) => setSForm({ ...sForm, homework: e.target.value })} /></div>
                 </div>
               </details>
               <div className="admin-session-editor__actions">
-                <button className="btn btn--dark btn--sm" type="submit" disabled={busy}>{busy ? 'در حال ذخیره…' : editingSession ? 'ذخیره تغییرات' : 'افزودن جلسه'}</button>
-                {editingSession && <button type="button" className="btn btn--outline btn--sm" onClick={() => { setSForm(emptySession); setEditingSession(null); }}>انصراف</button>}
+                <button className="btn btn--dark btn--sm" type="submit" disabled={busy}>{busy ? 'در حال ذخیره…' : editingSession ? 'ذخیره تغییرات' : 'ثبت جلسه'}</button>
+                <button type="button" className="btn btn--outline btn--sm" onClick={() => { setSForm(emptySession); setEditingSession(null); setSessionFormOpen(false); }}>انصراف</button>
               </div>
-            </form>
+            </form>}
+
+            <div className="admin-calendar-workspace">
+              <div className="admin-calendar-workspace__calendar">
+                {sessions && sessions.length > 0 ? <ShamsiCalendar sessions={sessions} selectedId={editingSession} onSelectDay={(list) => startEditSession(list[0])} /> : <div className="su-empty">پس از ثبت اولین جلسه، تقویم کلاس اینجا نمایش داده می‌شود.</div>}
+              </div>
+              <div className="admin-calendar-workspace__list">
+                <div className="admin-calendar-workspace__list-head"><strong>جلسات ثبت‌شده</strong><span>{(sessions?.length || 0).toLocaleString('fa-IR')} جلسه</span></div>
+                {sessions === null ? <p className="admin-calendar-empty">در حال بارگذاری جلسات…</p> : sessions.length === 0 ? <p className="admin-calendar-empty">هنوز جلسه‌ای ثبت نشده است.</p> : (
+                  <ul className="admin-session-list">
+                    {sessions.map((s, i) => {
+                      const d = new Date(s.startsAt);
+                      return <li key={s.id} className={editingSession === s.id ? 'is-editing' : ''}>
+                        <span className="admin-session-list__number">{(i + 1).toLocaleString('fa-IR')}</span>
+                        <button type="button" className="admin-session-list__main" onClick={() => startEditSession(s)}><strong>{s.title}</strong><small>{dateFmt.format(d)} · {timeFmt.format(d)}</small></button>
+                        <button type="button" className="admin-session-list__delete" onClick={() => deleteSession(s.id)} aria-label={`حذف ${s.title}`}>حذف</button>
+                      </li>;
+                    })}
+                  </ul>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* تب ۳: حضور و غیاب */}
