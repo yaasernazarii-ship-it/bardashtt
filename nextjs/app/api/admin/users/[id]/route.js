@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { hashPassword } from '@/lib/password';
 import { logAction } from '@/lib/audit';
+import { removeLocalUploads } from '@/lib/uploadCleanup';
 
 const ROLES = ['member', 'student', 'filmmaker', 'editor', 'admin'];
 
@@ -194,4 +195,103 @@ export async function PATCH(request, { params }) {
   } catch {
     return Response.json({ ok: false, error: 'کاربر یافت نشد یا درخواست نامعتبر است.' }, { status: 400 });
   }
+}
+
+export async function DELETE(request, { params }) {
+  const user = await getSessionUser();
+  if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
+  if (!isManager(user)) return Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 });
+
+  const { id } = await params;
+  if (id === user.id) {
+    return Response.json({ ok: false, error: 'حساب خودتان را نمی‌توانید حذف کنید.' }, { status: 400 });
+  }
+
+  const target = await prisma.user.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      displayName: true,
+      username: true,
+      phone: true,
+      role: true,
+      photoUrl: true,
+      resume: { select: { id: true, photoUrl: true, showreelUrl: true, selfVideoUrl: true } },
+      enrollments: { select: { videoUrl: true } },
+      certificates: { select: { photoUrl: true } },
+    },
+  });
+  if (!target) return Response.json({ ok: false, error: 'کاربر یافت نشد.' }, { status: 404 });
+  if (target.role === 'admin' || target.role === 'editor') {
+    return Response.json({ ok: false, error: 'حساب مدیریتی از این بخش قابل حذف نیست.' }, { status: 403 });
+  }
+
+  const [signups, submissions] = await Promise.all([
+    prisma.signupRequest.findMany({ where: { userId: id }, select: { idCardImage: true } }),
+    prisma.assignmentSubmission.findMany({ where: { userId: id }, select: { fileUrl: true } }),
+  ]);
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.signupRequest.deleteMany({ where: { userId: id } });
+      await tx.enrollment.deleteMany({ where: { userId: id } });
+      await tx.bookingRequest.deleteMany({ where: { userId: id } });
+      await tx.notification.deleteMany({ where: { userId: id } });
+      await tx.bookOrder.deleteMany({ where: { userId: id } });
+
+      if (target.resume) {
+        await tx.actorShortlist.deleteMany({ where: { OR: [{ userId: id }, { actorId: target.resume.id }] } });
+      } else {
+        await tx.actorShortlist.deleteMany({ where: { userId: id } });
+      }
+
+      await tx.assignmentSubmission.deleteMany({ where: { userId: id } });
+      await tx.assignment.deleteMany({ where: { userId: id } });
+      await tx.growthTask.deleteMany({ where: { userId: id } });
+      await tx.habit.deleteMany({ where: { userId: id } });
+      await tx.growthGoal.deleteMany({ where: { userId: id } });
+      await tx.journalEntry.deleteMany({ where: { userId: id } });
+      await tx.assessment.deleteMany({ where: { userId: id } });
+      await tx.mentorNote.deleteMany({ where: { userId: id } });
+      await tx.studentProgressComment.deleteMany({ where: { userId: id } });
+
+      await tx.chatGroupMessage.deleteMany({ where: { authorId: id } });
+      await tx.chatGroupRead.deleteMany({ where: { userId: id } });
+      await tx.chatGroupMember.deleteMany({ where: { userId: id } });
+      await tx.directChat.deleteMany({ where: { OR: [{ userAId: id }, { userBId: id }] } });
+
+      await tx.certificate.deleteMany({ where: { userId: id } });
+      await tx.examAttempt.deleteMany({ where: { userId: id } });
+      await tx.examPermit.deleteMany({ where: { userId: id } });
+      await tx.attendance.deleteMany({ where: { userId: id } });
+      await tx.payment.deleteMany({ where: { userId: id } });
+      await tx.courseAccess.deleteMany({ where: { userId: id } });
+      await tx.session.deleteMany({ where: { userId: id } });
+      await tx.actorResume.deleteMany({ where: { userId: id } });
+      await tx.user.delete({ where: { id } });
+    }, { timeout: 15000 });
+  } catch {
+    return Response.json({ ok: false, error: 'حذف کامل حساب انجام نشد.' }, { status: 500 });
+  }
+
+  await removeLocalUploads([
+    target.photoUrl,
+    target.resume?.photoUrl,
+    target.resume?.showreelUrl,
+    target.resume?.selfVideoUrl,
+    ...target.enrollments.map((item) => item.videoUrl),
+    ...target.certificates.map((item) => item.photoUrl),
+    ...signups.map((item) => item.idCardImage),
+    ...submissions.map((item) => item.fileUrl),
+  ]);
+
+  const who = target.displayName || target.username || target.phone;
+  await logAction(user, {
+    action: 'user.delete',
+    targetType: 'user',
+    targetId: id,
+    summary: `حساب «${who}» و اطلاعات وابسته حذف شد.`,
+  }).catch(() => {});
+
+  return Response.json({ ok: true });
 }

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { hashPassword } from '@/lib/password';
+import { removeLocalUploads } from '@/lib/uploadCleanup';
 
 const ACTIONS = ['approve', 'reject'];
 
@@ -22,8 +23,9 @@ export async function PATCH(request, { params }) {
   if (!req) return Response.json({ ok: false, error: 'درخواست یافت نشد.' }, { status: 404 });
 
   if (action === 'reject') {
-    await prisma.signupRequest.update({ where: { id }, data: { status: 'rejected', adminNote: note } });
-    return Response.json({ ok: true, status: 'rejected' });
+    await prisma.signupRequest.delete({ where: { id } });
+    await removeLocalUploads([req.idCardImage]);
+    return Response.json({ ok: true, status: 'deleted' });
   }
 
   // تأیید: نام کاربری و رمز عبور لازم است.
@@ -79,5 +81,6 @@ export async function DELETE(request, { params }) {
   if (!req) return Response.json({ ok: false, error: 'درخواست یافت نشد.' }, { status: 404 });
 
   await prisma.signupRequest.delete({ where: { id } });
+  await removeLocalUploads([req.idCardImage]);
   return Response.json({ ok: true });
 }

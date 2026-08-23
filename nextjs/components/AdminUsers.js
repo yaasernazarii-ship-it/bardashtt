@@ -62,6 +62,25 @@ export default function AdminUsers() {
     patch(u.id, { graduated: next });
   }
 
+  async function deleteAccount(u) {
+    const name = u.displayName || u.username || u.phone;
+    if (!window.confirm(`حساب «${name}» برای همیشه حذف شود؟ حساب، ثبت‌نام، اطلاعات آموزشی و فایل‌های وابسته پاک می‌شوند و این کار قابل بازگشت نیست.`)) return;
+
+    setSavingId(u.id);
+    setError('');
+    const res = await fetch(`/api/admin/users/${u.id}`, { method: 'DELETE' });
+    const data = await res.json();
+    setSavingId(null);
+    if (!data.ok) {
+      setError(data.error || 'حذف حساب انجام نشد.');
+      return;
+    }
+
+    setUsers((current) => current.filter((item) => item.id !== u.id));
+    setOpenId('');
+    if (panelId === u.id) setPanelId(null);
+  }
+
   async function resetPassword(u) {
     const name = u.displayName || u.username || u.phone;
     const pass = window.prompt(`رمز عبور جدید برای «${name}» را وارد کنید (حداقل ۶ کاراکتر):`);
@@ -171,6 +190,12 @@ export default function AdminUsers() {
                             disabled={savingId === u.id} onClick={() => toggleActive(u)}>
                             {u.active === false ? 'فعال‌سازی' : 'غیرفعال'}
                           </button>
+                          {u.role !== 'admin' && u.role !== 'editor' && (
+                            <button type="button" className="btn btn--sm btn--danger"
+                              disabled={savingId === u.id} onClick={() => deleteAccount(u)}>
+                              {savingId === u.id ? 'در حال حذف…' : 'حذف کامل حساب'}
+                            </button>
+                          )}
                         </>
                       )}
                     </div>

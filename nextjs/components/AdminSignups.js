@@ -76,6 +76,7 @@ export default function AdminSignups() {
   }
 
   async function reject(id) {
+    if (!window.confirm('این ثبت‌نام رد و برای همیشه از فهرست و سرور حذف شود؟')) return;
     setBusyId(id); setError('');
     const res = await fetch(`/api/admin/signups/${id}`, {
       method: 'PATCH',

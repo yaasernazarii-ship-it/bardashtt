@@ -7,6 +7,7 @@ const ACTIONS = [
   { value: 'content.update', label: 'ویرایش متن‌های سایت' },
   { value: 'user.update', label: 'تغییر اطلاعات کاربر' },
   { value: 'user.password', label: 'بازنشانی رمز عبور' },
+  { value: 'user.delete', label: 'حذف کامل حساب کاربر' },
   { value: 'chat-group.create', label: 'ساخت گروه گفت‌وگو' },
   { value: 'chat-group.update', label: 'ویرایش گروه گفت‌وگو' },
   { value: 'chat-group.delete', label: 'حذف گروه گفت‌وگو' },
