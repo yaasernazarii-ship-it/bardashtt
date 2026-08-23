@@ -2902,6 +2902,27 @@ div.admin-stat { cursor: default; }
 .admin-class-member em { width: fit-content; padding: 3px 7px; color: #475569; background: #f1f5f9; border-radius: 999px; font-size: .62rem; font-style: normal; }
 .admin-class-member.is-selected em { color: #166534; background: #dcfce7; }
 
+/* گزارش تغییرات مدیریت */
+.admin-audit { display: grid; gap: 12px; }
+.admin-audit__toolbar { display: flex; align-items: center; gap: 10px; padding: 10px; background: #fff; border: 1px solid var(--border); border-radius: 12px; }
+.admin-audit__toolbar .admin-search { flex: 1; min-width: 240px; }
+.admin-audit__filter { width: 250px !important; min-height: 40px !important; margin: 0 !important; }
+.admin-audit__count { flex: none; color: var(--muted); font-size: .72rem; font-weight: 700; }
+.admin-audit__table { overflow: hidden; background: #fff; border: 1px solid var(--border); border-radius: 12px; }
+.admin-audit__head, .admin-audit__row { display: grid; grid-template-columns: 170px 180px 170px minmax(280px, 1fr); gap: 12px; align-items: center; }
+.admin-audit__head { min-height: 40px; padding: 7px 12px; color: var(--muted); background: var(--surface); border-bottom: 1px solid var(--border); font-size: .68rem; font-weight: 800; }
+.admin-audit__row { min-height: 68px; padding: 9px 12px; }
+.admin-audit__row + .admin-audit__row { border-top: 1px solid var(--border); }
+.admin-audit__row:hover { background: #fafafa; }
+.admin-audit__time strong, .admin-audit__time span, .admin-audit__actor strong, .admin-audit__actor span { display: block; }
+.admin-audit__time strong, .admin-audit__actor strong { font-size: .76rem; }
+.admin-audit__time span, .admin-audit__actor span { margin-top: 3px; color: var(--muted); font-size: .66rem; }
+.admin-audit__action span { display: inline-flex; width: fit-content; padding: 4px 8px; color: #334155; background: #f1f5f9; border-radius: 7px; font-size: .68rem; font-weight: 700; }
+.admin-audit__summary { min-width: 0; }
+.admin-audit__summary p { margin: 0; color: var(--body); font-size: .76rem; line-height: 1.75; }
+.admin-audit__summary small { display: block; overflow: hidden; margin-top: 3px; color: var(--muted); font-size: .62rem; text-overflow: ellipsis; white-space: nowrap; direction: ltr; text-align: left; }
+.admin-audit__empty { padding: 34px 16px; color: var(--muted); text-align: center; background: #fff; border: 1px dashed var(--border); border-radius: 12px; font-size: .8rem; }
+
 /* درخواست‌های ست‌تایم */
 .booking-filter { width: 160px !important; min-height: 40px !important; }
 .booking-table { overflow: hidden; background: #fff; border: 1px solid var(--border); border-radius: 13px; box-shadow: var(--shadow-sm); }
@@ -2949,6 +2970,7 @@ div.admin-stat { cursor: default; }
   .admin-session-options__grid { grid-template-columns: 1fr; }
   .admin-calendar-workspace { grid-template-columns: 1fr; }
   .admin-calendar-workspace__list { max-height: 360px; }
+  .admin-audit__head, .admin-audit__row { grid-template-columns: 145px 150px 150px minmax(240px, 1fr); }
   .booking-table__head, .booking-row__summary { grid-template-columns: minmax(200px, 1.5fr) 120px 120px 44px; }
   .booking-table__head > :nth-child(3), .booking-row__date { display: none; }
 }
@@ -2973,6 +2995,12 @@ div.admin-stat { cursor: default; }
   .admin-class-settings__actions { grid-column: auto; }
   .admin-class-members__head, .admin-class-member { grid-template-columns: 46px minmax(150px, 1fr) 100px; }
   .admin-class-members__head > :nth-child(3), .admin-class-member > :nth-child(3) { display: none; }
+  .admin-audit__toolbar { flex-wrap: wrap; }
+  .admin-audit__toolbar .admin-search { flex-basis: 100%; }
+  .admin-audit__filter { flex: 1; width: auto !important; }
+  .admin-audit__head { display: none; }
+  .admin-audit__row { grid-template-columns: minmax(140px, .7fr) minmax(160px, .8fr) minmax(0, 1.5fr); gap: 9px; }
+  .admin-audit__summary { grid-column: 1 / -1; padding-top: 7px; border-top: 1px dashed var(--border); }
   .booking-table__head { display: none; }
   .booking-row__summary { grid-template-columns: minmax(0, 1fr) auto; gap: 7px; padding: 10px 11px; }
   .booking-row__phone { grid-column: 1; }
@@ -3002,6 +3030,9 @@ div.admin-stat { cursor: default; }
   .admin-class-settings__actions { flex-direction: column; }
   .admin-session-fields-title { display: grid; }
   .admin-session-editor__head { display: grid; }
+  .admin-audit__row { grid-template-columns: 1fr 1fr; }
+  .admin-audit__action { grid-column: 1 / -1; }
+  .admin-audit__summary { grid-column: 1 / -1; }
   .admin-content-savebar { width: 100%; justify-content: space-between; }
   .admin-content-savebar span { font-size: .7rem; }
 }
