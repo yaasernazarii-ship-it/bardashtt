@@ -2902,6 +2902,28 @@ div.admin-stat { cursor: default; }
 .admin-class-member em { width: fit-content; padding: 3px 7px; color: #475569; background: #f1f5f9; border-radius: 999px; font-size: .62rem; font-style: normal; }
 .admin-class-member.is-selected em { color: #166534; background: #dcfce7; }
 
+/* پیشرفت هنرجو و نظر استاد */
+.admin-progress-students { display: grid; gap: 10px; }
+.admin-progress-students__list { display: grid; gap: 10px; }
+.admin-progress-student { display: grid; grid-template-columns: minmax(190px, .8fr) 220px minmax(260px, 1.2fr); gap: 12px; align-items: start; padding: 12px; background: #fff; border: 1px solid var(--border); border-radius: 11px; }
+.admin-progress-student__identity { display: flex; align-items: center; gap: 9px; }
+.admin-progress-student__identity strong, .admin-progress-student__identity span { display: block; }
+.admin-progress-student__identity strong { font-size: .8rem; }
+.admin-progress-student__identity span { margin-top: 3px; color: var(--muted); font-size: .64rem; line-height: 1.6; }
+.admin-progress-student__percent > div { display: flex; gap: 6px; }
+.admin-progress-student__percent input { width: 82px; }
+.admin-progress-student__latest { grid-column: 1 / -1; padding: 9px 11px; color: #1e3a5f; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 9px; }
+.admin-progress-student__latest strong, .admin-progress-student__latest small { display: block; font-size: .68rem; }
+.admin-progress-student__latest p { margin: 5px 0; font-size: .76rem; line-height: 1.8; white-space: pre-wrap; }
+.admin-progress-student__latest small { color: #64748b; }
+.admin-progress-student__comment { display: grid; gap: 6px; }
+.admin-progress-student__comment .btn { width: fit-content; }
+.student-progress-comment { margin-top: 14px; padding: 11px 12px; color: #1e3a5f; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; }
+.student-progress-comment strong { display: block; font-size: .78rem; }
+.student-progress-comment p { margin: 6px 0; color: #1e3a5f; font-size: .78rem; line-height: 1.9; white-space: pre-wrap; }
+.student-progress-comment small { color: #64748b; font-size: .65rem; }
+.student-progress-comment--dashboard { margin: -8px 0 18px; }
+
 /* گزارش تغییرات مدیریت */
 .admin-audit { display: grid; gap: 12px; }
 .admin-audit__toolbar { display: flex; align-items: center; gap: 10px; padding: 10px; background: #fff; border: 1px solid var(--border); border-radius: 12px; }
@@ -2965,6 +2987,8 @@ div.admin-stat { cursor: default; }
 .admin-content-savebar span { color: var(--muted); font-size: .78rem; }
 
 @media (max-width: 1100px) {
+  .admin-progress-student { grid-template-columns: minmax(180px, .8fr) minmax(260px, 1.2fr); }
+  .admin-progress-student__comment { grid-column: 2; }
   .live-admin__head, .live-admin__row { grid-template-columns: minmax(210px, 2fr) minmax(140px, 1fr) 105px minmax(145px, auto); }
   .live-admin__head > :nth-child(3), .live-admin__members { display: none; }
   .admin-session-options__grid { grid-template-columns: 1fr; }
@@ -2975,6 +2999,9 @@ div.admin-stat { cursor: default; }
   .booking-table__head > :nth-child(3), .booking-row__date { display: none; }
 }
 @media (max-width: 760px) {
+  .admin-progress-student { grid-template-columns: 1fr; }
+  .admin-progress-student__comment { grid-column: auto; }
+  .admin-progress-student__percent > div { flex-wrap: wrap; }
   .admin-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .admin-list-toolbar { flex-wrap: wrap; }
   .admin-search { flex-basis: 100%; }

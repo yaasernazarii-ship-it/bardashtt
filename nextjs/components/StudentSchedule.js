@@ -86,7 +86,7 @@ export default function StudentSchedule() {
     );
   }
 
-  const { group, progress, presentCount, totalSessions, hasUpdate } = data;
+  const { group, progress, progressComment, presentCount, totalSessions, hasUpdate } = data;
 
   function selectDay(day) {
     const list = byDay[day.key];
@@ -126,6 +126,13 @@ export default function StudentSchedule() {
             <div style={{ width: `${progress}%`, height: '100%', background: 'linear-gradient(90deg,#16A34A,#22C55E)', transition: 'width .4s' }} />
           </div>
           <div style={{ color: 'var(--muted)', fontSize: '.82rem', marginTop: 10 }}>{faNum(presentCount)} جلسه حضور از {faNum(totalSessions)} جلسه دوره.</div>
+          {progressComment && (
+            <div className="student-progress-comment">
+              <strong>نظر استاد دربارهٔ پیشرفت شما</strong>
+              <p>{progressComment.content}</p>
+              <small>{dateFmt.format(new Date(progressComment.createdAt))}</small>
+            </div>
+          )}
         </div>
       </div>
 

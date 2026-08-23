@@ -579,6 +579,7 @@ function SessionAttendance({ sessionId, onChanged }) {
 function ProgressOverrides({ members, students, onChanged }) {
   const byId = Object.fromEntries(students.map((s) => [s.id, s]));
   const [values, setValues] = useState(() => Object.fromEntries(members.map((m) => [m.id, byId[m.id]?.progressOverride ?? ''])));
+  const [comments, setComments] = useState({});
   const [savingId, setSavingId] = useState(null);
   const [msg, setMsg] = useState('');
 
@@ -587,38 +588,67 @@ function ProgressOverrides({ members, students, onChanged }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [members, students]);
 
-  async function save(userId) {
-    setSavingId(userId); setMsg('');
-    const v = values[userId];
+  async function saveProgress(userId) {
+    setSavingId(`progress-${userId}`); setMsg('');
+    const value = values[userId];
     const res = await fetch(`/api/admin/users/${userId}`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ progressOverride: v === '' ? null : v }),
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ progressOverride: value === '' ? null : value }),
     });
-    const d = await res.json();
+    const data = await res.json();
     setSavingId(null);
-    if (d.ok) { setMsg('درصد پیشرفت ذخیره شد.'); onChanged(); }
-    else setMsg(d.error || 'خطا');
+    if (data.ok) { setMsg('درصد پیشرفت ذخیره شد.'); onChanged(); }
+    else setMsg(data.error || 'خطا در ذخیره درصد پیشرفت.');
+  }
+
+  async function saveComment(userId) {
+    const content = (comments[userId] || '').trim();
+    if (!content) { setMsg('ابتدا متن نظر استاد را وارد کنید.'); return; }
+    setSavingId(`comment-${userId}`); setMsg('');
+    const res = await fetch(`/api/admin/growth/students/${userId}/progress-comments`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content }),
+    });
+    const data = await res.json();
+    setSavingId(null);
+    if (res.ok && data.ok) {
+      setComments((current) => ({ ...current, [userId]: '' }));
+      setMsg('نظر استاد ثبت شد و اکنون در پنل هنرجو نمایش داده می‌شود.');
+      onChanged();
+    } else setMsg(data.error || 'خطا در ثبت نظر استاد.');
   }
 
   if (members.length === 0) return null;
 
   return (
-    <div>
-      <h3 style={{ fontWeight: 800, marginBottom: 8 }}>درصد پیشرفتِ دستیِ هنرجویان</h3>
-      <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginTop: 0, marginBottom: 8 }}>در صورت خالی‌بودن، درصد پیشرفت از روی حضور و غیاب محاسبه می‌شود.</p>
-      {msg && <div className="alert alert--info" style={{ marginBottom: 8 }}>{msg}</div>}
-      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 6 }}>
-        {members.map((m) => (
-          <li key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--surface)', borderRadius: 8, padding: '6px 10px' }}>
-            <UserPhotoThumb src={m.photoUrl} name={m.displayName || m.phone} size={28} />
-            <span style={{ flex: 1, fontSize: '.85rem' }}>{m.displayName || m.phone}</span>
-            <input type="number" min={0} max={100} className="form-input" style={{ maxWidth: 90 }} placeholder="خودکار"
-              value={values[m.id]} onChange={(e) => setValues({ ...values, [m.id]: e.target.value })} />
-            <button type="button" className="btn btn--sm btn--outline" onClick={() => save(m.id)} disabled={savingId === m.id}>
-              {savingId === m.id ? '...' : 'ذخیره'}
-            </button>
-          </li>
-        ))}
-      </ul>
+    <div className="admin-progress-students">
+      <div className="admin-class-section-head">
+        <div><h3>پیشرفت و نظر استاد</h3><p>درصد دستی اختیاری است. نظر استاد فقط پس از ثبت در پنل همان هنرجو نمایش داده می‌شود.</p></div>
+      </div>
+      {msg && <div className="alert alert--info">{msg}</div>}
+      <div className="admin-progress-students__list">
+        {members.map((member) => {
+          const student = byId[member.id];
+          const latestComment = student?.latestProgressComment;
+          return (
+            <section key={member.id} className="admin-progress-student">
+              <div className="admin-progress-student__identity">
+                <UserPhotoThumb src={member.photoUrl} name={member.displayName || member.phone} size={34} />
+                <div><strong>{member.displayName || member.phone}</strong><span>{latestComment ? 'آخرین نظر ثبت‌شده در پنل هنرجو نمایش داده می‌شود.' : 'هنوز نظری برای نمایش ثبت نشده است.'}</span></div>
+              </div>
+              <div className="admin-progress-student__percent">
+                <label className="form-label">درصد پیشرفت</label>
+                <div><input type="number" min={0} max={100} className="form-input" placeholder="خودکار" value={values[member.id]} onChange={(e) => setValues({ ...values, [member.id]: e.target.value })} />
+                  <button type="button" className="btn btn--sm btn--outline" onClick={() => saveProgress(member.id)} disabled={savingId === `progress-${member.id}`}>{savingId === `progress-${member.id}` ? '...' : 'ذخیره درصد'}</button></div>
+              </div>
+              {latestComment && <div className="admin-progress-student__latest"><strong>آخرین نظر استاد</strong><p>{latestComment.content}</p><small>{dateFmt.format(new Date(latestComment.createdAt))}</small></div>}
+              <div className="admin-progress-student__comment">
+                <label className="form-label">نظر جدید استاد برای هنرجو</label>
+                <textarea className="form-input" rows={2} value={comments[member.id] || ''} onChange={(e) => setComments({ ...comments, [member.id]: e.target.value })} placeholder="نظر یا بازخورد استاد را بنویسید…" />
+                <button type="button" className="btn btn--sm btn--dark" onClick={() => saveComment(member.id)} disabled={savingId === `comment-${member.id}`}>{savingId === `comment-${member.id}` ? 'در حال ثبت…' : 'ثبت و نمایش در پنل هنرجو'}</button>
+              </div>
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }

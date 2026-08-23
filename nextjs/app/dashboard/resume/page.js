@@ -2,16 +2,13 @@ import { redirect } from 'next/navigation';
 import { getSessionUser, isManager } from '@/lib/auth';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import ResumeForm from '@/components/ResumeForm';
-import StudentResumeView from '@/components/StudentResumeView';
 
 export const metadata = { title: 'رزومه بازیگری' };
 
 export default async function ResumePage() {
   const user = await getSessionUser();
   if (!user) redirect('/auth');
-
-  // هنرجو رزومه‌اش را ویرایش نمی‌کند؛ فقط آن را می‌بیند و ویدیوی معرفی‌اش را بارگذاری می‌کند.
-  const isStudent = user.role === 'student';
+  if (user.role === 'student') redirect('/dashboard');
 
   return (
     <div className="dash-layout" style={{ background: 'var(--surface)' }}>
@@ -19,13 +16,9 @@ export default async function ResumePage() {
       <main className="main-area">
         <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
           <h1 className="dash-head__title">رزومه بازیگری</h1>
-          <p className="dash-head__sub">
-            {isStudent
-              ? 'رزومه‌ی شما توسط خانواده برداشت تنظیم می‌شود. شما می‌توانید آن را ببینید و ویدیوی معرفی خودتان را بارگذاری کنید.'
-              : 'رزومه خود را کامل کنید. با فعال‌کردن نمایش عمومی، فیلم‌سازان می‌توانند آن را در فهرست بازیگران ببینند.'}
-          </p>
+          <p className="dash-head__sub">رزومه را کامل کنید و در صورت نیاز نمایش عمومی آن را فعال کنید.</p>
         </div>
-        {isStudent ? <StudentResumeView /> : <ResumeForm />}
+        <ResumeForm />
       </main>
     </div>
   );

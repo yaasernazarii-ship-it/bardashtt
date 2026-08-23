@@ -187,7 +187,7 @@ export default function AdminUsers() {
   );
 }
 
-const EMPTY_RESUME = { fullName: '', headline: '', gender: '', city: '', birthYear: '', heightCm: '', skills: '', bio: '', experience: '', photoUrl: '', showreelUrl: '', isPublic: false };
+const EMPTY_RESUME = { fullName: '', headline: '', gender: '', city: '', birthYear: '', heightCm: '', skills: '', bio: '', experience: '', photoUrl: '', showreelUrl: '', selfVideoUrl: '', isPublic: false };
 
 function UserPanel({ userId, onClose }) {
   const [data, setData] = useState(null);
@@ -209,7 +209,7 @@ function UserPanel({ userId, onClose }) {
         fullName: r.fullName || d.user?.displayName || '', headline: r.headline || '', gender: r.gender || '',
         city: r.city || '', birthYear: r.birthYear || '', heightCm: r.heightCm || '', skills: r.skills || '',
         bio: r.bio || '', experience: r.experience || '', photoUrl: r.photoUrl || '', showreelUrl: r.showreelUrl || '',
-        isPublic: !!r.isPublic,
+        selfVideoUrl: r.selfVideoUrl || '', isPublic: !!r.isPublic,
       } : { ...EMPTY_RESUME, fullName: d.user?.displayName || '' });
     } else setError(d.error || 'خطا در بارگذاری.');
     setLoading(false);
@@ -286,7 +286,7 @@ function UserPanel({ userId, onClose }) {
 
               {editResume && (
                 <form onSubmit={saveResume} style={{ background: 'var(--surface)', borderRadius: 12, padding: 14, marginBottom: 14, display: 'grid', gap: 10 }}>
-                  <p style={{ fontSize: '.82rem', color: 'var(--muted)', margin: 0 }}>رزومه‌ی هنرجو را شما می‌سازید. هنرجو فقط می‌تواند آن را ببیند و ویدیوی معرفی خودش را اضافه کند.</p>
+                  <p style={{ fontSize: '.82rem', color: 'var(--muted)', margin: 0 }}>ساخت، ویرایش و بارگذاری تمام اجزای رزومه فقط از همین پنل مدیریت انجام می‌شود و هنرجو به رزومه دسترسی ندارد.</p>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                     <div className="form-group" style={{ margin: 0 }}><label className="form-label">نام و نام خانوادگی *</label><input className="form-input" value={form.fullName} onChange={(e) => setField('fullName', e.target.value)} /></div>
                     <div className="form-group" style={{ margin: 0 }}><label className="form-label">عنوان/تیتر</label><input className="form-input" value={form.headline} onChange={(e) => setField('headline', e.target.value)} /></div>
@@ -302,6 +302,7 @@ function UserPanel({ userId, onClose }) {
                   <div className="form-group" style={{ margin: 0 }}><label className="form-label">مهارت‌ها</label><input className="form-input" value={form.skills} onChange={(e) => setField('skills', e.target.value)} /></div>
                   <div className="form-group" style={{ margin: 0 }}><label className="form-label">نشانی عکس رزومه (URL)</label><input className="form-input" dir="ltr" value={form.photoUrl} onChange={(e) => setField('photoUrl', e.target.value)} /></div>
                   <div className="form-group" style={{ margin: 0 }}><label className="form-label">لینک شوریل/نمونه‌کار (URL)</label><input className="form-input" dir="ltr" value={form.showreelUrl} onChange={(e) => setField('showreelUrl', e.target.value)} /></div>
+                  <div className="form-group" style={{ margin: 0 }}><label className="form-label">لینک ویدیوی معرفی (URL)</label><input className="form-input" dir="ltr" value={form.selfVideoUrl} onChange={(e) => setField('selfVideoUrl', e.target.value)} /></div>
                   <div className="form-group" style={{ margin: 0 }}><label className="form-label">معرفی</label><textarea className="form-input" rows={3} value={form.bio} onChange={(e) => setField('bio', e.target.value)} /></div>
                   <div className="form-group" style={{ margin: 0 }}><label className="form-label">سوابق</label><textarea className="form-input" rows={3} value={form.experience} onChange={(e) => setField('experience', e.target.value)} /></div>
                   <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '.9rem' }}>
@@ -336,8 +337,8 @@ function UserPanel({ userId, onClose }) {
                   )}
                   {r.selfVideoUrl && (
                     <div style={{ fontSize: '.9rem' }}>
-                      <Icon name="clapperboard" size={14} /> ویدیوی معرفیِ خودِ هنرجو: <a href={r.selfVideoUrl} target="_blank" rel="noopener noreferrer" dir="ltr">{r.selfVideoUrl}</a>
-                      <button type="button" className="btn btn--sm btn--danger" style={{ marginRight: 8 }} disabled={busy} onClick={() => moderate('deleteSelfVideo', 'ویدیوی معرفیِ بارگذاری‌شده توسط هنرجو حذف شود؟')}>حذف</button>
+                      <Icon name="clapperboard" size={14} /> ویدیوی معرفی: <a href={r.selfVideoUrl} target="_blank" rel="noopener noreferrer" dir="ltr">{r.selfVideoUrl}</a>
+                      <button type="button" className="btn btn--sm btn--danger" style={{ marginRight: 8 }} disabled={busy} onClick={() => moderate('deleteSelfVideo', 'ویدیوی معرفی حذف شود؟')}>حذف</button>
                     </div>
                   )}
                   {r.bio && <div><b style={{ fontSize: '.85rem' }}>معرفی:</b> <p style={{ color: 'var(--muted)', margin: '4px 0', whiteSpace: 'pre-wrap' }}>{r.bio}</p></div>}

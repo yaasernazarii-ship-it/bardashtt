@@ -95,6 +95,7 @@ export async function PATCH(request, { params }) {
         experience: str(b.experience, 1500),
         photoUrl: str(b.photoUrl, 500),
         showreelUrl: str(b.showreelUrl, 500),
+        selfVideoUrl: str(b.selfVideoUrl, 500),
         isPublic: !!b.isPublic,
       };
       const resume = await prisma.actorResume.upsert({

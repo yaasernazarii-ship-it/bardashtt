@@ -1,11 +1,11 @@
 import { prisma } from '@/lib/prisma';
-import { getSessionUser } from '@/lib/auth';
+import { getSessionUser, isManager } from '@/lib/auth';
 
-// هنرجو فقط می‌تواند «ویدیوی معرفی» خودش را روی رزومه‌اش بگذارد؛
-// هیچ فیلد دیگری از رزومه از این مسیر قابل تغییر نیست.
+// تغییر ویدیوی رزومه نیز فقط برای اعضای مدیریت مجاز است.
 export async function PUT(request) {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
+  if (!isManager(user)) return Response.json({ ok: false, error: 'تغییر رزومه فقط از پنل مدیریت مجاز است.' }, { status: 403 });
 
   try {
     const body = await request.json();

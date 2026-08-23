@@ -86,9 +86,11 @@ async function ManagerDashboard({ user }) {
   // بدون ورود به تک‌تک صفحه‌ها موارد نیازمند رسیدگی را نشان دهد.
   const seenAt = user.staffReportsSeenAt || new Date(0);
   const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const growthSince = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const [
     newReports, newComments, openReports, myOpenTasks, latestReport, chatUnread, liveCount,
     pendingSignups, pendingEnrollments, supportSummary, pendingPayments, newBookings, upcomingClasses,
+    recentGrowthGoals, recentGrowthTasks, recentHabitLogs, recentSharedJournals,
   ] = await Promise.all([
     prisma.staffReport.count({ where: { createdAt: { gt: seenAt }, authorId: { not: user.id } } }),
     prisma.staffReportComment.count({ where: { createdAt: { gt: seenAt }, authorId: { not: user.id } } }),
@@ -103,7 +105,12 @@ async function ManagerDashboard({ user }) {
     prisma.payment.count({ where: { status: 'pending' } }),
     prisma.bookingRequest.count({ where: { status: 'new' } }),
     prisma.classSession.count({ where: { startsAt: { gte: new Date(), lte: nextWeek } } }),
+    prisma.growthGoal.count({ where: { updatedAt: { gte: growthSince } } }),
+    prisma.growthTask.count({ where: { updatedAt: { gte: growthSince } } }),
+    prisma.habitLog.count({ where: { createdAt: { gte: growthSince } } }),
+    prisma.journalEntry.count({ where: { visibility: 'shared', createdAt: { gte: growthSince } } }),
   ]);
+  const recentGrowthActivity = recentGrowthGoals + recentGrowthTasks + recentHabitLogs + recentSharedJournals;
   const unread = newReports + newComments;
   const supportUnread = supportSummary._sum.adminUnread || 0;
   const urgentTasks = [
@@ -154,6 +161,7 @@ async function ManagerDashboard({ user }) {
         <Link href="/dashboard/admin/classes"><Icon name="calendar" size={18} /><span><strong>{upcomingClasses.toLocaleString('fa-IR')}</strong> کلاس در هفت روز آینده</span></Link>
         <Link href="/dashboard/admin/bookings"><Icon name="clapperboard" size={18} /><span><strong>{newBookings.toLocaleString('fa-IR')}</strong> درخواست جدید ست‌تایم</span></Link>
         <Link href="/dashboard/admin/reports"><Icon name="users" size={18} /><span><strong>{openReports.toLocaleString('fa-IR')}</strong> کار باز تیمی{myOpenTasks > 0 ? ` · ${myOpenTasks.toLocaleString('fa-IR')} ارجاع به شما` : ''}</span></Link>
+        <Link href="/dashboard/admin/growth"><Icon name="flag" size={18} /><span><strong>{recentGrowthActivity.toLocaleString('fa-IR')}</strong> فعالیت رشد در هفت روز اخیر</span></Link>
       </div>
 
       <Link href="/dashboard/admin/reports" className="manager-team-card">
@@ -310,54 +318,19 @@ async function FilmmakerDashboard({ user }) {
   );
 }
 
-// یادآوری برای هنرجو: رزومه‌اش را مدیریت می‌نویسد، اما ویدیوی معرفی را باید خودش بگذارد؛
-// بدون ویدیو، رزومه در بانک بازیگران برای فیلم‌سازان کم‌جان دیده می‌شود.
-async function StudentResumeNudge({ user }) {
-  const resume = await prisma.actorResume.findUnique({
-    where: { userId: user.id },
-    select: { isPublic: true, selfVideoUrl: true },
-  });
-
-  if (!resume) {
-    return (
-      <div className="alert alert--info" style={{ marginBottom: 14 }}>
-        <Icon name="masks" size={16} /> هنوز رزومهٔ بازیگری برای شما ثبت نشده است. رزومه را مدیریت آموزشگاه تنظیم می‌کند؛ برای پیگیری با پشتیبانی در تماس باشید.
-      </div>
-    );
-  }
-
-  if (!resume.selfVideoUrl) {
-    return (
-      <div className="alert alert--warning" style={{ marginBottom: 14 }}>
-        <Icon name="video" size={16} /> رزومهٔ شما ویدیوی معرفی ندارد. با یک ویدیوی کوتاه، شانس دیده‌شدن شما توسط فیلم‌سازان بیشتر می‌شود.{' '}
-        <Link href="/dashboard/resume" style={{ fontWeight: 700 }}>بارگذاری ویدیوی معرفی ←</Link>
-      </div>
-    );
-  }
-
-  if (!resume.isPublic) {
-    return (
-      <div className="alert alert--info" style={{ marginBottom: 14 }}>
-        <Icon name="masks" size={16} /> رزومهٔ شما هنوز در بانک بازیگران منتشر نشده است. انتشار آن را مدیریت آموزشگاه انجام می‌دهد.
-      </div>
-    );
-  }
-
-  return null;
-}
-
 // نوارِ آمارِ بالای داشبورد هنرجو: چهار عددی که هنرجو بیشتر از همه دنبالشان است.
 // همهٔ اعداد واقعی‌اند و از حضور و غیاب و جلسه‌های کلاسِ خودش می‌آیند؛ فرمول پیشرفت
 // دقیقاً همان چیزی است که در /api/my/schedule استفاده می‌شود تا دو جا دو عدد ندهند.
 async function StudentStats({ user }) {
   const groupId = user.classGroupId;
 
-  const [group, presentCount, upcoming, activeGoals, openTasks] = await Promise.all([
+  const [group, presentCount, upcoming, activeGoals, openTasks, latestProgressComment] = await Promise.all([
     groupId ? prisma.classGroup.findUnique({ where: { id: groupId }, select: { totalSessions: true } }) : null,
     groupId ? prisma.attendance.count({ where: { userId: user.id, status: 'present', session: { groupId } } }) : 0,
     groupId ? prisma.classSession.count({ where: { groupId, startsAt: { gt: new Date() } } }) : 0,
     prisma.growthGoal.count({ where: { userId: user.id, status: 'active' } }),
     prisma.growthTask.count({ where: { userId: user.id, status: 'pending' } }),
+    prisma.studentProgressComment.findFirst({ where: { userId: user.id }, orderBy: { createdAt: 'desc' }, select: { content: true, createdAt: true } }),
   ]);
 
   const totalSessions = group?.totalSessions || 8;
@@ -366,7 +339,8 @@ async function StudentStats({ user }) {
   const fa = (n) => n.toLocaleString('fa-IR');
 
   return (
-    <div className="dash-stats">
+    <>
+      <div className="dash-stats">
       {/* جای مربعِ بیمه را مسیر رشد گرفته است؛ بیمه از منوی کناری در دسترس می‌ماند. */}
       <Link href="/dashboard/growth" className="dash-stat">
         <div className="dash-stat__head">
@@ -409,7 +383,15 @@ async function StudentStats({ user }) {
         <div className="dash-stat__value">٪{fa(progress)}</div>
         <div className="dash-progress"><div className="dash-progress__bar" style={{ width: `${progress}%` }} /></div>
       </div>
-    </div>
+      </div>
+      {latestProgressComment && (
+        <div className="student-progress-comment student-progress-comment--dashboard">
+          <strong>نظر استاد دربارهٔ پیشرفت شما</strong>
+          <p>{latestProgressComment.content}</p>
+          <small>{new Intl.DateTimeFormat('fa-IR', { dateStyle: 'medium' }).format(latestProgressComment.createdAt)}</small>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -444,7 +426,7 @@ export default async function DashboardPage() {
   const welcomeSub = user.role !== 'student'
     ? 'از اینجا ثبت‌نام و حسابت را دنبال کن.'
     : user.graduated
-      ? 'دوره‌ات را کامل کرده‌ای؛ گواهی‌نامه و رزومه‌ات همیشه اینجاست.'
+      ? 'دوره‌ات را کامل کرده‌ای؛ گواهی‌نامه و امکانات فارغ‌التحصیلی از پنل در دسترس توست.'
       : 'امروز یک قدم به هنرمند شدن نزدیک‌تری ✨';
 
   return (
@@ -463,7 +445,6 @@ export default async function DashboardPage() {
             </div>
             <LiveNowNudge user={user} />
             {user.role === 'student' && !user.graduated && <StudentStats user={user} />}
-            {user.role === 'student' && <StudentResumeNudge user={user} />}
             <div className="dash-cards" style={{ gridTemplateColumns: user.graduated ? undefined : '2fr 1fr' }}>
               {!user.graduated && (
                 <Link href="/dashboard/calendar" className="dash-hero">

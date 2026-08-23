@@ -24,7 +24,26 @@ export async function GET() {
     orderBy: { createdAt: 'desc' },
   });
 
-  return Response.json({ ok: true, groups, students });
+  const latestComments = students.length ? await prisma.studentProgressComment.findMany({
+    where: { userId: { in: students.map((student) => student.id) } },
+    orderBy: { createdAt: 'desc' },
+    select: { userId: true, content: true, createdAt: true },
+  }) : [];
+  const commentByStudent = {};
+  for (const comment of latestComments) {
+    if (!commentByStudent[comment.userId]) commentByStudent[comment.userId] = comment;
+  }
+
+  return Response.json({
+    ok: true,
+    groups,
+    students: students.map((student) => ({
+      ...student,
+      latestProgressComment: commentByStudent[student.id]
+        ? { content: commentByStudent[student.id].content, createdAt: commentByStudent[student.id].createdAt.toISOString() }
+        : null,
+    })),
+  });
 }
 
 export async function POST(request) {

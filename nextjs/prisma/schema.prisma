@@ -951,6 +951,18 @@ model MentorNote {
   @@index([userId])
 }
 
+// نظر استاد دربارهٔ پیشرفت که پس از ثبت برای خود هنرجو نیز نمایش داده می‌شود.
+model StudentProgressComment {
+  id          String   @id @default(cuid())
+  userId      String
+  createdById String?
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId, createdAt])
+}
+
 // ===================== گروه‌های گفت‌وگوی هنرجویان =====================
 // فضای گفت‌وگوی گروهی که فقط مدیر آن را می‌سازد و اعضایش را خودش انتخاب می‌کند.
 // هیچ کاربری نمی‌تواند خودش عضو شود؛ عضویت فقط هنرجوی فعال است و غیرهنرجو حتی وجود گروه را نمی‌بیند.

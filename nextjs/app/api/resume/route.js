@@ -36,6 +36,7 @@ function intOrNull(v, min, max) {
 export async function GET() {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
+  if (user.role === 'student') return Response.json({ ok: false, error: 'دسترسی به رزومه برای هنرجو مجاز نیست.' }, { status: 403 });
   const resume = await prisma.actorResume.findUnique({ where: { userId: user.id } });
   return Response.json({ ok: true, resume: serialize(resume) });
 }
@@ -43,8 +44,7 @@ export async function GET() {
 export async function PUT(request) {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
-  // هنرجو اجازه‌ی ویرایش رزومه را ندارد؛ رزومه‌ی او را خانواده برداشت می‌سازد.
-  // (هنرجو فقط می‌تواند از مسیر /api/resume/video ویدیوی معرفی‌اش را بگذارد.)
+  // رزومهٔ هنرجو فقط از پنل مدیریت ساخته و ویرایش می‌شود.
   if (user.role === 'student') {
     return Response.json({ ok: false, error: 'ویرایش رزومه توسط هنرجو مجاز نیست.' }, { status: 403 });
   }

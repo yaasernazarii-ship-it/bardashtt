@@ -32,6 +32,11 @@ export async function GET() {
   const totalSessions = group.totalSessions || 8;
   const computedProgress = totalSessions ? Math.min(100, Math.round((presentCount / totalSessions) * 100)) : 0;
   const progress = user.progressOverride !== null && user.progressOverride !== undefined ? user.progressOverride : computedProgress;
+  const latestProgressComment = await prisma.studentProgressComment.findFirst({
+    where: { userId: user.id },
+    orderBy: { createdAt: 'desc' },
+    select: { content: true, createdAt: true },
+  });
 
   // نوتیفیکیشن: اگر برنامه بعد از آخرین بازدید هنرجو تغییر کرده باشد
   const hasUpdate = !user.scheduleSeenAt || group.updatedAt.getTime() > new Date(user.scheduleSeenAt).getTime();
@@ -49,6 +54,9 @@ export async function GET() {
       coverImage: group.coverImage,
     },
     progress,
+    progressComment: latestProgressComment
+      ? { content: latestProgressComment.content, createdAt: latestProgressComment.createdAt.toISOString() }
+      : null,
     presentCount,
     totalSessions,
     passed,
