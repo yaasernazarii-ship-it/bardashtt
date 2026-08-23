@@ -335,6 +335,33 @@ model BookChunk {
   @@index([idx])
 }
 
+// منابع تکمیلی که مدیر جدا از کتاب «متد پنج سوال» به دستیار هوشمند اضافه می‌کند.
+model AiKnowledgeDocument {
+  id            String             @id @default(cuid())
+  title         String
+  fileName      String?
+  mimeType      String?
+  chunkCount    Int                @default(0)
+  createdByName String?
+  createdAt     DateTime           @default(now())
+  chunks        AiKnowledgeChunk[]
+
+  @@index([createdAt])
+}
+
+model AiKnowledgeChunk {
+  id         String              @id @default(cuid())
+  documentId String
+  document   AiKnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  idx        Int
+  content    String
+  embedding  Json
+  createdAt  DateTime            @default(now())
+
+  @@unique([documentId, idx])
+  @@index([documentId])
+}
+
 model SupportConversation {
   id            String           @id @default(cuid())
   visitorName   String

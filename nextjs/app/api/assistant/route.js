@@ -1,5 +1,6 @@
 import { getSessionUser } from '@/lib/auth';
-import { isAiConfigured, isBookReady, answerFromBook } from '@/lib/assistant';
+import { aiErrorMessage } from '@/lib/ai';
+import { isAiConfigured, isAssistantReady, answerFromSources } from '@/lib/assistant';
 
 export async function POST(request) {
   const user = await getSessionUser();
@@ -9,9 +10,9 @@ export async function POST(request) {
     return Response.json({ ok: false, error: 'دستیار هوشمند هنوز پیکربندی نشده است.' }, { status: 503 });
   }
 
-  const ready = await isBookReady();
+  const ready = await isAssistantReady();
   if (!ready) {
-    return Response.json({ ok: false, error: 'محتوای کتاب هنوز بارگذاری نشده است.' }, { status: 503 });
+    return Response.json({ ok: false, error: 'هنوز منبعی برای دستیار هوشمند بارگذاری نشده است.' }, { status: 503 });
   }
 
   try {
@@ -19,9 +20,9 @@ export async function POST(request) {
     const question = String(body.question || '').trim().slice(0, 500);
     if (!question) return Response.json({ ok: false, error: 'پرسش خود را بنویسید.' }, { status: 400 });
 
-    const answer = await answerFromBook(question);
+    const answer = await answerFromSources(question);
     return Response.json({ ok: true, answer });
-  } catch {
-    return Response.json({ ok: false, error: 'خطا در پردازش پرسش. کمی بعد دوباره تلاش کنید.' }, { status: 500 });
+  } catch (error) {
+    return Response.json({ ok: false, error: aiErrorMessage(error) }, { status: 503 });
   }
 }

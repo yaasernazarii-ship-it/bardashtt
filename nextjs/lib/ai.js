@@ -9,6 +9,27 @@ export function isAiConfigured() {
   return !!process.env.AI_API_KEY;
 }
 
+export class AiServiceError extends Error {
+  constructor(operation, status, detail = '') {
+    super(`${operation}_failed ${status} ${detail.slice(0, 200)}`);
+    this.name = 'AiServiceError';
+    this.operation = operation;
+    this.status = status;
+    this.detail = detail.slice(0, 500);
+  }
+}
+
+export function aiErrorMessage(error) {
+  if (error instanceof AiServiceError) {
+    if (error.status === 401 || error.status === 403) return 'کلید اتصال گپ‌جی‌پی‌تی معتبر نیست.';
+    if (error.status === 402 || error.status === 429 || /insufficient|quota|credit|balance|اعتبار/i.test(error.detail)) {
+      return 'اعتبار گپ‌جی‌پی‌تی کافی نیست. پس از شارژ، بدون تغییر تنظیمات دوباره امتحان کنید.';
+    }
+    if (error.status >= 500) return 'سرویس گپ‌جی‌پی‌تی موقتاً در دسترس نیست. کمی بعد دوباره امتحان کنید.';
+  }
+  return 'ارتباط با سرویس هوش مصنوعی انجام نشد.';
+}
+
 function authHeaders() {
   return {
     'Content-Type': 'application/json',
@@ -24,7 +45,7 @@ export async function embed(input) {
   });
   if (!res.ok) {
     const detail = await res.text().catch(() => '');
-    throw new Error(`embed_failed ${res.status} ${detail.slice(0, 200)}`);
+    throw new AiServiceError('embed', res.status, detail);
   }
   const data = await res.json();
   return data.data.map((d) => d.embedding);
@@ -43,7 +64,7 @@ export async function chat(messages, { temperature = 0.2, maxTokens = 700 } = {}
   });
   if (!res.ok) {
     const detail = await res.text().catch(() => '');
-    throw new Error(`chat_failed ${res.status} ${detail.slice(0, 200)}`);
+    throw new AiServiceError('chat', res.status, detail);
   }
   const data = await res.json();
   return data.choices?.[0]?.message?.content?.trim() || '';

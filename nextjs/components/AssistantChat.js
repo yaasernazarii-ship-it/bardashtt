@@ -50,7 +50,7 @@ export default function AssistantChat() {
       <div className="chat-thread">
         {messages.length === 0 && (
           <div className="chat-empty">
-            <p style={{ color: 'var(--muted)', marginBottom: 14 }}>پرسش‌های خود را دربارهٔ کتاب «متد پنج سوال طلایی» بپرسید. پاسخ‌ها فقط بر اساس همین کتاب داده می‌شوند.</p>
+            <p style={{ color: 'var(--muted)', marginBottom: 14 }}>پرسش خود را دربارهٔ کتاب «متد پنج سوال طلایی» و منابع آموزشی تاییدشده بپرسید. پاسخ‌ها فقط بر اساس همین منابع داده می‌شوند.</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {SUGGESTIONS.map((s) => (
                 <button key={s} type="button" className="btn btn--sm btn--outline" onClick={() => ask(s)}>{s}</button>
