@@ -29,7 +29,7 @@ export async function GET(request, { params }) {
     where: { id },
     select: {
       id: true, phone: true, displayName: true, city: true, role: true, username: true,
-      passwordPlain: true, active: true, branch: true, graduated: true, courseTitle: true, nationalId: true, createdAt: true,
+      passwordPlain: true, active: true, deletedAt: true, branch: true, graduated: true, courseTitle: true, nationalId: true, createdAt: true,
       photoUrl: true,
       progressOverride: true,
       resume: true,
@@ -62,20 +62,39 @@ export async function PATCH(request, { params }) {
     // مدیریت محتوای بارگذاری‌شده‌ی کاربر (رزومه) توسط ادمین/ادیتور
     if (body.moderate) {
       const action = String(body.moderate);
+      const currentResume = await prisma.actorResume.findUnique({
+        where: { userId: id },
+        select: { id: true, photoUrl: true, showreelUrl: true, selfVideoUrl: true },
+      });
+      let removedUrls = [];
+
       if (action === 'deleteResumePhoto') {
         await prisma.actorResume.updateMany({ where: { userId: id }, data: { photoUrl: null } });
+        removedUrls = [currentResume?.photoUrl];
       } else if (action === 'deleteShowreel') {
         await prisma.actorResume.updateMany({ where: { userId: id }, data: { showreelUrl: null } });
+        removedUrls = [currentResume?.showreelUrl];
       } else if (action === 'deleteSelfVideo') {
         await prisma.actorResume.updateMany({ where: { userId: id }, data: { selfVideoUrl: null } });
+        removedUrls = [currentResume?.selfVideoUrl];
       } else if (action === 'hideResume') {
         await prisma.actorResume.updateMany({ where: { userId: id }, data: { isPublic: false } });
       } else if (action === 'deleteResume') {
+        if (currentResume) await prisma.actorShortlist.deleteMany({ where: { actorId: currentResume.id } });
         await prisma.actorResume.deleteMany({ where: { userId: id } });
+        removedUrls = [currentResume?.photoUrl, currentResume?.showreelUrl, currentResume?.selfVideoUrl];
       } else {
         return Response.json({ ok: false, error: 'عملیات نامعتبر است.' }, { status: 400 });
       }
+
+      await removeLocalUploads(removedUrls);
       return Response.json({ ok: true, moderated: action });
+    }
+
+    const account = await prisma.user.findUnique({ where: { id }, select: { deletedAt: true } });
+    if (!account) return Response.json({ ok: false, error: 'کاربر یافت نشد.' }, { status: 404 });
+    if (account.deletedAt) {
+      return Response.json({ ok: false, error: 'حساب بایگانی‌شده فقط برای مشاهده و حذف دستی مدارک در دسترس است.' }, { status: 409 });
     }
 
     // ساخت/ویرایش رزومه‌ی هنرجو توسط ادمین/ادیتور (هنرجو خودش دسترسی ویرایش ندارد)
@@ -215,13 +234,14 @@ export async function DELETE(request, { params }) {
       username: true,
       phone: true,
       role: true,
+      deletedAt: true,
       photoUrl: true,
-      resume: { select: { id: true, photoUrl: true, showreelUrl: true, selfVideoUrl: true } },
+      resume: { select: { id: true } },
       enrollments: { select: { videoUrl: true } },
-      certificates: { select: { photoUrl: true } },
     },
   });
   if (!target) return Response.json({ ok: false, error: 'کاربر یافت نشد.' }, { status: 404 });
+  if (target.deletedAt) return Response.json({ ok: false, error: 'این حساب قبلاً بایگانی شده است.' }, { status: 409 });
   if (target.role === 'admin' || target.role === 'editor') {
     return Response.json({ ok: false, error: 'حساب مدیریتی از این بخش قابل حذف نیست.' }, { status: 403 });
   }
@@ -260,27 +280,33 @@ export async function DELETE(request, { params }) {
       await tx.chatGroupMember.deleteMany({ where: { userId: id } });
       await tx.directChat.deleteMany({ where: { OR: [{ userAId: id }, { userBId: id }] } });
 
-      await tx.certificate.deleteMany({ where: { userId: id } });
-      await tx.examAttempt.deleteMany({ where: { userId: id } });
-      await tx.examPermit.deleteMany({ where: { userId: id } });
       await tx.attendance.deleteMany({ where: { userId: id } });
       await tx.payment.deleteMany({ where: { userId: id } });
       await tx.courseAccess.deleteMany({ where: { userId: id } });
       await tx.session.deleteMany({ where: { userId: id } });
-      await tx.actorResume.deleteMany({ where: { userId: id } });
-      await tx.user.delete({ where: { id } });
+      await tx.actorResume.updateMany({ where: { userId: id }, data: { isPublic: false } });
+      await tx.user.update({
+        where: { id },
+        data: {
+          phone: `archived-${id}`,
+          username: null,
+          passwordHash: null,
+          passwordPlain: null,
+          active: false,
+          role: 'member',
+          classGroupId: null,
+          photoUrl: null,
+          deletedAt: new Date(),
+        },
+      });
     }, { timeout: 15000 });
   } catch {
-    return Response.json({ ok: false, error: 'حذف کامل حساب انجام نشد.' }, { status: 500 });
+    return Response.json({ ok: false, error: 'حذف حساب از فهرست‌ها انجام نشد.' }, { status: 500 });
   }
 
   await removeLocalUploads([
     target.photoUrl,
-    target.resume?.photoUrl,
-    target.resume?.showreelUrl,
-    target.resume?.selfVideoUrl,
     ...target.enrollments.map((item) => item.videoUrl),
-    ...target.certificates.map((item) => item.photoUrl),
     ...signups.map((item) => item.idCardImage),
     ...submissions.map((item) => item.fileUrl),
   ]);
@@ -290,7 +316,7 @@ export async function DELETE(request, { params }) {
     action: 'user.delete',
     targetType: 'user',
     targetId: id,
-    summary: `حساب «${who}» و اطلاعات وابسته حذف شد.`,
+    summary: `حساب «${who}» بایگانی شد؛ رزومه، آزمون‌ها و گواهی‌ها برای حذف دستی مدیریت حفظ شدند.`,
   }).catch(() => {});
 
   return Response.json({ ok: true });

@@ -23,6 +23,7 @@ model User {
   passwordHash String?
   passwordPlain String? // رمز عبورِ صادرشده توسط مدیر، برای ارسال مجدد در صورت فراموشی
   active       Boolean      @default(true) // غیرفعال‌سازی حساب توسط ادمین/ادیتور
+  deletedAt    DateTime? // حساب بایگانی‌شده؛ از فهرست‌های عملیاتی مخفی است ولی رزومه/آزمون/گواهی تا حذف دستی مدیر حفظ می‌شوند
   graduated    Boolean      @default(false) // فارغ‌التحصیل؟ در این حالت تقویم کلاس از داشبورد حذف و از انتخاب اسامی کنار می‌رود
   nationalId   String?
   branch       String? // تهران | ساری
@@ -46,6 +47,7 @@ model User {
   certificates Certificate[] // گواهی‌نامه‌های صادرشده
 
   @@index([classGroupId])
+  @@index([deletedAt])
 }
 
 model ClassGroup {

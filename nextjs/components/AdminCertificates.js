@@ -167,6 +167,17 @@ export default function AdminCertificates() {
     setItems((prev) => prev.map((it) => (it.id === c.id ? { ...it, revoked: next } : it)));
   }
 
+  async function removeCertificate(c) {
+    if (!confirm(`گواهی ${c.serial} برای همیشه از سایت و سرور حذف شود؟ این کار قابل بازگشت نیست.`)) return;
+    setRowBusy(c.id); setError(''); setNotice('');
+    const res = await fetch(`/api/admin/certificates/${c.id}`, { method: 'DELETE' });
+    const data = await res.json();
+    setRowBusy('');
+    if (!data.ok) { setError(data.error || 'حذف گواهی ناموفق بود.'); return; }
+    setItems((current) => current.filter((item) => item.id !== c.id));
+    setNotice(`گواهی ${c.serial} از سایت و سرور حذف شد.`);
+  }
+
   const shownPhoto = photoUrl || profilePhoto;
   const today = new Date().toISOString().slice(0, 10);
   const ready = form.userId && form.fullName.trim().length >= 3 && form.gender && form.nationalId.length === 10;
@@ -371,6 +382,9 @@ export default function AdminCertificates() {
                   )}
                   <button className={`btn ${c.revoked ? '' : 'btn--danger'}`} disabled={rowBusy === c.id} onClick={() => toggleRevoke(c)}>
                     {c.revoked ? 'اعادهٔ اعتبار' : 'ابطال'}
+                  </button>
+                  <button className="btn btn--danger" disabled={rowBusy === c.id} onClick={() => removeCertificate(c)}>
+                    {rowBusy === c.id ? 'در حال حذف…' : 'حذف کامل از سرور'}
                   </button>
                 </div>
               </div>

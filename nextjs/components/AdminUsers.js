@@ -16,10 +16,11 @@ export default function AdminUsers() {
   const [query, setQuery] = useState('');
   const [panelId, setPanelId] = useState(null);
   const [openId, setOpenId] = useState('');
+  const [archivedMode, setArchivedMode] = useState(false);
 
-  async function load() {
+  async function load(archived = archivedMode) {
     setLoading(true);
-    const res = await fetch('/api/admin/users');
+    const res = await fetch(`/api/admin/users${archived ? '?archived=1' : ''}`);
     const data = await res.json();
     if (data.ok) {
       setUsers(data.users);
@@ -30,7 +31,7 @@ export default function AdminUsers() {
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(archivedMode); }, [archivedMode]);
 
   async function patch(id, payload) {
     setSavingId(id);
@@ -64,7 +65,7 @@ export default function AdminUsers() {
 
   async function deleteAccount(u) {
     const name = u.displayName || u.username || u.phone;
-    if (!window.confirm(`حساب «${name}» برای همیشه حذف شود؟ حساب، ثبت‌نام، اطلاعات آموزشی و فایل‌های وابسته پاک می‌شوند و این کار قابل بازگشت نیست.`)) return;
+    if (!window.confirm(`حساب «${name}» از تمام فهرست‌های سایت حذف و بایگانی شود؟ اطلاعات روزمره و فایل‌های وابسته پاک می‌شوند؛ رزومه، آزمون‌ها و گواهی‌ها برای حذف دستی شما باقی می‌مانند.`)) return;
 
     setSavingId(u.id);
     setError('');
@@ -113,10 +114,20 @@ export default function AdminUsers() {
     <div>
       {error && <div className="alert alert--error" style={{ marginBottom: 14 }}>{error}</div>}
 
-      <div style={{ marginBottom: 14 }}>
+      <div style={{ marginBottom: 14, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <input className="form-input" placeholder="جستجو بر اساس نام، نام کاربری یا موبایل…" value={query}
           onChange={(e) => setQuery(e.target.value)} style={{ maxWidth: 360 }} />
+        <button type="button" className={`btn btn--sm ${archivedMode ? 'btn--dark' : 'btn--outline'}`}
+          onClick={() => { setArchivedMode((current) => !current); setOpenId(''); setPanelId(null); }}>
+          {archivedMode ? 'بازگشت به حساب‌های فعال' : 'رزومه، آزمون و گواهی حساب‌های حذف‌شده'}
+        </button>
       </div>
+
+      {archivedMode && (
+        <div className="alert alert--info" style={{ marginBottom: 14 }}>
+          این افراد در هیچ فهرست عملیاتی یا بخش عمومی سایت دیده نمی‌شوند. فقط مدارک باقی‌مانده را از اینجا باز و در صورت نیاز دستی حذف کنید.
+        </div>
+      )}
 
       {filtered.length === 0 ? (
         <p style={{ color: 'var(--muted)' }}>کاربری یافت نشد.</p>
@@ -132,10 +143,16 @@ export default function AdminUsers() {
                   <UserPhotoThumb src={u.photoUrl} name={u.displayName || u.username || u.phone} />
                   <span className="su-head__name">{u.displayName || u.username || u.phone}</span>
                   <span className="su-tags">
-                    <span className="su-tag su-tag--muted">{ROLE_LABEL[u.role] || u.role}{isSelf ? ' (شما)' : ''}</span>
-                    <span className={`su-tag ${u.active === false ? 'su-tag--off' : 'su-tag--ok'}`}>{u.active === false ? 'غیرفعال' : 'فعال'}</span>
-                    {u.role === 'student' && (
-                      <span className={`su-tag ${u.graduated ? 'su-tag--grad' : 'su-tag--enrolled'}`}>{u.graduated ? 'فارغ‌التحصیل' : 'در حال تحصیل'}</span>
+                    {u.deletedAt ? (
+                      <span className="su-tag su-tag--off">حساب حذف‌شده</span>
+                    ) : (
+                      <>
+                        <span className="su-tag su-tag--muted">{ROLE_LABEL[u.role] || u.role}{isSelf ? ' (شما)' : ''}</span>
+                        <span className={`su-tag ${u.active === false ? 'su-tag--off' : 'su-tag--ok'}`}>{u.active === false ? 'غیرفعال' : 'فعال'}</span>
+                        {u.role === 'student' && (
+                          <span className={`su-tag ${u.graduated ? 'su-tag--grad' : 'su-tag--enrolled'}`}>{u.graduated ? 'فارغ‌التحصیل' : 'در حال تحصیل'}</span>
+                        )}
+                      </>
                     )}
                   </span>
                   <svg className={`su-chev ${open ? 'is-open' : ''}`} width="16" height="16" viewBox="0 0 24 24"
@@ -147,15 +164,23 @@ export default function AdminUsers() {
                 {open && (
                   <div className="su-body">
                     <div style={{ color: 'var(--muted)', fontSize: '.88rem', lineHeight: 2 }}>
-                      <div>موبایل: <span dir="ltr">{u.phone}</span></div>
-                      <div>نام کاربری: <b dir="ltr">{u.username || '—'}</b></div>
-                      <div>رمز عبور: <b dir="ltr" style={{ fontFamily: 'monospace' }}>{u.passwordPlain || '—'}</b></div>
-                      <div>تاریخ عضویت: {dateFmt.format(new Date(u.createdAt))}</div>
+                      {u.deletedAt ? (
+                        <div>تاریخ حذف حساب: {dateFmt.format(new Date(u.deletedAt))}</div>
+                      ) : (
+                        <>
+                          <div>موبایل: <span dir="ltr">{u.phone}</span></div>
+                          <div>نام کاربری: <b dir="ltr">{u.username || '—'}</b></div>
+                          <div>رمز عبور: <b dir="ltr" style={{ fontFamily: 'monospace' }}>{u.passwordPlain || '—'}</b></div>
+                          <div>تاریخ عضویت: {dateFmt.format(new Date(u.createdAt))}</div>
+                        </>
+                      )}
                     </div>
 
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginTop: 12, borderTop: '1px solid var(--border)', paddingTop: 12 }}>
                       <button type="button" className="btn btn--sm btn--dark" onClick={() => setPanelId(u.id)}>مشاهدهٔ پنل کامل</button>
 
+                      {!u.deletedAt && (
+                        <>
                       {/* نام کاربری و رمز عبور برای هر حسابی — از جمله حساب خودتان — قابل تغییر است،
                           چون کاربر دیگر از پروفایلش رمز عوض نمی‌کند و تنها راه، همین‌جاست. */}
                       <button type="button" className="btn btn--sm btn--outline" disabled={savingId === u.id} onClick={() => setUsername(u)}>
@@ -193,9 +218,11 @@ export default function AdminUsers() {
                           {u.role !== 'admin' && u.role !== 'editor' && (
                             <button type="button" className="btn btn--sm btn--danger"
                               disabled={savingId === u.id} onClick={() => deleteAccount(u)}>
-                              {savingId === u.id ? 'در حال حذف…' : 'حذف کامل حساب'}
+                              {savingId === u.id ? 'در حال حذف…' : 'حذف حساب از سایت'}
                             </button>
                           )}
+                        </>
+                      )}
                         </>
                       )}
                     </div>
@@ -303,9 +330,11 @@ function UserPanel({ userId, onClose }) {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, gap: 8 }}>
                 <h3 style={{ fontWeight: 800, margin: 0 }}>رزومه‌ی بازیگری و بارگذاری‌ها</h3>
-                <button type="button" className="btn btn--sm btn--dark" disabled={busy} onClick={() => setEditResume((v) => !v)}>
-                  {editResume ? 'بستن ویرایش' : (r ? 'ویرایش رزومه' : 'ساخت رزومه')}
-                </button>
+                {!u.deletedAt && (
+                  <button type="button" className="btn btn--sm btn--dark" disabled={busy} onClick={() => setEditResume((v) => !v)}>
+                    {editResume ? 'بستن ویرایش' : (r ? 'ویرایش رزومه' : 'ساخت رزومه')}
+                  </button>
+                )}
               </div>
               {savedMsg && <div className="alert alert--success" style={{ marginBottom: 10 }}>{savedMsg}</div>}
 

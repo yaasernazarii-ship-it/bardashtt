@@ -15,6 +15,7 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
+  const [removingAttemptId, setRemovingAttemptId] = useState('');
   const [search, setSearch] = useState('');
 
   const [form, setForm] = useState(EMPTY);
@@ -50,6 +51,27 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
     const res = await fetch('/api/admin/exam/attempts');
     const data = await res.json();
     if (data.ok) setAttempts(data.items); else setError(data.error || 'خطا در بارگذاری.');
+  }
+
+  async function removeAttempt(attempt) {
+    const who = attempt.user?.displayName || attempt.user?.username || attempt.user?.phone || 'این هنرجو';
+    if (!confirm(`کارنامهٔ آزمون «${who}» برای همیشه حذف شود؟ این کار قابل بازگشت نیست.`)) return;
+
+    setRemovingAttemptId(attempt.id);
+    setError('');
+    setNotice('');
+    try {
+      const res = await fetch(`/api/admin/exam/attempts?id=${encodeURIComponent(attempt.id)}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!data.ok) {
+        setError(data.error || 'حذف کارنامه ناموفق بود.');
+        return;
+      }
+      setAttempts((current) => current.filter((item) => item.id !== attempt.id));
+      setNotice('کارنامهٔ آزمون حذف شد.');
+    } finally {
+      setRemovingAttemptId('');
+    }
   }
 
   async function loadPermits() {
@@ -424,6 +446,9 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
                     <span style={{ fontWeight: 700, color: a.passed ? '#16a34a' : '#dc2626' }}>{a.passed ? 'قبول' : 'مردود'}</span>
                   )}
                   {a.certificate && <span dir="ltr" style={{ color: 'var(--muted)' }}>{a.certificate.serial}</span>}
+                  <button type="button" className="btn btn--danger" disabled={removingAttemptId === a.id} onClick={() => removeAttempt(a)}>
+                    {removingAttemptId === a.id ? 'در حال حذف…' : 'حذف کارنامه'}
+                  </button>
                 </div>
               ))}
             </div>

@@ -1,9 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { setCertificatePhoto } from '@/lib/certificate';
+import { removeLocalUploads } from '@/lib/uploadCleanup';
 
-// ابطال/اعادهٔ گواهی، یا جایگزینیِ عکسِ روی آن. گواهی هرگز حذف نمی‌شود تا استعلامِ کدِ
-// صادرشده همیشه پاسخ داشته باشد.
+// ابطال/اعادهٔ گواهی، یا جایگزینیِ عکسِ روی آن.
 export async function PATCH(request, { params }) {
   const manager = await getSessionUser();
   if (!manager) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
@@ -40,4 +40,18 @@ export async function PATCH(request, { params }) {
 
   const updated = await prisma.certificate.update({ where: { id }, data: { revoked: body.revoked } });
   return Response.json({ ok: true, item: { id: updated.id, serial: updated.serial, revoked: updated.revoked } });
+}
+
+export async function DELETE(_request, { params }) {
+  const manager = await getSessionUser();
+  if (!manager) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
+  if (!isManager(manager)) return Response.json({ ok: false, error: 'دسترسی ندارید.' }, { status: 403 });
+
+  const { id } = await params;
+  const certificate = await prisma.certificate.findUnique({ where: { id }, select: { photoUrl: true } });
+  if (!certificate) return Response.json({ ok: false, error: 'گواهی یافت نشد.' }, { status: 404 });
+
+  await prisma.certificate.delete({ where: { id } });
+  await removeLocalUploads([certificate.photoUrl]);
+  return Response.json({ ok: true });
 }
