@@ -2814,7 +2814,12 @@ div.admin-stat { cursor: default; }
 
 /* کلاس‌ها و تقویم */
 .admin-class-list { display: grid; gap: 8px; }
+.admin-class-workspace { display: grid; gap: 12px; }
 .admin-class-card { overflow: hidden; background: #fff; border: 1px solid var(--border); border-radius: 13px; box-shadow: var(--shadow-sm); }
+.admin-class-card--workspace { overflow: visible; border-radius: 14px; }
+.admin-class-card--workspace .admin-class-card__head { position: sticky; top: 8px; z-index: 15; background: rgba(255,255,255,.97); border-radius: 14px 14px 0 0; box-shadow: 0 5px 18px rgba(15,23,42,.07); }
+.admin-class-back { min-height: 42px; padding: 8px 12px; color: var(--dark); background: var(--surface); border: 1px solid var(--border); border-radius: 9px; font: inherit; font-size: .76rem; font-weight: 700; cursor: pointer; }
+.admin-class-card__open-label { min-width: 95px; padding: 7px 10px; color: #fff; background: var(--dark); border-radius: 8px; text-align: center; font-size: .7rem; font-weight: 700; }
 .admin-class-card.is-open { border-color: #cbd5e1; }
 .admin-class-card__head { display: flex; align-items: center; gap: 8px; min-height: 68px; padding: 8px 12px; }
 .admin-class-card__toggle { min-width: 0; flex: 1; display: flex; align-items: center; gap: 12px; padding: 0; text-align: right; border: 0; background: none; font: inherit; cursor: pointer; }
@@ -2831,8 +2836,10 @@ div.admin-stat { cursor: default; }
 .admin-class-card__chev { color: var(--muted); font-size: 1.2rem; transition: transform .18s ease; }
 .admin-class-card__chev.is-open { transform: rotate(180deg); }
 .admin-class-card__body { padding: 14px; border-top: 1px solid var(--border); }
-.admin-class-card__body .tab-list { margin-bottom: 14px; }
-.admin-class-card__body .tab-btn { min-height: 42px; padding: 8px 13px; font-size: .78rem; }
+.admin-class-card--workspace .admin-class-card__body { min-height: 520px; padding: 18px; }
+.admin-class-card__body .tab-list { margin-bottom: 18px; padding: 5px; background: var(--surface); border: 1px solid var(--border); border-radius: 11px; }
+.admin-class-card__body .tab-btn { min-height: 42px; padding: 8px 13px; border-radius: 8px; font-size: .78rem; }
+.admin-class-card__body .tab-btn.active { background: #fff; box-shadow: 0 2px 7px rgba(15,23,42,.08), inset 0 -2px 0 var(--gold); }
 .admin-roster { box-shadow: none !important; }
 .admin-session-editor { display: grid; gap: 10px; margin-top: 14px; padding: 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 11px; }
 .admin-session-editor__head { display: flex; align-items: baseline; gap: 8px; }
@@ -2841,6 +2848,9 @@ div.admin-stat { cursor: default; }
 .admin-session-options { border-top: 1px dashed var(--border); padding-top: 8px; }
 .admin-session-options summary { width: fit-content; padding: 7px 0; color: var(--body); font-size: .78rem; font-weight: 700; cursor: pointer; }
 .admin-session-options__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding-top: 8px; }
+.admin-session-fields-title { display: flex; align-items: baseline; gap: 8px; padding-top: 9px; border-top: 1px solid var(--border); }
+.admin-session-fields-title strong { font-size: .8rem; }
+.admin-session-fields-title span { color: var(--muted); font-size: .68rem; }
 .admin-session-editor__actions { display: flex; gap: 8px; }
 .admin-class-section-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 12px; }
 .admin-class-section-head h3 { margin: 0 0 3px; font-size: .95rem; }
@@ -2862,22 +2872,29 @@ div.admin-stat { cursor: default; }
 .admin-session-list__main small { margin-top: 2px; color: var(--muted); font-size: .66rem; }
 .admin-session-list__delete { min-width: 42px; min-height: 40px; padding: 5px; color: #b42318; background: transparent; border: 0; border-radius: 7px; font: inherit; font-size: .68rem; cursor: pointer; }
 .admin-session-list__delete:hover { background: #fff1f2; }
-.admin-class-settings { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .8fr); gap: 14px; align-items: start; }
-.admin-class-settings__fields { display: grid; grid-template-columns: minmax(0, 1fr) 160px; gap: 12px; }
-.admin-class-settings__cover { padding: 11px; background: var(--surface); border-radius: 10px; }
-.admin-class-settings__cover input[type="file"] { padding: 5px; }
-.admin-class-settings__cover input[type="file"]::file-selector-button { margin-inline-end: 10px; padding: 7px 11px; font: inherit; color: #fff; background: var(--dark); border: 0; border-radius: 7px; cursor: pointer; }
-.admin-class-settings__actions { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.admin-class-settings { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 16px; align-items: start; }
+.admin-class-settings__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 12px; }
+.admin-class-settings__cover { padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+.class-cover-field { display: grid; gap: 7px; }
+.class-cover-field__body { display: grid; gap: 9px; }
+.class-cover-field__body img, .class-cover-field__empty { width: 100%; height: 140px; object-fit: cover; border: 1px solid var(--border); border-radius: 9px; background: #fff; }
+.class-cover-field__empty { display: grid; place-items: center; color: var(--muted); font-size: .75rem; }
+.class-cover-field__actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.class-cover-field__error { color: #b91c1c; font-size: .72rem; }
+.admin-class-settings__actions { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 10px; padding-top: 12px; border-top: 1px solid var(--border); }
 .admin-class-members { display: grid; gap: 10px; }
-.admin-class-members__search { max-width: 360px; }
-.admin-class-members__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 6px; max-height: 330px; overflow-y: auto; padding: 3px; }
-.admin-class-member { min-width: 0; display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 6px 8px; background: var(--surface); border: 1px solid transparent; border-radius: 9px; cursor: pointer; }
-.admin-class-member.is-selected { background: #f0fdf4; border-color: #86efac; }
-.admin-class-member > span { min-width: 0; flex: 1; }
-.admin-class-member strong, .admin-class-member small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.admin-class-member strong { font-size: .76rem; }
-.admin-class-member small { color: var(--muted); font-size: .65rem; }
-.admin-class-member em { color: #b45309; font-size: .62rem; font-style: normal; }
+.admin-class-members__search { max-width: 420px; }
+.admin-class-members__table { max-height: 430px; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; }
+.admin-class-members__head, .admin-class-member { display: grid; grid-template-columns: 54px minmax(180px, 1.2fr) minmax(160px, 1fr) 110px; align-items: center; gap: 10px; }
+.admin-class-members__head { position: sticky; top: 0; z-index: 2; min-height: 36px; padding: 6px 10px; color: var(--muted); background: var(--surface); border-bottom: 1px solid var(--border); font-size: .68rem; font-weight: 700; }
+.admin-class-member { min-height: 49px; padding: 6px 10px; background: #fff; border-bottom: 1px solid var(--border); cursor: pointer; }
+.admin-class-member:last-child { border-bottom: 0; }
+.admin-class-member:hover { background: var(--surface); }
+.admin-class-member.is-selected { background: #f0fdf4; }
+.admin-class-member strong { overflow: hidden; font-size: .76rem; text-overflow: ellipsis; white-space: nowrap; }
+.admin-class-member > span { overflow: hidden; color: var(--muted); font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
+.admin-class-member em { width: fit-content; padding: 3px 7px; color: #475569; background: #f1f5f9; border-radius: 999px; font-size: .62rem; font-style: normal; }
+.admin-class-member.is-selected em { color: #166534; background: #dcfce7; }
 
 /* درخواست‌های ست‌تایم */
 .booking-filter { width: 160px !important; min-height: 40px !important; }
@@ -2948,6 +2965,8 @@ div.admin-stat { cursor: default; }
   .admin-class-section-head { align-items: flex-start; }
   .admin-class-settings, .admin-class-settings__fields { grid-template-columns: 1fr; }
   .admin-class-settings__actions { grid-column: auto; }
+  .admin-class-members__head, .admin-class-member { grid-template-columns: 46px minmax(150px, 1fr) 100px; }
+  .admin-class-members__head > :nth-child(3), .admin-class-member > :nth-child(3) { display: none; }
   .booking-table__head { display: none; }
   .booking-row__summary { grid-template-columns: minmax(0, 1fr) auto; gap: 7px; padding: 10px 11px; }
   .booking-row__phone { grid-column: 1; }
@@ -2967,9 +2986,15 @@ div.admin-stat { cursor: default; }
   .admin-list-toolbar > .btn { flex: 1; }
   .live-admin__details { grid-template-columns: 1fr; }
   .live-admin__recording { grid-column: auto; }
-  .admin-class-card__head { align-items: flex-start; }
+  .admin-class-card__head { align-items: flex-start; flex-wrap: wrap; }
+  .admin-class-back { width: 100%; }
   .admin-class-card__cover { display: none; }
+  .admin-class-card__open-label { display: none; }
   .admin-class-card__head > .btn { padding-inline: 10px; }
+  .admin-class-members__head, .admin-class-member { grid-template-columns: 38px minmax(0, 1fr); }
+  .admin-class-members__head > :nth-child(4), .admin-class-member > :nth-child(4) { display: none; }
+  .admin-class-settings__actions { flex-direction: column; }
+  .admin-session-fields-title { display: grid; }
   .admin-session-editor__head { display: grid; }
   .admin-content-savebar { width: 100%; justify-content: space-between; }
   .admin-content-savebar span { font-size: .7rem; }

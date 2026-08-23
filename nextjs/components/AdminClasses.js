@@ -30,18 +30,20 @@ function ClassCoverPicker({ value, onChange, label = 'عکس کلاس (اختی�
   }
 
   return (
-    <div className="form-group">
+    <div className="class-cover-field">
       {label && <label className="form-label">{label}</label>}
-      <input ref={fileRef} type="file" accept="image/*" className="form-input" onChange={pick} disabled={uploading} />
-      {uploading && <span style={{ color: 'var(--muted)', fontSize: '.8rem' }}>در حال آپلود…</span>}
-      {err && <span style={{ color: '#B91C1C', fontSize: '.8rem' }}>{err}</span>}
-      {value && (
-        <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value} alt="عکس کلاس" style={{ width: 96, height: 64, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)' }} />
-          <button type="button" className="btn btn--sm btn--outline" onClick={() => onChange('')}>حذف عکس</button>
+      <input ref={fileRef} type="file" accept="image/*" onChange={pick} disabled={uploading} hidden />
+      <div className="class-cover-field__body">
+        {value ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={value} alt="عکس کلاس" />
+        ) : <div className="class-cover-field__empty">بدون تصویر</div>}
+        <div className="class-cover-field__actions">
+          <button type="button" className="btn btn--sm btn--outline" onClick={() => fileRef.current?.click()} disabled={uploading}>{uploading ? 'در حال آپلود…' : value ? 'تغییر تصویر' : 'انتخاب تصویر'}</button>
+          {value && <button type="button" className="btn btn--sm btn--ghost" onClick={() => onChange('')}>حذف تصویر</button>}
         </div>
-      )}
+      </div>
+      {err && <span className="class-cover-field__error">{err}</span>}
     </div>
   );
 }
@@ -88,6 +90,16 @@ export default function AdminClasses() {
     .filter(Boolean).join(' ').toLowerCase().includes(needle));
   const totalSessions = groups.reduce((sum, group) => sum + Number(group._count?.sessions || 0), 0);
   const totalMembers = groups.reduce((sum, group) => sum + Number(group.members?.length || 0), 0);
+  const selectedGroup = groups.find((group) => group.id === openId);
+
+  if (selectedGroup) {
+    return (
+      <div className="admin-class-workspace">
+        {error && <div className="alert alert--error">{error}</div>}
+        <GroupCard group={selectedGroup} students={students} open onBack={() => setOpenId(null)} onChanged={load} />
+      </div>
+    );
+  }
 
   return (
     <div className="admin-operation-page admin-classes">
@@ -149,9 +161,7 @@ export default function AdminClasses() {
       ) : (
         <div className="admin-class-list">
           {visibleGroups.map((g) => (
-            <GroupCard key={g.id} group={g} students={students}
-              open={openId === g.id} onToggle={() => setOpenId(openId === g.id ? null : g.id)}
-              onChanged={load} />
+            <GroupCard key={g.id} group={g} students={students} open={false} onToggle={() => setOpenId(g.id)} onChanged={load} />
           ))}
         </div>
       )}
@@ -224,7 +234,7 @@ const TABS = [
   { id: 'settings', label: 'تنظیمات کلاس' },
 ];
 
-function GroupCard({ group, students, open, onToggle, onChanged }) {
+function GroupCard({ group, students, open, onToggle, onBack, onChanged }) {
   const branchStudents = students.filter((s) => !s.branch || s.branch === group.branch);
   const [tab, setTab] = useState('sessions');
   const [memberQuery, setMemberQuery] = useState('');
@@ -237,6 +247,9 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
   const [msg, setMsg] = useState('');
   const [totalSessions, setTotalSessions] = useState(String(group.totalSessions || 8));
   const [cover, setCover] = useState(group.coverImage || '');
+  const [groupName, setGroupName] = useState(group.name || '');
+  const [branch, setBranch] = useState(group.branch || BRANCHES[0]);
+  const [courseTitle, setCourseTitle] = useState(group.courseTitle || '');
   const [teacherName, setTeacherName] = useState(group.teacherName || '');
   const [attendanceSessionId, setAttendanceSessionId] = useState(null);
   const [sessionFormOpen, setSessionFormOpen] = useState(false);
@@ -245,13 +258,15 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
   useEffect(() => { setMemberIds(group.members.map((m) => m.id)); }, [group]);
   useEffect(() => { setTotalSessions(String(group.totalSessions || 8)); }, [group.totalSessions]);
   useEffect(() => { setCover(group.coverImage || ''); }, [group.coverImage]);
+  useEffect(() => { setGroupName(group.name || ''); setBranch(group.branch || BRANCHES[0]); setCourseTitle(group.courseTitle || ''); }, [group.name, group.branch, group.courseTitle]);
   useEffect(() => { setTeacherName(group.teacherName || ''); }, [group.teacherName]);
 
   async function saveSettings() {
+    if (!groupName.trim()) { setMsg('نام کلاس الزامی است.'); return; }
     setSettingsSaving(true); setMsg('');
     const res = await fetch(`/api/admin/classes/${group.id}`, {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teacherName, coverImage: cover, totalSessions }),
+      body: JSON.stringify({ name: groupName, branch, courseTitle, teacherName, coverImage: cover, totalSessions }),
     });
     const d = await res.json();
     setSettingsSaving(false);
@@ -319,9 +334,10 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
   }
 
   return (
-    <div className={`admin-class-card${open ? ' is-open' : ''}`}>
+    <div className={`admin-class-card${open ? ' is-open admin-class-card--workspace' : ''}`}>
       <div className="admin-class-card__head">
-        <button type="button" onClick={onToggle} className="admin-class-card__toggle" aria-expanded={open}>
+        {open && <button type="button" className="admin-class-back" onClick={onBack}>بازگشت به کلاس‌ها</button>}
+        <button type="button" onClick={open ? undefined : onToggle} className="admin-class-card__toggle" aria-expanded={open}>
           {group.coverImage && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={group.coverImage} alt="" className="admin-class-card__cover" />
@@ -330,7 +346,7 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
           <span className="admin-class-card__branch">{group.branch}</span>
           <span className="admin-class-card__metric"><strong>{group.members.length.toLocaleString('fa-IR')}</strong><small>هنرجو</small></span>
           <span className="admin-class-card__metric"><strong>{group._count.sessions.toLocaleString('fa-IR')}</strong><small>جلسه</small></span>
-          <span className={`admin-class-card__chev${open ? ' is-open' : ''}`} aria-hidden="true">⌄</span>
+          {!open && <span className="admin-class-card__open-label">مدیریت کلاس</span>}
         </button>
       </div>
 
@@ -351,16 +367,11 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
           <div className={`tab-panel${tab === 'settings' ? ' active' : ''}`}>
             <div className="admin-class-settings">
               <div className="admin-class-settings__fields">
-                <div className="form-group">
-                  <label className="form-label">نام استاد</label>
-                  <input className="form-input" value={teacherName} onChange={(e) => setTeacherName(e.target.value)} placeholder="مثلاً علی محمدی" />
-                  <p className="form-hint">در برنامه کلاسی و کلاس آنلاین نمایش داده می‌شود.</p>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">تعداد کل جلسات دوره</label>
-                  <input className="form-input" type="number" min={1} max={100} value={totalSessions} onChange={(e) => setTotalSessions(e.target.value)} />
-                  <p className="form-hint">مبنای محاسبه خودکار پیشرفت هنرجویان است.</p>
-                </div>
+                <div className="form-group"><label className="form-label">نام کلاس *</label><input className="form-input" value={groupName} onChange={(e) => setGroupName(e.target.value)} /></div>
+                <div className="form-group"><label className="form-label">شعبه *</label><select className="form-input" value={branch} onChange={(e) => setBranch(e.target.value)}>{BRANCHES.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+                <div className="form-group"><label className="form-label">عنوان دوره</label><input className="form-input" value={courseTitle} onChange={(e) => setCourseTitle(e.target.value)} placeholder="مثلاً مقدماتی بازیگری" /></div>
+                <div className="form-group"><label className="form-label">نام استاد</label><input className="form-input" value={teacherName} onChange={(e) => setTeacherName(e.target.value)} placeholder="مثلاً علی محمدی" /></div>
+                <div className="form-group"><label className="form-label">تعداد کل جلسات دوره</label><input className="form-input" type="number" min={1} max={100} value={totalSessions} onChange={(e) => setTotalSessions(e.target.value)} /><p className="form-hint">مبنای محاسبه خودکار پیشرفت است.</p></div>
               </div>
               <div className="admin-class-settings__cover">
                 <ClassCoverPicker value={cover} onChange={setCover} label="تصویر کلاس" />
@@ -383,7 +394,8 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
               ) : (
                 <>
                   <input className="form-input admin-class-members__search" placeholder="جست‌وجوی نام، نام کاربری یا موبایل…" value={memberQuery} onChange={(e) => setMemberQuery(e.target.value)} />
-                  <div className="admin-class-members__grid">
+                  <div className="admin-class-members__table">
+                    <div className="admin-class-members__head" aria-hidden="true"><span>انتخاب</span><span>هنرجو</span><span>نام کاربری / موبایل</span><span>وضعیت</span></div>
                     {branchStudents.filter((s) => {
                       const mq = memberQuery.trim().toLowerCase();
                       return !mq || [s.displayName, s.username, s.phone].some((v) => (v || '').toLowerCase().includes(mq));
@@ -392,9 +404,9 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
                       return (
                         <label key={s.id} className={`admin-class-member${memberIds.includes(s.id) ? ' is-selected' : ''}`}>
                           <input type="checkbox" checked={memberIds.includes(s.id)} onChange={() => toggleMember(s.id)} />
-                          <UserPhotoThumb src={s.photoUrl} name={s.displayName || s.phone} size={30} />
-                          <span><strong>{s.displayName || s.phone}</strong><small>{s.username || s.phone}</small></span>
-                          {inOther && <em>در کلاس دیگر</em>}
+                          <strong>{s.displayName || s.phone}</strong>
+                          <span>{s.username || s.phone}</span>
+                          <em>{memberIds.includes(s.id) ? 'عضو این کلاس' : inOther ? 'عضو کلاس دیگر' : 'آزاد'}</em>
                         </label>
                       );
                     })}
@@ -418,14 +430,12 @@ function GroupCard({ group, students, open, onToggle, onChanged }) {
                 <div className="form-group"><label className="form-label">عنوان جلسه *</label><input className="form-input" value={sForm.title} onChange={(e) => setSForm({ ...sForm, title: e.target.value })} placeholder="مثلاً جلسه سوم: بیان و بدن" /></div>
                 <div className="form-group"><label className="form-label">تاریخ و ساعت *</label><input className="form-input" type="datetime-local" value={sForm.startsAt} onChange={(e) => setSForm({ ...sForm, startsAt: e.target.value })} /></div>
               </div>
-              <details className="admin-session-options" open={Boolean(sForm.chartDescription || sForm.tools || sForm.homework)}>
-                <summary>جزئیات اختیاری جلسه</summary>
-                <div className="admin-session-options__grid">
-                  <div className="form-group"><label className="form-label">چارت درسی</label><textarea className="form-input" rows={2} value={sForm.chartDescription} onChange={(e) => setSForm({ ...sForm, chartDescription: e.target.value })} /></div>
-                  <div className="form-group"><label className="form-label">ابزار لازم</label><textarea className="form-input" rows={2} value={sForm.tools} onChange={(e) => setSForm({ ...sForm, tools: e.target.value })} /></div>
-                  <div className="form-group"><label className="form-label">تمرین و اتود</label><textarea className="form-input" rows={2} value={sForm.homework} onChange={(e) => setSForm({ ...sForm, homework: e.target.value })} /></div>
-                </div>
-              </details>
+              <div className="admin-session-fields-title"><strong>برنامه و نیازهای جلسه</strong><span>این اطلاعات در برنامه هنرجو نمایش داده می‌شود.</span></div>
+              <div className="admin-session-options__grid">
+                <div className="form-group"><label className="form-label">چارت و محتوای آموزشی</label><textarea className="form-input" rows={3} value={sForm.chartDescription} onChange={(e) => setSForm({ ...sForm, chartDescription: e.target.value })} placeholder="سرفصل‌ها و مباحثی که در این جلسه آموزش داده می‌شود" /></div>
+                <div className="form-group"><label className="form-label">ابزار و وسایل موردنیاز</label><textarea className="form-input" rows={3} value={sForm.tools} onChange={(e) => setSForm({ ...sForm, tools: e.target.value })} placeholder="وسایلی که هنرجو باید همراه داشته باشد" /></div>
+                <div className="form-group"><label className="form-label">تمرین و اتود</label><textarea className="form-input" rows={3} value={sForm.homework} onChange={(e) => setSForm({ ...sForm, homework: e.target.value })} placeholder="تمرین یا اتود موردنظر برای این جلسه" /></div>
+              </div>
               <div className="admin-session-editor__actions">
                 <button className="btn btn--dark btn--sm" type="submit" disabled={busy}>{busy ? 'در حال ذخیره…' : editingSession ? 'ذخیره تغییرات' : 'ثبت جلسه'}</button>
                 <button type="button" className="btn btn--outline btn--sm" onClick={() => { setSForm(emptySession); setEditingSession(null); setSessionFormOpen(false); }}>انصراف</button>
