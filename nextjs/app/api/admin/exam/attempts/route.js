@@ -47,16 +47,13 @@ export async function DELETE(request) {
     select: { id: true, certificate: { select: { serial: true } } },
   });
   if (!attempt) return Response.json({ ok: false, error: 'آزمون یافت نشد.' }, { status: 404 });
-  if (attempt.certificate) {
-    return Response.json({
-      ok: false,
-      error: `ابتدا گواهی ${attempt.certificate.serial} را از بخش گواهی‌نامه‌ها حذف کنید.`,
-    }, { status: 409 });
-  }
 
-  await prisma.$transaction([
-    prisma.examPermit.deleteMany({ where: { attemptId: id } }),
-    prisma.examAttempt.delete({ where: { id } }),
-  ]);
-  return Response.json({ ok: true });
+  await prisma.$transaction(async (tx) => {
+    // گواهی یک سند مستقل و ماندگار است؛ حذف کارنامه فقط پیوند آن با آزمون را برمی‌دارد.
+    // اعتبار یا ابطال گواهی همچنان فقط با تصمیم مدیر در بخش گواهی‌نامه‌ها تغییر می‌کند.
+    await tx.certificate.updateMany({ where: { attemptId: id }, data: { attemptId: null } });
+    await tx.examPermit.deleteMany({ where: { attemptId: id } });
+    await tx.examAttempt.delete({ where: { id } });
+  });
+  return Response.json({ ok: true, certificatePreserved: Boolean(attempt.certificate) });
 }

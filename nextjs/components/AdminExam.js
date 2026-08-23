@@ -55,7 +55,10 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
 
   async function removeAttempt(attempt) {
     const who = attempt.user?.displayName || attempt.user?.username || attempt.user?.phone || 'این هنرجو';
-    if (!confirm(`کارنامهٔ آزمون «${who}» برای همیشه حذف شود؟ این کار قابل بازگشت نیست.`)) return;
+    const certificateNote = attempt.certificate
+      ? `\nگواهی ${attempt.certificate.serial} حذف نمی‌شود و تصمیم ابطال یا اعتبار آن در بخش گواهی‌نامه‌ها با شماست.`
+      : '';
+    if (!confirm(`کارنامهٔ آزمون «${who}» برای همیشه حذف شود؟ این کار قابل بازگشت نیست.${certificateNote}`)) return;
 
     setRemovingAttemptId(attempt.id);
     setError('');
@@ -68,7 +71,9 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
         return;
       }
       setAttempts((current) => current.filter((item) => item.id !== attempt.id));
-      setNotice('کارنامهٔ آزمون حذف شد.');
+      setNotice(data.certificatePreserved
+        ? 'کارنامه حذف شد؛ گواهی صادرشده محفوظ و معتبر باقی ماند.'
+        : 'کارنامهٔ آزمون حذف شد.');
     } finally {
       setRemovingAttemptId('');
     }
