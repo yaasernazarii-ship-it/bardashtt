@@ -238,6 +238,7 @@ export async function DELETE(request, { params }) {
       photoUrl: true,
       resume: { select: { id: true } },
       enrollments: { select: { videoUrl: true } },
+      _count: { select: { examAttempts: true, certificates: true } },
     },
   });
   if (!target) return Response.json({ ok: false, error: 'کاربر یافت نشد.' }, { status: 404 });
@@ -245,6 +246,10 @@ export async function DELETE(request, { params }) {
   if (target.role === 'admin' || target.role === 'editor') {
     return Response.json({ ok: false, error: 'حساب مدیریتی از این بخش قابل حذف نیست.' }, { status: 403 });
   }
+
+  const preserveDocuments = Boolean(
+    target.resume || target._count.examAttempts || target._count.certificates
+  );
 
   const [signups, submissions] = await Promise.all([
     prisma.signupRequest.findMany({ where: { userId: id }, select: { idCardImage: true } }),
@@ -284,21 +289,26 @@ export async function DELETE(request, { params }) {
       await tx.payment.deleteMany({ where: { userId: id } });
       await tx.courseAccess.deleteMany({ where: { userId: id } });
       await tx.session.deleteMany({ where: { userId: id } });
-      await tx.actorResume.updateMany({ where: { userId: id }, data: { isPublic: false } });
-      await tx.user.update({
-        where: { id },
-        data: {
-          phone: `archived-${id}`,
-          username: null,
-          passwordHash: null,
-          passwordPlain: null,
-          active: false,
-          role: 'member',
-          classGroupId: null,
-          photoUrl: null,
-          deletedAt: new Date(),
-        },
-      });
+
+      if (preserveDocuments) {
+        await tx.actorResume.updateMany({ where: { userId: id }, data: { isPublic: false } });
+        await tx.user.update({
+          where: { id },
+          data: {
+            phone: `archived-${id}`,
+            username: null,
+            passwordHash: null,
+            passwordPlain: null,
+            active: false,
+            role: 'member',
+            classGroupId: null,
+            photoUrl: null,
+            deletedAt: new Date(),
+          },
+        });
+      } else {
+        await tx.user.delete({ where: { id } });
+      }
     }, { timeout: 15000 });
   } catch {
     return Response.json({ ok: false, error: 'حذف حساب از فهرست‌ها انجام نشد.' }, { status: 500 });
@@ -316,7 +326,9 @@ export async function DELETE(request, { params }) {
     action: 'user.delete',
     targetType: 'user',
     targetId: id,
-    summary: `حساب «${who}» بایگانی شد؛ رزومه، آزمون‌ها و گواهی‌ها برای حذف دستی مدیریت حفظ شدند.`,
+    summary: preserveDocuments
+      ? `حساب «${who}» بایگانی شد؛ رزومه، آزمون‌ها و گواهی‌ها برای حذف دستی مدیریت حفظ شدند.`
+      : `حساب «${who}» و تمام اطلاعات وابسته از سایت حذف شد.`,
   }).catch(() => {});
 
   return Response.json({ ok: true });

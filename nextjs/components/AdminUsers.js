@@ -65,7 +65,7 @@ export default function AdminUsers() {
 
   async function deleteAccount(u) {
     const name = u.displayName || u.username || u.phone;
-    if (!window.confirm(`حساب «${name}» از تمام فهرست‌های سایت حذف و بایگانی شود؟ اطلاعات روزمره و فایل‌های وابسته پاک می‌شوند؛ رزومه، آزمون‌ها و گواهی‌ها برای حذف دستی شما باقی می‌مانند.`)) return;
+    if (!window.confirm(`حساب «${name}» از تمام فهرست‌های سایت حذف شود؟ اگر رزومه، آزمون یا گواهی داشته باشد فقط همان مدارک در آرشیو مدیریت باقی می‌مانند؛ در غیر این صورت حساب و اطلاعات وابسته کاملاً پاک می‌شوند.`)) return;
 
     setSavingId(u.id);
     setError('');
