@@ -510,7 +510,7 @@ body.nav-open {
   transition: background .3s ease, box-shadow .3s ease;
 }
 .nav__inner {
-  max-width: 1200px; margin: 0 auto; padding: 0 24px;
+  max-width: 1480px; margin: 0 auto; padding: 0 24px;
   display: flex; align-items: center; gap: 22px; height: 68px;
 }
 .nav__logo {
@@ -1005,14 +1005,14 @@ a.dash-stat:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(27
 /* ── RESPONSIVE ───────────────────────────
    mobile: <=767px · tablet: 768-1023px · desktop: >=1024px
 ─────────────────────────────────────────── */
-@media(min-width: 1024px) {
-  .nav__inner { gap: 24px; }
-  .nav__links { gap: 6px; min-width: 0; }
-  .nav__actions { gap: 10px; }
+@media(min-width: 1280px) {
+  .nav__inner { gap: 18px; }
+  .nav__links { gap: 4px; min-width: 0; }
+  .nav__actions { gap: 8px; }
   .support-chat-box { bottom: 32px; left: 32px; }
 }
 
-@media(min-width: 768px) and (max-width: 1023px) {
+@media(min-width: 768px) and (max-width: 1279px) {
   .nav__inner { height: 64px; gap: 12px; padding: 0 18px; }
   .nav__logo img { height: 30px; }
   .nav__links { gap: 0; }
