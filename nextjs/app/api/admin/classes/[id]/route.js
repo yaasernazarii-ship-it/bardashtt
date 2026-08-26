@@ -73,9 +73,12 @@ export async function DELETE(request, { params }) {
 
   const { id } = await params;
   try {
-    // اعضا آزاد شوند، سپس کلاس و جلساتش حذف شوند
-    await prisma.user.updateMany({ where: { classGroupId: id }, data: { classGroupId: null, courseTitle: null } });
-    await prisma.classGroup.delete({ where: { id } });
+    // آزادسازی اعضا و حذف کلاس باید اتمیک باشد تا در صورت خطا داده‌ها نیمه‌کاره نمانند.
+    // جلسات و حضور و غیاب‌ها با روابط Cascade دیتابیس حذف می‌شوند.
+    await prisma.$transaction([
+      prisma.user.updateMany({ where: { classGroupId: id }, data: { classGroupId: null, courseTitle: null } }),
+      prisma.classGroup.delete({ where: { id } }),
+    ]);
     return Response.json({ ok: true });
   } catch {
     return Response.json({ ok: false, error: 'حذف انجام نشد.' }, { status: 400 });

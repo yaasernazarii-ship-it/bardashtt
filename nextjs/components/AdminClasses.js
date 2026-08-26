@@ -254,6 +254,7 @@ function GroupCard({ group, students, open, onToggle, onBack, onChanged }) {
   const [attendanceSessionId, setAttendanceSessionId] = useState(null);
   const [sessionFormOpen, setSessionFormOpen] = useState(true);
   const [settingsSaving, setSettingsSaving] = useState(false);
+  const [deletingGroup, setDeletingGroup] = useState(false);
 
   useEffect(() => { setMemberIds(group.members.map((m) => m.id)); }, [group]);
   useEffect(() => { setTotalSessions(String(group.totalSessions || 8)); }, [group.totalSessions]);
@@ -297,10 +298,18 @@ function GroupCard({ group, students, open, onToggle, onBack, onChanged }) {
   }
 
   async function deleteGroup() {
-    if (!window.confirm('این کلاس و همه‌ی جلساتش حذف شود؟')) return;
-    const res = await fetch(`/api/admin/classes/${group.id}`, { method: 'DELETE' });
-    const d = await res.json();
-    if (d.ok) onChanged();
+    if (!window.confirm(`کلاس «${group.name}» همراه با همه جلسات و حضور و غیاب‌های آن برای همیشه حذف شود؟ هنرجویان از کلاس خارج می‌شوند اما حساب آن‌ها حذف نمی‌شود.`)) return;
+    setDeletingGroup(true); setMsg('');
+    try {
+      const res = await fetch(`/api/admin/classes/${group.id}`, { method: 'DELETE' });
+      const d = await res.json();
+      if (d.ok) onChanged();
+      else setMsg(d.error || 'حذف کلاس انجام نشد.');
+    } catch {
+      setMsg('ارتباط با سرور برقرار نشد؛ کلاس حذف نشده است.');
+    } finally {
+      setDeletingGroup(false);
+    }
   }
 
   async function submitSession(e) {
@@ -380,7 +389,7 @@ function GroupCard({ group, students, open, onToggle, onBack, onChanged }) {
                 <button type="button" className="btn btn--dark btn--sm" onClick={saveSettings} disabled={settingsSaving}>
                   {settingsSaving ? 'در حال ذخیره…' : 'ذخیره تغییرات کلاس'}
                 </button>
-                <button type="button" className="btn btn--danger btn--sm" onClick={deleteGroup}>حذف کامل کلاس</button>
+                <button type="button" className="btn btn--danger btn--sm" onClick={deleteGroup} disabled={deletingGroup}>{deletingGroup ? 'در حال حذف…' : 'حذف کامل کلاس'}</button>
               </div>
             </div>
           </div>
@@ -421,7 +430,10 @@ function GroupCard({ group, students, open, onToggle, onBack, onChanged }) {
           <div className={`tab-panel${tab === 'sessions' ? ' active' : ''}`}>
             <div className="admin-class-section-head">
               <div><h3>جلسات، ابزار و تمرین</h3><p>برای هر جلسه زمان، محتوای آموزشی، ابزار موردنیاز و تمرین یا اتود را همین‌جا ثبت کنید.</p></div>
-              <button type="button" className="btn btn--dark btn--sm" onClick={() => { setSForm(emptySession); setEditingSession(null); setSessionFormOpen((value) => !value); }}>{sessionFormOpen && !editingSession ? 'بستن فرم ثبت جلسه' : '+ ثبت جلسه و برنامه آن'}</button>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <button type="button" className="btn btn--danger btn--sm" onClick={deleteGroup} disabled={deletingGroup}>{deletingGroup ? 'در حال حذف…' : 'حذف کامل کلاس پایان‌یافته'}</button>
+                <button type="button" className="btn btn--dark btn--sm" onClick={() => { setSForm(emptySession); setEditingSession(null); setSessionFormOpen((value) => !value); }}>{sessionFormOpen && !editingSession ? 'بستن فرم ثبت جلسه' : '+ ثبت جلسه و برنامه آن'}</button>
+              </div>
             </div>
 
             {!sessionFormOpen && (
