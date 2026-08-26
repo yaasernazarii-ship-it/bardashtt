@@ -1,5 +1,4 @@
 import { getSessionUser } from '@/lib/auth';
-import { aiErrorMessage } from '@/lib/ai';
 import { isAiConfigured, isAssistantReady, answerFromSources } from '@/lib/assistant';
 
 export async function POST(request) {
@@ -23,6 +22,10 @@ export async function POST(request) {
     const answer = await answerFromSources(question);
     return Response.json({ ok: true, answer });
   } catch (error) {
-    return Response.json({ ok: false, error: aiErrorMessage(error) }, { status: 503 });
+    console.error('assistant_request_failed', error);
+    return Response.json(
+      { ok: false, error: 'در حال حاضر پاسخ‌گویی دستیار انجام نشد. لطفاً کمی بعد دوباره تلاش کنید.' },
+      { status: 503 },
+    );
   }
 }

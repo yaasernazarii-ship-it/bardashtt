@@ -74,6 +74,7 @@ const MANAGER_GROUPS = [
   {
     key: 'content', label: 'محتوا و سایت', icon: 'edit',
     items: [
+      { key: 'ai-knowledge', href: '/dashboard/admin/ai-knowledge', icon: 'chat', label: 'منابع هوش مصنوعی' },
       { key: 'posts', href: '/dashboard/admin/posts', icon: 'edit', label: 'محتوا و انتشار' },
       { key: 'content', href: '/dashboard/admin/content', icon: 'fileText', label: 'متن صفحات' },
       { key: 'links', href: '/dashboard/admin/links', icon: 'link', label: 'لینک صفحات' },

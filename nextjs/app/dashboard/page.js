@@ -70,6 +70,7 @@ const MANAGER_GROUPS = [
   {
     title: 'محتوا و سایت', icon: 'edit',
     cards: [
+      { href: '/dashboard/admin/ai-knowledge', icon: 'chat', title: 'منابع هوش مصنوعی', text: 'بارگذاری جزوه و بررسی اتصال هوش مصنوعی' },
       { href: '/dashboard/admin/posts', icon: 'edit', title: 'محتوا و انتشار', text: 'وبلاگ، اخبار و گالری' },
       { href: '/dashboard/admin/content', icon: 'fileText', title: 'متن صفحات', text: 'ویرایش محتوای ثابت سایت' },
       { href: '/dashboard/admin/links', icon: 'link', title: 'لینک صفحات', text: 'دسترسی و کپی نشانی صفحات' },
