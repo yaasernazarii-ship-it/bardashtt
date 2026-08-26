@@ -6,7 +6,7 @@ import { loadContent } from '@/lib/siteContent';
 import { authContent, signupContent, parsePairs } from '@/lib/formContent';
 
 export async function generateMetadata() {
-  return pageMetadata('auth', { robots: { index: false, follow: true } });
+  return pageMetadata('auth');
 }
 
 export const dynamic = 'force-dynamic';

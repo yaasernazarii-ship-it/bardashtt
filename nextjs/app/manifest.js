@@ -3,7 +3,7 @@ export default function manifest() {
     name: 'خانواده برداشت',
     short_name: 'برداشت',
     description: 'آموزش رایگان و حرفه‌ای بازیگری سینما و پنل خانواده برداشت',
-    start_url: '/dashboard',
+    start_url: '/',
     scope: '/',
     display: 'standalone',
     orientation: 'any',

@@ -69,10 +69,8 @@ export default function Nav({ onOpenChat, logo, content }) {
   const pathname = usePathname();
   const supportRef = useRef(null);
   const linksRef = useRef(null);
-  const menuToggleRef = useRef(null);
 
   function closeMobileMenu() {
-    if (menuToggleRef.current) menuToggleRef.current.checked = false;
     setMenuOpen(false);
   }
 
@@ -119,15 +117,6 @@ export default function Nav({ onOpenChat, logo, content }) {
 
   return (
     <>
-      <input
-        ref={menuToggleRef}
-        id="mobile-menu-toggle"
-        className="nav__menu-toggle"
-        type="checkbox"
-        aria-hidden="true"
-        tabIndex={-1}
-        onChange={(e) => setMenuOpen(e.target.checked)}
-      />
       <nav className="nav" aria-label="ناوبری اصلی">
         <div className="nav__inner">
           <Link href="/" className="nav__logo">
@@ -212,21 +201,22 @@ export default function Nav({ onOpenChat, logo, content }) {
             )}
           </div>
           {user && <NotificationBell />}
-          <label
+          <button
+            type="button"
             className="nav__menu-btn"
-            htmlFor="mobile-menu-toggle"
-            role="button"
+            onClick={() => setMenuOpen((current) => !current)}
             aria-label={menuOpen ? 'بستن منو' : 'باز کردن منو'}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
           >
             <Icon name={menuOpen ? 'close' : 'menu'} size={24} />
-          </label>
+          </button>
         </div>
       </nav>
-      <label
+      <button
+        type="button"
         className={`nav__backdrop${menuOpen ? ' active' : ''}`}
-        htmlFor="mobile-menu-toggle"
+        onClick={closeMobileMenu}
         aria-label="بستن منو"
       />
       <aside id="mobile-menu" className={`mobile-drawer${menuOpen ? ' mobile-drawer--open' : ''}`} aria-hidden={!menuOpen}>
@@ -235,7 +225,7 @@ export default function Nav({ onOpenChat, logo, content }) {
             <strong>{c.drawerTitle}</strong>
             <span>{c.drawerSubtitle}</span>
           </div>
-          <label className="mobile-drawer__close" htmlFor="mobile-menu-toggle" role="button" aria-label="بستن منو"><Icon name="close" size={22} /></label>
+          <button type="button" className="mobile-drawer__close" onClick={closeMobileMenu} aria-label="بستن منو"><Icon name="close" size={22} /></button>
         </div>
         <div className="mobile-drawer__links">
           {navLinks.map((item, i) => (

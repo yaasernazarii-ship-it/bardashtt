@@ -607,8 +607,7 @@ body.nav-open {
 .nav__support .nav__caret::before { content: '▾'; }
 .nav__support.open .nav__caret { color: var(--gold); transform: rotate(180deg); }
 .nav__support.open .hdr-support-drop { opacity: 1; pointer-events: all; transform: translateY(0); }
-.nav__menu-toggle { position: fixed; opacity: 0; pointer-events: none; }
-.nav__menu-btn { display: none; background: none; border: none; font-size: 1.4rem; cursor: pointer; padding: 4px 8px; color: #fff; }
+.nav__menu-btn { display: none; background: none; border: none; font-size: 1.4rem; cursor: pointer; padding: 4px 8px; color: #fff; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 
 /* دکمه‌های ورود/داشبورد داخل نوار ناوبری (پس‌زمینه تیره) */
 .nav .btn--outline {
@@ -623,10 +622,10 @@ body.nav-open {
 /* Backdrop */
 .nav__backdrop {
   display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-  z-index: 180; backdrop-filter: blur(2px);
+  z-index: 180; backdrop-filter: blur(2px); border: 0; padding: 0;
+  cursor: pointer; touch-action: manipulation;
 }
-.nav__backdrop.active,
-.nav__menu-toggle:checked ~ .nav__backdrop { display: block; }
+.nav__backdrop.active { display: block; }
 .mobile-drawer { display: none; }
 
 /* Drawer actions (mobile) */
@@ -1052,8 +1051,7 @@ a.dash-stat:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(27
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
-  .mobile-drawer--open,
-  .nav__menu-toggle:checked ~ .mobile-drawer { transform: translateX(0); }
+  .mobile-drawer--open { transform: translateX(0); }
   .nav__backdrop { z-index: 880; background: rgba(0,0,0,.45); }
   .mobile-drawer__head {
     display: flex; align-items: center; justify-content: space-between;
@@ -1067,6 +1065,7 @@ a.dash-stat:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(27
     display: inline-flex; align-items: center; justify-content: center;
     width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255,255,255,.14);
     background: rgba(255,255,255,.08); color: #fff; cursor: pointer; font-size: 1rem;
+    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
   }
   .mobile-drawer__links { display: flex; flex-direction: column; padding-bottom: 14px; }
   .mobile-drawer__links a,
