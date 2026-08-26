@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { notifyUsers } from '@/lib/notifications';
+import { enqueueSmsForUsers } from '@/lib/smsQueue';
 
 const sessionDateFmt = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'full', timeStyle: 'short', timeZone: 'Asia/Tehran' });
 
@@ -37,22 +38,32 @@ export async function POST(request) {
     const group = await prisma.classGroup.findUnique({ where: { id: groupId } });
     if (!group) return Response.json({ ok: false, error: 'کلاس یافت نشد.' }, { status: 404 });
 
-    const session = await prisma.classSession.create({
-      data: {
-        groupId,
-        title,
-        startsAt,
-        chartDescription: b.chartDescription ? String(b.chartDescription).trim().slice(0, 2000) : null,
-        tools: b.tools ? String(b.tools).trim().slice(0, 1000) : null,
-        homework: b.homework ? String(b.homework).trim().slice(0, 2000) : null,
-        createdById: user.id,
-      },
+    const { session, members } = await prisma.$transaction(async (tx) => {
+      const created = await tx.classSession.create({
+        data: {
+          groupId,
+          title,
+          startsAt,
+          chartDescription: b.chartDescription ? String(b.chartDescription).trim().slice(0, 2000) : null,
+          tools: b.tools ? String(b.tools).trim().slice(0, 1000) : null,
+          homework: b.homework ? String(b.homework).trim().slice(0, 2000) : null,
+          createdById: user.id,
+        },
+      });
+      await tx.classGroup.update({ where: { id: groupId }, data: { updatedAt: new Date() } });
+      const classMembers = await tx.user.findMany({
+        where: { classGroupId: groupId, role: 'student', active: true, deletedAt: null },
+        select: { id: true },
+      });
+      await enqueueSmsForUsers(classMembers.map((member) => member.id), {
+        kind: 'class_session',
+        dedupePrefix: `class-session:${created.id}`,
+        body: `خانواده برداشت\nزمان جدید برای کلاس «${group.name}» ثبت شد.\n${title}\n${sessionDateFmt.format(startsAt)}\nجزئیات در حساب کاربری شما`,
+      }, tx);
+      return { session: created, members: classMembers };
     });
-    // به‌روزرسانی زمان کلاس → هنرجویان نشان «به‌روزرسانی شد» می‌بینند
-    await prisma.classGroup.update({ where: { id: groupId }, data: { updatedAt: new Date() } });
 
-    // اعلانِ اختصاصی به اعضای این کلاس که زمان جلسهٔ جدیدشان مشخص شد
-    const members = await prisma.user.findMany({ where: { classGroupId: groupId }, select: { id: true } });
+    // اعلان داخل سایت نیز فقط برای اعضای همین کلاس ثبت می‌شود.
     await notifyUsers(members.map((m) => m.id), {
       title: 'زمان کلاس جدید تعیین شد',
       body: `${title} — ${sessionDateFmt.format(startsAt)}`,

@@ -53,6 +53,7 @@ export async function sendTextSms(mobile, text) {
   try {
     const res = await fetch(BULK_URL, {
       method: 'POST',
+      signal: AbortSignal.timeout(15000),
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',

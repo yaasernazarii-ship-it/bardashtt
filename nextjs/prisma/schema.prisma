@@ -1089,3 +1089,24 @@ model DirectChatRead {
   @@unique([chatId, userId])
   @@index([userId])
 }
+
+// صف پایدار پیامک‌های اطلاع‌رسانی. خطای پنل یا اتمام اعتبار فقط زمان تلاش بعدی را عقب می‌اندازد.
+model SmsNotificationQueue {
+  id            String    @id @default(cuid())
+  dedupeKey     String    @unique
+  userId        String?
+  phone         String
+  kind          String // class_session | group_message
+  body          String
+  status        String    @default("pending") // pending | sending | sent
+  attempts      Int       @default(0)
+  nextAttemptAt DateTime  @default(now())
+  providerId    String?
+  lastError     String?
+  sentAt        DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status, nextAttemptAt])
+  @@index([userId, createdAt])
+}

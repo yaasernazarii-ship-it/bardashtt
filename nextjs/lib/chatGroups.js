@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { notifyUsers } from '@/lib/notifications';
+import { enqueueSmsForUsers } from '@/lib/smsQueue';
 import { displayNameOf } from '@/lib/staffReports';
 
 // گروه‌های گفت‌وگوی هنرجویان. سه قاعده‌ای که هیچ مسیری نباید دور بزند:
@@ -134,15 +135,32 @@ export async function postMessage(group, sender, text) {
     select: { id: true },
   });
 
-  const message = await prisma.chatGroupMessage.create({
-    data: { groupId: group.id, authorId: sender.id, authorName: name, authorRole: sender.role, body: text },
+  const message = await prisma.$transaction(async (tx) => {
+    const created = await tx.chatGroupMessage.create({
+      data: { groupId: group.id, authorId: sender.id, authorName: name, authorRole: sender.role, body: text },
+    });
+    await tx.chatGroup.update({ where: { id: group.id }, data: { lastMessageAt: created.createdAt } });
+    await tx.chatGroupRead.upsert({
+      where: { groupId_userId: { groupId: group.id, userId: sender.id } },
+      update: { lastReadAt: new Date() },
+      create: { groupId: group.id, userId: sender.id, lastReadAt: new Date() },
+    });
+    const members = await tx.chatGroupMember.findMany({
+      where: { groupId: group.id, userId: { not: sender.id } },
+      select: { userId: true },
+    });
+    const preview = text.replace(/\s+/g, ' ').slice(0, 120);
+    await enqueueSmsForUsers(members.map((member) => member.userId), {
+      kind: 'group_message',
+      dedupePrefix: `group-message:${created.id}`,
+      body: `خانواده برداشت\nپیام جدید از ${name} در گروه «${group.name}»\n${preview}\nمشاهده در حساب کاربری شما`,
+    }, tx);
+    return created;
   });
 
-  await Promise.all([
-    prisma.chatGroup.update({ where: { id: group.id }, data: { lastMessageAt: message.createdAt } }),
-    markGroupRead(sender.id, group.id),
-    recentlyActive ? Promise.resolve() : notifyMembers(group, sender.id, `پیام تازه از ${name} در گروه ${group.name}`, text),
-  ]);
+  if (!recentlyActive) {
+    await notifyMembers(group, sender.id, `پیام تازه از ${name} در گروه ${group.name}`, text);
+  }
 
   return message;
 }
