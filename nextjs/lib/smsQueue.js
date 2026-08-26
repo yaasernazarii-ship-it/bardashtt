@@ -1,6 +1,6 @@
 import { normalizePhone } from './auth';
 import { prisma } from './prisma';
-import { sendTextSms } from './sms';
+import { sendGroupNotificationSms, sendTextSms } from './sms';
 
 const RETRY_DELAY_MS = 2 * 60 * 1000;
 const STALE_SENDING_MS = 10 * 60 * 1000;
@@ -34,7 +34,9 @@ async function deliver(item) {
   });
   if (claimed.count !== 1) return false;
 
-  const result = await sendTextSms(item.phone, item.body);
+  const result = item.kind === 'group_message'
+    ? await sendGroupNotificationSms(item.phone, item.body)
+    : await sendTextSms(item.phone, item.body);
   if (result.delivered) {
     await prisma.smsNotificationQueue.update({
       where: { id: item.id },

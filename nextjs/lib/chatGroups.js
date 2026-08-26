@@ -149,11 +149,11 @@ export async function postMessage(group, sender, text) {
       where: { groupId: group.id, userId: { not: sender.id } },
       select: { userId: true },
     });
-    const preview = text.replace(/\s+/g, ' ').slice(0, 120);
     await enqueueSmsForUsers(members.map((member) => member.userId), {
       kind: 'group_message',
       dedupePrefix: `group-message:${created.id}`,
-      body: `خانواده برداشت\nپیام جدید از ${name} در گروه «${group.name}»\n${preview}\nمشاهده در حساب کاربری شما`,
+      // قالب SMS.IR خودش دامنه و متن را دارد؛ مقدار پارامتر باید هر هنرجو را مستقیم به همین گروه ببرد.
+      body: `dashboard/groups?g=${encodeURIComponent(group.id)}`,
     }, tx);
     return created;
   });

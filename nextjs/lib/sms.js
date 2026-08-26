@@ -15,23 +15,19 @@ export function isTextSmsConfigured() {
   return !!(process.env.SMS_IR_API_KEY && process.env.SMS_IR_LINE_NUMBER);
 }
 
-export async function sendOtpSms(mobile, code) {
-  if (!isSmsConfigured()) return { delivered: false, reason: 'not_configured' };
+async function sendTemplateSms(mobile, templateId, parameters) {
+  if (!process.env.SMS_IR_API_KEY || !templateId) return { delivered: false, reason: 'not_configured' };
 
-  const paramName = process.env.SMS_IR_PARAM_NAME || 'CODE';
   try {
     const res = await fetch(VERIFY_URL, {
       method: 'POST',
+      signal: AbortSignal.timeout(15000),
       headers: {
         'Content-Type': 'application/json',
         Accept: 'text/plain',
         'x-api-key': process.env.SMS_IR_API_KEY,
       },
-      body: JSON.stringify({
-        mobile,
-        templateId: Number(process.env.SMS_IR_TEMPLATE_ID),
-        parameters: [{ name: paramName, value: String(code) }],
-      }),
+      body: JSON.stringify({ mobile, templateId: Number(templateId), parameters }),
     });
 
     const data = await res.json().catch(() => null);
@@ -42,6 +38,18 @@ export async function sendOtpSms(mobile, code) {
   } catch (err) {
     return { delivered: false, reason: 'network_error', detail: String(err?.message || err) };
   }
+}
+
+export async function sendOtpSms(mobile, code) {
+  if (!isSmsConfigured()) return { delivered: false, reason: 'not_configured' };
+  const paramName = process.env.SMS_IR_PARAM_NAME || 'CODE';
+  return sendTemplateSms(mobile, process.env.SMS_IR_TEMPLATE_ID, [{ name: paramName, value: String(code) }]);
+}
+
+export async function sendGroupNotificationSms(mobile, link) {
+  const templateId = process.env.SMS_IR_GROUP_TEMPLATE_ID || '162830';
+  const paramName = process.env.SMS_IR_GROUP_PARAM_NAME || 'CODE';
+  return sendTemplateSms(mobile, templateId, [{ name: paramName, value: String(link) }]);
 }
 
 // ارسال یک پیامک متنی به یک شماره. هرگز throw نمی‌کند؛ نتیجه را برمی‌گرداند.
