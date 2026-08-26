@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { notifyUsers } from '@/lib/notifications';
-import { enqueueSmsForUsers } from '@/lib/smsQueue';
+import { enqueueSmsForUsers, processSmsQueue } from '@/lib/smsQueue';
 import { displayNameOf } from '@/lib/staffReports';
 
 // گروه‌های گفت‌وگوی هنرجویان. سه قاعده‌ای که هیچ مسیری نباید دور بزند:
@@ -152,11 +152,13 @@ export async function postMessage(group, sender, text) {
     await enqueueSmsForUsers(members.map((member) => member.userId), {
       kind: 'group_message',
       dedupePrefix: `group-message:${created.id}`,
-      // قالب SMS.IR خودش دامنه و متن را دارد؛ مقدار پارامتر باید هر هنرجو را مستقیم به همین گروه ببرد.
-      body: `dashboard/groups?g=${encodeURIComponent(group.id)}`,
+      // شناسهٔ ۲۵کاراکتری داخل محدودیت پارامتر قالب است و از مسیر کوتاه به همین گروه هدایت می‌شود.
+      body: group.id,
     }, tx);
     return created;
   });
+
+  await processSmsQueue().catch((error) => console.error('group message sms queue failed:', error));
 
   if (!recentlyActive) {
     await notifyMembers(group, sender.id, `پیام تازه از ${name} در گروه ${group.name}`, text);

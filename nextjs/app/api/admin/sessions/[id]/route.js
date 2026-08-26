@@ -1,5 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
+import { notifyUsers } from '@/lib/notifications';
+import { enqueueSmsForUsers, processSmsQueue } from '@/lib/smsQueue';
+
+const sessionDateFmt = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'full', timeStyle: 'short', timeZone: 'Asia/Tehran' });
 
 export async function PATCH(request, { params }) {
   const user = await getSessionUser();
@@ -7,7 +11,7 @@ export async function PATCH(request, { params }) {
   if (!isManager(user)) return Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 });
 
   const { id } = await params;
-  const existing = await prisma.classSession.findUnique({ where: { id } });
+  const existing = await prisma.classSession.findUnique({ where: { id }, include: { group: true } });
   if (!existing) return Response.json({ ok: false, error: 'جلسه یافت نشد.' }, { status: 404 });
 
   try {
@@ -25,8 +29,34 @@ export async function PATCH(request, { params }) {
     // ویدیوی ضبط‌شدهٔ این جلسه (فقط برای جلسهٔ پایان‌یافته در پنل هنرجو نمایش داده می‌شود)
     if (b.recordingUrl !== undefined) data.recordingUrl = b.recordingUrl ? String(b.recordingUrl).trim().slice(0, 2000) : null;
 
-    const session = await prisma.classSession.update({ where: { id }, data });
-    await prisma.classGroup.update({ where: { id: existing.groupId }, data: { updatedAt: new Date() } });
+    const timeChanged = data.startsAt !== undefined;
+    const { session, members } = await prisma.$transaction(async (tx) => {
+      const updated = await tx.classSession.update({ where: { id }, data });
+      await tx.classGroup.update({ where: { id: existing.groupId }, data: { updatedAt: new Date() } });
+
+      if (!timeChanged) return { session: updated, members: [] };
+      const classMembers = await tx.user.findMany({
+        where: { classGroupId: existing.groupId, role: 'student', active: true, deletedAt: null },
+        select: { id: true },
+      });
+      await enqueueSmsForUsers(classMembers.map((member) => member.id), {
+        kind: 'class_session',
+        dedupePrefix: `class-session-update:${updated.id}:${updated.updatedAt.getTime()}`,
+        body: existing.groupId,
+      }, tx);
+      return { session: updated, members: classMembers };
+    });
+
+    if (timeChanged) {
+      await processSmsQueue().catch((error) => console.error('class session update sms queue failed:', error));
+      await notifyUsers(members.map((member) => member.id), {
+        title: 'زمان کلاس تغییر کرد',
+        body: `${session.title} — ${sessionDateFmt.format(session.startsAt)}`,
+        href: '/dashboard/schedule',
+        kind: 'class',
+      });
+    }
+
     return Response.json({ ok: true, session });
   } catch {
     return Response.json({ ok: false, error: 'درخواست نامعتبر است.' }, { status: 400 });

@@ -34,7 +34,9 @@ async function deliver(item) {
   });
   if (claimed.count !== 1) return false;
 
-  const result = item.kind === 'group_message'
+  const usesServiceTemplate = (item.kind === 'group_message' || item.kind === 'class_session')
+    && /^c[a-z0-9]{24}$/.test(item.body);
+  const result = usesServiceTemplate
     ? await sendGroupNotificationSms(item.phone, item.body)
     : await sendTextSms(item.phone, item.body);
   if (result.delivered) {

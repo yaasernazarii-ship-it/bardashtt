@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { notifyUsers } from '@/lib/notifications';
-import { enqueueSmsForUsers } from '@/lib/smsQueue';
+import { enqueueSmsForUsers, processSmsQueue } from '@/lib/smsQueue';
 
 const sessionDateFmt = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'full', timeStyle: 'short', timeZone: 'Asia/Tehran' });
 
@@ -58,10 +58,12 @@ export async function POST(request) {
       await enqueueSmsForUsers(classMembers.map((member) => member.id), {
         kind: 'class_session',
         dedupePrefix: `class-session:${created.id}`,
-        body: `خانواده برداشت\nزمان جدید برای کلاس «${group.name}» ثبت شد.\n${title}\n${sessionDateFmt.format(startsAt)}\nجزئیات در حساب کاربری شما`,
+        body: group.id,
       }, tx);
       return { session: created, members: classMembers };
     });
+
+    await processSmsQueue().catch((error) => console.error('class session sms queue failed:', error));
 
     // اعلان داخل سایت نیز فقط برای اعضای همین کلاس ثبت می‌شود.
     await notifyUsers(members.map((m) => m.id), {
