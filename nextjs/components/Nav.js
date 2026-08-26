@@ -119,7 +119,7 @@ export default function Nav({ onOpenChat, logo, content }) {
     <>
       <nav className="nav" aria-label="ناوبری اصلی">
         <div className="nav__inner">
-          <Link href="/" className="nav__logo">
+          <Link href="/" className="nav__logo" onClick={closeMobileMenu} aria-label="صفحه اصلی خانواده برداشت">
             <img src={logo || '/imgg.png'} alt="خانواده برداشت" width={90} height={30} style={{ height: 30, width: 'auto' }} />
           </Link>
           <ul className="nav__links" ref={linksRef}>

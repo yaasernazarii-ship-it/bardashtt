@@ -10,6 +10,12 @@ export default function PwaRegistration() {
 
     let registration;
     let reloading = false;
+    const standaloneQuery = window.matchMedia('(display-mode: standalone)');
+
+    const syncDisplayMode = () => {
+      const standalone = standaloneQuery.matches || window.navigator.standalone === true;
+      document.documentElement.classList.toggle('pwa-standalone', standalone);
+    };
 
     const reloadForUpdate = () => {
       if (reloading || sessionStorage.getItem(RELOAD_KEY) === '1') return;
@@ -26,6 +32,9 @@ export default function PwaRegistration() {
       if (event.data?.type === 'PWA_REFRESH') reloadForUpdate();
     };
 
+    syncDisplayMode();
+    if (standaloneQuery.addEventListener) standaloneQuery.addEventListener('change', syncDisplayMode);
+    else standaloneQuery.addListener(syncDisplayMode);
     navigator.serviceWorker.addEventListener('controllerchange', reloadForUpdate);
     navigator.serviceWorker.addEventListener('message', onMessage);
     document.addEventListener('visibilitychange', onVisibilityChange);
@@ -41,6 +50,8 @@ export default function PwaRegistration() {
       .catch(() => {});
 
     return () => {
+      if (standaloneQuery.removeEventListener) standaloneQuery.removeEventListener('change', syncDisplayMode);
+      else standaloneQuery.removeListener(syncDisplayMode);
       navigator.serviceWorker.removeEventListener('controllerchange', reloadForUpdate);
       navigator.serviceWorker.removeEventListener('message', onMessage);
       document.removeEventListener('visibilitychange', onVisibilityChange);

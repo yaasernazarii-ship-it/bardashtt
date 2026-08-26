@@ -1,4 +1,4 @@
-const CACHE = 'bardasht-pwa-v3';
+const CACHE = 'bardasht-pwa-v4';
 const OFFLINE_URL = '/offline.html';
 const STATIC_ASSETS = [
   OFFLINE_URL,
