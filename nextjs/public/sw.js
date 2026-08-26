@@ -1,4 +1,4 @@
-const CACHE = 'bardasht-pwa-v2';
+const CACHE = 'bardasht-pwa-v3';
 const OFFLINE_URL = '/offline.html';
 const STATIC_ASSETS = [
   OFFLINE_URL,
@@ -17,7 +17,14 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
       .then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))
-      .then(() => self.clients.claim()),
+      .then(() => self.clients.claim())
+      .then(() => self.clients.matchAll({ type: 'window', includeUncontrolled: true }))
+      .then((clients) => Promise.all(clients.map((client) => {
+        client.postMessage({ type: 'PWA_REFRESH' });
+        // نسخه‌های قبلی listener پیام نداشتند؛ navigate باعث می‌شود PWA قدیمی iOS
+        // نیز HTML و جاوااسکریپت هماهنگِ بیلد جاری را دریافت کند.
+        return client.navigate(client.url).catch(() => undefined);
+      }))),
   );
 });
 
@@ -36,26 +43,24 @@ self.addEventListener('fetch', (event) => {
     || url.pathname.startsWith('/panel')
   ) {
     if (request.mode === 'navigate') {
-      event.respondWith(fetch(request).catch(() => caches.match(OFFLINE_URL)));
+      event.respondWith(fetch(request, { cache: 'no-store' }).catch(() => caches.match(OFFLINE_URL)));
     }
     return;
   }
 
   if (request.mode === 'navigate') {
-    event.respondWith(fetch(request).catch(() => caches.match(OFFLINE_URL)));
+    event.respondWith(fetch(request, { cache: 'no-store' }).catch(() => caches.match(OFFLINE_URL)));
     return;
   }
 
-  // فایل‌های بیلد باید ابتدا از شبکه خوانده شوند؛ کش قدیمیِ این فایل‌ها می‌تواند
-  // باعث ناسازگاری HTML و جاوااسکریپت و از کار افتادن کنترل‌های تعاملی شود.
+  // فایل‌های بیلد Next نام نسخه‌دار و تغییرناپذیر دارند. اگر فایل قبلاً دریافت شده
+  // باشد، خواندن آن از کش از ناقص ماندن hydration در شروع PWA جلوگیری می‌کند.
   if (url.pathname.startsWith('/_next/static/')) {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          if (response.ok) caches.open(CACHE).then((cache) => cache.put(request, response.clone()));
-          return response;
-        })
-        .catch(() => caches.match(request)),
+      caches.match(request).then((cached) => cached || fetch(request).then((response) => {
+        if (response.ok) caches.open(CACHE).then((cache) => cache.put(request, response.clone()));
+        return response;
+      })),
     );
     return;
   }
