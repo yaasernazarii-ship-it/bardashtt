@@ -1,4 +1,4 @@
-const CACHE = 'bardasht-pwa-v1';
+const CACHE = 'bardasht-pwa-v2';
 const OFFLINE_URL = '/offline.html';
 const STATIC_ASSETS = [
   OFFLINE_URL,
@@ -46,7 +46,21 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (url.pathname.startsWith('/_next/static/') || /\.(?:png|jpg|jpeg|webp|svg|ico|woff2?)$/i.test(url.pathname)) {
+  // فایل‌های بیلد باید ابتدا از شبکه خوانده شوند؛ کش قدیمیِ این فایل‌ها می‌تواند
+  // باعث ناسازگاری HTML و جاوااسکریپت و از کار افتادن کنترل‌های تعاملی شود.
+  if (url.pathname.startsWith('/_next/static/')) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) caches.open(CACHE).then((cache) => cache.put(request, response.clone()));
+          return response;
+        })
+        .catch(() => caches.match(request)),
+    );
+    return;
+  }
+
+  if (/\.(?:png|jpg|jpeg|webp|svg|ico|woff2?)$/i.test(url.pathname)) {
     event.respondWith(
       caches.match(request).then((cached) => cached || fetch(request).then((response) => {
         if (response.ok) caches.open(CACHE).then((cache) => cache.put(request, response.clone()));

@@ -7,7 +7,10 @@ export default function PwaRegistration() {
     if (!('serviceWorker' in navigator)) return undefined;
 
     const register = () => {
-      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {});
+      navigator.serviceWorker
+        .register('/sw.js', { scope: '/', updateViaCache: 'none' })
+        .then((registration) => registration.update())
+        .catch(() => {});
     };
     if (document.readyState === 'complete') register();
     else window.addEventListener('load', register, { once: true });
