@@ -29,7 +29,6 @@ const staticRoutes = [
   '/news',
   '/online-learning',
   '/social-responsibility',
-  '/register',
   '/verify',
   '/works/output',
   '/works/advertising',

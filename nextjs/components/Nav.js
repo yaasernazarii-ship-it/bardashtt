@@ -69,9 +69,15 @@ export default function Nav({ onOpenChat, logo, content }) {
   const pathname = usePathname();
   const supportRef = useRef(null);
   const linksRef = useRef(null);
+  const menuToggleRef = useRef(null);
+
+  function closeMobileMenu() {
+    if (menuToggleRef.current) menuToggleRef.current.checked = false;
+    setMenuOpen(false);
+  }
 
   useEffect(() => {
-    setMenuOpen(false);
+    closeMobileMenu();
     setSupportOpen(false);
     setOpenIndex(null);
     setOpenSub(false);
@@ -113,6 +119,15 @@ export default function Nav({ onOpenChat, logo, content }) {
 
   return (
     <>
+      <input
+        ref={menuToggleRef}
+        id="mobile-menu-toggle"
+        className="nav__menu-toggle"
+        type="checkbox"
+        aria-hidden="true"
+        tabIndex={-1}
+        onChange={(e) => setMenuOpen(e.target.checked)}
+      />
       <nav className="nav" aria-label="ناوبری اصلی">
         <div className="nav__inner">
           <Link href="/" className="nav__logo">
@@ -197,21 +212,22 @@ export default function Nav({ onOpenChat, logo, content }) {
             )}
           </div>
           {user && <NotificationBell />}
-          <button
-            type="button"
+          <label
             className="nav__menu-btn"
-            onClick={() => setMenuOpen(p => !p)}
+            htmlFor="mobile-menu-toggle"
+            role="button"
             aria-label={menuOpen ? 'بستن منو' : 'باز کردن منو'}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
           >
             <Icon name={menuOpen ? 'close' : 'menu'} size={24} />
-          </button>
+          </label>
         </div>
       </nav>
-      <div
+      <label
         className={`nav__backdrop${menuOpen ? ' active' : ''}`}
-        onClick={() => setMenuOpen(false)}
+        htmlFor="mobile-menu-toggle"
+        aria-label="بستن منو"
       />
       <aside id="mobile-menu" className={`mobile-drawer${menuOpen ? ' mobile-drawer--open' : ''}`} aria-hidden={!menuOpen}>
         <div className="mobile-drawer__head">
@@ -219,7 +235,7 @@ export default function Nav({ onOpenChat, logo, content }) {
             <strong>{c.drawerTitle}</strong>
             <span>{c.drawerSubtitle}</span>
           </div>
-          <button type="button" onClick={() => setMenuOpen(false)} aria-label="بستن منو"><Icon name="close" size={22} /></button>
+          <label className="mobile-drawer__close" htmlFor="mobile-menu-toggle" role="button" aria-label="بستن منو"><Icon name="close" size={22} /></label>
         </div>
         <div className="mobile-drawer__links">
           {navLinks.map((item, i) => (
