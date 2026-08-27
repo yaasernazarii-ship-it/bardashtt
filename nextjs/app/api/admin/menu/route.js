@@ -3,6 +3,12 @@ import { prisma } from '@/lib/prisma';
 
 async function manager() { const user = await getSessionUser(); return isManager(user) ? user : null; }
 function bad(message, status = 400) { return Response.json({ ok: false, error: message }, { status }); }
+function cleanText(value) { return typeof value === 'string' ? value.trim() : ''; }
+function positiveAmount(value, { allowZero = false } = {}) {
+  const amount = Number(value);
+  return Number.isSafeInteger(amount) && (allowZero ? amount >= 0 : amount > 0) ? amount : null;
+}
+function validDate(value) { const date = new Date(value); return Number.isNaN(date.getTime()) ? null : date; }
 
 export async function GET() {
   if (!await manager()) return bad('دسترسی ندارید.', 403);
@@ -42,10 +48,27 @@ export async function POST(request) {
   const user = await manager(); if (!user) return bad('دسترسی ندارید.', 403);
   const body = await request.json();
   try {
-    if (body.type === 'category') return Response.json({ category: await prisma.menuCategory.create({ data: { name: String(body.name).trim(), kind: body.kind === 'image' ? 'image' : 'items', sortOrder: Number(body.sortOrder) || 0 } }) });
-    if (body.type === 'item') return Response.json({ item: await prisma.menuItem.create({ data: { categoryId: body.categoryId, name: String(body.name).trim(), description: body.description || null, price: Number(body.price), imageUrl: body.imageUrl || null, sortOrder: Number(body.sortOrder) || 0 } }) });
-    if (body.type === 'expense') return Response.json({ expense: await prisma.menuExpense.create({ data: { title: String(body.title).trim(), amount: Number(body.amount), expenseDate: new Date(body.date) } }) });
-    if (body.type === 'sale') return Response.json({ sale: await prisma.menuSale.create({ data: { amount: Number(body.amount), note: body.note || null, saleDate: new Date(body.date) } }) });
+    if (body.type === 'category') {
+      const name = cleanText(body.name);
+      if (!name) return bad('نام دسته الزامی است.');
+      return Response.json({ category: await prisma.menuCategory.create({ data: { name, kind: body.kind === 'image' ? 'image' : 'items', sortOrder: Number(body.sortOrder) || 0 } }) });
+    }
+    if (body.type === 'item') {
+      const name = cleanText(body.name); const price = positiveAmount(body.price, { allowZero: true });
+      if (!name) return bad('نام آیتم الزامی است.');
+      if (price === null) return bad('قیمت باید عددی صفر یا بیشتر باشد.');
+      return Response.json({ item: await prisma.menuItem.create({ data: { categoryId: body.categoryId, name, description: cleanText(body.description) || null, price, imageUrl: body.imageUrl || null, sortOrder: Number(body.sortOrder) || 0 } }) });
+    }
+    if (body.type === 'expense') {
+      const title = cleanText(body.title); const amount = positiveAmount(body.amount); const expenseDate = validDate(body.date);
+      if (!title || amount === null || !expenseDate) return bad('عنوان، مبلغ مثبت و تاریخ معتبر هزینه الزامی است.');
+      return Response.json({ expense: await prisma.menuExpense.create({ data: { title, amount, expenseDate } }) });
+    }
+    if (body.type === 'sale') {
+      const amount = positiveAmount(body.amount); const saleDate = validDate(body.date);
+      if (amount === null || !saleDate) return bad('مبلغ مثبت و تاریخ معتبر فروش الزامی است.');
+      return Response.json({ sale: await prisma.menuSale.create({ data: { amount, note: cleanText(body.note) || null, saleDate } }) });
+    }
     return bad('نوع داده نامعتبر است.');
   } catch { return bad('اطلاعات واردشده معتبر نیست.'); }
 }
