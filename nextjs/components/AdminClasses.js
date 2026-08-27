@@ -15,7 +15,11 @@ function smsSummary(result) {
   if (result.timeChanged === false) return 'تغییرات جلسه ذخیره شد. چون زمان جلسه عوض نشد، پیامکی برای هنرجویان ارسال نشد.';
   if (!result.memberCount) return 'جلسه ذخیره شد، اما این کلاس هنوز هنرجویی ندارد و پیامکی ارسال نشد. ابتدا از تب «هنرجویان» اعضای کلاس را انتخاب کنید.';
   if (!result.smsQueued) return 'جلسه ذخیره شد، اما پیامکی ارسال نشد؛ شماره موبایل معتبری برای هنرجویان این کلاس ثبت نشده است.';
-  return `جلسه ذخیره شد و پیامک اطلاع‌رسانی برای ${Number(result.smsQueued).toLocaleString('fa-IR')} هنرجوی این کلاس ارسال شد.`;
+  const skipped = Number(result.memberCount) - Number(result.smsQueued);
+  const base = `جلسه ذخیره شد و پیامک اطلاع‌رسانی برای ${Number(result.smsQueued).toLocaleString('fa-IR')} هنرجوی این کلاس ارسال شد.`;
+  return skipped > 0
+    ? `${base} ${skipped.toLocaleString('fa-IR')} هنرجو شماره موبایل معتبر ندارند و پیامکی دریافت نکردند.`
+    : base;
 }
 
 const emptySession = { title: '', startsAt: '', chartDescription: '', tools: '', homework: '' };
