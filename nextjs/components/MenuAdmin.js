@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 const today = () => new Date().toISOString().slice(0, 10);
 async function api(url, options) {
@@ -13,12 +13,15 @@ const icons = {
   menu: <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>,
   wallet: <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h15a2 2 0 0 1 2 2v10H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h13v2M16 12h5" /></svg>,
   settings: <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.6v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z" /></svg>,
+  grip: <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="6" r="1" /><circle cx="16" cy="6" r="1" /><circle cx="8" cy="12" r="1" /><circle cx="16" cy="12" r="1" /><circle cx="8" cy="18" r="1" /><circle cx="16" cy="18" r="1" /></svg>,
 };
 
 export default function MenuAdmin({ publicSlug }) {
   const [data, setData] = useState({ categories: [], expenses: [], sales: [] });
   const [activeTab, setActiveTab] = useState('menu');
   const [message, setMessage] = useState('');
+  const [dragging, setDragging] = useState(null);
+  const dragRef = useRef(null);
   const load = () => api('/api/admin/menu').then(setData).catch((error) => setMessage(error.message));
   useEffect(load, []);
   const totals = useMemo(() => ({
@@ -32,6 +35,60 @@ export default function MenuAdmin({ publicSlug }) {
   const update = async (id, type, body) => { await api(`/api/admin/menu/${id}`, { method: 'PATCH', body: JSON.stringify({ type, ...body }) }); load(); };
   const remove = async (id, type) => { if (!confirm('این مورد حذف شود؟')) return; await api(`/api/admin/menu/${id}`, { method: 'DELETE', body: JSON.stringify({ type }) }); setMessage('مورد انتخاب‌شده حذف شد.'); load(); };
   const upload = async (file, id, type) => { const form = new FormData(); form.append('file', file); const result = await api('/api/upload', { method: 'POST', headers: {}, body: form }); await update(id, type, { imageUrl: result.url }); setMessage('تصویر ذخیره شد.'); };
+  const persistOrder = async (type, ids, categoryId) => {
+    try { await api('/api/admin/menu', { method: 'PATCH', body: JSON.stringify({ type, ids, categoryId }) }); setMessage('ترتیب جدید ذخیره شد.'); }
+    catch (error) { setMessage(error.message); load(); }
+  };
+  const moveInList = (list, fromId, toId) => {
+    const from = list.findIndex((row) => row.id === fromId);
+    const to = list.findIndex((row) => row.id === toId);
+    if (from < 0 || to < 0 || from === to) return list;
+    const next = [...list];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    return next.map((row, sortOrder) => ({ ...row, sortOrder }));
+  };
+  const startDrag = (type, id, categoryId, event) => {
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dragRef.current = { type, id, categoryId, changed: false, ids: [] };
+    setDragging({ type, id });
+  };
+  const moveDrag = (event) => {
+    const drag = dragRef.current;
+    if (!drag) return;
+    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest(`[data-drag-type="${drag.type}"]`);
+    const targetId = target?.dataset.dragId;
+    if (!targetId || targetId === drag.id || (drag.type === 'item' && target.dataset.categoryId !== drag.categoryId)) return;
+    setData((current) => {
+      if (drag.type === 'category') {
+        const categories = moveInList(current.categories, drag.id, targetId);
+        drag.ids = categories.map((row) => row.id);
+        drag.changed = true;
+        return { ...current, categories };
+      }
+      const categories = current.categories.map((category) => category.id === drag.categoryId ? { ...category, items: moveInList(category.items, drag.id, targetId) } : category);
+      drag.ids = categories.find((category) => category.id === drag.categoryId).items.map((row) => row.id);
+      drag.changed = true;
+      return { ...current, categories };
+    });
+  };
+  const endDrag = () => {
+    const drag = dragRef.current;
+    dragRef.current = null;
+    setDragging(null);
+    if (drag?.changed) persistOrder(drag.type === 'category' ? 'categories' : 'items', drag.ids, drag.categoryId);
+  };
+  const moveByButton = (type, id, categoryId, direction) => {
+    const source = type === 'category' ? data.categories : data.categories.find((category) => category.id === categoryId)?.items || [];
+    const index = source.findIndex((row) => row.id === id);
+    const target = source[index + direction];
+    if (!target) return;
+    const ordered = moveInList(source, id, target.id);
+    if (type === 'category') setData((current) => ({ ...current, categories: ordered }));
+    else setData((current) => ({ ...current, categories: current.categories.map((category) => category.id === categoryId ? { ...category, items: ordered } : category) }));
+    persistOrder(type === 'category' ? 'categories' : 'items', ordered.map((row) => row.id), categoryId);
+  };
 
   return <div className="menu-admin">
     <header className="menu-admin__header">
@@ -54,8 +111,8 @@ export default function MenuAdmin({ publicSlug }) {
         <label><span>نوع نمایش</span><select name="kind"><option value="items">لیست آیتم‌ها</option><option value="image">تصویر تبلیغاتی</option></select></label>
         <button className="button button--primary">افزودن دسته</button>
       </form>
-      <div className="menu-admin__category-grid">{data.categories.map((category) => <article className="menu-category" key={category.id}>
-        <div className="menu-category__head"><div className="menu-category__identity"><span className="menu-category__number">{(category.sortOrder || 0).toLocaleString('fa-IR')}</span><div><h3>{category.name}</h3><small>{category.kind === 'image' ? 'بخش تصویری' : `${category.items.length.toLocaleString('fa-IR')} آیتم`}</small></div></div><span className={`menu-category__state ${category.active ? 'is-active' : ''}`}>{category.active ? 'فعال' : 'غیرفعال'}</span></div>
+      <div className="menu-admin__category-grid">{data.categories.map((category) => <article className={`menu-category ${dragging?.type === 'category' && dragging.id === category.id ? 'is-dragging' : ''}`} key={category.id} data-drag-type="category" data-drag-id={category.id}>
+        <div className="menu-category__head"><div className="menu-category__identity"><button className="drag-handle" aria-label={`جابه‌جایی دسته ${category.name}`} title="برای جابه‌جایی بکشید" onPointerDown={(event) => startDrag('category', category.id, null, event)} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag}>{icons.grip}</button><span className="menu-category__number">{(category.sortOrder + 1).toLocaleString('fa-IR')}</span><div><h3>{category.name}</h3><small>{category.kind === 'image' ? 'بخش تصویری' : `${category.items.length.toLocaleString('fa-IR')} آیتم`}</small></div></div><span className={`menu-category__state ${category.active ? 'is-active' : ''}`}>{category.active ? 'فعال' : 'غیرفعال'}</span></div>
         <div className="menu-category__controls">
           <label><span>نام دسته</span><input value={category.name} onChange={(event) => update(category.id, 'category', { name: event.target.value })} /></label>
           <label><span>نوع</span><select value={category.kind} onChange={(event) => update(category.id, 'category', { kind: event.target.value })}><option value="items">لیست آیتم‌ها</option><option value="image">تصویر تبلیغاتی</option></select></label>
@@ -63,10 +120,10 @@ export default function MenuAdmin({ publicSlug }) {
         </div>
         {category.kind === 'image' ? <div className="menu-category__feature"><label><span>توضیح کوتاه</span><input value={category.description || ''} onChange={(event) => update(category.id, 'category', { description: event.target.value })} placeholder="متن زیر تصویر" /></label>{category.imageUrl && <img src={category.imageUrl} alt={`تصویر ${category.name}`} />}<label className="menu-upload"><span>انتخاب تصویر</span><input type="file" accept="image/*" onChange={(event) => event.target.files[0] && upload(event.target.files[0], category.id, 'category')} /></label></div> : <div className="menu-category__items">
           {category.items.length === 0 && <div className="menu-empty">هنوز آیتمی در این دسته ثبت نشده است.</div>}
-          {category.items.map((item) => <div className="menu-item-edit" key={item.id}>{item.imageUrl ? <img src={item.imageUrl} alt="" /> : <div className="menu-item-edit__placeholder" />}<label className="menu-item-edit__name"><span>نام آیتم</span><input value={item.name} onChange={(event) => update(item.id, 'item', { name: event.target.value })} /></label><label><span>قیمت (تومان)</span><input type="number" min="0" value={item.price} onChange={(event) => update(item.id, 'item', { price: event.target.value })} /></label><label className="menu-switch"><input type="checkbox" checked={item.available} onChange={(event) => update(item.id, 'item', { available: event.target.checked })} /><span /> موجود</label><label className="menu-upload menu-upload--small"><span>تصویر</span><input type="file" accept="image/*" onChange={(event) => event.target.files[0] && upload(event.target.files[0], item.id, 'item')} /></label><button className="button button--danger button--icon" aria-label={`حذف ${item.name}`} onClick={() => remove(item.id, 'item')}>×</button></div>)}
+          {category.items.map((item) => <div className={`menu-item-edit ${dragging?.type === 'item' && dragging.id === item.id ? 'is-dragging' : ''}`} key={item.id} data-drag-type="item" data-drag-id={item.id} data-category-id={category.id}><button className="drag-handle" aria-label={`جابه‌جایی آیتم ${item.name}`} title="برای جابه‌جایی بکشید" onPointerDown={(event) => startDrag('item', item.id, category.id, event)} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag}>{icons.grip}</button>{item.imageUrl ? <img src={item.imageUrl} alt="" /> : <div className="menu-item-edit__placeholder" />}<label className="menu-item-edit__name"><span>نام آیتم</span><input value={item.name} onChange={(event) => update(item.id, 'item', { name: event.target.value })} /></label><label><span>قیمت (تومان)</span><input type="number" min="0" value={item.price} onChange={(event) => update(item.id, 'item', { price: event.target.value })} /></label><label className="menu-switch"><input type="checkbox" checked={item.available} onChange={(event) => update(item.id, 'item', { available: event.target.checked })} /><span /> موجود</label><label className="menu-upload menu-upload--small"><span>تصویر</span><input type="file" accept="image/*" onChange={(event) => event.target.files[0] && upload(event.target.files[0], item.id, 'item')} /></label><div className="order-buttons"><button aria-label="انتقال به بالا" onClick={() => moveByButton('item', item.id, category.id, -1)}>↑</button><button aria-label="انتقال به پایین" onClick={() => moveByButton('item', item.id, category.id, 1)}>↓</button></div><button className="button button--danger button--icon" aria-label={`حذف ${item.name}`} onClick={() => remove(item.id, 'item')}>×</button></div>)}
           <form className="menu-category__add-item" onSubmit={(event) => { event.preventDefault(); const form = new FormData(event.currentTarget); add({ type: 'item', categoryId: category.id, name: form.get('name'), price: form.get('price') }); event.currentTarget.reset(); }}><label><span>نام آیتم</span><input name="name" required /></label><label><span>قیمت (تومان)</span><input name="price" type="number" min="0" required /></label><button className="button button--secondary">افزودن آیتم</button></form>
         </div>}
-        <footer className="menu-category__footer"><button className="button button--danger" onClick={() => remove(category.id, 'category')}>حذف دسته</button></footer>
+        <footer className="menu-category__footer"><div className="order-buttons"><button aria-label="انتقال دسته به بالا" onClick={() => moveByButton('category', category.id, null, -1)}>↑</button><button aria-label="انتقال دسته به پایین" onClick={() => moveByButton('category', category.id, null, 1)}>↓</button></div><button className="button button--danger" onClick={() => remove(category.id, 'category')}>حذف دسته</button></footer>
       </article>)}</div>
     </section>}
 
