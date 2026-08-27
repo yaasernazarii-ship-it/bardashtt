@@ -52,48 +52,38 @@ export default function ShamsiCalendar({ sessions = [], onSelectDay, selectedId 
   const todayKey = jKey(new Date());
 
   return (
-    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: 16 }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-        <button type="button" onClick={() => setViewDate(addDays(month.firstDate, -1))} style={navBtn}>‹ ماه قبل</button>
-        <strong style={{ fontSize: '1rem' }}>{jTitleFmt.format(month.firstDate)}</strong>
-        <button type="button" onClick={() => setViewDate(addDays(month.days[month.days.length - 1].date, 1))} style={navBtn}>ماه بعد ›</button>
+    <div className="shamsi-cal">
+      <div className="shamsi-cal__head">
+        <button type="button" className="shamsi-cal__nav" title="ماه قبل" aria-label="ماه قبل"
+          onClick={() => setViewDate(addDays(month.firstDate, -1))}>‹</button>
+        <strong>{jTitleFmt.format(month.firstDate)}</strong>
+        <button type="button" className="shamsi-cal__nav" title="ماه بعد" aria-label="ماه بعد"
+          onClick={() => setViewDate(addDays(month.days[month.days.length - 1].date, 1))}>›</button>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 5 }}>
-        {WEEKDAYS.map((w) => (
-          <div key={w} style={{ textAlign: 'center', fontSize: '.72rem', color: 'var(--muted)', fontWeight: 700, padding: '3px 0' }}>{w}</div>
-        ))}
-        {Array.from({ length: month.startCol }).map((_, i) => <div key={`b${i}`} />)}
+      <div className="shamsi-cal__grid">
+        {WEEKDAYS.map((w) => <span key={w} className="shamsi-cal__weekday">{w}</span>)}
+        {Array.from({ length: month.startCol }).map((_, i) => <span key={`b${i}`} className="shamsi-cal__blank" />)}
         {month.days.map((day) => {
           const list = byDay[day.key];
           const has = !!list;
-          const isToday = day.key === todayKey;
           const isSelected = has && selectedId && list.some((s) => s.id === selectedId);
+          const cls = ['shamsi-cal__day'];
+          if (has) cls.push('has-session');
+          if (day.key === todayKey) cls.push('is-today');
+          if (isSelected) cls.push('is-selected');
           return (
-            <button key={day.key} type="button" onClick={() => has && onSelectDay && onSelectDay(list)} disabled={!has}
-              title={has ? list.map((s) => s.title).join('، ') : ''}
-              style={{
-                aspectRatio: '1', borderRadius: 9, border: isToday ? '2px solid var(--dark)' : '1px solid var(--border)',
-                cursor: has ? 'pointer' : 'default',
-                background: isSelected ? 'var(--dark)' : has ? 'rgba(22,163,74,.12)' : 'var(--surface)',
-                color: isSelected ? '#fff' : 'var(--text)',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2,
-                fontWeight: has ? 800 : 500, fontSize: '.82rem', padding: 0,
-              }}>
-              <span>{faNum(day.jd)}</span>
-              {has && <span style={{ width: 5, height: 5, borderRadius: 999, background: isSelected ? '#fff' : '#16A34A' }} />}
+            <button key={day.key} type="button" className={cls.join(' ')} disabled={!has}
+              onClick={() => has && onSelectDay && onSelectDay(list)}
+              title={has ? list.map((s) => s.title).join('، ') : ''}>
+              {faNum(day.jd)}
             </button>
           );
         })}
       </div>
-      <div style={{ display: 'flex', gap: 16, marginTop: 12, flexWrap: 'wrap', fontSize: '.74rem', color: 'var(--muted)' }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 10, height: 10, borderRadius: 3, background: 'rgba(22,163,74,.4)' }} /> روز جلسه</span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 10, height: 10, borderRadius: 3, border: '2px solid var(--dark)' }} /> امروز</span>
+      <div className="shamsi-cal__legend">
+        <span><i className="shamsi-cal__chip" /> روز جلسه</span>
+        <span><i className="shamsi-cal__chip shamsi-cal__chip--today" /> امروز</span>
       </div>
     </div>
   );
 }
-
-const navBtn = {
-  background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10,
-  padding: '5px 11px', cursor: 'pointer', fontSize: '.8rem', fontWeight: 700, color: 'var(--text)',
-};

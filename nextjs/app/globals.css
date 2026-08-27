@@ -2892,12 +2892,29 @@ div.admin-stat { cursor: default; }
 .admin-class-section-head h3 { margin: 0 0 3px; font-size: .95rem; }
 .admin-class-section-head p { margin: 0; color: var(--muted); font-size: .75rem; }
 .admin-class-section-head > strong { color: var(--muted); font-size: .78rem; }
-.admin-calendar-workspace { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(280px, .75fr); gap: 12px; margin-top: 12px; align-items: start; }
+/* تقویم ستون باریک و ثابتی می‌گیرد؛ فهرست جلسات محتوای اصلی است و باید جای بیشتری داشته باشد. */
+.admin-calendar-workspace { display: grid; grid-template-columns: minmax(0, 268px) minmax(0, 1fr); gap: 12px; margin-top: 12px; align-items: start; }
 .admin-calendar-workspace__calendar, .admin-calendar-workspace__list { min-width: 0; padding: 11px; background: #fff; border: 1px solid var(--border); border-radius: 11px; }
 .admin-calendar-workspace__list { max-height: 560px; overflow: auto; }
 .admin-calendar-workspace__list-head { display: flex; justify-content: space-between; gap: 8px; padding: 2px 2px 9px; border-bottom: 1px solid var(--border); }
 .admin-calendar-workspace__list-head strong { font-size: .82rem; }
 .admin-calendar-workspace__list-head span, .admin-calendar-empty { color: var(--muted); font-size: .72rem; }
+/* خانه‌های تقویم ارتفاع ثابت و کوتاه دارند؛ با aspect-ratio در ستون پهن، هر خانه به اندازهٔ یک کارت بزرگ می‌شد. */
+.shamsi-cal__head { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 8px; }
+.shamsi-cal__head strong { font-size: .8rem; }
+.shamsi-cal__nav { width: 24px; height: 24px; display: grid; place-items: center; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 7px; font: inherit; font-size: .9rem; line-height: 1; cursor: pointer; }
+.shamsi-cal__nav:hover { color: var(--text); background: #fff; }
+.shamsi-cal__grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.shamsi-cal__weekday { padding-bottom: 3px; color: var(--muted); font-size: .62rem; font-weight: 700; text-align: center; }
+.shamsi-cal__day { height: 28px; padding: 0; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 7px; font: inherit; font-size: .72rem; cursor: default; }
+.shamsi-cal__day.has-session { color: #14532d; background: #dcfce7; font-weight: 800; cursor: pointer; }
+.shamsi-cal__day.has-session:hover { background: #bbf7d0; }
+.shamsi-cal__day.is-today { border-color: var(--dark); color: var(--text); font-weight: 800; }
+.shamsi-cal__day.is-selected { color: #fff; background: var(--dark); border-color: var(--dark); }
+.shamsi-cal__legend { display: flex; gap: 12px; margin-top: 9px; color: var(--muted); font-size: .64rem; }
+.shamsi-cal__legend span { display: flex; align-items: center; gap: 5px; }
+.shamsi-cal__chip { width: 9px; height: 9px; background: #dcfce7; border-radius: 3px; }
+.shamsi-cal__chip--today { background: transparent; border: 1px solid var(--dark); }
 .admin-session-list { display: grid; gap: 5px; margin: 8px 0 0; padding: 0; list-style: none; }
 .admin-session-list li { display: flex; align-items: center; gap: 7px; min-height: 52px; padding: 6px 7px; background: var(--surface); border: 1px solid transparent; border-radius: 9px; }
 .admin-session-list li.is-editing { border-color: var(--gold); background: #fffdf0; }
