@@ -1,7 +1,6 @@
-import { getSessionUser, isManager } from '@/lib/auth';
+import { hasCafeAccess } from '@/lib/cafeAuth';
 import { prisma } from '@/lib/prisma';
 
-async function manager() { const user = await getSessionUser(); return isManager(user) ? user : null; }
 function bad(message, status = 400) { return Response.json({ ok: false, error: message }, { status }); }
 function cleanText(value) { return typeof value === 'string' ? value.trim() : ''; }
 function positiveAmount(value, { allowZero = false } = {}) {
@@ -11,7 +10,7 @@ function positiveAmount(value, { allowZero = false } = {}) {
 function validDate(value) { const date = new Date(value); return Number.isNaN(date.getTime()) ? null : date; }
 
 export async function GET() {
-  if (!await manager()) return bad('دسترسی ندارید.', 403);
+  if (!await hasCafeAccess()) return bad('دسترسی ندارید.', 403);
   const [categories, expenses, sales] = await Promise.all([
     prisma.menuCategory.findMany({ orderBy: { sortOrder: 'asc' }, include: { items: { orderBy: { sortOrder: 'asc' } } } }),
     prisma.menuExpense.findMany({ orderBy: { expenseDate: 'desc' }, take: 100 }),
@@ -21,8 +20,7 @@ export async function GET() {
 }
 
 export async function PATCH(request) {
-  const user = await manager();
-  if (!user) return bad('دسترسی ندارید.', 403);
+  if (!await hasCafeAccess()) return bad('دسترسی ندارید.', 403);
   const body = await request.json();
   const ids = Array.isArray(body.ids) ? body.ids.filter((id) => typeof id === 'string') : [];
   if (!ids.length || ids.length > 200 || new Set(ids).size !== ids.length) return bad('ترتیب ارسال‌شده معتبر نیست.');
@@ -45,7 +43,7 @@ export async function PATCH(request) {
 }
 
 export async function POST(request) {
-  const user = await manager(); if (!user) return bad('دسترسی ندارید.', 403);
+  if (!await hasCafeAccess()) return bad('دسترسی ندارید.', 403);
   const body = await request.json();
   try {
     if (body.type === 'category') {

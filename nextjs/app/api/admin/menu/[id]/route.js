@@ -1,8 +1,8 @@
-import { getSessionUser, isManager } from '@/lib/auth';
+import { hasCafeAccess } from '@/lib/cafeAuth';
 import { prisma } from '@/lib/prisma';
 
 export async function PATCH(request, { params }) {
-  const user = await getSessionUser(); if (!isManager(user)) return Response.json({ error: 'دسترسی ندارید.' }, { status: 403 });
+  if (!await hasCafeAccess()) return Response.json({ error: 'دسترسی ندارید.' }, { status: 403 });
   const body = await request.json(); const id = (await params).id;
   try {
     if (body.type === 'category') {
@@ -20,7 +20,7 @@ export async function PATCH(request, { params }) {
 }
 
 export async function DELETE(request, { params }) {
-  const user = await getSessionUser(); if (!isManager(user)) return Response.json({ error: 'دسترسی ندارید.' }, { status: 403 });
+  if (!await hasCafeAccess()) return Response.json({ error: 'دسترسی ندارید.' }, { status: 403 });
   const body = await request.json(); const id = (await params).id;
   if (body.type === 'category') await prisma.menuCategory.delete({ where: { id } });
   else if (body.type === 'item') await prisma.menuItem.delete({ where: { id } });

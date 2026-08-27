@@ -9,7 +9,7 @@ export default async function robots() {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/api/', '/dashboard/', '/profile', '/panel'],
+      disallow: ['/api/', '/dashboard/', '/profile', '/panel', '/cafe-admin'],
     },
     sitemap: `${base}/sitemap.xml`,
     host: base,

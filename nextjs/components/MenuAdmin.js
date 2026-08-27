@@ -33,7 +33,7 @@ function ImageUpload({ imageUrl, label, onSelect, onRemove, compact = false }) {
   </div>;
 }
 
-export default function MenuAdmin({ publicSlug }) {
+export default function MenuAdmin({ publicSlug, canSignOut = false }) {
   const [data, setData] = useState({ categories: [], expenses: [], sales: [] });
   const [activeTab, setActiveTab] = useState('menu');
   const [message, setMessage] = useState('');
@@ -62,6 +62,7 @@ export default function MenuAdmin({ publicSlug }) {
     catch (error) { setMessage(error.message); }
   };
   const update = async (id, type, body) => { try { await api(`/api/admin/menu/${id}`, { method: 'PATCH', body: JSON.stringify({ type, ...body }) }); load(); } catch (error) { setMessage(error.message); } };
+  const signOut = async () => { await fetch('/api/cafe-admin/session', { method: 'DELETE' }); window.location.reload(); };
   const askConfirmation = (title, description, action) => setConfirmDialog({ title, description, action });
   const remove = (id, type, label = 'این مورد') => askConfirmation(`حذف ${label}`, 'این عملیات قابل بازگشت نیست و اطلاعات مرتبط برای همیشه حذف می‌شود.', async () => { await api(`/api/admin/menu/${id}`, { method: 'DELETE', body: JSON.stringify({ type }) }); setMessage(`${label} حذف شد.`); load(); });
   const removeImage = (id, type, label) => askConfirmation(`حذف تصویر ${label}`, 'تصویر از منو برداشته شود؟ خود فایل ممکن است برای سوابق روی سرور باقی بماند.', async () => { await api(`/api/admin/menu/${id}`, { method: 'PATCH', body: JSON.stringify({ type, imageUrl: null }) }); setMessage('تصویر از منو حذف شد.'); load(); });
@@ -124,7 +125,7 @@ export default function MenuAdmin({ publicSlug }) {
   return <div className="menu-admin">
     <header className="menu-admin__header">
       <div className="menu-admin__brand"><span className="menu-admin__brand-mark">ک</span><span><b>کافه کتاب</b><small>پنل مدیریت منو</small></span></div>
-      <nav aria-label="دسترسی‌های منو"><a className="menu-admin__preview" href={`/menu/${publicSlug}`} target="_blank" rel="noreferrer">مشاهده منو</a></nav>
+      <nav aria-label="دسترسی‌های منو"><a className="menu-admin__preview" href={`/menu/${publicSlug}`} target="_blank" rel="noreferrer">مشاهده منو</a>{canSignOut && <button type="button" className="menu-admin__signout" onClick={signOut}>خروج</button>}</nav>
     </header>
 
     <section className="menu-admin__intro"><div><span className="menu-admin__eyebrow">پنل مدیریت</span><h1>منوی کافه کتاب</h1><p>دسته‌ها، آیتم‌ها و گزارش مالی کافه را از یک فضای منظم مدیریت کنید.</p></div><div className="menu-admin__status"><span /> منوی عمومی فعال است</div></section>
