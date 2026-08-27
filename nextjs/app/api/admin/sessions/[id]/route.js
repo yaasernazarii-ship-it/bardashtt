@@ -30,21 +30,21 @@ export async function PATCH(request, { params }) {
     if (b.recordingUrl !== undefined) data.recordingUrl = b.recordingUrl ? String(b.recordingUrl).trim().slice(0, 2000) : null;
 
     const timeChanged = data.startsAt !== undefined;
-    const { session, members } = await prisma.$transaction(async (tx) => {
+    const { session, members, smsQueued } = await prisma.$transaction(async (tx) => {
       const updated = await tx.classSession.update({ where: { id }, data });
       await tx.classGroup.update({ where: { id: existing.groupId }, data: { updatedAt: new Date() } });
 
-      if (!timeChanged) return { session: updated, members: [] };
+      if (!timeChanged) return { session: updated, members: [], smsQueued: 0 };
       const classMembers = await tx.user.findMany({
         where: { classGroupId: existing.groupId, role: 'student', active: true, deletedAt: null },
         select: { id: true },
       });
-      await enqueueSmsForUsers(classMembers.map((member) => member.id), {
+      const queued = await enqueueSmsForUsers(classMembers.map((member) => member.id), {
         kind: 'class_session',
         dedupePrefix: `class-session-update:${updated.id}:${updated.updatedAt.getTime()}`,
         body: existing.groupId,
       }, tx);
-      return { session: updated, members: classMembers };
+      return { session: updated, members: classMembers, smsQueued: queued };
     });
 
     if (timeChanged) {
@@ -57,7 +57,7 @@ export async function PATCH(request, { params }) {
       });
     }
 
-    return Response.json({ ok: true, session });
+    return Response.json({ ok: true, session, memberCount: members.length, smsQueued, timeChanged });
   } catch {
     return Response.json({ ok: false, error: 'درخواست نامعتبر است.' }, { status: 400 });
   }

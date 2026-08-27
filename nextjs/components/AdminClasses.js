@@ -10,6 +10,14 @@ const BRANCHES = ['تهران', 'ساری'];
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 const timeFmt = new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit' });
 
+// نتیجهٔ پیامکِ ثبت/ویرایش جلسه باید دیده شود؛ وگرنه «هیچ پیامکی نرفت» بی‌صدا می‌ماند.
+function smsSummary(result) {
+  if (result.timeChanged === false) return 'تغییرات جلسه ذخیره شد. چون زمان جلسه عوض نشد، پیامکی برای هنرجویان ارسال نشد.';
+  if (!result.memberCount) return 'جلسه ذخیره شد، اما این کلاس هنوز هنرجویی ندارد و پیامکی ارسال نشد. ابتدا از تب «هنرجویان» اعضای کلاس را انتخاب کنید.';
+  if (!result.smsQueued) return 'جلسه ذخیره شد، اما پیامکی ارسال نشد؛ شماره موبایل معتبری برای هنرجویان این کلاس ثبت نشده است.';
+  return `جلسه ذخیره شد و پیامک اطلاع‌رسانی برای ${Number(result.smsQueued).toLocaleString('fa-IR')} هنرجوی این کلاس ارسال شد.`;
+}
+
 const emptySession = { title: '', startsAt: '', chartDescription: '', tools: '', homework: '' };
 const emptyGroup = { name: '', branch: 'تهران', courseTitle: '', teacherName: '', coverImage: '', totalSessions: '8' };
 
@@ -324,6 +332,7 @@ function GroupCard({ group, students, open, onToggle, onBack, onChanged }) {
     const d = await res.json();
     setBusy(false);
     if (!d.ok) { setMsg(d.error || 'خطا در ذخیره جلسه.'); return; }
+    setMsg(smsSummary(d));
     setSForm(emptySession); setEditingSession(null); setSessionFormOpen(false);
     loadSessions(); onChanged();
   }

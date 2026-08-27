@@ -38,7 +38,7 @@ export async function POST(request) {
     const group = await prisma.classGroup.findUnique({ where: { id: groupId } });
     if (!group) return Response.json({ ok: false, error: 'کلاس یافت نشد.' }, { status: 404 });
 
-    const { session, members } = await prisma.$transaction(async (tx) => {
+    const { session, members, smsQueued } = await prisma.$transaction(async (tx) => {
       const created = await tx.classSession.create({
         data: {
           groupId,
@@ -55,12 +55,12 @@ export async function POST(request) {
         where: { classGroupId: groupId, role: 'student', active: true, deletedAt: null },
         select: { id: true },
       });
-      await enqueueSmsForUsers(classMembers.map((member) => member.id), {
+      const queued = await enqueueSmsForUsers(classMembers.map((member) => member.id), {
         kind: 'class_session',
         dedupePrefix: `class-session:${created.id}`,
         body: group.id,
       }, tx);
-      return { session: created, members: classMembers };
+      return { session: created, members: classMembers, smsQueued: queued };
     });
 
     await processSmsQueue().catch((error) => console.error('class session sms queue failed:', error));
@@ -73,7 +73,7 @@ export async function POST(request) {
       kind: 'class',
     });
 
-    return Response.json({ ok: true, session });
+    return Response.json({ ok: true, session, memberCount: members.length, smsQueued });
   } catch {
     return Response.json({ ok: false, error: 'درخواست نامعتبر است.' }, { status: 400 });
   }
