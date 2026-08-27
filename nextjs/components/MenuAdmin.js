@@ -2,27 +2,76 @@
 import { useEffect, useMemo, useState } from 'react';
 
 const today = () => new Date().toISOString().slice(0, 10);
-async function api(url, options) { const response = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options }); const data = await response.json(); if (!response.ok) throw new Error(data.error || 'خطا'); return data; }
+async function api(url, options) {
+  const response = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || 'خطایی رخ داد.');
+  return data;
+}
+
+const icons = {
+  menu: <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>,
+  wallet: <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h15a2 2 0 0 1 2 2v10H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h13v2M16 12h5" /></svg>,
+  settings: <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.6v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z" /></svg>,
+};
 
 export default function MenuAdmin({ publicSlug }) {
   const [data, setData] = useState({ categories: [], expenses: [], sales: [] });
+  const [activeTab, setActiveTab] = useState('menu');
   const [message, setMessage] = useState('');
-  const load = () => api('/api/admin/menu').then(setData).catch((e) => setMessage(e.message));
+  const load = () => api('/api/admin/menu').then(setData).catch((error) => setMessage(error.message));
   useEffect(load, []);
-  const totals = useMemo(() => ({ sales: data.sales.reduce((s, x) => s + x.amount, 0), expenses: data.expenses.reduce((s, x) => s + x.amount, 0) }), [data]);
-  const add = async (body) => { try { await api('/api/admin/menu', { method: 'POST', body: JSON.stringify(body) }); setMessage('ذخیره شد.'); load(); } catch (e) { setMessage(e.message); } };
+  const totals = useMemo(() => ({
+    sales: data.sales.reduce((sum, row) => sum + row.amount, 0),
+    expenses: data.expenses.reduce((sum, row) => sum + row.amount, 0),
+  }), [data]);
+  const add = async (body) => {
+    try { await api('/api/admin/menu', { method: 'POST', body: JSON.stringify(body) }); setMessage('تغییرات با موفقیت ذخیره شد.'); load(); }
+    catch (error) { setMessage(error.message); }
+  };
   const update = async (id, type, body) => { await api(`/api/admin/menu/${id}`, { method: 'PATCH', body: JSON.stringify({ type, ...body }) }); load(); };
-  const remove = async (id, type) => { if (!confirm('این مورد حذف شود؟')) return; await api(`/api/admin/menu/${id}`, { method: 'DELETE', body: JSON.stringify({ type }) }); load(); };
+  const remove = async (id, type) => { if (!confirm('این مورد حذف شود؟')) return; await api(`/api/admin/menu/${id}`, { method: 'DELETE', body: JSON.stringify({ type }) }); setMessage('مورد انتخاب‌شده حذف شد.'); load(); };
   const upload = async (file, id, type) => { const form = new FormData(); form.append('file', file); const result = await api('/api/upload', { method: 'POST', headers: {}, body: form }); await update(id, type, { imageUrl: result.url }); setMessage('تصویر ذخیره شد.'); };
+
   return <div className="menu-admin">
-    <div className="menu-admin__top"><div><h1>مدیریت منوی کافه</h1><p>تغییرات بدون Build روی منوی QR اعمال می‌شود.</p></div><a href={`/menu/${publicSlug}`} target="_blank">مشاهده منو</a></div>
-    {message && <div className="menu-admin__message">{message}</div>}
-    <section className="menu-admin__stats"><div><span>فروش ثبت‌شده</span><b>{totals.sales.toLocaleString('fa-IR')} تومان</b></div><div><span>هزینه ثبت‌شده</span><b>{totals.expenses.toLocaleString('fa-IR')} تومان</b></div><div><span>سود تقریبی</span><b>{(totals.sales - totals.expenses).toLocaleString('fa-IR')} تومان</b></div></section>
-    <section className="menu-admin__card"><h2>دسته‌بندی‌ها</h2><form onSubmit={(e) => { e.preventDefault(); const f = new FormData(e.currentTarget); add({ type: 'category', name: f.get('name'), kind: f.get('kind') }); e.currentTarget.reset(); }}><input name="name" placeholder="نام دسته" required /><select name="kind"><option value="items">لیست آیتم</option><option value="image">فقط تصویر</option></select><button>افزودن دسته</button></form>
-      {data.categories.map((c) => <div className="menu-admin__row" key={c.id}><input value={c.name} onChange={(e) => update(c.id, 'category', { name: e.target.value })} /><select value={c.kind} onChange={(e) => update(c.id, 'category', { kind: e.target.value })}><option value="items">آیتم‌ها</option><option value="image">تصویر</option></select><label><input type="checkbox" checked={c.active} onChange={(e) => update(c.id, 'category', { active: e.target.checked })} /> فعال</label>{c.kind === 'image' && <><input placeholder="توضیح تصویر" value={c.description || ''} onChange={(e) => update(c.id, 'category', { description: e.target.value })} /><input type="file" accept="image/*" onChange={(e) => e.target.files[0] && upload(e.target.files[0], c.id, 'category')} /></>}<button className="danger" onClick={() => remove(c.id, 'category')}>حذف</button>
-        {c.kind === 'items' && <div className="menu-admin__items">{c.items.map((item) => <div className="menu-admin__item" key={item.id}><input value={item.name} onChange={(e) => update(item.id, 'item', { name: e.target.value })} /><input type="number" value={item.price} onChange={(e) => update(item.id, 'item', { price: e.target.value })} /><label><input type="checkbox" checked={item.available} onChange={(e) => update(item.id, 'item', { available: e.target.checked })} /> موجود</label>{<input type="file" accept="image/*" onChange={(e) => e.target.files[0] && upload(e.target.files[0], item.id, 'item')} />}<button className="danger" onClick={() => remove(item.id, 'item')}>×</button></div>)}<form onSubmit={(e) => { e.preventDefault(); const f = new FormData(e.currentTarget); add({ type: 'item', categoryId: c.id, name: f.get('name'), price: f.get('price') }); e.currentTarget.reset(); }}><input name="name" placeholder="نام آیتم" required /><input name="price" type="number" placeholder="قیمت تومان" required /><button>افزودن آیتم</button></form></div>}
-      </div>)}
-    </section>
-    <section className="menu-admin__card"><h2>حسابداری</h2><div className="menu-admin__forms"><form onSubmit={(e) => { e.preventDefault(); const f = new FormData(e.currentTarget); add({ type: 'sale', amount: f.get('amount'), date: f.get('date'), note: f.get('note') }); e.currentTarget.reset(); }}><h3>ثبت فروش</h3><input name="amount" type="number" placeholder="مبلغ فروش" required /><input name="date" type="date" defaultValue={today()} required /><input name="note" placeholder="توضیح اختیاری" /><button>ثبت فروش</button></form><form onSubmit={(e) => { e.preventDefault(); const f = new FormData(e.currentTarget); add({ type: 'expense', title: f.get('title'), amount: f.get('amount'), date: f.get('date') }); e.currentTarget.reset(); }}><h3>ثبت هزینه</h3><input name="title" placeholder="عنوان هزینه" required /><input name="amount" type="number" placeholder="مبلغ هزینه" required /><input name="date" type="date" defaultValue={today()} required /><button>ثبت هزینه</button></form></div></section>
+    <header className="menu-admin__header">
+      <a className="menu-admin__brand" href="/dashboard"><span className="menu-admin__brand-mark">ب</span><span><b>خانواده برداشت</b><small>مدیریت کافه کتاب</small></span></a>
+      <nav aria-label="دسترسی‌های مدیریت"><a href="/dashboard">داشبورد</a><a href="/dashboard/admin">کاربران</a><a className="menu-admin__preview" href={`/menu/${publicSlug}`} target="_blank" rel="noreferrer">مشاهده منو</a></nav>
+    </header>
+
+    <section className="menu-admin__intro"><div><span className="menu-admin__eyebrow">پنل مدیریت</span><h1>منوی کافه کتاب</h1><p>دسته‌ها، آیتم‌ها و گزارش مالی کافه را از یک فضای منظم مدیریت کنید.</p></div><div className="menu-admin__status"><span /> منوی عمومی فعال است</div></section>
+
+    <div className="menu-admin__tabs" role="tablist" aria-label="بخش‌های مدیریت منو">
+      {[['menu', 'دسته‌بندی و آیتم‌ها', icons.menu], ['accounting', 'حسابداری', icons.wallet], ['settings', 'تنظیمات کلی منو', icons.settings]].map(([id, label, icon]) => <button key={id} role="tab" aria-selected={activeTab === id} className={activeTab === id ? 'is-active' : ''} onClick={() => setActiveTab(id)}>{icon}<span>{label}</span></button>)}
+    </div>
+
+    {message && <div className="menu-admin__message" role="status">{message}</div>}
+
+    {activeTab === 'menu' && <section className="menu-admin__panel" role="tabpanel">
+      <div className="menu-admin__section-head"><div><h2>دسته‌بندی‌ها و آیتم‌ها</h2><p>{data.categories.length.toLocaleString('fa-IR')} دسته در منوی کافه</p></div></div>
+      <form className="menu-admin__create" onSubmit={(event) => { event.preventDefault(); const form = new FormData(event.currentTarget); add({ type: 'category', name: form.get('name'), kind: form.get('kind') }); event.currentTarget.reset(); }}>
+        <label><span>نام دسته جدید</span><input name="name" placeholder="مثلاً نوشیدنی‌های ویژه" required /></label>
+        <label><span>نوع نمایش</span><select name="kind"><option value="items">لیست آیتم‌ها</option><option value="image">تصویر تبلیغاتی</option></select></label>
+        <button className="button button--primary">افزودن دسته</button>
+      </form>
+      <div className="menu-admin__category-grid">{data.categories.map((category) => <article className="menu-category" key={category.id}>
+        <div className="menu-category__head"><div className="menu-category__identity"><span className="menu-category__number">{(category.sortOrder || 0).toLocaleString('fa-IR')}</span><div><h3>{category.name}</h3><small>{category.kind === 'image' ? 'بخش تصویری' : `${category.items.length.toLocaleString('fa-IR')} آیتم`}</small></div></div><span className={`menu-category__state ${category.active ? 'is-active' : ''}`}>{category.active ? 'فعال' : 'غیرفعال'}</span></div>
+        <div className="menu-category__controls">
+          <label><span>نام دسته</span><input value={category.name} onChange={(event) => update(category.id, 'category', { name: event.target.value })} /></label>
+          <label><span>نوع</span><select value={category.kind} onChange={(event) => update(category.id, 'category', { kind: event.target.value })}><option value="items">لیست آیتم‌ها</option><option value="image">تصویر تبلیغاتی</option></select></label>
+          <label className="menu-switch"><input type="checkbox" checked={category.active} onChange={(event) => update(category.id, 'category', { active: event.target.checked })} /><span /> نمایش در منو</label>
+        </div>
+        {category.kind === 'image' ? <div className="menu-category__feature"><label><span>توضیح کوتاه</span><input value={category.description || ''} onChange={(event) => update(category.id, 'category', { description: event.target.value })} placeholder="متن زیر تصویر" /></label>{category.imageUrl && <img src={category.imageUrl} alt={`تصویر ${category.name}`} />}<label className="menu-upload"><span>انتخاب تصویر</span><input type="file" accept="image/*" onChange={(event) => event.target.files[0] && upload(event.target.files[0], category.id, 'category')} /></label></div> : <div className="menu-category__items">
+          {category.items.length === 0 && <div className="menu-empty">هنوز آیتمی در این دسته ثبت نشده است.</div>}
+          {category.items.map((item) => <div className="menu-item-edit" key={item.id}>{item.imageUrl ? <img src={item.imageUrl} alt="" /> : <div className="menu-item-edit__placeholder" />}<label className="menu-item-edit__name"><span>نام آیتم</span><input value={item.name} onChange={(event) => update(item.id, 'item', { name: event.target.value })} /></label><label><span>قیمت (تومان)</span><input type="number" min="0" value={item.price} onChange={(event) => update(item.id, 'item', { price: event.target.value })} /></label><label className="menu-switch"><input type="checkbox" checked={item.available} onChange={(event) => update(item.id, 'item', { available: event.target.checked })} /><span /> موجود</label><label className="menu-upload menu-upload--small"><span>تصویر</span><input type="file" accept="image/*" onChange={(event) => event.target.files[0] && upload(event.target.files[0], item.id, 'item')} /></label><button className="button button--danger button--icon" aria-label={`حذف ${item.name}`} onClick={() => remove(item.id, 'item')}>×</button></div>)}
+          <form className="menu-category__add-item" onSubmit={(event) => { event.preventDefault(); const form = new FormData(event.currentTarget); add({ type: 'item', categoryId: category.id, name: form.get('name'), price: form.get('price') }); event.currentTarget.reset(); }}><label><span>نام آیتم</span><input name="name" required /></label><label><span>قیمت (تومان)</span><input name="price" type="number" min="0" required /></label><button className="button button--secondary">افزودن آیتم</button></form>
+        </div>}
+        <footer className="menu-category__footer"><button className="button button--danger" onClick={() => remove(category.id, 'category')}>حذف دسته</button></footer>
+      </article>)}</div>
+    </section>}
+
+    {activeTab === 'accounting' && <section className="menu-admin__panel" role="tabpanel"><div className="menu-admin__section-head"><div><h2>حسابداری کافه</h2><p>خلاصهٔ فروش، هزینه و سود تقریبی ثبت‌شده</p></div></div><div className="menu-admin__stats"><div><span>مجموع فروش</span><b>{totals.sales.toLocaleString('fa-IR')}</b><small>تومان</small></div><div><span>مجموع هزینه</span><b>{totals.expenses.toLocaleString('fa-IR')}</b><small>تومان</small></div><div className={totals.sales - totals.expenses < 0 ? 'is-negative' : 'is-positive'}><span>سود تقریبی</span><b>{(totals.sales - totals.expenses).toLocaleString('fa-IR')}</b><small>تومان</small></div></div><div className="menu-admin__forms"><form onSubmit={(event) => { event.preventDefault(); const form = new FormData(event.currentTarget); add({ type: 'sale', amount: form.get('amount'), date: form.get('date'), note: form.get('note') }); event.currentTarget.reset(); }}><h3>ثبت فروش روزانه</h3><label><span>مبلغ فروش</span><input name="amount" type="number" min="0" required /></label><label><span>تاریخ</span><input name="date" type="date" defaultValue={today()} required /></label><label><span>توضیح اختیاری</span><input name="note" /></label><button className="button button--primary">ثبت فروش</button></form><form onSubmit={(event) => { event.preventDefault(); const form = new FormData(event.currentTarget); add({ type: 'expense', title: form.get('title'), amount: form.get('amount'), date: form.get('date') }); event.currentTarget.reset(); }}><h3>ثبت هزینه</h3><label><span>عنوان هزینه</span><input name="title" required /></label><label><span>مبلغ هزینه</span><input name="amount" type="number" min="0" required /></label><label><span>تاریخ</span><input name="date" type="date" defaultValue={today()} required /></label><button className="button button--primary">ثبت هزینه</button></form></div></section>}
+
+    {activeTab === 'settings' && <section className="menu-admin__panel" role="tabpanel"><div className="menu-admin__section-head"><div><h2>تنظیمات کلی منو</h2><p>اطلاعات دسترسی و وضعیت انتشار منوی QR</p></div></div><div className="menu-settings"><div><span>عنوان منو</span><b>کافه کتاب برداشت</b></div><div><span>وضعیت انتشار</span><b className="menu-settings__online">فعال و قابل مشاهده</b></div><div><span>نشانی منوی QR</span><code>/menu/{publicSlug}</code></div><p>این نشانی در منو، هدر، فوتر یا نقشهٔ سایت آموزشی نمایش داده نمی‌شود و برای موتورهای جست‌وجو noindex است.</p></div></section>}
   </div>;
 }
