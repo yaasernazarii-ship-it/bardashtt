@@ -133,7 +133,7 @@ export default function MenuAdmin({ publicSlug }) {
       {[['menu', 'دسته‌بندی و آیتم‌ها', icons.menu], ['accounting', 'حسابداری', icons.wallet], ['settings', 'تنظیمات کلی منو', icons.settings]].map(([id, label, icon]) => <button key={id} role="tab" aria-selected={activeTab === id} className={activeTab === id ? 'is-active' : ''} onClick={() => setActiveTab(id)}>{icon}<span>{label}</span></button>)}
     </div>
 
-    {message && <div className="menu-toast" role="status" aria-live="polite"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg></span>{message}<button aria-label="بستن پیام" onClick={() => setMessage('')}>×</button></div>}}
+    {message && <div className="menu-toast" role="status" aria-live="polite"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg></span>{message}<button aria-label="بستن پیام" onClick={() => setMessage('')}>×</button></div>}
 
     {activeTab === 'menu' && <section className="menu-admin__panel" role="tabpanel">
       <div className="menu-admin__section-head"><div><h2>دسته‌بندی‌ها و آیتم‌ها</h2><p>{data.categories.length.toLocaleString('fa-IR')} دسته در منوی کافه</p></div></div>
