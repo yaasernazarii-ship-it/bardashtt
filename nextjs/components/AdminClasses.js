@@ -269,6 +269,12 @@ function GroupCard({ group, students, open, onToggle, onBack, onChanged }) {
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [deletingGroup, setDeletingGroup] = useState(false);
 
+  const msgRef = useRef(null);
+
+  // نتیجهٔ ذخیره بالای کارت رندر می‌شود؛ کاربر هنگام ثبت جلسه پایین صفحه است
+  // و بدون این اسکرول، پیامِ «چند پیامک رفت» را اصلاً نمی‌بیند.
+  useEffect(() => { if (msg) msgRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, [msg]);
+
   useEffect(() => { setMemberIds(group.members.map((m) => m.id)); }, [group]);
   useEffect(() => { setTotalSessions(String(group.totalSessions || 8)); }, [group.totalSessions]);
   useEffect(() => { setCover(group.coverImage || ''); }, [group.coverImage]);
@@ -375,7 +381,7 @@ function GroupCard({ group, students, open, onToggle, onBack, onChanged }) {
 
       {open && (
         <div className="admin-class-card__body">
-          {msg && <div className="alert alert--info">{msg}</div>}
+          {msg && <div className="alert alert--info" ref={msgRef}>{msg}</div>}
 
           <div className="tab-list" role="tablist">
             {TABS.map((t) => (
