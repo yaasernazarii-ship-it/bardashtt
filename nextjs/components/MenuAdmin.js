@@ -123,8 +123,8 @@ export default function MenuAdmin({ publicSlug }) {
 
   return <div className="menu-admin">
     <header className="menu-admin__header">
-      <a className="menu-admin__brand" href="/dashboard"><span className="menu-admin__brand-mark">ب</span><span><b>خانواده برداشت</b><small>مدیریت کافه کتاب</small></span></a>
-      <nav aria-label="دسترسی‌های مدیریت"><a href="/dashboard">داشبورد</a><a href="/dashboard/admin">کاربران</a><a className="menu-admin__preview" href={`/menu/${publicSlug}`} target="_blank" rel="noreferrer">مشاهده منو</a></nav>
+      <div className="menu-admin__brand"><span className="menu-admin__brand-mark">ک</span><span><b>کافه کتاب</b><small>پنل مدیریت منو</small></span></div>
+      <nav aria-label="دسترسی‌های منو"><a className="menu-admin__preview" href={`/menu/${publicSlug}`} target="_blank" rel="noreferrer">مشاهده منو</a></nav>
     </header>
 
     <section className="menu-admin__intro"><div><span className="menu-admin__eyebrow">پنل مدیریت</span><h1>منوی کافه کتاب</h1><p>دسته‌ها، آیتم‌ها و گزارش مالی کافه را از یک فضای منظم مدیریت کنید.</p></div><div className="menu-admin__status"><span /> منوی عمومی فعال است</div></section>
