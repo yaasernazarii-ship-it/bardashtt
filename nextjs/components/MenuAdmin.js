@@ -1,0 +1,28 @@
+'use client';
+import { useEffect, useMemo, useState } from 'react';
+
+const today = () => new Date().toISOString().slice(0, 10);
+async function api(url, options) { const response = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options }); const data = await response.json(); if (!response.ok) throw new Error(data.error || 'خطا'); return data; }
+
+export default function MenuAdmin({ publicSlug }) {
+  const [data, setData] = useState({ categories: [], expenses: [], sales: [] });
+  const [message, setMessage] = useState('');
+  const load = () => api('/api/admin/menu').then(setData).catch((e) => setMessage(e.message));
+  useEffect(load, []);
+  const totals = useMemo(() => ({ sales: data.sales.reduce((s, x) => s + x.amount, 0), expenses: data.expenses.reduce((s, x) => s + x.amount, 0) }), [data]);
+  const add = async (body) => { try { await api('/api/admin/menu', { method: 'POST', body: JSON.stringify(body) }); setMessage('ذخیره شد.'); load(); } catch (e) { setMessage(e.message); } };
+  const update = async (id, type, body) => { await api(`/api/admin/menu/${id}`, { method: 'PATCH', body: JSON.stringify({ type, ...body }) }); load(); };
+  const remove = async (id, type) => { if (!confirm('این مورد حذف شود؟')) return; await api(`/api/admin/menu/${id}`, { method: 'DELETE', body: JSON.stringify({ type }) }); load(); };
+  const upload = async (file, id, type) => { const form = new FormData(); form.append('file', file); const result = await api('/api/upload', { method: 'POST', headers: {}, body: form }); await update(id, type, { imageUrl: result.url }); setMessage('تصویر ذخیره شد.'); };
+  return <div className="menu-admin">
+    <div className="menu-admin__top"><div><h1>مدیریت منوی کافه</h1><p>تغییرات بدون Build روی منوی QR اعمال می‌شود.</p></div><a href={`/menu/${publicSlug}`} target="_blank">مشاهده منو</a></div>
+    {message && <div className="menu-admin__message">{message}</div>}
+    <section className="menu-admin__stats"><div><span>فروش ثبت‌شده</span><b>{totals.sales.toLocaleString('fa-IR')} تومان</b></div><div><span>هزینه ثبت‌شده</span><b>{totals.expenses.toLocaleString('fa-IR')} تومان</b></div><div><span>سود تقریبی</span><b>{(totals.sales - totals.expenses).toLocaleString('fa-IR')} تومان</b></div></section>
+    <section className="menu-admin__card"><h2>دسته‌بندی‌ها</h2><form onSubmit={(e) => { e.preventDefault(); const f = new FormData(e.currentTarget); add({ type: 'category', name: f.get('name'), kind: f.get('kind') }); e.currentTarget.reset(); }}><input name="name" placeholder="نام دسته" required /><select name="kind"><option value="items">لیست آیتم</option><option value="image">فقط تصویر</option></select><button>افزودن دسته</button></form>
+      {data.categories.map((c) => <div className="menu-admin__row" key={c.id}><input value={c.name} onChange={(e) => update(c.id, 'category', { name: e.target.value })} /><select value={c.kind} onChange={(e) => update(c.id, 'category', { kind: e.target.value })}><option value="items">آیتم‌ها</option><option value="image">تصویر</option></select><label><input type="checkbox" checked={c.active} onChange={(e) => update(c.id, 'category', { active: e.target.checked })} /> فعال</label>{c.kind === 'image' && <><input placeholder="توضیح تصویر" value={c.description || ''} onChange={(e) => update(c.id, 'category', { description: e.target.value })} /><input type="file" accept="image/*" onChange={(e) => e.target.files[0] && upload(e.target.files[0], c.id, 'category')} /></>}<button className="danger" onClick={() => remove(c.id, 'category')}>حذف</button>
+        {c.kind === 'items' && <div className="menu-admin__items">{c.items.map((item) => <div className="menu-admin__item" key={item.id}><input value={item.name} onChange={(e) => update(item.id, 'item', { name: e.target.value })} /><input type="number" value={item.price} onChange={(e) => update(item.id, 'item', { price: e.target.value })} /><label><input type="checkbox" checked={item.available} onChange={(e) => update(item.id, 'item', { available: e.target.checked })} /> موجود</label>{<input type="file" accept="image/*" onChange={(e) => e.target.files[0] && upload(e.target.files[0], item.id, 'item')} />}<button className="danger" onClick={() => remove(item.id, 'item')}>×</button></div>)}<form onSubmit={(e) => { e.preventDefault(); const f = new FormData(e.currentTarget); add({ type: 'item', categoryId: c.id, name: f.get('name'), price: f.get('price') }); e.currentTarget.reset(); }}><input name="name" placeholder="نام آیتم" required /><input name="price" type="number" placeholder="قیمت تومان" required /><button>افزودن آیتم</button></form></div>}
+      </div>)}
+    </section>
+    <section className="menu-admin__card"><h2>حسابداری</h2><div className="menu-admin__forms"><form onSubmit={(e) => { e.preventDefault(); const f = new FormData(e.currentTarget); add({ type: 'sale', amount: f.get('amount'), date: f.get('date'), note: f.get('note') }); e.currentTarget.reset(); }}><h3>ثبت فروش</h3><input name="amount" type="number" placeholder="مبلغ فروش" required /><input name="date" type="date" defaultValue={today()} required /><input name="note" placeholder="توضیح اختیاری" /><button>ثبت فروش</button></form><form onSubmit={(e) => { e.preventDefault(); const f = new FormData(e.currentTarget); add({ type: 'expense', title: f.get('title'), amount: f.get('amount'), date: f.get('date') }); e.currentTarget.reset(); }}><h3>ثبت هزینه</h3><input name="title" placeholder="عنوان هزینه" required /><input name="amount" type="number" placeholder="مبلغ هزینه" required /><input name="date" type="date" defaultValue={today()} required /><button>ثبت هزینه</button></form></div></section>
+  </div>;
+}

@@ -1110,3 +1110,57 @@ model SmsNotificationQueue {
   @@index([status, nextAttemptAt])
   @@index([userId, createdAt])
 }
+
+// محتوای مستقل منوی کافه؛ هیچ رابطه‌ای با محتوای آموزشی ندارد.
+model MenuCategory {
+  id          String     @id @default(cuid())
+  name        String
+  kind        String     @default("items") // items | image
+  imageUrl    String?
+  description String?
+  sortOrder   Int        @default(0)
+  active      Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  items       MenuItem[]
+
+  @@index([active, sortOrder])
+}
+
+model MenuItem {
+  id          String       @id @default(cuid())
+  categoryId  String
+  category    MenuCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  price       Int
+  imageUrl    String?
+  available   Boolean      @default(true)
+  sortOrder   Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([categoryId, sortOrder])
+}
+
+model MenuExpense {
+  id          String   @id @default(cuid())
+  title       String
+  amount      Int
+  expenseDate DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([expenseDate])
+}
+
+model MenuSale {
+  id        String   @id @default(cuid())
+  amount    Int
+  saleDate  DateTime
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([saleDate])
+}
