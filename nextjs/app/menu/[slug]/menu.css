@@ -1,1 +1,265 @@
-.cafe-menu{min-height:100vh;background:#f6f1e8;color:#27221d;font-family:var(--font-vazirmatn),sans-serif}.cafe-menu__hero{text-align:center;padding:42px 20px 30px;background:#29231f;color:#f8f1e5}.cafe-menu__mark{display:inline-flex;width:42px;height:42px;border:1px solid #c89b5c;border-radius:50%;align-items:center;justify-content:center;color:#e5b96f;font-size:11px;margin-bottom:12px}.cafe-menu h1{font-size:28px;margin:0 0 5px;font-weight:800}.cafe-menu__hero p{margin:0;color:#c9b9a2;font-size:13px}.cafe-menu__nav{position:sticky;top:0;z-index:2;display:flex;gap:8px;overflow:auto;padding:12px max(16px,calc((100% - 840px)/2));background:#fffaf2;border-bottom:1px solid #e5d9c8}.cafe-menu__nav a{white-space:nowrap;text-decoration:none;color:#675342;background:#f1e7d8;border-radius:20px;padding:6px 13px;font-size:12px}.cafe-menu__content{max-width:840px;margin:auto;padding:24px 16px}.menu-section{scroll-margin-top:65px;margin-bottom:34px}.menu-section h2{font-size:20px;margin:0 0 14px;display:flex;align-items:center;gap:10px}.menu-section h2:after{content:"";height:1px;background:#d5b681;flex:1}.menu-items{display:grid;gap:10px}.menu-item{display:flex;align-items:center;gap:12px;padding:12px;background:#fffdf9;border:1px solid #eadfce;border-radius:12px;box-shadow:0 2px 8px #4e32100b}.menu-item img{width:62px;height:62px;object-fit:cover;border-radius:9px}.menu-item div{flex:1}.menu-item h3{font-size:15px;margin:0 0 3px}.menu-item p,.menu-description{font-size:12px;color:#817364;margin:0;line-height:1.8}.menu-item strong{font-size:12px;color:#9b6422;white-space:nowrap}.menu-feature{width:100%;max-height:460px;object-fit:cover;border-radius:14px;display:block}.cafe-menu__footer{text-align:center;color:#998a79;font-size:12px;padding:10px 20px 35px}@media(max-width:500px){.cafe-menu h1{font-size:24px}.menu-item strong{font-size:11px}.menu-item{padding:10px}.menu-item img{width:54px;height:54px}}
+/* منوی دیجیتال کافه کتاب برداشت — تیره، طلایی و موبایل‌محور */
+.cafe {
+  --ink: #0a0908;
+  --panel: #16130f;
+  --panel-2: #1e1a15;
+  --line: #2f2921;
+  --gold: #c9a15c;
+  --gold-soft: #e2c489;
+  --text: #f3ece0;
+  --muted-text: #a99e8e;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 16px 150px;
+  color: var(--text);
+  font-family: var(--font-vazirmatn), sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+.cafe * { box-sizing: border-box; }
+body:has(.cafe) { background: #0a0908; overflow-x: hidden; }
+
+/* هدر */
+.cafe__top {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 2px;
+  background: linear-gradient(#0a0908 72%, transparent);
+}
+.cafe__brand b { display: block; font-size: 19px; letter-spacing: 1px; color: var(--gold-soft); }
+.cafe__brand small { display: block; font-size: 11px; color: var(--muted-text); margin-top: 3px; }
+.cafe__private {
+  display: inline-flex; align-items: center; gap: 7px;
+  min-height: 40px; padding: 0 14px; border-radius: 999px;
+  border: 1px solid #3b3227; background: #161310;
+  color: var(--gold-soft); font-size: 12px; text-decoration: none;
+}
+.cafe__private svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+
+/* قاب ابتدای منو */
+.cafe__hero {
+  position: relative; overflow: hidden;
+  border: 1px solid var(--line); border-radius: 22px;
+  min-height: 208px; display: flex; align-items: flex-end;
+  background: radial-gradient(circle at 30% 20%, #2a2118, #0d0b09 70%);
+}
+.cafe__hero-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .5; }
+.cafe__hero-body {
+  position: relative; width: 100%; padding: 26px 20px 22px; text-align: center;
+  background: linear-gradient(transparent, rgba(8, 7, 6, .9) 62%);
+}
+.cafe__hero h1 { margin: 0; font-size: 26px; line-height: 1.5; color: #fbf4e6; }
+.cafe__hero p { margin: 8px 0 0; font-size: 14px; color: #d6cab5; }
+.cafe__ornament { display: block; margin-top: 10px; color: var(--gold); letter-spacing: 6px; font-size: 12px; }
+
+/* دسته‌ها */
+.cafe__chips {
+  display: flex; gap: 16px; overflow-x: auto; scrollbar-width: none;
+  margin: 0 -16px; padding: 20px 16px 6px;
+}
+.cafe__chips::-webkit-scrollbar { display: none; }
+.cafe__chips button {
+  flex: 0 0 auto; width: 76px; border: 0; background: transparent; cursor: pointer;
+  display: grid; justify-items: center; gap: 8px;
+  color: var(--muted-text); font: inherit; font-size: 11px; line-height: 1.6;
+}
+.cafe__chip-mark {
+  width: 56px; height: 56px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 1px solid #3a3127; background: linear-gradient(160deg, #221d17, #141110);
+  color: var(--gold-soft); transition: border-color .2s, background .2s, color .2s;
+}
+.cafe__chips svg { width: 24px; height: 24px; }
+.cafe__chips button.is-active { color: var(--gold-soft); }
+.cafe__chips button.is-active .cafe__chip-mark {
+  background: linear-gradient(160deg, #d8b672, #a67c3a); color: #1a1409; border-color: #e0c184;
+}
+
+/* جستجو */
+.cafe__search {
+  position: relative; display: flex; align-items: center; gap: 10px;
+  margin-top: 16px; padding: 0 14px;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--panel);
+}
+.cafe__search svg { width: 18px; height: 18px; flex: 0 0 auto; fill: none; stroke: #8d8272; stroke-width: 1.7; stroke-linecap: round; }
+.cafe__search input {
+  flex: 1; min-width: 0; height: 50px; border: 0; background: transparent;
+  color: var(--text); font: inherit; font-size: 14px; outline: none;
+}
+.cafe__search input::placeholder { color: #7d7466; }
+.cafe__search button { border: 0; background: transparent; color: #8d8272; cursor: pointer; padding: 6px; display: grid; place-items: center; }
+
+/* نوار توضیح */
+.cafe__note {
+  display: flex; align-items: center; gap: 10px; margin: 14px 0 0; padding: 14px;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--panel);
+  color: #c2b7a5; font-size: 12px; line-height: 1.9;
+}
+.cafe__note svg { width: 20px; height: 20px; flex: 0 0 auto; fill: none; stroke: var(--gold); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* بخش‌ها */
+.cafe__list { margin-top: 26px; display: grid; gap: 28px; scroll-margin-top: 80px; }
+.cafe__section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.cafe__section-head h2 { margin: 0; font-size: 17px; color: #f0e6d5; }
+.cafe__section-head button { border: 0; background: transparent; color: var(--gold); font: inherit; font-size: 12px; cursor: pointer; padding: 6px 0; }
+.cafe__dishes { display: grid; gap: 12px; }
+.cafe__feature { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--panel); }
+.cafe__feature img { display: block; width: 100%; height: auto; }
+.cafe__feature p { margin: 0; padding: 14px; color: #c2b7a5; font-size: 13px; line-height: 1.9; }
+.cafe__empty { text-align: center; color: var(--muted-text); font-size: 13px; padding: 30px 0; }
+
+/* کارت محصول */
+.dish {
+  display: grid; grid-template-columns: 84px minmax(0, 1fr) auto; align-items: center; gap: 13px;
+  padding: 11px; border: 1px solid var(--line); border-radius: 18px;
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+}
+.dish__photo {
+  width: 84px; height: 84px; border-radius: 14px; overflow: hidden;
+  background: #241f19; display: grid; place-items: center; color: #6d6355;
+}
+.dish__photo img { width: 100%; height: 100%; object-fit: cover; }
+.dish__photo svg { width: 28px; height: 28px; }
+.dish__body { min-width: 0; }
+.dish__body h3 { margin: 0; font-size: 15px; color: #f2e9da; }
+.dish__body p { margin: 5px 0 0; font-size: 12px; line-height: 1.8; color: var(--muted-text); }
+.dish__price { display: inline-block; margin-top: 7px; color: var(--gold-soft); font-size: 14px; font-weight: 700; }
+.dish__price small { font-size: 11px; font-weight: 400; color: #9d9284; }
+.dish__add {
+  width: 46px; height: 46px; border-radius: 14px; border: 0; cursor: pointer;
+  background: linear-gradient(160deg, #d8b672, #a67c3a); color: #1a1409;
+  font-size: 24px; font-weight: 700; line-height: 1;
+}
+.dish__stepper {
+  display: flex; align-items: center; gap: 4px; padding: 4px;
+  border: 1px solid #4a3d29; border-radius: 14px; background: #221c14;
+}
+.dish__stepper button {
+  width: 34px; height: 38px; border: 0; border-radius: 10px; cursor: pointer;
+  background: transparent; color: var(--gold-soft); font: inherit; font-size: 19px;
+}
+.dish__stepper b { min-width: 24px; text-align: center; font-size: 14px; color: #f2e9da; }
+.dish.is-out { opacity: .62; }
+.dish__out { padding: 10px 12px; border: 1px dashed #5a4a3a; border-radius: 12px; color: #bba98f; font-size: 12px; white-space: nowrap; }
+
+/* پاورقی */
+.cafe__footer { margin-top: 40px; text-align: center; display: grid; gap: 6px; color: #8d8272; font-size: 12px; line-height: 2; }
+
+/* نوار سبد و ناوبری پایین */
+.cafe__cartbar {
+  position: fixed; z-index: 40; inset-inline: 16px; bottom: calc(84px + env(safe-area-inset-bottom));
+  max-width: 528px; margin: 0 auto;
+  display: flex; align-items: center; gap: 10px; min-height: 54px; padding: 0 16px;
+  border: 0; border-radius: 16px; cursor: pointer;
+  background: linear-gradient(160deg, #d8b672, #a67c3a); color: #191307;
+  font: inherit; font-size: 14px; font-weight: 700;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .45);
+}
+.cafe__cartbar b { margin-inline-start: auto; }
+.cafe__cartbar-count {
+  min-width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  background: #1c1509; color: var(--gold-soft); font-size: 12px;
+}
+.cafe__tabs {
+  position: fixed; z-index: 40; inset-inline: 0; bottom: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  background: rgba(12, 10, 9, .93); border-top: 1px solid #2f2921;
+  backdrop-filter: blur(10px);
+}
+.cafe__tabs button {
+  position: relative; border: 0; background: transparent; cursor: pointer;
+  display: grid; justify-items: center; gap: 5px; min-height: 52px;
+  color: #a99e8e; font: inherit; font-size: 11px;
+}
+.cafe__tabs svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.cafe__tabs button.has-badge { color: #e2c489; }
+.cafe__tabs i {
+  position: absolute; top: -2px; inset-inline-start: calc(50% + 6px);
+  min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px;
+  background: #c9a15c; color: #171106; font-size: 10px; font-style: normal;
+  display: grid; place-items: center;
+}
+
+/* شیت سبد خرید، اطلاعات و ثبت سفارش */
+.cafe__sheet {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(6, 5, 4, .72); backdrop-filter: blur(5px);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.cafe__sheet-body {
+  width: min(560px, 100%); max-height: 92vh; overflow-y: auto;
+  background: #14110e; border: 1px solid #2f2921; border-bottom: 0;
+  border-radius: 22px 22px 0 0; padding: 18px 16px calc(24px + env(safe-area-inset-bottom));
+  color: #f3ece0; font-family: var(--font-vazirmatn), sans-serif;
+  animation: cafe-sheet-in .24s ease-out;
+}
+.cafe__sheet-body * { box-sizing: border-box; }
+.cafe__sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.cafe__sheet-head h2 { margin: 0; font-size: 17px; }
+.cafe__sheet-head button { width: 40px; height: 40px; border: 1px solid #2f2921; border-radius: 12px; background: transparent; color: #a99e8e; cursor: pointer; display: grid; place-items: center; }
+.cafe__sheet-head svg, .cafe__done svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+
+.cafe__cart-lines { display: grid; gap: 10px; }
+.cart-line {
+  display: grid; grid-template-columns: 62px minmax(0, 1fr) auto auto; align-items: center; gap: 11px;
+  padding: 10px; border: 1px solid #2f2921; border-radius: 16px; background: #16130f;
+}
+.cart-line__photo { width: 62px; height: 62px; border-radius: 12px; overflow: hidden; background: #241f19; display: grid; place-items: center; color: #6d6355; }
+.cart-line__photo img { width: 100%; height: 100%; object-fit: cover; }
+.cart-line__photo svg { width: 22px; height: 22px; }
+.cart-line__body h3 { margin: 0; font-size: 14px; }
+.cart-line__body span { display: block; margin-top: 5px; font-size: 12px; color: #e2c489; }
+.cart-line__drop { width: 40px; height: 40px; border: 0; border-radius: 12px; background: #2a1c1c; color: #e8a1a1; cursor: pointer; display: grid; place-items: center; }
+.cart-line__drop svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+
+.cafe__summary { margin-top: 16px; display: grid; gap: 10px; padding: 15px; border: 1px solid #2f2921; border-radius: 16px; background: #16130f; }
+.cafe__summary div { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; color: #a99e8e; }
+.cafe__summary b { color: #f3ece0; font-size: 14px; }
+.cafe__summary .is-total { padding-top: 10px; border-top: 1px solid #2f2921; }
+.cafe__summary .is-total b { color: #e2c489; font-size: 16px; }
+
+.cafe__submit {
+  width: 100%; min-height: 54px; margin-top: 16px; border: 0; border-radius: 15px; cursor: pointer;
+  background: linear-gradient(160deg, #d8b672, #a67c3a); color: #191307;
+  font: inherit; font-size: 15px; font-weight: 800;
+}
+.cafe__submit:disabled { opacity: .65; cursor: not-allowed; }
+.cafe__back { min-height: 54px; margin-top: 16px; padding: 0 20px; border: 1px solid #4a3d29; border-radius: 15px; background: transparent; color: #e2c489; font: inherit; font-size: 14px; cursor: pointer; }
+.cafe__form { display: grid; gap: 13px; }
+.cafe__form label { display: grid; gap: 8px; font-size: 12px; color: #a99e8e; }
+.cafe__form input {
+  width: 100%; height: 50px; border: 1px solid #3a332a; border-radius: 13px;
+  background: #100e0c; color: #f3ece0; padding: 0 13px; font: inherit; font-size: 14px; outline: none;
+}
+.cafe__form input:focus { border-color: #c9a15c; box-shadow: 0 0 0 3px rgba(201, 161, 92, .16); }
+.cafe__form-actions { display: grid; grid-template-columns: auto 1fr; gap: 10px; }
+.cafe__error { margin: 0; padding: 12px; border: 1px solid #6e3434; border-radius: 12px; background: #2c1818; color: #f0a9a9; font-size: 12px; }
+
+.cafe__info p { margin: 0 0 12px; font-size: 13px; line-height: 2.1; color: #c2b7a5; }
+.cafe__info-sign { color: #e2c489; }
+.cafe__done { text-align: center; display: grid; gap: 14px; padding-bottom: 6px; }
+.cafe__done-mark { width: 62px; height: 62px; margin: 4px auto 0; border-radius: 50%; display: grid; place-items: center; background: #1d3325; color: #8fe0ad; border: 1px solid #2f6644; }
+.cafe__done-mark svg { width: 26px; height: 26px; stroke-width: 2.2; }
+.cafe__done p { margin: 0; font-size: 13px; line-height: 2; color: #c2b7a5; }
+.cafe__done-code { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 15px; border: 1px solid #2f2921; border-radius: 14px; background: #16130f; font-size: 13px; color: #a99e8e; }
+.cafe__done-code b { color: #e2c489; font-size: 15px; letter-spacing: 1px; }
+
+.cafe :focus-visible, .cafe__sheet :focus-visible { outline: 2px solid #e2c489; outline-offset: 3px; }
+
+@keyframes cafe-sheet-in { from { transform: translateY(28px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+@media (min-width: 900px) {
+  .cafe { max-width: 940px; padding-bottom: 120px; }
+  .cafe__hero { min-height: 300px; }
+  .cafe__hero h1 { font-size: 32px; }
+  .cafe__dishes { grid-template-columns: 1fr 1fr; }
+  .cafe__cartbar { max-width: 420px; inset-inline: auto 24px; bottom: calc(96px + env(safe-area-inset-bottom)); }
+  .cafe__tabs { max-width: 940px; margin: 0 auto; border-radius: 18px 18px 0 0; border: 1px solid #2f2921; border-bottom: 0; }
+  .cafe__sheet { align-items: center; }
+  .cafe__sheet-body { border-radius: 22px; border-bottom: 1px solid #2f2921; max-height: 86vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cafe *, .cafe__sheet * { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto !important; }
+}
