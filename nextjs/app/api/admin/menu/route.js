@@ -1,5 +1,6 @@
 import { hasCafeAccess } from '@/lib/cafeAuth';
 import { prisma } from '@/lib/prisma';
+import { MENU_SETTING_KEYS, readMenuSettings } from '@/lib/menuSettings';
 
 function bad(message, status = 400) { return Response.json({ ok: false, error: message }, { status }); }
 function cleanText(value) { return typeof value === 'string' ? value.trim() : ''; }
@@ -11,12 +12,30 @@ function validDate(value) { const date = new Date(value); return Number.isNaN(da
 
 export async function GET() {
   if (!await hasCafeAccess()) return bad('دسترسی ندارید.', 403);
-  const [categories, expenses, sales] = await Promise.all([
+  const [categories, expenses, sales, orders, settings] = await Promise.all([
     prisma.menuCategory.findMany({ orderBy: { sortOrder: 'asc' }, include: { items: { orderBy: { sortOrder: 'asc' } } } }),
     prisma.menuExpense.findMany({ orderBy: { expenseDate: 'desc' }, take: 100 }),
     prisma.menuSale.findMany({ orderBy: { saleDate: 'desc' }, take: 100 }),
+    prisma.menuOrder.findMany({ orderBy: { createdAt: 'desc' }, take: 60, include: { lines: true } }),
+    readMenuSettings(),
   ]);
-  return Response.json({ categories, expenses, sales });
+  return Response.json({ categories, expenses, sales, orders, settings });
+}
+
+export async function PUT(request) {
+  if (!await hasCafeAccess()) return bad('دسترسی ندارید.', 403);
+  const body = await request.json();
+  const entries = Object.entries(body || {}).filter(([key]) => MENU_SETTING_KEYS.includes(key));
+  if (!entries.length) return bad('تنظیمی برای ذخیره ارسال نشده است.');
+  const fee = entries.find(([key]) => key === 'serviceFee');
+  if (fee && (!Number.isSafeInteger(Number(fee[1])) || Number(fee[1]) < 0)) return bad('هزینهٔ سرویس باید عددی صفر یا بیشتر باشد.');
+
+  try {
+    await prisma.$transaction(entries.map(([key, value]) => prisma.menuSetting.upsert({
+      where: { key }, update: { value: String(value).slice(0, 400) }, create: { key, value: String(value).slice(0, 400) },
+    })));
+    return Response.json({ ok: true });
+  } catch { return bad('ذخیره تنظیمات انجام نشد.', 500); }
 }
 
 export async function PATCH(request) {

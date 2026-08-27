@@ -1116,6 +1116,7 @@ model MenuCategory {
   id          String     @id @default(cuid())
   name        String
   kind        String     @default("items") // items | image
+  icon        String?    // کلید آیکن دایره‌ای بالای منوی عمومی
   imageUrl    String?
   description String?
   sortOrder   Int        @default(0)
@@ -1163,4 +1164,39 @@ model MenuSale {
   updatedAt DateTime @updatedAt
 
   @@index([saleDate])
+}
+
+// سفارشی که مشتری از منوی دیجیتال ثبت می‌کند؛ قیمت‌ها هنگام ثبت از دیتابیس خوانده و ذخیره می‌شوند.
+model MenuOrder {
+  id        String          @id @default(cuid())
+  code      String          @unique
+  customer  String
+  place     String
+  phone     String?
+  note      String?
+  total     Int
+  status    String          @default("new") // new | preparing | done | cancelled
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  lines     MenuOrderLine[]
+
+  @@index([status, createdAt])
+}
+
+model MenuOrderLine {
+  id       String    @id @default(cuid())
+  orderId  String
+  order    MenuOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  itemId   String?
+  name     String
+  price    Int
+  quantity Int
+
+  @@index([orderId])
+}
+
+model MenuSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
 }
