@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import ShamsiCalendar from '@/components/ShamsiCalendar';
+import ShamsiDateTimeField from '@/components/ShamsiDateTimeField';
 import UserPhotoThumb from '@/components/UserPhotoThumb';
 import { uploadFile } from '@/lib/uploadClient';
 
 const BRANCHES = ['تهران', 'ساری'];
-const dateFmt = new Intl.DateTimeFormat('fa-IR', { weekday: 'long', month: 'long', day: 'numeric' });
+const dateFmt = new Intl.DateTimeFormat('fa-IR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 const timeFmt = new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit' });
 
 const emptySession = { title: '', startsAt: '', chartDescription: '', tools: '', homework: '' };
@@ -447,7 +448,7 @@ function GroupCard({ group, students, open, onToggle, onBack, onChanged }) {
               <div className="admin-session-editor__head"><strong>{editingSession ? 'ویرایش زمان و برنامه جلسه' : 'ثبت زمان و برنامه جلسه جدید'}</strong><span>اطلاعات این فرم پس از ذخیره در برنامه هنرجویان نمایش داده می‌شود.</span></div>
               <div className="cal-form-grid">
                 <div className="form-group"><label className="form-label">عنوان جلسه *</label><input className="form-input" value={sForm.title} onChange={(e) => setSForm({ ...sForm, title: e.target.value })} placeholder="مثلاً جلسه سوم: بیان و بدن" /></div>
-                <div className="form-group"><label className="form-label">تاریخ و ساعت *</label><input className="form-input" type="datetime-local" value={sForm.startsAt} onChange={(e) => setSForm({ ...sForm, startsAt: e.target.value })} /></div>
+                <div className="form-group"><label className="form-label">تاریخ و ساعت *</label><ShamsiDateTimeField value={sForm.startsAt} onChange={(v) => setSForm({ ...sForm, startsAt: v })} /></div>
               </div>
               <div className="admin-session-fields-title"><strong>برنامه و نیازهای جلسه</strong><span>این اطلاعات در برنامه هنرجو نمایش داده می‌شود.</span></div>
               <div className="admin-session-options__grid">

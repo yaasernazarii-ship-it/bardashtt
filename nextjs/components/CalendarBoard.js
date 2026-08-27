@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Icon from './Icon';
+import ShamsiDateTimeField from './ShamsiDateTimeField';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', {
   weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
@@ -110,7 +111,7 @@ export default function CalendarBoard() {
             </div>
             <div className="form-group">
               <label className="form-label">تاریخ و ساعت *</label>
-              <input className="form-input" type="datetime-local" value={form.startsAt} onChange={(e) => setForm({ ...form, startsAt: e.target.value })} />
+              <ShamsiDateTimeField value={form.startsAt} onChange={(v) => setForm({ ...form, startsAt: v })} />
             </div>
             <div className="form-group">
               <label className="form-label">مدت (دقیقه)</label>

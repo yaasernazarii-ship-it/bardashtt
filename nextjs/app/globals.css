@@ -3096,3 +3096,16 @@ div.admin-stat { cursor: default; }
   .admin-content-savebar { width: 100%; justify-content: space-between; }
   .admin-content-savebar span { font-size: .7rem; }
 }
+
+/* ── انتخاب تاریخ و ساعت شمسی ────────────── */
+.shamsi-pop--datetime { width: 288px; }
+.shamsi-pop__time {
+  display: flex; align-items: center; gap: 7px; margin-top: 12px;
+  padding-top: 11px; border-top: 1px solid var(--border); font-size: .8rem; color: var(--muted);
+}
+.shamsi-pop__time select {
+  border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
+  color: var(--dark); font: inherit; font-size: .82rem; padding: 6px 8px; cursor: pointer;
+}
+.shamsi-pop__time b { color: var(--dark); }
+.shamsi-pop__foot { flex-wrap: wrap; }
