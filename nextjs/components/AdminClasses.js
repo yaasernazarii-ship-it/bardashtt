@@ -72,8 +72,9 @@ export default function AdminClasses() {
   const [rosterOpen, setRosterOpen] = useState(false);
   const [query, setQuery] = useState('');
 
+  // بازخوانیِ بعد از ذخیره نباید اسپینر سراسری را برگرداند: با آن، کارت کلاس unmount
+  // می‌شد و پیامِ نتیجه (مثل «پیامک برای ۳ هنرجو ارسال شد») بی‌آنکه دیده شود پاک می‌شد.
   async function load() {
-    setLoading(true);
     const res = await fetch('/api/admin/classes');
     const d = await res.json();
     if (d.ok) { setGroups(d.groups); setStudents(d.students); }
