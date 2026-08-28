@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import Icon from './Icon';
 
 const SUGGESTIONS = [
-  'متد پنج سوال طلایی چیست؟',
+  'متد پنج سؤال طلایی چیست؟',
   'چطور احساس واقعی در بازیگری خلق کنم؟',
-  'پنج سوال طلایی کدام‌اند؟',
+  'پنج سؤال طلایی کدام‌اند؟',
 ];
 
 export default function BardashtAI() {
@@ -63,7 +63,7 @@ export default function BardashtAI() {
           <div className="bai-thread">
             {messages.length === 0 && (
               <div style={{ color: 'var(--muted)' }}>
-                <p style={{ marginBottom: 12 }}>سلام! من Bardasht.AI هستم. پرسش‌های خود دربارهٔ کتاب «متد پنج سوال طلایی» را بپرسید.</p>
+                <p style={{ marginBottom: 12 }}>سلام! من Bardasht.AI هستم. پرسش‌های خود دربارهٔ کتاب «متد پنج سؤال طلایی» را بپرسید.</p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                   {SUGGESTIONS.map((s) => (
                     <button key={s} type="button" className="btn btn--sm btn--outline" onClick={() => ask(s)}>{s}</button>

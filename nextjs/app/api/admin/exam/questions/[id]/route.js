@@ -58,7 +58,7 @@ export async function DELETE(_request, { params }) {
   if (error) return error;
 
   const { id } = await params;
-  // سوالی که در آزمون‌های برگزارشده استفاده شده حذف نمی‌شود تا کارنامه‌های قبلی معنا داشته باشند؛
+  // سؤالی که در آزمون‌های برگزارشده استفاده شده حذف نمی‌شود تا کارنامه‌های قبلی معنا داشته باشند؛
   // به‌جایش غیرفعال می‌شود و دیگر در آزمون‌های جدید نمی‌آید.
   const used = await prisma.$queryRaw`
     SELECT 1 FROM "ExamAttempt" WHERE "questionIds" @> ${JSON.stringify([id])}::jsonb LIMIT 1

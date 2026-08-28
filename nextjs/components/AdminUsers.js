@@ -115,7 +115,7 @@ export default function AdminUsers() {
       {error && <div className="alert alert--error" style={{ marginBottom: 14 }}>{error}</div>}
 
       <div style={{ marginBottom: 14, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        <input className="form-input" placeholder="جستجو بر اساس نام، نام کاربری یا موبایل…" value={query}
+        <input className="form-input" placeholder="جست‌وجو بر اساس نام، نام کاربری یا موبایل…" value={query}
           onChange={(e) => setQuery(e.target.value)} style={{ maxWidth: 360 }} />
         <button type="button" className={`btn btn--sm ${archivedMode ? 'btn--dark' : 'btn--outline'}`}
           onClick={() => { setArchivedMode((current) => !current); setOpenId(''); setPanelId(null); }}>

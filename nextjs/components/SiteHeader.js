@@ -30,7 +30,7 @@ export default function SiteHeader({ onOpenChat }) {
             پشتیبانی
           </button>
           <ul className="hdr-support-drop">
-            <li><Link href="/faq"><span className="drop-icon"><Icon name="clipboard" size={18} /></span>سوالات متداول</Link></li>
+            <li><Link href="/faq"><span className="drop-icon"><Icon name="clipboard" size={18} /></span>سؤالات متداول</Link></li>
             <li className="drop-sep" />
             <li>
               <button onClick={() => { onOpenChat?.(); setOpen(false); }}>

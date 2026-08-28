@@ -24,7 +24,7 @@ function parseItems(value) {
 
 export default async function FaqPage() {
   const site = await siteUrl();
-  const breadcrumbLd = breadcrumbJsonLd([{ name: 'خانه', url: site }, { name: 'سوالات متداول' }]);
+  const breadcrumbLd = breadcrumbJsonLd([{ name: 'خانه', url: site }, { name: 'سؤالات متداول' }]);
   const t = await loadContent();
   const groups = [
     { title: t('faq.g1.title'), tag: 'tag--gold', items: parseItems(t('faq.g1.items')) },
@@ -41,7 +41,7 @@ export default async function FaqPage() {
           <div className="page-header__tag">{t('faq.tag')}</div>
           <h1>{t('faq.title')}</h1>
           <p>{t('faq.subtitle')}</p>
-          <div className="breadcrumb"><Link href="/">خانه</Link> › سوالات متداول</div>
+          <div className="breadcrumb"><Link href="/">خانه</Link> › سؤالات متداول</div>
         </div>
       </div>
       <section style={{ background: 'var(--bg)' }}>

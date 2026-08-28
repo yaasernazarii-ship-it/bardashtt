@@ -65,7 +65,7 @@ export default function ExamRunner() {
     if (state?.expiredAttemptId) submit(state.expiredAttemptId, true);
   }, [state?.expiredAttemptId, submit]);
 
-  // رفتن به سوال بعدی؛ حرکتی یک‌طرفه که سرور هم آن را تأیید می‌کند.
+  // رفتن به سؤال بعدی؛ حرکتی یک‌طرفه که سرور هم آن را تأیید می‌کند.
   const goNext = useCallback(async (attemptId, cursor, auto = false) => {
     if (movingRef.current) return;
     movingRef.current = true;
@@ -77,7 +77,7 @@ export default function ExamRunner() {
         body: JSON.stringify({ attemptId, cursor }),
       });
       const data = await res.json();
-      if (!data.ok) { setError(data.error || 'رفتن به سوال بعدی ممکن نشد.'); return; }
+      if (!data.ok) { setError(data.error || 'رفتن به سؤال بعدی ممکن نشد.'); return; }
       if (data.finished) { await submit(attemptId, auto); return; }
       setConfirming(false);
       await load();
@@ -89,7 +89,7 @@ export default function ExamRunner() {
     }
   }, [load, submit]);
 
-  // شمارش معکوسِ همین سوال؛ با رسیدن به صفر خودکار به سوال بعدی می‌رود.
+  // شمارش معکوسِ همین سؤال؛ با رسیدن به صفر خودکار به سؤال بعدی می‌رود.
   useEffect(() => {
     const current = state?.current;
     if (!current || !current.questionEndsAt) return undefined;
@@ -217,19 +217,19 @@ export default function ExamRunner() {
         <>
           <div className="stack-card" style={{ position: 'sticky', top: 0, zIndex: 5, display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <strong>سوال {fa(current.cursor + 1)} از {fa(current.total)}</strong>
+              <strong>سؤال {fa(current.cursor + 1)} از {fa(current.total)}</strong>
               <span style={{ color: 'var(--muted)', marginRight: 12 }}>
                 پاسخ‌داده‌شده: {fa(current.answeredCount)}
               </span>
             </div>
             <div style={{ fontWeight: 800, color: remaining <= 10000 ? '#dc2626' : 'var(--dark)' }}>
-              مهلت این سوال: {clock(remaining)}
+              مهلت این سؤال: {clock(remaining)}
             </div>
           </div>
 
           <div className="alert alert--info">
-            به هر سوال {fa(current.perQuestionSec)} ثانیه فرصت دارید. گزینه‌ای که انتخاب کنید <strong>قطعی است و تغییر نمی‌کند</strong>،
-            و با تمام‌شدن زمان یا زدن دکمهٔ «سوال بعدی» <strong>بازگشت به این سوال ممکن نیست</strong>.
+            به هر سؤال {fa(current.perQuestionSec)} ثانیه فرصت دارید. گزینه‌ای که انتخاب کنید <strong>قطعی است و تغییر نمی‌کند</strong>،
+            و با تمام‌شدن زمان یا زدن دکمهٔ «سؤال بعدی» <strong>بازگشت به این سؤال ممکن نیست</strong>.
           </div>
 
           <div className="stack-card">
@@ -275,12 +275,12 @@ export default function ExamRunner() {
                 <>
                   <p style={{ marginBottom: 12, lineHeight: 1.9 }}>
                     {current.isLast
-                      ? 'این آخرین سوال است. با تأیید، آزمون ثبت و تصحیح می‌شود.'
-                      : 'این سوال بی‌پاسخ می‌ماند و دیگر نمی‌توانید به آن برگردید. مطمئنید؟'}
+                      ? 'این آخرین سؤال است. با تأیید، آزمون ثبت و تصحیح می‌شود.'
+                      : 'این سؤال بی‌پاسخ می‌ماند و دیگر نمی‌توانید به آن برگردید. مطمئنید؟'}
                   </p>
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     <button className="btn btn--dark" disabled={busy} onClick={() => (current.isLast ? submit(current.id) : goNext(current.id, current.cursor))}>
-                      {busy ? 'صبر کنید…' : current.isLast ? 'بله، ثبت نهایی کن' : 'بله، سوال بعدی'}
+                      {busy ? 'صبر کنید…' : current.isLast ? 'بله، ثبت نهایی کن' : 'بله، سؤال بعدی'}
                     </button>
                     <button className="btn" disabled={busy} onClick={() => setConfirming(false)}>انصراف</button>
                   </div>
@@ -295,7 +295,7 @@ export default function ExamRunner() {
                     else setConfirming(true);
                   }}
                 >
-                  {current.isLast ? 'پایان و ثبت نهایی آزمون' : 'سوال بعدی'}
+                  {current.isLast ? 'پایان و ثبت نهایی آزمون' : 'سؤال بعدی'}
                 </button>
               )}
             </div>
@@ -305,15 +305,15 @@ export default function ExamRunner() {
         <div className="stack-card">
           <h3 style={{ marginBottom: 10 }}>آزمون فارغ‌التحصیلی</h3>
           <ul style={{ lineHeight: 2.1, color: 'var(--muted)', paddingInlineStart: 18, marginBottom: 18 }}>
-            <li>تعداد سوال: {fa(cfg.questionCount)} سوال چهارگزینه‌ای</li>
-            <li>مهلت هر سوال: {fa(cfg.secondsPerQuestion)} ثانیه</li>
+            <li>تعداد سؤال: {fa(cfg.questionCount)} سؤال چهارگزینه‌ای</li>
+            <li>مهلت هر سؤال: {fa(cfg.secondsPerQuestion)} ثانیه</li>
             <li>حد نصاب قبولی: {fa(cfg.passPercent)} از ۱۰۰ <strong>روی نمرهٔ نهایی</strong></li>
             <li>
               نمرهٔ نهایی از ۱۰۰ ساخته می‌شود از: <strong>{fa(cfg.examWeight)} نمره آزمون کتبی</strong> به‌علاوهٔ{' '}
               <strong>{fa(cfg.classScoreMax)} نمره تکلیف و فعالیت کلاسی</strong> که مدرس پیش از آزمون ثبت کرده است.
             </li>
-            <li>سوال‌ها یکی‌یکی نمایش داده می‌شوند و <strong>بازگشت به سوال قبلی ممکن نیست</strong>.</li>
-            <li>با پایان مهلت هر سوال، خودکار به سوال بعدی می‌روید و سوال قبلی بسته می‌شود.</li>
+            <li>سؤال‌ها یکی‌یکی نمایش داده می‌شوند و <strong>بازگشت به سؤال قبلی ممکن نیست</strong>.</li>
+            <li>با پایان مهلت هر سؤال، خودکار به سؤال بعدی می‌روید و سؤال قبلی بسته می‌شود.</li>
             <li>انتخاب گزینه قطعی است؛ پس از کلیک روی یک گزینه، امکان تغییر آن وجود ندارد.</li>
             <li>درست یا غلط بودن پاسخ‌ها در حین آزمون نمایش داده نمی‌شود؛ نتیجه فقط در پایان اعلام می‌شود.</li>
             <li>آزمون پس از شروع <strong>وقفه ندارد</strong>؛ زمان روی سرور می‌گذرد و با بستن صفحه یا قطعی اینترنت متوقف نمی‌شود.</li>
@@ -323,12 +323,12 @@ export default function ExamRunner() {
           {state.passedBefore ? (
             <div className="alert alert--success">شما در این آزمون قبول شده‌اید و نیازی به شرکت مجدد نیست.</div>
           ) : state.bankSize === 0 ? (
-            <div className="alert alert--info">هنوز سوالی در بانک آزمون ثبت نشده است. لطفاً بعداً مراجعه کنید.</div>
+            <div className="alert alert--info">هنوز سؤالی در بانک آزمون ثبت نشده است. لطفاً بعداً مراجعه کنید.</div>
           ) : state.permitExempt ? (
             <>
               <div className="alert alert--info" style={{ marginBottom: 14 }}>
                 شما مدیر/ادیتور هستید و برای بازبینی آزمون به اجازه نیاز ندارید. این اجرا فقط برای بررسی است و
-                گواهی‌نامه‌ای از آن صادر نمی‌شود. قواعد آزمون (زمان هر سوال و قطعی‌بودن پاسخ‌ها) برای شما هم برقرار است.
+                گواهی‌نامه‌ای از آن صادر نمی‌شود. قواعد آزمون (زمان هر سؤال و قطعی‌بودن پاسخ‌ها) برای شما هم برقرار است.
                 نمرهٔ کلاسی هم برای بازبینی ثبت نمی‌شود، پس نمرهٔ نهایی این اجرا فقط از خودِ آزمون حساب می‌شود.
               </div>
               <button className="btn btn--dark btn--full" disabled={busy} onClick={start}>

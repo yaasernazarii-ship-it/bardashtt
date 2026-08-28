@@ -27,7 +27,7 @@ export const SITE_LINKS = [
   },
   { path: '/courses', title: 'دوره جامع حضوری' },
   { path: '/gallery', title: 'گالری' },
-  { path: '/faq', title: 'سوالات متداول' },
+  { path: '/faq', title: 'سؤالات متداول' },
   { path: '/news', title: 'اخبار و مطالب' },
   { path: '/actors', title: 'بانک بازیگران' },
   { path: '/works/output', title: 'خروجی خانواده برداشت' },

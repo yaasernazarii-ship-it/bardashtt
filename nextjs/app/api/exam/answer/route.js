@@ -3,9 +3,9 @@ import { getSessionUser } from '@/lib/auth';
 import { OPTION_COUNT } from '@/lib/exam';
 import { isAttemptOver, syncCursor } from '@/lib/examRun';
 
-// ثبت پاسخِ سوال جاری. فقط سوالی که هنرجو همین حالا روی آن است پذیرفته می‌شود؛
+// ثبت پاسخِ سؤال جاری. فقط سؤالی که هنرجو همین حالا روی آن است پذیرفته می‌شود؛
 // انتخاب گزینه قطعی است: پس از ثبت، نه قابل تغییر است و نه قابل حذف.
-// با گذشتن مهلتِ آن سوال هم دیگر هیچ تغییری روی پاسخش ممکن نیست.
+// با گذشتن مهلتِ آن سؤال هم دیگر هیچ تغییری روی پاسخش ممکن نیست.
 export async function PATCH(request) {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
@@ -37,10 +37,10 @@ export async function PATCH(request) {
 
   const ids = Array.isArray(attempt.questionIds) ? attempt.questionIds : [];
   if (ids[attempt.cursor] !== questionId) {
-    // یا مهلت این سوال گذشته و رد شده، یا هنوز نوبتش نرسیده؛ در هر دو حالت پاسخ پذیرفته نیست.
+    // یا مهلت این سؤال گذشته و رد شده، یا هنوز نوبتش نرسیده؛ در هر دو حالت پاسخ پذیرفته نیست.
     return Response.json({
       ok: false,
-      error: 'مهلت این سوال تمام شده است و بازگشت به آن ممکن نیست.',
+      error: 'مهلت این سؤال تمام شده است و بازگشت به آن ممکن نیست.',
       moved: true,
       cursor: attempt.cursor,
     }, { status: 409 });
@@ -48,11 +48,11 @@ export async function PATCH(request) {
 
   const answers = { ...(attempt.answers && typeof attempt.answers === 'object' ? attempt.answers : {}) };
 
-  // گزینهٔ انتخاب‌شده قفل است؛ درخواست دوم برای همین سوال پذیرفته نمی‌شود.
+  // گزینهٔ انتخاب‌شده قفل است؛ درخواست دوم برای همین سؤال پذیرفته نمی‌شود.
   if (answers[questionId] !== undefined) {
     return Response.json({
       ok: false,
-      error: 'پاسخ این سوال ثبت شده است و تغییر آن ممکن نیست.',
+      error: 'پاسخ این سؤال ثبت شده است و تغییر آن ممکن نیست.',
       locked: true,
       choice: answers[questionId],
     }, { status: 409 });

@@ -16,7 +16,7 @@ function canTakeExam(user) {
   return user.role === 'student' || isManager(user);
 }
 
-// سوالِ ارسالی به مرورگر نه پاسخ درست را همراه دارد و نه سوال‌های بعدی را،
+// سؤالِ ارسالی به مرورگر نه پاسخ درست را همراه دارد و نه سؤال‌های بعدی را،
 // چون با جلو رفتن آزمون دیگر بازگشتی در کار نیست.
 function publicQuestion(q, index) {
   return {
@@ -72,7 +72,7 @@ export async function GET() {
   const passedBefore = attempts.some((a) => a.passed);
   let open = attempts.find((a) => !a.submittedAt) || null;
 
-  // مکان‌نما را با زمان واقعی هماهنگ می‌کنیم؛ سوال‌هایی که مهلتشان در نبودِ هنرجو گذشته، رد می‌شوند.
+  // مکان‌نما را با زمان واقعی هماهنگ می‌کنیم؛ سؤال‌هایی که مهلتشان در نبودِ هنرجو گذشته، رد می‌شوند.
   if (open) open = await syncCursor(open, now);
 
   // تلاشِ تمام‌شده اما تصحیح‌نشده در همین درخواست نمره‌گذاری نمی‌شود؛
@@ -93,7 +93,7 @@ export async function GET() {
       perQuestionSec: open.perQuestionSec,
       questionEndsAt: open.questionEndsAt ? open.questionEndsAt.toISOString() : null,
       expiresAt: open.expiresAt.toISOString(),
-      // پاسخِ همین سوال، تا اگر صفحه رفرش شد گزینهٔ انتخابی گم نشود.
+      // پاسخِ همین سؤال، تا اگر صفحه رفرش شد گزینهٔ انتخابی گم نشود.
       choice: q && answers[q.id] !== undefined ? answers[q.id] : null,
       question: q ? publicQuestion(q, open.cursor) : null,
       isLast: open.cursor >= open.total - 1,
@@ -126,7 +126,7 @@ export async function GET() {
   });
 }
 
-// شروع آزمون: سوالات همین‌جا قفل می‌شوند تا رفرش صفحه، سوال‌ها را عوض نکند.
+// شروع آزمون: سؤالات همین‌جا قفل می‌شوند تا رفرش صفحه، سؤال‌ها را عوض نکند.
 export async function POST() {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
@@ -164,7 +164,7 @@ export async function POST() {
 
   const pool = await prisma.examQuestion.findMany({ where: { active: true }, select: { id: true } });
   if (pool.length === 0) {
-    return Response.json({ ok: false, error: 'هنوز سوالی در بانک آزمون ثبت نشده است.' }, { status: 409 });
+    return Response.json({ ok: false, error: 'هنوز سؤالی در بانک آزمون ثبت نشده است.' }, { status: 409 });
   }
 
   const chosen = pickRandom(pool.map((q) => q.id), EXAM_QUESTION_COUNT);

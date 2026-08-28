@@ -14,7 +14,7 @@ function serialize(q) {
   };
 }
 
-// هر خط یک سوال:  متن سوال | گزینه۱ | گزینه۲ | گزینه۳ | گزینه۴ | شمارهٔ گزینهٔ درست (۱ تا ۴) | سرفصل (اختیاری)
+// هر خط یک سؤال:  متن سؤال | گزینه۱ | گزینه۲ | گزینه۳ | گزینه۴ | شمارهٔ گزینهٔ درست (۱ تا ۴) | سرفصل (اختیاری)
 function parseBulk(text) {
   const rows = [];
   const errors = [];
@@ -33,7 +33,7 @@ function parseBulk(text) {
     const correct = parseInt(toLatinDigits(rest[OPTION_COUNT]).replace(/[^\d]/g, ''), 10);
     const topic = rest[OPTION_COUNT + 1] || null;
 
-    if (!qText) { errors.push(`خط ${i + 1}: متن سوال خالی است.`); return; }
+    if (!qText) { errors.push(`خط ${i + 1}: متن سؤال خالی است.`); return; }
     if (!options) { errors.push(`خط ${i + 1}: باید دقیقاً ${OPTION_COUNT} گزینه داشته باشد.`); return; }
     if (!(correct >= 1 && correct <= OPTION_COUNT)) {
       errors.push(`خط ${i + 1}: شمارهٔ گزینهٔ درست باید بین ۱ تا ${OPTION_COUNT} باشد.`);
@@ -77,11 +77,11 @@ export async function POST(request) {
     return Response.json({ ok: false, error: 'درخواست نامعتبر است.' }, { status: 400 });
   }
 
-  // افزودن گروهی از روی متنِ چسبانده‌شده (هر خط یک سوال)
+  // افزودن گروهی از روی متنِ چسبانده‌شده (هر خط یک سؤال)
   if (typeof body.bulk === 'string') {
     const { rows, errors } = parseBulk(body.bulk);
     if (rows.length === 0) {
-      return Response.json({ ok: false, error: 'هیچ سوال معتبری پیدا نشد.', errors }, { status: 400 });
+      return Response.json({ ok: false, error: 'هیچ سؤال معتبری پیدا نشد.', errors }, { status: 400 });
     }
     await prisma.examQuestion.createMany({
       data: rows.map((r) => ({ ...r, createdById: user.id })),
@@ -93,7 +93,7 @@ export async function POST(request) {
   const options = normalizeOptions(body.options);
   const correct = Number(body.correct);
 
-  if (!text) return Response.json({ ok: false, error: 'متن سوال لازم است.' }, { status: 400 });
+  if (!text) return Response.json({ ok: false, error: 'متن سؤال لازم است.' }, { status: 400 });
   if (!options) return Response.json({ ok: false, error: `باید دقیقاً ${OPTION_COUNT} گزینه وارد شود.` }, { status: 400 });
   if (!Number.isInteger(correct) || correct < 0 || correct >= OPTION_COUNT) {
     return Response.json({ ok: false, error: 'گزینهٔ درست را مشخص کنید.' }, { status: 400 });

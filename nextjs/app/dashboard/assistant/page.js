@@ -15,7 +15,7 @@ export default async function AssistantPage() {
       <main className="main-area">
         <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
           <h1 className="dash-head__title">دستیار هوشمند کتاب</h1>
-          <p className="dash-head__sub">پرسش‌های خود را بر اساس کتاب «متد پنج سوال طلایی» اثر یاسر نظری بپرسید.</p>
+          <p className="dash-head__sub">پرسش‌های خود را بر اساس کتاب «متد پنج سؤال طلایی» اثر یاسر نظری بپرسید.</p>
         </div>
         <AssistantChat />
       </main>

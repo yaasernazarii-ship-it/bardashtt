@@ -2,8 +2,8 @@ import { prisma } from '@/lib/prisma';
 import { getSessionUser } from '@/lib/auth';
 import { isAttemptOver, syncCursor } from '@/lib/examRun';
 
-// رفتن به سوال بعدی. این حرکت یک‌طرفه است: مکان‌نما فقط جلو می‌رود و
-// سوالِ رهاشده دیگر باز نمی‌شود. مهلت سوال بعدی از همین لحظه شروع می‌شود.
+// رفتن به سؤال بعدی. این حرکت یک‌طرفه است: مکان‌نما فقط جلو می‌رود و
+// سؤالِ رهاشده دیگر باز نمی‌شود. مهلت سؤال بعدی از همین لحظه شروع می‌شود.
 export async function POST(request) {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
@@ -22,7 +22,7 @@ export async function POST(request) {
   const attempt = await syncCursor(found, now);
   if (isAttemptOver(attempt, now)) return Response.json({ ok: true, finished: true });
 
-  // اگر مرورگر برای سوالی که خودش از قبل رد شده «بعدی» بفرستد، دوباره جلو نمی‌رویم.
+  // اگر مرورگر برای سؤالی که خودش از قبل رد شده «بعدی» بفرستد، دوباره جلو نمی‌رویم.
   const from = Number(body.cursor);
   if (Number.isInteger(from) && from !== attempt.cursor) {
     return Response.json({ ok: true, cursor: attempt.cursor, finished: false });

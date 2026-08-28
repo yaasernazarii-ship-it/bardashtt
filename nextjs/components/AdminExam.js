@@ -166,7 +166,7 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
       });
       const data = await res.json();
       if (!data.ok) { setError(data.error || 'ذخیره نشد.'); return; }
-      setNotice(editingId ? 'سوال ویرایش شد.' : 'سوال افزوده شد.');
+      setNotice(editingId ? 'سؤال ویرایش شد.' : 'سؤال افزوده شد.');
       resetForm();
       await loadBank(search);
     } finally {
@@ -187,7 +187,7 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
         setError([data.error, ...(data.errors || []).slice(0, 8)].filter(Boolean).join(' • '));
         return;
       }
-      setNotice(`${fa(data.created)} سوال افزوده شد.${data.errors?.length ? ` ${fa(data.errors.length)} خط نادیده گرفته شد.` : ''}`);
+      setNotice(`${fa(data.created)} سؤال افزوده شد.${data.errors?.length ? ` ${fa(data.errors.length)} خط نادیده گرفته شد.` : ''}`);
       setBulk('');
       await loadBank(search);
     } finally {
@@ -206,11 +206,11 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
   }
 
   async function remove(q) {
-    if (!confirm('این سوال حذف شود؟')) return;
+    if (!confirm('این سؤال حذف شود؟')) return;
     const res = await fetch(`/api/admin/exam/questions/${q.id}`, { method: 'DELETE' });
     const data = await res.json();
     if (!data.ok) { setError(data.error || 'حذف ناموفق بود.'); return; }
-    setNotice(data.deactivated ? 'این سوال در آزمون‌های برگزارشده استفاده شده بود، پس فقط غیرفعال شد.' : 'سوال حذف شد.');
+    setNotice(data.deactivated ? 'این سؤال در آزمون‌های برگزارشده استفاده شده بود، پس فقط غیرفعال شد.' : 'سؤال حذف شد.');
     await loadBank(search);
   }
 
@@ -227,9 +227,9 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
       {notice && <div className="alert alert--success">{notice}</div>}
 
       <div className="alert alert--info">
-        سوال فعال در بانک: <strong>{fa(activeCount)}</strong> — هر آزمون {fa(questionCount)} سوال تصادفی از همین بانک برمی‌دارد.
+        سؤال فعال در بانک: <strong>{fa(activeCount)}</strong> — هر آزمون {fa(questionCount)} سؤال تصادفی از همین بانک برمی‌دارد.
         {activeCount < questionCount && ' هنوز به تعداد لازم نرسیده‌اید؛ آزمون با همین تعداد موجود برگزار می‌شود.'}
-        {' '}مهلت هر سوال: {fa(secondsPerQuestion)} ثانیه — حد نصاب قبولی: {fa(passPercent)} درصد.
+        {' '}مهلت هر سؤال: {fa(secondsPerQuestion)} ثانیه — حد نصاب قبولی: {fa(passPercent)} درصد.
         <div style={{ marginTop: 6 }}>
           نمرهٔ نهایی از ۱۰۰: <strong>{fa(examWeight)} نمره از آزمون کتبی</strong> + <strong>{fa(classScoreMax)} نمره تکلیف کلاسی</strong>.
           نمرهٔ کلاسی را هنگام صدور اجازه ثبت می‌کنید و گواهی بر اساس نمرهٔ نهایی صادر می‌شود.
@@ -238,7 +238,7 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <button className={`btn ${tab === 'permits' ? 'btn--dark' : ''}`} onClick={() => { setTab('permits'); loadPermits(); }}>اجازهٔ آزمون</button>
-        <button className={`btn ${tab === 'bank' ? 'btn--dark' : ''}`} onClick={() => setTab('bank')}>بانک سوالات</button>
+        <button className={`btn ${tab === 'bank' ? 'btn--dark' : ''}`} onClick={() => setTab('bank')}>بانک سؤالات</button>
         <button className={`btn ${tab === 'results' ? 'btn--dark' : ''}`} onClick={() => { setTab('results'); loadAttempts(); }}>کارنامه‌ها</button>
       </div>
 
@@ -351,9 +351,9 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
       {tab === 'bank' && (
         <>
           <form className="stack-card" onSubmit={saveQuestion}>
-            <h3 style={{ marginBottom: 14 }}>{editingId ? 'ویرایش سوال' : 'افزودن سوال'}</h3>
+            <h3 style={{ marginBottom: 14 }}>{editingId ? 'ویرایش سؤال' : 'افزودن سؤال'}</h3>
             <div className="form-group">
-              <label className="form-label">متن سوال</label>
+              <label className="form-label">متن سؤال</label>
               <textarea className="form-input" rows={2} required value={form.text} onChange={(e) => setForm((f) => ({ ...f, text: e.target.value }))} />
             </div>
             {form.options.map((opt, i) => (
@@ -374,17 +374,17 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
               <input className="form-input" value={form.topic} onChange={(e) => setForm((f) => ({ ...f, topic: e.target.value }))} />
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button className="btn btn--dark" disabled={busy}>{busy ? 'در حال ذخیره…' : editingId ? 'ذخیرهٔ ویرایش' : 'افزودن سوال'}</button>
+              <button className="btn btn--dark" disabled={busy}>{busy ? 'در حال ذخیره…' : editingId ? 'ذخیرهٔ ویرایش' : 'افزودن سؤال'}</button>
               {editingId && <button type="button" className="btn" onClick={resetForm}>انصراف</button>}
             </div>
           </form>
 
           <div className="stack-card">
-            <h3 style={{ marginBottom: 8 }}>افزودن گروهی سوال</h3>
+            <h3 style={{ marginBottom: 8 }}>افزودن گروهی سؤال</h3>
             <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 12 }}>
-              هر خط یک سوال، با علامت <b>|</b> جدا شده:
+              هر خط یک سؤال، با علامت <b>|</b> جدا شده:
               <br />
-              <code dir="rtl">متن سوال | گزینه۱ | گزینه۲ | گزینه۳ | گزینه۴ | شمارهٔ گزینهٔ درست (۱ تا ۴) | سرفصل (اختیاری)</code>
+              <code dir="rtl">متن سؤال | گزینه۱ | گزینه۲ | گزینه۳ | گزینه۴ | شمارهٔ گزینهٔ درست (۱ تا ۴) | سرفصل (اختیاری)</code>
               <br />
               می‌توانید ستون‌ها را مستقیم از اکسل کپی کنید (جداکننده را به | تبدیل کنید).
             </p>
@@ -396,11 +396,11 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
 
           <div className="stack-card">
             <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
-              <input className="form-input" placeholder="جست‌وجو در متن سوال…" value={search} onChange={(e) => setSearch(e.target.value)} />
+              <input className="form-input" placeholder="جست‌وجو در متن سؤال…" value={search} onChange={(e) => setSearch(e.target.value)} />
               <button className="btn" onClick={() => loadBank(search)}>جست‌وجو</button>
             </div>
             {loading ? <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p> : items.length === 0 ? (
-              <p style={{ color: 'var(--muted)' }}>هنوز سوالی ثبت نشده است.</p>
+              <p style={{ color: 'var(--muted)' }}>هنوز سؤالی ثبت نشده است.</p>
             ) : (
               <div style={{ display: 'grid', gap: 10 }}>
                 {items.map((q, i) => (

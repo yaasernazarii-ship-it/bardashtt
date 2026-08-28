@@ -22,15 +22,15 @@ export function findUsablePermit(userId, now = new Date()) {
   });
 }
 
-// ── حرکت رو به جلوی سوال‌ها ────────────────────────────────────
-// مهلت هر سوال مستقل است و با بستن مرورگر متوقف نمی‌شود. این تابع وضعیت ذخیره‌شده را
-// با زمان واقعی هماهنگ می‌کند: هر مهلتِ سپری‌شده یک سوال جلو می‌برد. مکان‌نما هرگز عقب نمی‌رود.
+// ── حرکت رو به جلوی سؤال‌ها ────────────────────────────────────
+// مهلت هر سؤال مستقل است و با بستن مرورگر متوقف نمی‌شود. این تابع وضعیت ذخیره‌شده را
+// با زمان واقعی هماهنگ می‌کند: هر مهلتِ سپری‌شده یک سؤال جلو می‌برد. مکان‌نما هرگز عقب نمی‌رود.
 export async function syncCursor(attempt, now = new Date()) {
   if (attempt.submittedAt) return attempt;
 
   const perMs = Math.max(1, attempt.perQuestionSec) * 1000;
 
-  // آزمونی که پیش از راه‌اندازی مهلتِ تک‌سوالی باز شده بود، از همین لحظه زمان‌بندی می‌شود.
+  // آزمونی که پیش از راه‌اندازی مهلتِ تک‌سؤالی باز شده بود، از همین لحظه زمان‌بندی می‌شود.
   if (!attempt.questionEndsAt) {
     return prisma.examAttempt.update({
       where: { id: attempt.id },
@@ -51,7 +51,7 @@ export async function syncCursor(attempt, now = new Date()) {
   });
 }
 
-// آزمون وقتی تمام است که همهٔ سوال‌ها رد شده باشند یا مهلت کل به پایان رسیده باشد.
+// آزمون وقتی تمام است که همهٔ سؤال‌ها رد شده باشند یا مهلت کل به پایان رسیده باشد.
 export function isAttemptOver(attempt, now = new Date()) {
   return attempt.cursor >= attempt.total || attempt.expiresAt <= now;
 }

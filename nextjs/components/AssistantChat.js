@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 
 const SUGGESTIONS = [
-  'متد پنج سوال طلایی چیست؟',
+  'متد پنج سؤال طلایی چیست؟',
   'چطور احساس واقعی در بازیگری خلق کنم؟',
-  'پنج سوال طلایی کدام‌اند؟',
+  'پنج سؤال طلایی کدام‌اند؟',
 ];
 
 export default function AssistantChat() {
@@ -50,7 +50,7 @@ export default function AssistantChat() {
       <div className="chat-thread">
         {messages.length === 0 && (
           <div className="chat-empty">
-            <p style={{ color: 'var(--muted)', marginBottom: 14 }}>پرسش خود را دربارهٔ کتاب «متد پنج سوال طلایی» و منابع آموزشی تاییدشده بپرسید. پاسخ‌ها فقط بر اساس همین منابع داده می‌شوند.</p>
+            <p style={{ color: 'var(--muted)', marginBottom: 14 }}>پرسش خود را دربارهٔ کتاب «متد پنج سؤال طلایی» و منابع آموزشی تأییدشده بپرسید. پاسخ‌ها فقط بر اساس همین منابع داده می‌شوند.</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {SUGGESTIONS.map((s) => (
                 <button key={s} type="button" className="btn btn--sm btn--outline" onClick={() => ask(s)}>{s}</button>

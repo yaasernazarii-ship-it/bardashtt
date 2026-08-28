@@ -136,8 +136,8 @@ export default function CafeMenuClient({ categories, settings, serviceFee, slug 
 
   return <div className="cafe">
     <header className="cafe__top">
-      <div className="cafe__brand"><b>برداشت</b><small>کنو کافه کتاب</small></div>
-      <a className="cafe__private" href="/cafe-admin">{icons.lock}<span>بخش مخفی</span></a>
+      <div className="cafe__brand"><b>برداشت</b><small>کافه کتاب</small></div>
+      <a className="cafe__private" href="/cafe-admin">{icons.lock}<span>مدیریت</span></a>
     </header>
 
     <section className="cafe__hero">
@@ -160,14 +160,14 @@ export default function CafeMenuClient({ categories, settings, serviceFee, slug 
 
     <div className="cafe__search">
       {icons.search}
-      <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="جستجو در منو…" aria-label="جستجو در منو" />
-      {query && <button type="button" aria-label="پاک کردن جستجو" onClick={() => setQuery('')}>{icons.close}</button>}
+      <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="جست‌وجو در منو…" aria-label="جست‌وجو در منو" />
+      {query && <button type="button" aria-label="پاک کردن جست‌وجو" onClick={() => setQuery('')}>{icons.close}</button>}
     </div>
 
     {settings.note && <p className="cafe__note">{icons.leaf}<span>{settings.note}</span></p>}
 
     <div className="cafe__list" ref={listRef}>
-      {visible.length === 0 && <p className="cafe__empty">موردی با این جستجو پیدا نشد.</p>}
+      {visible.length === 0 && <p className="cafe__empty">موردی با این جست‌وجو پیدا نشد.</p>}
       {visible.map((category) => <section className="cafe__section" key={category.id}>
         <div className="cafe__section-head">
           <h2>{category.name}</h2>

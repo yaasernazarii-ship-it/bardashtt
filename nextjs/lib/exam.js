@@ -12,10 +12,10 @@ export const TVTO_NAME = 'سازمان آموزش فنی و حرفه‌ای کش
 export const GRADUATION_BRANCH = 'بازیگری سینما';
 export const GRADUATION_FIELD = 'بازی در مقابل دوربین';
 
-export const EXAM_QUESTION_COUNT = 100; // تعداد سوال هر آزمون
-// مهلت هر سوال جداگانه است و مهلت کل آزمون از جمعِ همین‌ها ساخته می‌شود.
-// چون بازگشت به سوال قبلی ممکن نیست، زمانِ استفاده‌نشدهٔ یک سوال به سوال بعدی منتقل نمی‌شود.
-export const EXAM_SECONDS_PER_QUESTION = 20; // مهلت پاسخ به هر سوال، به ثانیه
+export const EXAM_QUESTION_COUNT = 100; // تعداد سؤال هر آزمون
+// مهلت هر سؤال جداگانه است و مهلت کل آزمون از جمعِ همین‌ها ساخته می‌شود.
+// چون بازگشت به سؤال قبلی ممکن نیست، زمانِ استفاده‌نشدهٔ یک سؤال به سؤال بعدی منتقل نمی‌شود.
+export const EXAM_SECONDS_PER_QUESTION = 20; // مهلت پاسخ به هر سؤال، به ثانیه
 export const EXAM_PASS_PERCENT = 70; // حد نصاب قبولی (روی نمرهٔ نهایی سنجیده می‌شود)
 export const OPTION_COUNT = 4;
 
@@ -72,7 +72,7 @@ export function normalizeSerial(input) {
   return cleaned;
 }
 
-// انتخاب تصادفی n سوال (Fisher–Yates روی کپیِ آرایه).
+// انتخاب تصادفی n سؤال (Fisher–Yates روی کپیِ آرایه).
 export function pickRandom(items, n) {
   const arr = [...items];
   for (let i = arr.length - 1; i > 0; i--) {

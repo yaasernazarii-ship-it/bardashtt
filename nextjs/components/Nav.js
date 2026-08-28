@@ -45,7 +45,7 @@ const FALLBACK_LINKS = [
 
 const FALLBACK_TEXT = {
   supportButton: 'پشتیبانی',
-  supportFaq: 'سوالات متداول',
+  supportFaq: 'سؤالات متداول',
   supportChat: 'پشتیبانی آنلاین',
   supportChatHint: 'گفت‌وگوی زنده با تیم ما',
   callLabel: 'تماس با ما',

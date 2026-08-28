@@ -72,7 +72,7 @@ export default function AdminPayments() {
     }));
   }
 
-  // انتخاب/لغوِ همهٔ هنرجویانِ نتیجهٔ جستجوی فعلی.
+  // انتخاب/لغوِ همهٔ هنرجویانِ نتیجهٔ جست‌وجوی فعلی.
   const allFilteredSelected = filteredStudents.length > 0 && filteredStudents.every((s) => form.userIds.includes(s.id));
   function toggleAllFiltered() {
     const ids = filteredStudents.map((s) => s.id);
@@ -194,12 +194,12 @@ export default function AdminPayments() {
               </button>
               {pickerOpen && (
                 <div className="pay-picker__panel">
-                  <input className="form-input" placeholder="جستجوی نام/موبایل هنرجو…" value={studentQuery}
+                  <input className="form-input" placeholder="جست‌وجوی نام/موبایل هنرجو…" value={studentQuery}
                     onChange={(e) => setStudentQuery(e.target.value)} style={{ margin: '10px 10px 8px', width: 'auto', display: 'block' }} />
                   <label className="pay-picker__all">
                     <input type="checkbox" checked={allFilteredSelected} onChange={toggleAllFiltered}
                       disabled={filteredStudents.length === 0} />
-                    انتخاب همه{studentQuery.trim() ? ' (نتیجهٔ جستجو)' : ''}
+                    انتخاب همه{studentQuery.trim() ? ' (نتیجهٔ جست‌وجو)' : ''}
                   </label>
                   <div className="pay-picker__list">
                     {filteredStudents.length === 0 ? (

@@ -199,7 +199,7 @@ function StudentRoster({ students }) {
     <div className="form-shell admin-roster" style={{ marginBottom: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
         <h2 className="heading" style={{ fontSize: '1.1rem', margin: 0 }}>فهرست هنرجویان (به تفکیک شعبه)</h2>
-        <input className="form-input" placeholder="جستجوی نام هنرجو…" value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 280 }} />
+        <input className="form-input" placeholder="جست‌وجوی نام هنرجو…" value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: 280 }} />
       </div>
       <p style={{ fontSize: '.78rem', color: 'var(--muted)', marginTop: 0, marginBottom: 14 }}>فقط هنرجویانِ در حال تحصیل نمایش داده می‌شوند؛ فارغ‌التحصیل‌ها در این فهرست نمی‌آیند.</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 14 }}>

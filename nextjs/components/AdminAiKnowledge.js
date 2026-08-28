@@ -88,7 +88,7 @@ export default function AdminAiKnowledge() {
           <h2 style={{ marginBottom: 6, fontSize: '1.08rem' }}>منابع هوش مصنوعی</h2>
           <p style={{ color: 'var(--muted)', lineHeight: 1.9, margin: 0 }}>
             مطلب، جزوهٔ PDF یا فایل متنی را اینجا ثبت کنید تا دستیار هنگام پرسش کاربران از آن پاسخ بدهد.
-            منابع کتاب «متد پنج سوال طلایی» جدا هستند و از این بخش تغییری نمی‌کنند.
+            منابع کتاب «متد پنج سؤال طلایی» جدا هستند و از این بخش تغییری نمی‌کنند.
           </p>
         </div>
         <button type="button" className="btn btn--outline" onClick={checkConnection} disabled={checking || !configured}>

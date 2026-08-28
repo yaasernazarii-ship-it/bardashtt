@@ -4,7 +4,7 @@ import DashboardSidebar from '@/components/DashboardSidebar';
 import AdminExam from '@/components/AdminExam';
 import { CLASS_SCORE_MAX, EXAM_PASS_PERCENT, EXAM_QUESTION_COUNT, EXAM_SECONDS_PER_QUESTION, EXAM_WEIGHT } from '@/lib/exam';
 
-export const metadata = { title: 'بانک سوال و آزمون' };
+export const metadata = { title: 'بانک سؤال و آزمون' };
 
 export default async function AdminExamPage() {
   const user = await getSessionUser();
@@ -17,7 +17,7 @@ export default async function AdminExamPage() {
       <main className="main-area">
         <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
           <h1 className="dash-head__title">آزمون فارغ‌التحصیلی</h1>
-          <p className="dash-head__sub">به هنرجویان اجازهٔ آزمون بدهید، بانک سوالات را مدیریت کنید و کارنامه‌ها را ببینید.</p>
+          <p className="dash-head__sub">به هنرجویان اجازهٔ آزمون بدهید، بانک سؤالات را مدیریت کنید و کارنامه‌ها را ببینید.</p>
         </div>
         <AdminExam
           questionCount={EXAM_QUESTION_COUNT}
