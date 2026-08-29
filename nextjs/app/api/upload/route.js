@@ -3,7 +3,6 @@ import path from 'path';
 import { randomBytes } from 'crypto';
 import sharp from 'sharp';
 import { getSessionUser, isManager } from '@/lib/auth';
-import { hasCafeCookie } from '@/lib/cafeAuth';
 
 export const runtime = 'nodejs';
 
@@ -32,10 +31,8 @@ const CONVERT_TO_WEBP = new Set(['image/jpeg', 'image/png']);
 
 export async function POST(request) {
   const user = await getSessionUser();
-  // مدیر کافه با رمز اختصاصی خودش وارد می‌شود و فقط اجازه‌ی آپلود تصویر منو را دارد.
-  const cafeOnly = !isManager(user) && await hasCafeCookie();
-  if (!user && !cafeOnly) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
-  if (!isManager(user) && !cafeOnly) return Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 });
+  if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
+  if (!isManager(user)) return Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 });
 
   try {
     const form = await request.formData();
@@ -47,9 +44,6 @@ export async function POST(request) {
     const ext = EXT_BY_TYPE[file.type];
     if (!ext && !audioExt) {
       return Response.json({ ok: false, error: 'فقط تصویر (jpg, png, webp, gif) یا فایل صوتی (mp3, m4a, aac, ogg, wav) مجاز است.' }, { status: 400 });
-    }
-    if (cafeOnly && !ext) {
-      return Response.json({ ok: false, error: 'فقط تصویر (jpg, png, webp, gif) مجاز است.' }, { status: 400 });
     }
     let buf = Buffer.from(await file.arrayBuffer());
     const limit = audioExt ? MAX_AUDIO_BYTES : MAX_BYTES;
