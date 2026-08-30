@@ -24,6 +24,13 @@ export default function Footer({ content }) {
   const enamadId = String(c.enamadId || '').replace(/[^0-9]/g, '');
   const enamadCode = String(c.enamadCode || '').replace(/[^A-Za-z0-9]/g, '');
   const showEnamad = Boolean(enamadId && enamadCode);
+  // ساختار زیر عیناً همان اسنیپت رسمی اینماد است (src از سرور اینماد، referrerpolicy و صفت
+  // code) و نباید ساده‌سازی شود، چون سامانهٔ اینماد با همین ساختار نصب نماد را تأیید می‌کند.
+  // onerror فقط یک لایهٔ ایمنی است: سرور trustseal.enamad.ir گاهی قطع می‌شود و به‌جای تصویر،
+  // خطای 403/500 برمی‌گرداند که در فوتر به شکل آیکنِ تصویرِ شکسته دیده می‌شود. در آن حالت
+  // نسخهٔ محلی نماد از public/enamad-seal.png نمایش داده می‌شود. this.onerror=null جلوی
+  // حلقهٔ بی‌نهایت را می‌گیرد اگر فایل محلی هم در دسترس نباشد. لینک <a> همیشه به صفحهٔ
+  // استعلام رسمی می‌رود و پس از رفع قطعی، تصویر زنده بدون تغییر کد دوباره جایگزین می‌شود.
   const enamadSeal = showEnamad
     ? `<a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=${enamadId}&Code=${enamadCode}'><img referrerpolicy='origin' loading='lazy' src='https://trustseal.enamad.ir/logo.aspx?id=${enamadId}&Code=${enamadCode}' alt='نماد اعتماد الکترونیکی' style='cursor:pointer' code='${enamadCode}' onerror="this.onerror=null;this.src='/enamad-seal.png'"></a>`
     : '';
