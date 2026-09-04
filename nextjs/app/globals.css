@@ -1501,18 +1501,6 @@ summary:focus-visible {
 }
 .enroll-card__title { font-size: 1.1rem; margin: 0 0 18px; color: var(--dark); }
 
-/* توضیح ثابتِ دورهٔ ورودی، جایگزین انتخابگر دوره در فرم ثبت‌نام. */
-.enroll-entry-note {
-  background: rgba(212, 175, 55, 0.1);
-  border-right: 3px solid var(--gold);
-  border-radius: 10px;
-  padding: 12px 14px;
-  margin-bottom: 20px;
-  color: var(--body);
-  font-size: 0.86rem;
-  line-height: 1.9;
-}
-
 .enroll-q {
   border: 1px solid var(--border);
   border-radius: 14px;
