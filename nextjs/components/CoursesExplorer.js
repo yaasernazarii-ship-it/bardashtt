@@ -88,12 +88,16 @@ export default function CoursesExplorer({
               <h4>{listHeading}</h4>
               <ul>{c.items.map(item => <li key={item}>{item}</li>)}</ul>
             </div>
-            <div className="payment-box">
-              <h3>{payTitle}</h3>
-              <p>{payText}</p>
-              <Link href="/audition" className="btn btn--gold btn--full">{payButton}</Link>
-            </div>
           </div>
+        </div>
+      </section>
+      {/* ثبت‌نام یک‌بار و از دورهٔ مقدماتی انجام می‌شود؛ پس دکمه به‌جای تکرار در شرح هر دوره،
+          فقط یک‌بار و در پایان صفحه می‌آید تا مسیر ورود هنرجو یکتا و بدون ابهام بماند. */}
+      <section className="courses-cta">
+        <div className="courses-cta__inner">
+          <h3>{payTitle}</h3>
+          <p>{payText}</p>
+          <Link href="/audition" className="btn btn--gold">{payButton}</Link>
         </div>
       </section>
     </>
