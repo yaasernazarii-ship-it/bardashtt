@@ -1501,30 +1501,17 @@ summary:focus-visible {
 }
 .enroll-card__title { font-size: 1.1rem; margin: 0 0 18px; color: var(--dark); }
 
-.enroll-courses {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 10px;
+/* توضیح ثابتِ دورهٔ ورودی، جایگزین انتخابگر دوره در فرم ثبت‌نام. */
+.enroll-entry-note {
+  background: rgba(212, 175, 55, 0.1);
+  border-right: 3px solid var(--gold);
+  border-radius: 10px;
+  padding: 12px 14px;
   margin-bottom: 20px;
+  color: var(--body);
+  font-size: 0.86rem;
+  line-height: 1.9;
 }
-.enroll-course {
-  font-family: inherit;
-  text-align: center;
-  padding: 14px 8px;
-  border-radius: 12px;
-  border: 1.5px solid var(--border);
-  background: #fff;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  transition: 0.15s;
-}
-.enroll-course:hover { border-color: var(--gold); }
-.enroll-course.active { border-color: var(--gold); background: #FFFBF0; }
-.enroll-course__num { font-size: 0.7rem; font-weight: 800; color: var(--gold); }
-.enroll-course__title { font-weight: 800; color: var(--dark); }
-.enroll-course__sub { font-size: 0.72rem; color: var(--muted); }
 
 .enroll-q {
   border: 1px solid var(--border);

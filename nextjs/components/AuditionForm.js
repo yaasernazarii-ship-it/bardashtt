@@ -1,13 +1,15 @@
 'use client';
 import { useState } from 'react';
 import Icon from './Icon';
-import { COURSES, QUESTIONS, VIDEO_FORM_URL, isValidNationalId } from '@/lib/enrollmentData';
+import { ENROLL_COURSE_KEY, QUESTIONS, VIDEO_FORM_URL, courseByKey, isValidNationalId } from '@/lib/enrollmentData';
 
-const STEPS = ['دوره و مشخصات', 'تست آنلاین', 'تحلیل خانواده برداشت', 'ارسال ویدیو', 'پایان'];
+const STEPS = ['مشخصات', 'تست آنلاین', 'تحلیل خانواده برداشت', 'ارسال ویدیو', 'پایان'];
+
+// هنرجو دوره را انتخاب نمی‌کند؛ ورود همیشه از دورهٔ مقدماتی است.
+const ENTRY_COURSE = courseByKey(ENROLL_COURSE_KEY);
 
 export default function AuditionForm() {
   const [step, setStep] = useState(0);
-  const [courseKey, setCourseKey] = useState('01');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [answers, setAnswers] = useState({});
@@ -45,7 +47,7 @@ export default function AuditionForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          courseKey, fullName, phone,
+          fullName, phone,
           answers: QUESTIONS.map((_, i) => answers[i]),
           actorType: analysis?.actorType,
           aiAnalysis: analysis?.analysis,
@@ -85,16 +87,10 @@ export default function AuditionForm() {
         <div className="enroll-card">
           {step === 0 && (
             <>
-              <h3 className="enroll-card__title">دوره مورد نظر را انتخاب کنید</h3>
-              <div className="enroll-courses">
-                {COURSES.map((c) => (
-                  <button key={c.key} type="button" className={`enroll-course${courseKey === c.key ? ' active' : ''}`} onClick={() => setCourseKey(c.key)}>
-                    <span className="enroll-course__num">{c.key}</span>
-                    <span className="enroll-course__title">{c.title}</span>
-                    <span className="enroll-course__sub">{c.sub}</span>
-                  </button>
-                ))}
-              </div>
+              <h3 className="enroll-card__title">مشخصات خود را وارد کنید</h3>
+              <p className="enroll-entry-note">
+                مسیر آموزشی برای همه از دورهٔ «{ENTRY_COURSE.title}» شروع می‌شود؛ دوره‌های بعدی پس از گذراندن همین مرحله ثبت می‌شوند.
+              </p>
               <div className="form-group"><label className="form-label">نام و نام خانوادگی</label>
                 <input className="form-input" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="مثلاً علی رضایی" /></div>
               <div className="form-group"><label className="form-label">شماره موبایل</label>
@@ -168,7 +164,7 @@ export default function AuditionForm() {
               <div className="enroll-result__emoji" style={{ color: 'var(--gold)' }}><Icon name="check" size={44} strokeWidth={1.6} /></div>
               <h2 className="enroll-result__type" style={{ color: 'var(--gold)' }}>درخواست شما ثبت شد</h2>
               <p className="enroll-result__text">
-                {fullName} عزیز، درخواست ثبت‌نام شما در دوره «{COURSES.find((c) => c.key === courseKey)?.title}» ثبت شد و ویدیوی شما در انتظار بررسی مدیر است. پس از تأیید، حساب کاربری شما ساخته می‌شود و با شماره موبایل خود می‌توانید وارد پنل هنرجو شوید و روند آموزش را دنبال کنید.
+                {fullName} عزیز، درخواست ثبت‌نام شما در دوره «{ENTRY_COURSE.title}» ثبت شد و ویدیوی شما در انتظار بررسی مدیر است. پس از تأیید، حساب کاربری شما ساخته می‌شود و با شماره موبایل خود می‌توانید وارد پنل هنرجو شوید و روند آموزش را دنبال کنید.
               </p>
               <a className="btn btn--dark" href="/auth">ورود به پنل هنرجو</a>
             </div>

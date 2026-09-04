@@ -8,6 +8,10 @@ export const COURSES = [
   { key: '05', title: 'فیلمسازی', sub: 'زبان سینما' },
 ];
 
+// ورود به مسیر آموزشی همیشه از دورهٔ مقدماتی است؛ هنرجو دوره را انتخاب نمی‌کند.
+// دوره‌های بعدی را مدیریت پس از گذراندن مرحلهٔ قبل ثبت می‌کند.
+export const ENROLL_COURSE_KEY = '01';
+
 export function courseByKey(key) {
   return COURSES.find((c) => c.key === key) || null;
 }
