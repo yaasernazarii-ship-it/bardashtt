@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // پیش‌نمایشِ نسخهٔ آزمایشی زیر یک مسیر روی همان دامنه سرو می‌شود، چون فایروال ارائه‌دهنده
+  // فقط ۸۰/۴۴۳ را باز گذاشته و پورت جداگانه از بیرون در دسترس نیست. در بیلد پروداکشن این
+  // متغیر تنظیم نمی‌شود و پیکربندی دقیقاً مثل قبل می‌ماند.
+  ...(process.env.NEXT_BASE_PATH ? { basePath: process.env.NEXT_BASE_PATH } : {}),
   // pdfkit فایل‌های داخلی (فونت‌های AFM/داده‌ها) را در زمان اجرا از node_modules می‌خواند؛
   // باید از باندل‌شدن توسط سرور خارج بماند.
   serverExternalPackages: ['pdfkit', 'fontkit'],
