@@ -53,6 +53,49 @@ export function faqJsonLd(groups) {
   };
 }
 
+// schema.org ItemList از Courseها — برای صفحهٔ چارت دوره‌ها.
+// courses: [{ name, description, items[] }] — همهٔ دوره‌ها، نه فقط دورهٔ فعال.
+// site: آدرس پایهٔ همان درخواست (siteUrl()).
+export function courseListJsonLd(courses, { site, url }) {
+  const provider = {
+    '@type': 'Organization',
+    name: 'خانواده برداشت',
+    url: site,
+  };
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: courses.map((c, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'Course',
+        name: c.name,
+        description: c.description || undefined,
+        url: `${url}#course-panel-${i}`,
+        inLanguage: 'fa-IR',
+        provider,
+        teaches: c.items?.length ? c.items : undefined,
+        // دوره‌های حضوری و بدون شهریه‌اند؛ Offer با قیمت صفر شرطِ Rich Result گوگل را کامل می‌کند.
+        offers: {
+          '@type': 'Offer',
+          price: 0,
+          priceCurrency: 'IRR',
+          category: 'Free',
+          availability: 'https://schema.org/InStock',
+          url: `${site}/audition`,
+        },
+        hasCourseInstance: {
+          '@type': 'CourseInstance',
+          courseMode: 'Onsite',
+          courseWorkload: 'PT4H',
+          location: { '@type': 'Place', name: 'آموزشگاه خانواده برداشت', address: 'تهران، ایران' },
+        },
+      },
+    })),
+  };
+}
+
 export function jsonLdScript(data) {
   // escape '<' تا اگر متنِ عنوان/توضیحات حاوی «</script>» بود، از تگ اسکریپت خارج نشود.
   return { __html: JSON.stringify(data).replace(/</g, '\\u003c') };

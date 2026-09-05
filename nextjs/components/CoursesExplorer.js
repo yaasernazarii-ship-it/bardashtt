@@ -45,60 +45,75 @@ export default function CoursesExplorer({
   subheading = '۵ مرحله برای تبدیل علاقه به مهارت حرفه‌ای',
   courses = DEFAULT_COURSES,
   listHeading = 'آنچه یاد می‌گیرید',
-  payTitle = 'ثبت‌نام رایگان',
-  payText = 'تمام دوره‌های اصلی خانواده برداشت بدون شهریه برگزار می‌شود.',
-  payButton = 'شروع ثبت‌نام',
+  ctaNote = 'تمام دوره‌های اصلی خانواده برداشت بدون شهریه برگزار می‌شود.',
+  ctaButton = 'ثبت‌نام در دوره‌های بازیگری',
 }) {
   const [active, setActive] = useState(0);
-  const c = courses[active];
   return (
     <>
       <section className="path-section">
         <div className="path-section__title">
           <h1>{heading}</h1>
           <p>{subheading}</p>
+          {/* ثبت‌نام یک‌بار و از دورهٔ مقدماتی انجام می‌شود؛ پس دکمه مستقل از دورهٔ انتخاب‌شده
+              و بالای صفحه می‌نشیند تا مسیر ورود هنرجو یکتا و از همان نگاه اول دیده شود. */}
+          <Link href="/audition" className="btn btn--gold path-section__cta">{ctaButton}</Link>
+          <span className="path-section__note">{ctaNote}</span>
         </div>
-        <div className="path-track">
+        <div className="path-track" role="tablist" aria-orientation="vertical">
           {courses.map((course, i) => (
-            <button key={course.num} className={`path-node${active === i ? ' active' : ''}`} onClick={() => setActive(i)}>
+            <button
+              key={course.num}
+              type="button"
+              role="tab"
+              id={`course-tab-${i}`}
+              aria-selected={active === i}
+              aria-controls={`course-panel-${i}`}
+              className={`path-node${active === i ? ' active' : ''}`}
+              onClick={() => setActive(i)}
+            >
               <span className="path-node__num">{course.num}</span>
-              <span className="path-node__title">{course.title}</span>
-              <span className="path-node__sub">{course.sub}</span>
+              <span className="path-node__text">
+                <span className="path-node__title">{course.title}</span>
+                <span className="path-node__sub">{course.sub}</span>
+              </span>
             </button>
           ))}
         </div>
       </section>
+      {/* هر پنج پنل در HTML سمت سرور رندر می‌شوند تا شرح و سرفصلِ همهٔ دوره‌ها برای خزندهٔ
+          موتور جست‌وجو خوانده شود؛ فقط پنل دورهٔ فعال با کلاس CSS نمایش داده می‌شود. */}
       <section className="detail-wrap">
-        <div className="course-panel active">
-          <div className="course-hero" style={{ background: c.grad }}>
-            <span className="course-hero__icon"><Icon name={STEP_ICONS[active] || 'sparkles'} size={40} strokeWidth={1.6} /></span>
-            <span className="course-hero__badge">دوره {c.num}</span>
-            <h2 className="course-hero__title">{c.title}</h2>
-            <p className="course-hero__sub">{c.sub}</p>
-          </div>
-          <div className="panel-head">
-            <div className="panel-num">{c.num}</div>
-            <div>
-              <h2>{c.title}</h2>
-              <p>{c.desc}</p>
+        {courses.map((c, i) => (
+          <div
+            key={c.num}
+            id={`course-panel-${i}`}
+            role="tabpanel"
+            aria-labelledby={`course-tab-${i}`}
+            className={`course-panel${active === i ? ' active' : ''}`}
+          >
+            <div className="course-hero" style={{ background: c.grad }}>
+              <span className="course-hero__icon"><Icon name={STEP_ICONS[i] || 'sparkles'} size={40} strokeWidth={1.6} /></span>
+              <span className="course-hero__badge">دوره {c.num}</span>
+              <h2 className="course-hero__title">{c.title}</h2>
+              <p className="course-hero__sub">{c.sub}</p>
+            </div>
+            <div className="panel-head">
+              <div className="panel-num">{c.num}</div>
+              <div>
+                {/* عنوان دوره یک‌بار و در hero تیتر h2 می‌گیرد؛ این تکرارِ بصری است، نه تیتر. */}
+                <div className="panel-head__title">{c.title}</div>
+                <p>{c.desc}</p>
+              </div>
+            </div>
+            <div className="panel-body">
+              <div className="panel-list">
+                <h3>{listHeading}</h3>
+                <ul>{c.items.map(item => <li key={item}>{item}</li>)}</ul>
+              </div>
             </div>
           </div>
-          <div className="panel-body">
-            <div className="panel-list">
-              <h4>{listHeading}</h4>
-              <ul>{c.items.map(item => <li key={item}>{item}</li>)}</ul>
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* ثبت‌نام یک‌بار و از دورهٔ مقدماتی انجام می‌شود؛ پس دکمه به‌جای تکرار در شرح هر دوره،
-          فقط یک‌بار و در پایان صفحه می‌آید تا مسیر ورود هنرجو یکتا و بدون ابهام بماند. */}
-      <section className="courses-cta">
-        <div className="courses-cta__inner">
-          <h3>{payTitle}</h3>
-          <p>{payText}</p>
-          <Link href="/audition" className="btn btn--gold">{payButton}</Link>
-        </div>
+        ))}
       </section>
     </>
   );

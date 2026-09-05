@@ -268,9 +268,10 @@ export const CONTENT_GROUPS = [
     title: 'چارت دوره‌ها (جزئیات هر دوره)',
     fields: [
       { key: 'courses.panel.listHeading', label: 'عنوان فهرست سرفصل‌ها', type: 'text', default: 'آنچه یاد می‌گیرید' },
-      { key: 'courses.pay.title', label: 'کادر ثبت‌نام — عنوان', type: 'text', default: 'ثبت‌نام رایگان' },
-      { key: 'courses.pay.text', label: 'کادر ثبت‌نام — متن', type: 'textarea', default: 'تمام دوره‌های اصلی خانواده برداشت بدون شهریه برگزار می‌شود.' },
-      { key: 'courses.pay.button', label: 'کادر ثبت‌نام — دکمه', type: 'text', default: 'شروع ثبت‌نام' },
+      // کادر بزرگ ثبت‌نام حذف شد و جای دکمه به نوار عنوان بالای صفحه رفت؛ کلیدها هم عوض
+      // شدند تا متنِ تازه بدون نیاز به ویرایش دستیِ مقدارهای قدیمی در پنل نمایش داده شود.
+      { key: 'courses.cta.button', label: 'دکمهٔ ثبت‌نام بالای صفحه — متن', type: 'text', default: 'ثبت‌نام در دوره‌های بازیگری' },
+      { key: 'courses.cta.note', label: 'دکمهٔ ثبت‌نام بالای صفحه — توضیح کوتاه زیر دکمه', type: 'textarea', default: 'تمام دوره‌های اصلی خانواده برداشت بدون شهریه برگزار می‌شود.' },
 
       { key: 'course.c1.title', label: 'دورهٔ ۱ — نام', type: 'text', default: 'مقدماتی' },
       { key: 'course.c1.sub', label: 'دورهٔ ۱ — زیرعنوان', type: 'text', default: 'شروع مسیر' },

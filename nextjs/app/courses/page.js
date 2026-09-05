@@ -2,6 +2,8 @@ import PageLayout from '@/components/PageLayout';
 import CoursesExplorer from '@/components/CoursesExplorer';
 import PageSlider from '@/components/PageSlider';
 import { loadContent, splitLines } from '@/lib/siteContent';
+import { courseListJsonLd, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
+import { siteUrl } from '@/lib/siteUrl';
 import { pageMetadata } from '@/lib/pageMeta';
 
 // شماره و رنگِ گرادیانِ هر دوره ثابت‌اند؛ متن و سرفصل‌ها از پنل می‌آیند.
@@ -34,17 +36,25 @@ export default async function CoursesPage() {
     };
   });
   const courseSlides = splitLines(t('courses.slides'));
+  const site = await siteUrl();
+  const url = `${site}/courses`;
+  const courseLd = courseListJsonLd(
+    courses.map((c) => ({ name: c.title, description: c.desc, items: c.items })),
+    { site, url },
+  );
+  const breadcrumbLd = breadcrumbJsonLd([{ name: 'خانه', url: site }, { name: t('courses.title') }]);
   return (
     <PageLayout>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(courseLd)} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(breadcrumbLd)} />
       {courseSlides.length > 0 && <PageSlider title={t('courses.title')} images={courseSlides} />}
       <CoursesExplorer
         heading={t('courses.title')}
         subheading={t('courses.subtitle')}
         courses={courses}
         listHeading={t('courses.panel.listHeading')}
-        payTitle={t('courses.pay.title')}
-        payText={t('courses.pay.text')}
-        payButton={t('courses.pay.button')}
+        ctaNote={t('courses.cta.note')}
+        ctaButton={t('courses.cta.button')}
       />
     </PageLayout>
   );
