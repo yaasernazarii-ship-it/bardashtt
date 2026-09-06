@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { hashPassword } from '@/lib/password';
 import { removeLocalUploads } from '@/lib/uploadCleanup';
+import { archiveRejectedSignup } from '@/lib/signupNotify';
 
 const ACTIONS = ['approve', 'reject'];
 
@@ -22,7 +23,21 @@ export async function PATCH(request, { params }) {
   const req = await prisma.signupRequest.findUnique({ where: { id } });
   if (!req) return Response.json({ ok: false, error: 'درخواست یافت نشد.' }, { status: 404 });
 
+  // رد کردن = ثبت گزارش در «بله» و سپس حذف کاملِ اطلاعات. اگر گزارش نرسد، حذفی انجام نمی‌شود.
   if (action === 'reject') {
+    try {
+      await archiveRejectedSignup(
+        { ...req, adminNote: note },
+        { rejectedBy: user.displayName || user.username || null },
+      );
+    } catch (err) {
+      console.error('archiveRejectedSignup failed:', err?.message || err);
+      return Response.json({
+        ok: false,
+        error: 'گزارش این درخواست به ربات بله نرسید، پس هیچ اطلاعاتی حذف نشد. اتصال ربات را بررسی و دوباره تلاش کنید.',
+      }, { status: 502 });
+    }
+
     await prisma.signupRequest.delete({ where: { id } });
     await removeLocalUploads([req.idCardImage]);
     return Response.json({ ok: true, status: 'deleted' });

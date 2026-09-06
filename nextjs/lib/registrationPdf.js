@@ -1,13 +1,14 @@
 // ساخت PDF فارسی از اطلاعات یک ثبت‌نام هنرجو با pdfkit.
 import path from 'node:path';
 import PDFDocument from 'pdfkit';
-import { shape } from './rtl';
-import { QUESTIONS, courseByKey } from './enrollmentData';
+import { shape } from './rtl.js';
+import { QUESTIONS, courseByKey } from './enrollmentData.js';
 
 const FONT_REGULAR = path.join(process.cwd(), 'assets/fonts/Vazirmatn-Regular.ttf');
 const FONT_BOLD = path.join(process.cwd(), 'assets/fonts/Vazirmatn-Bold.ttf');
 const FILMMAKER_KEY = '05';
 const TEXT_OPTS = { align: 'right', features: [] };
+const STATUS_FA = { submitted: 'در انتظار بررسی', approved: 'تأییدشده', rejected: 'ردشده' };
 
 const fmtDate = (d) => {
   try {
@@ -33,7 +34,11 @@ function divider(doc) {
 }
 
 // ساخت بافر PDF از یک رکورد ثبت‌نام.
-export async function buildEnrollmentPdf(enrollment) {
+// title و notice برای حالت‌هایی مثل «آرشیو ثبت‌نام ردشده» قابل جایگزینی‌اند.
+export async function buildEnrollmentPdf(enrollment, {
+  title = 'خانواده برداشت — درخواست ثبت‌نام جدید',
+  notice = null,
+} = {}) {
   const doc = new PDFDocument({ size: 'A4', margins: { top: 48, bottom: 48, left: 48, right: 48 } });
   const chunks = [];
   doc.on('data', (c) => chunks.push(c));
@@ -42,8 +47,11 @@ export async function buildEnrollmentPdf(enrollment) {
   const isFilmmaker = enrollment.courseKey === FILMMAKER_KEY;
   const maxWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
 
-  line(doc, 'خانواده برداشت — درخواست ثبت‌نام جدید', { size: 18, bold: true, color: '#0b0b0b', gap: 2 });
-  line(doc, `تاریخ: ${fmtDate(enrollment.createdAt || Date.now())}`, { size: 10, color: '#666', gap: 8 });
+  line(doc, title, { size: 18, bold: true, color: '#0b0b0b', gap: 2 });
+  line(doc, `تاریخ ثبت درخواست: ${fmtDate(enrollment.createdAt || Date.now())}`, { size: 10, color: '#666', gap: notice ? 4 : 8 });
+  if (notice) {
+    line(doc, notice, { size: 11, bold: true, color: '#b91c1c', gap: 8 });
+  }
 
   if (isFilmmaker) {
     doc.rect(doc.page.margins.left, doc.y, maxWidth, 28).fillColor('#fde68a').fill();
@@ -59,11 +67,15 @@ export async function buildEnrollmentPdf(enrollment) {
     ['کد ملی', enrollment.nationalId || '—'],
     ['دوره', `${course ? course.title : enrollment.courseTitle} — کد ${enrollment.courseKey}`],
     ['تیپ بازیگری', enrollment.actorType || '—'],
-    ['وضعیت', enrollment.status || 'submitted'],
+    ['وضعیت', STATUS_FA[enrollment.status] || enrollment.status || STATUS_FA.submitted],
     ['لینک ویدیو', enrollment.videoUrl || '—'],
   ];
   for (const [label, value] of rows) {
     line(doc, `${label}: ${value}`, { size: 12, gap: 3 });
+  }
+
+  if (enrollment.adminNote) {
+    line(doc, `یادداشت مدیریت: ${enrollment.adminNote}`, { size: 12, gap: 3 });
   }
 
   if (enrollment.aiAnalysis) {

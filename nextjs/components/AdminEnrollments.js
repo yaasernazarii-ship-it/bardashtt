@@ -4,7 +4,10 @@ import { useEffect, useMemo, useState } from 'react';
 import Icon from './Icon';
 import { QUESTIONS } from '@/lib/enrollmentData';
 
-const STATUS_LABEL = { submitted: 'در انتظار بررسی', approved: 'تأییدشده', rejected: 'ردشده' };
+// درخواستِ ردشده در سایت نگه داشته نمی‌شود؛ پس از آرشیو در «بله» برای همیشه حذف می‌شود.
+const STATUS_LABEL = { submitted: 'در انتظار بررسی', approved: 'تأییدشده' };
+
+const REJECT_CONFIRM = 'این درخواست رد شود؟\n\nاول گزارش و PDF کاملِ ثبت‌نام و پاسخ‌های تست به ربات بله فرستاده می‌شود، بعد نام و همهٔ اطلاعات این فرد برای همیشه از سایت و سرور حذف می‌شود. این کار برگشت‌پذیر نیست.';
 
 function requestDate(value) {
   return value ? new Date(value).toLocaleString('fa-IR', { dateStyle: 'medium', timeStyle: 'short' }) : '—';
@@ -35,7 +38,6 @@ export default function AdminEnrollments() {
     all: rows.length,
     submitted: rows.filter((r) => r.status === 'submitted').length,
     approved: rows.filter((r) => r.status === 'approved').length,
-    rejected: rows.filter((r) => r.status === 'rejected').length,
   }), [rows]);
 
   const courses = useMemo(() => [...new Set(rows.map((r) => r.courseTitle).filter(Boolean))], [rows]);
@@ -52,7 +54,7 @@ export default function AdminEnrollments() {
   }, [rows, query, statusFilter, courseFilter]);
 
   async function act(id, action) {
-    if (action === 'reject' && !window.confirm('این درخواست رد شود؟')) return;
+    if (action === 'reject' && !window.confirm(REJECT_CONFIRM)) return;
     setBusyId(id); setError('');
     const res = await fetch(`/api/admin/enrollments/${id}`, {
       method: 'PATCH',
@@ -62,6 +64,10 @@ export default function AdminEnrollments() {
     const data = await res.json();
     setBusyId(null);
     if (!data.ok) { setError(data.error || 'خطا در ثبت.'); return; }
+    if (data.status === 'deleted') {
+      setRows((previous) => previous.filter((r) => r.id !== id));
+      return;
+    }
     setRows((previous) => previous.map((r) => (r.id === id ? { ...r, status: data.status } : r)));
   }
 
@@ -76,7 +82,6 @@ export default function AdminEnrollments() {
           ['all', 'همه ثبت‌نام‌ها'],
           ['submitted', 'در انتظار بررسی'],
           ['approved', 'تأییدشده'],
-          ['rejected', 'ردشده'],
         ].map(([key, label]) => (
           <button key={key} type="button"
             className={`su-stat su-stat--${key === 'submitted' ? 'pending' : key} ${statusFilter === key ? 'is-active' : ''}`}
@@ -103,7 +108,6 @@ export default function AdminEnrollments() {
           <option value="all">همه وضعیت‌ها</option>
           <option value="submitted">در انتظار بررسی</option>
           <option value="approved">تأییدشده</option>
-          <option value="rejected">ردشده</option>
         </select>
         <span className="su-result-count">نمایش {filtered.length.toLocaleString('fa-IR')} مورد</span>
       </div>
@@ -179,12 +183,14 @@ export default function AdminEnrollments() {
 
                       {r.status === 'submitted' && (
                         <div className="su-approval enrollment-review__approval">
-                          <div className="su-section-title"><strong>تصمیم نهایی درخواست</strong><span>با تأیید درخواست، حساب کاربری متقاضی به‌صورت خودکار ساخته می‌شود.</span></div>
+                          <div className="su-section-title"><strong>تصمیم نهایی درخواست</strong><span>با تأیید، حساب کاربری متقاضی خودکار ساخته می‌شود. با رد کردن، گزارش و PDF به ربات بله می‌رود و اطلاعات از سایت و سرور حذف می‌شود.</span></div>
                           <div className="su-actions">
                             <button className="btn btn--dark" disabled={busyId === r.id} onClick={() => act(r.id, 'approve')}>
                               {busyId === r.id ? 'در حال ثبت…' : 'تأیید و ساخت حساب'}
                             </button>
-                            <button className="btn btn--danger" disabled={busyId === r.id} onClick={() => act(r.id, 'reject')}>رد درخواست</button>
+                            <button className="btn btn--danger" disabled={busyId === r.id} onClick={() => act(r.id, 'reject')}>
+                              {busyId === r.id ? 'در حال ارسال آرشیو…' : 'رد و حذف کامل اطلاعات'}
+                            </button>
                           </div>
                         </div>
                       )}

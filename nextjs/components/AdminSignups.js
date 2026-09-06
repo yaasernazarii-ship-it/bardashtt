@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 
 const ROLE_LABEL = { student: 'هنرجو', filmmaker: 'فیلمساز' };
-const STATUS_LABEL = { pending: 'در انتظار بررسی', approved: 'تأییدشده', rejected: 'ردشده' };
+// درخواستِ ردشده در سایت نگه داشته نمی‌شود؛ پس از آرشیو در «بله» برای همیشه حذف می‌شود.
+const STATUS_LABEL = { pending: 'در انتظار بررسی', approved: 'تأییدشده' };
 
 function randomPassword(len = 8) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
@@ -40,7 +41,6 @@ export default function AdminSignups() {
     all: requests.length,
     pending: requests.filter((r) => r.status === 'pending').length,
     approved: requests.filter((r) => r.status === 'approved').length,
-    rejected: requests.filter((r) => r.status === 'rejected').length,
   }), [requests]);
 
   const filtered = useMemo(() => {
@@ -76,7 +76,7 @@ export default function AdminSignups() {
   }
 
   async function reject(id) {
-    if (!window.confirm('این ثبت‌نام رد و برای همیشه از فهرست و سرور حذف شود؟')) return;
+    if (!window.confirm('این ثبت‌نام رد شود؟\n\nاول گزارش کاملش به ربات بله می‌رود، بعد نام و اطلاعاتش برای همیشه از فهرست و سرور حذف می‌شود. این کار برگشت‌پذیر نیست.')) return;
     setBusyId(id); setError('');
     const res = await fetch(`/api/admin/signups/${id}`, {
       method: 'PATCH',
@@ -110,7 +110,6 @@ export default function AdminSignups() {
           ['all', 'همه ثبت‌نام‌ها'],
           ['pending', 'در انتظار بررسی'],
           ['approved', 'تأییدشده'],
-          ['rejected', 'ردشده'],
         ].map(([key, label]) => (
           <button key={key} type="button" className={`su-stat su-stat--${key} ${statusFilter === key ? 'is-active' : ''}`}
             onClick={() => setStatusFilter(key)}>
@@ -137,7 +136,6 @@ export default function AdminSignups() {
           <option value="all">همه وضعیت‌ها</option>
           <option value="pending">در انتظار بررسی</option>
           <option value="approved">تأییدشده</option>
-          <option value="rejected">ردشده</option>
         </select>
         <span className="su-result-count">نمایش {filtered.length.toLocaleString('fa-IR')} مورد</span>
       </div>

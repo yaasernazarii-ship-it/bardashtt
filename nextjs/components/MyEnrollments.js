@@ -11,9 +11,9 @@ const STAGES = [
   { key: 'approved', label: 'تأیید و فعال‌سازی حساب' },
 ];
 
+// درخواستِ ردشده از دیتابیس حذف می‌شود، پس برای هنرجو فقط همین دو وضعیت باقی می‌ماند.
 function statusView(status) {
   if (status === 'approved') return { badge: 'تأییدشده', cls: 'badge-approved', reached: 3 };
-  if (status === 'rejected') return { badge: 'ردشده', cls: 'badge-rejected', reached: 1 };
   return { badge: 'در انتظار بررسی', cls: 'badge-submitted', reached: 2 };
 }
 
@@ -53,20 +53,14 @@ export default function MyEnrollments() {
             {r.actorType && <div className="enroll-mine-type">تیپ بازیگری شما: <b>{r.actorType}</b></div>}
             {r.aiAnalysis && <p className="enroll-admin-ai">{r.aiAnalysis}</p>}
 
-            {r.status !== 'rejected' ? (
-              <ol className="enroll-timeline">
-                {STAGES.map((st, i) => (
-                  <li key={st.key} className={i < sv.reached ? 'done' : undefined}>
-                    <span className="enroll-timeline__dot">{i < sv.reached ? <Icon name="checkMark" size={12} strokeWidth={3} /> : i + 1}</span>
-                    <span>{st.label}</span>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <div className="alert alert--error" style={{ marginTop: 12 }}>
-                این درخواست تأیید نشد.{r.adminNote ? ` توضیح مدیر: ${r.adminNote}` : ''}
-              </div>
-            )}
+            <ol className="enroll-timeline">
+              {STAGES.map((st, i) => (
+                <li key={st.key} className={i < sv.reached ? 'done' : undefined}>
+                  <span className="enroll-timeline__dot">{i < sv.reached ? <Icon name="checkMark" size={12} strokeWidth={3} /> : i + 1}</span>
+                  <span>{st.label}</span>
+                </li>
+              ))}
+            </ol>
 
             {r.status === 'approved' && (
               <p className="enroll-mine-ok">حساب کاربری شما فعال است. به‌زودی برنامه کلاس‌ها در بخش «تقویم کلاس» نمایش داده می‌شود.</p>

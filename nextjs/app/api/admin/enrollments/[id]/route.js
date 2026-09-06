@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
+import { archiveRejectedEnrollment } from '@/lib/enrollmentNotify';
+import { removeLocalUploads } from '@/lib/uploadCleanup';
 
 const ACTIONS = ['approve', 'reject'];
 
@@ -20,12 +22,25 @@ export async function PATCH(request, { params }) {
   const enrollment = await prisma.enrollment.findUnique({ where: { id } });
   if (!enrollment) return Response.json({ ok: false, error: 'درخواست یافت نشد.' }, { status: 404 });
 
+  // رد کردن = آرشیو در «بله» و سپس حذف کاملِ اطلاعات از سایت و سرور.
+  // ترتیب مهم است: اگر آرشیو نرسد، هیچ چیزی حذف نمی‌شود.
   if (action === 'reject') {
-    await prisma.enrollment.update({
-      where: { id },
-      data: { status: 'rejected', adminNote: note },
-    });
-    return Response.json({ ok: true, status: 'rejected' });
+    try {
+      await archiveRejectedEnrollment(
+        { ...enrollment, adminNote: note },
+        { rejectedBy: user.displayName || user.username || null },
+      );
+    } catch (err) {
+      console.error('archiveRejectedEnrollment failed:', err?.message || err);
+      return Response.json({
+        ok: false,
+        error: 'گزارش و PDF این درخواست به ربات بله نرسید، پس هیچ اطلاعاتی حذف نشد. اتصال ربات را بررسی و دوباره تلاش کنید.',
+      }, { status: 502 });
+    }
+
+    await prisma.enrollment.delete({ where: { id } });
+    await removeLocalUploads([enrollment.videoUrl]);
+    return Response.json({ ok: true, status: 'deleted' });
   }
 
   // تأیید: ساخت خودکار حساب کاربری بر اساس شماره موبایل و اتصال به درخواست.
