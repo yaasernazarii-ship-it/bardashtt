@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { normalizePhone } from '@/lib/auth';
+import { notifySignup } from '@/lib/signupNotify';
+import { siteUrl } from '@/lib/siteUrl';
 
 const BRANCHES = ['تهران', 'ساری'];
 const ROLES = ['student', 'filmmaker'];
@@ -55,7 +57,7 @@ export async function POST(request) {
       return Response.json({ ok: true, duplicate: true });
     }
 
-    await prisma.signupRequest.create({
+    const created = await prisma.signupRequest.create({
       data: {
         role,
         firstName,
@@ -68,6 +70,10 @@ export async function POST(request) {
         goal,
       },
     });
+
+    // گزارش آنی در «بله» بدون بلاک‌کردن پاسخ (خطا مسیر ثبت‌نام را مختل نمی‌کند).
+    const origin = await siteUrl();
+    notifySignup(created, { idCardUrl: idCardImage ? `${origin}${idCardImage}` : null }).catch(() => {});
 
     return Response.json({ ok: true });
   } catch {
