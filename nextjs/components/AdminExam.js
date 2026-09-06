@@ -1,10 +1,34 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import ShamsiDateTimeField from './ShamsiDateTimeField';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
+const dateTimeFmt = new Intl.DateTimeFormat('fa-IR', {
+  year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tehran',
+});
 const fa = (n) => new Intl.NumberFormat('fa-IR', { useGrouping: false }).format(n ?? 0);
 const EMPTY = { text: '', options: ['', '', '', ''], correct: 0, topic: '' };
+
+// مقدار ورودی تاریخ («YYYY-MM-DDTHH:mm» به وقت محلی) را به ISO برای سرور تبدیل می‌کند.
+const localToIso = (v) => (v ? new Date(v).toISOString() : null);
+
+// تبدیل زمان ذخیره‌شده به مقدار همان ورودی، برای ویرایش بازهٔ یک اجازهٔ صادرشده.
+function isoToLocalInput(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+}
+
+// پایان بازه = شروع (یا همین حالا) + مدت به ساعت. فقط برای پیش‌نمایش در فرم؛
+// محاسبهٔ معتبر همان چیزی است که سرور انجام می‌دهد.
+function windowEnd(startLocal, hours) {
+  const h = Number(hours);
+  if (!Number.isFinite(h) || h <= 0) return null;
+  const from = startLocal ? new Date(startLocal) : new Date();
+  if (Number.isNaN(from.getTime())) return null;
+  return new Date(from.getTime() + Math.round(h * 60) * 60000);
+}
 
 export default function AdminExam({ questionCount, passPercent, secondsPerQuestion, classScoreMax, examWeight }) {
   const [tab, setTab] = useState('permits');
@@ -27,12 +51,17 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
   const [students, setStudents] = useState([]);
   const [passedIds, setPassedIds] = useState([]);
   const [permitUser, setPermitUser] = useState('');
-  const [permitDays, setPermitDays] = useState('7');
+  // بازهٔ باز بودن صفحهٔ آزمون: زمان شروع (خالی = همین حالا) و مدت آن به ساعت.
+  const [permitStart, setPermitStart] = useState('');
+  const [permitHours, setPermitHours] = useState('3');
   const [permitNote, setPermitNote] = useState('');
   const [permitScore, setPermitScore] = useState('');
   const [permitSearch, setPermitSearch] = useState('');
   const [editScoreId, setEditScoreId] = useState(null);
   const [editScore, setEditScore] = useState('');
+  const [editWindowId, setEditWindowId] = useState(null);
+  const [editStart, setEditStart] = useState('');
+  const [editHours, setEditHours] = useState('');
 
   async function loadBank(q = '') {
     setLoading(true);
@@ -99,14 +128,15 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: permitUser,
-          days: permitDays === '' ? null : Number(permitDays),
+          startsAt: localToIso(permitStart),
+          hours: permitHours === '' ? null : Number(permitHours),
           note: permitNote,
           classScore: permitScore,
         }),
       });
       const data = await res.json();
       if (!data.ok) { setError(data.error || 'صدور اجازه ناموفق بود.'); return; }
-      setNotice('اجازهٔ آزمون با نمرهٔ کلاسی ثبت شد و به هنرجو اطلاع داده شد.');
+      setNotice('اجازهٔ آزمون با نمرهٔ کلاسی و بازهٔ زمانی ثبت شد و به هنرجو اطلاع داده شد.');
       setPermitUser(''); setPermitNote(''); setPermitScore('');
       await loadPermits();
     } finally {
@@ -144,12 +174,57 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
     await loadPermits();
   }
 
+  // جابه‌جایی بازهٔ زمانی یک اجازهٔ استفاده‌نشده، بدون نیاز به باطل‌کردن و صدور دوباره.
+  async function saveWindow(p) {
+    setError(''); setNotice('');
+    const res = await fetch('/api/admin/exam/permits', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: p.id,
+        startsAt: localToIso(editStart),
+        hours: editHours === '' ? null : Number(editHours),
+      }),
+    });
+    const data = await res.json();
+    if (!data.ok) { setError(data.error || 'تغییر بازهٔ آزمون ناموفق بود.'); return; }
+    setNotice('بازهٔ باز بودن آزمون تغییر کرد و به هنرجو اطلاع داده شد.');
+    setEditWindowId(null); setEditStart(''); setEditHours('');
+    await loadPermits();
+  }
+
+  // بازهٔ فعلی را برای ویرایش باز می‌کند؛ مدت از فاصلهٔ شروع تا پایان بازسازی می‌شود.
+  function openWindowEditor(p) {
+    setEditWindowId(p.id);
+    setEditStart(isoToLocalInput(p.startsAt));
+    if (p.expiresAt) {
+      const from = p.startsAt ? new Date(p.startsAt) : new Date(p.grantedAt);
+      const hours = (new Date(p.expiresAt).getTime() - from.getTime()) / 3600000;
+      setEditHours(hours > 0 ? String(Math.round(hours * 100) / 100) : '');
+    } else {
+      setEditHours('');
+    }
+  }
+
   function permitStatus(p) {
     if (p.usedAt) return { label: 'استفاده شده', color: 'var(--muted)' };
     if (p.revoked) return { label: 'باطل شده', color: '#dc2626' };
-    if (p.expiresAt && new Date(p.expiresAt) <= new Date()) return { label: 'مهلت گذشته', color: '#dc2626' };
+    if (p.expiresAt && new Date(p.expiresAt) <= new Date()) return { label: 'بازه تمام شده', color: '#dc2626' };
     if (p.classScore === null) return { label: 'نمرهٔ کلاسی ثبت نشده — آزمون باز نمی‌شود', color: '#dc2626' };
-    return { label: 'فعال — منتظر شرکت هنرجو', color: '#16a34a' };
+    if (p.startsAt && new Date(p.startsAt) > new Date()) {
+      return { label: `زمان‌بندی‌شده — از ${dateTimeFmt.format(new Date(p.startsAt))}`, color: '#b45309' };
+    }
+    return { label: 'باز — منتظر شرکت هنرجو', color: '#16a34a' };
+  }
+
+  // شرح بازهٔ هر اجازه در فهرست.
+  function windowText(p) {
+    if (p.startsAt && p.expiresAt) {
+      return `${dateTimeFmt.format(new Date(p.startsAt))} تا ${dateTimeFmt.format(new Date(p.expiresAt))}`;
+    }
+    if (p.startsAt) return `از ${dateTimeFmt.format(new Date(p.startsAt))} — بدون پایان`;
+    if (p.expiresAt) return `از لحظهٔ صدور تا ${dateTimeFmt.format(new Date(p.expiresAt))}`;
+    return 'بدون محدودیت زمانی';
   }
 
   function resetForm() { setForm(EMPTY); setEditingId(null); }
@@ -250,6 +325,7 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
               هیچ هنرجویی بدون اجازهٔ شما نمی‌تواند آزمون بدهد. هر اجازه فقط یک بار مصرف می‌شود؛
               با شروع آزمون خرج می‌شود و برای شرکت دوباره باید اجازهٔ تازه صادر کنید.
               نمرهٔ تکلیف کلاسی هم همین‌جا و پیش از شروع آزمون ثبت می‌شود.
+              بازهٔ زیر تعیین می‌کند صفحهٔ آزمون از چه ساعتی و چند ساعت برای این هنرجو باز باشد.
             </p>
             <div className="form-group">
               <label className="form-label">هنرجو</label>
@@ -275,11 +351,26 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
               </span>
             </div>
             <div className="form-group">
-              <label className="form-label">مهلت استفاده (روز)</label>
-              <input className="form-input" type="number" min={1} max={365} dir="ltr" value={permitDays}
-                onChange={(e) => setPermitDays(e.target.value)} placeholder="خالی = بدون مهلت" />
+              <label className="form-label">صفحهٔ آزمون از چه زمانی باز باشد؟</label>
+              <ShamsiDateTimeField value={permitStart} onChange={setPermitStart} label="از همین لحظه (برای زمان‌بندی کلیک کنید)" />
               <span style={{ color: 'var(--muted)', fontSize: '.85rem' }}>
-                اگر تا این مهلت آزمون را شروع نکند، اجازه باطل می‌شود. برای بدون‌مهلت، خالی بگذارید.
+                خالی بگذارید تا آزمون از همین حالا باز شود، یا تاریخ و ساعت دقیق شروع را انتخاب کنید.
+              </span>
+            </div>
+            <div className="form-group">
+              <label className="form-label">چند ساعت باز بماند؟</label>
+              <input className="form-input" type="number" min={0.25} step={0.25} dir="ltr" value={permitHours}
+                onChange={(e) => setPermitHours(e.target.value)} placeholder="خالی = بدون محدودیت" />
+              <span style={{ color: 'var(--muted)', fontSize: '.85rem' }}>
+                اعشار هم پذیرفته می‌شود (۰٫۵ یعنی نیم ساعت). این فقط بازهٔ <strong>ورود و شروع</strong> است؛
+                هنرجویی که در همین بازه آزمون را شروع کند، آزمونش با مهلت همیشگیِ خودش
+                ({fa(secondsPerQuestion)} ثانیه برای هر سؤال) تا آخر ادامه پیدا می‌کند و با پایان بازه قطع نمی‌شود.
+                {windowEnd(permitStart, permitHours) && (
+                  <>
+                    <br />
+                    پایان بازه: <strong>{dateTimeFmt.format(windowEnd(permitStart, permitHours))}</strong>
+                  </>
+                )}
               </span>
             </div>
             <div className="form-group">
@@ -314,9 +405,22 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
                           <span dir="ltr" style={{ color: 'var(--muted)' }}>{p.user?.phone}</span>
                         </span>
                         <span style={{ color: 'var(--muted)' }}>صدور: {dateFmt.format(new Date(p.grantedAt))}</span>
-                        <span style={{ color: 'var(--muted)' }}>
-                          {p.expiresAt ? `مهلت: ${dateFmt.format(new Date(p.expiresAt))}` : 'بدون مهلت'}
-                        </span>
+                        {editWindowId === p.id ? (
+                          <span style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                            <ShamsiDateTimeField value={editStart} onChange={setEditStart} label="از همین لحظه" />
+                            <input className="form-input" type="number" min={0.25} step={0.25} dir="ltr" style={{ width: 110 }}
+                              placeholder="ساعت" value={editHours} onChange={(e) => setEditHours(e.target.value)} />
+                            <button className="btn btn--dark" onClick={() => saveWindow(p)}>ثبت بازه</button>
+                            <button className="btn" onClick={() => { setEditWindowId(null); setEditStart(''); setEditHours(''); }}>انصراف</button>
+                          </span>
+                        ) : (
+                          <span style={{ color: 'var(--muted)' }}>
+                            بازه: {windowText(p)}
+                            {!p.usedAt && !p.revoked && (
+                              <button className="btn" style={{ marginRight: 8 }} onClick={() => openWindowEditor(p)}>تغییر زمان</button>
+                            )}
+                          </span>
+                        )}
                         {editScoreId === p.id ? (
                           <span style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                             <input className="form-input" type="number" min={0} max={classScoreMax} step={0.1} dir="ltr"

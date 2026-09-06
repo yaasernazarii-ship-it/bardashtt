@@ -6,7 +6,15 @@ import { CLASS_SCORE_MAX, formatScore, parseClassScore } from '@/lib/exam';
 
 const SCORE_RULE = `باید عددی بین ۰ تا ${CLASS_SCORE_MAX} با حداکثر یک رقم اعشار باشد (مثل ۱۸٫۵).`;
 
+// سقف بازه یک سال است تا اشتباهِ تایپی، اجازه‌ای عملاً همیشگی نسازد.
+const MAX_WINDOW_HOURS = 8760;
+
 const USER_FIELDS ={ id: true, displayName: true, username: true, phone: true, role: true, branch: true, courseTitle: true, graduated: true };
+
+const whenFmt = new Intl.DateTimeFormat('fa-IR', {
+  dateStyle: 'long', timeStyle: 'short', timeZone: 'Asia/Tehran',
+});
+const when = (d) => whenFmt.format(d);
 
 function shape(p) {
   return {
@@ -14,12 +22,51 @@ function shape(p) {
     user: p.user,
     grantedByName: p.grantedByName,
     grantedAt: p.grantedAt.toISOString(),
+    startsAt: p.startsAt ? p.startsAt.toISOString() : null,
     expiresAt: p.expiresAt ? p.expiresAt.toISOString() : null,
     usedAt: p.usedAt ? p.usedAt.toISOString() : null,
     revoked: p.revoked,
     note: p.note,
     classScore: p.classScore,
   };
+}
+
+// بازهٔ باز بودن صفحهٔ آزمون: از زمان شروعِ دلخواه، به مدت چند ساعت.
+// هر دو اختیاری‌اند: بدون زمان شروع یعنی «از همین حالا» و بدون مدت یعنی «بدون محدودیت».
+// این بازه هیچ ربطی به مهلت خود آزمون ندارد؛ آزمونِ شروع‌شده تا پایان ادامه می‌یابد.
+function parseWindow(body, now) {
+  let startsAt = null;
+  if (body.startsAt !== undefined && body.startsAt !== null && body.startsAt !== '') {
+    const d = new Date(body.startsAt);
+    if (Number.isNaN(d.getTime())) return { error: 'زمان شروع بازه نامعتبر است.' };
+    startsAt = d;
+  }
+
+  let expiresAt = null;
+  if (body.hours !== undefined && body.hours !== null && body.hours !== '') {
+    const hours = Number(body.hours);
+    if (!Number.isFinite(hours) || hours <= 0 || hours > MAX_WINDOW_HOURS) {
+      return { error: `مدت باز بودن آزمون باید عددی بیشتر از صفر و حداکثر ${MAX_WINDOW_HOURS} ساعت باشد.` };
+    }
+    // به دقیقهٔ کامل گرد می‌شود تا بازه‌های اعشاری (مثل ۱٫۵ ساعت) هم دقیق بمانند.
+    const minutes = Math.round(hours * 60);
+    if (minutes < 1) return { error: 'مدت باز بودن آزمون باید دست‌کم یک دقیقه باشد.' };
+    expiresAt = new Date((startsAt || now).getTime() + minutes * 60000);
+  }
+
+  if (expiresAt && expiresAt <= now) {
+    return { error: 'بازه‌ای که انتخاب کرده‌اید تمام شده است؛ زمان شروع یا مدت را اصلاح کنید.' };
+  }
+
+  return { startsAt, expiresAt };
+}
+
+// شرح بازه برای پیام اعلان و گزارش عملیات.
+function describeWindow(startsAt, expiresAt) {
+  if (startsAt && expiresAt) return `از ${when(startsAt)} تا ${when(expiresAt)}`;
+  if (startsAt) return `از ${when(startsAt)} به بعد، بدون محدودیت پایان`;
+  if (expiresAt) return `از هم‌اکنون تا ${when(expiresAt)}`;
+  return 'بدون محدودیت زمانی';
 }
 
 // فهرست اجازه‌های صادرشده، به‌همراه هنرجویانی که می‌توان به آن‌ها اجازه داد.
@@ -90,21 +137,17 @@ export async function POST(request) {
     }, { status: 400 });
   }
 
-  // مهلت استفاده از اجازه، بر حسب روز. خالی یعنی بدون مهلت.
-  let expiresAt = null;
-  if (body.days !== undefined && body.days !== null && body.days !== '') {
-    const days = Number(body.days);
-    if (!Number.isInteger(days) || days < 1 || days > 365) {
-      return Response.json({ ok: false, error: 'مهلت اجازه باید عددی بین ۱ تا ۳۶۵ روز باشد.' }, { status: 400 });
-    }
-    expiresAt = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
-  }
+  // بازهٔ باز بودن صفحهٔ آزمون؛ خارج از آن، هنرجو نمی‌تواند آزمون را شروع کند.
+  const window = parseWindow(body, now);
+  if (window.error) return Response.json({ ok: false, error: window.error }, { status: 400 });
+  const { startsAt, expiresAt } = window;
 
   const permit = await prisma.examPermit.create({
     data: {
       userId,
       grantedById: user.id,
       grantedByName: user.displayName || user.username || user.phone || null,
+      startsAt,
       expiresAt,
       classScore,
       note: body.note ? String(body.note).slice(0, 200) : null,
@@ -113,15 +156,20 @@ export async function POST(request) {
   });
 
   const who = target.displayName || target.username || target.phone;
+  const windowText = describeWindow(startsAt, expiresAt);
   await logAction(user, {
     action: 'exam.permit.grant',
     targetType: 'user',
     targetId: userId,
-    summary: `اجازهٔ آزمون برای ${who} با نمرهٔ کلاسی ${formatScore(classScore)} از ${CLASS_SCORE_MAX}${expiresAt ? ` تا ${expiresAt.toISOString().slice(0, 10)}` : ''}`,
+    summary: `اجازهٔ آزمون برای ${who} با نمرهٔ کلاسی ${formatScore(classScore)} از ${CLASS_SCORE_MAX} — ${windowText}`,
   });
   await notifyUsers([userId], {
     title: 'اجازهٔ شرکت در آزمون صادر شد',
-    body: `نمرهٔ تکلیف کلاسی شما ${formatScore(classScore)} از ${CLASS_SCORE_MAX} ثبت شد. می‌توانید از بخش «آزمون و گواهی‌نامه» آزمون پایان دوره را شروع کنید.`,
+    body: `نمرهٔ تکلیف کلاسی شما ${formatScore(classScore)} از ${CLASS_SCORE_MAX} ثبت شد. ${
+      startsAt && startsAt > now
+        ? `صفحهٔ آزمون ${windowText} برای شما باز است.`
+        : `${expiresAt ? `تا ${when(expiresAt)} فرصت دارید آزمون را شروع کنید.` : 'می‌توانید آزمون پایان دوره را شروع کنید.'}`
+    } از بخش «آزمون و گواهی‌نامه» وارد شوید.`,
     href: '/dashboard/exam',
     kind: 'system',
   });
@@ -176,6 +224,36 @@ export async function PATCH(request) {
       summary: `نمرهٔ کلاسی ${who} از ${permit.classScore === null ? '—' : formatScore(permit.classScore)} به ${formatScore(classScore)} تغییر کرد`,
     });
     return Response.json({ ok: true, item: shape(scored) });
+  }
+
+  // جابه‌جایی بازهٔ باز بودن آزمون، تا وقتی هنرجو آن را شروع نکرده است.
+  if (body.startsAt !== undefined || body.hours !== undefined) {
+    if (permit.revoked) {
+      return Response.json({ ok: false, error: 'این اجازه باطل شده است؛ برای بازهٔ تازه اجازهٔ جدید صادر کنید.' }, { status: 409 });
+    }
+    const now = new Date();
+    const window = parseWindow(body, now);
+    if (window.error) return Response.json({ ok: false, error: window.error }, { status: 400 });
+
+    const moved = await prisma.examPermit.update({
+      where: { id },
+      data: { startsAt: window.startsAt, expiresAt: window.expiresAt },
+      include: { user: { select: USER_FIELDS } },
+    });
+    const windowText = describeWindow(window.startsAt, window.expiresAt);
+    await logAction(user, {
+      action: 'exam.permit.window',
+      targetType: 'user',
+      targetId: permit.userId,
+      summary: `بازهٔ آزمون ${who} تغییر کرد — ${windowText}`,
+    });
+    await notifyUsers([permit.userId], {
+      title: 'زمان آزمون شما تغییر کرد',
+      body: `صفحهٔ آزمون پایان دوره ${windowText} برای شما باز است.`,
+      href: '/dashboard/exam',
+      kind: 'system',
+    });
+    return Response.json({ ok: true, item: shape(moved) });
   }
 
   const updated = await prisma.examPermit.update({

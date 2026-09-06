@@ -189,7 +189,10 @@ model ExamPermit {
   grantedById   String? // مدیر یا ادیتوری که اجازه را صادر کرده
   grantedByName String?
   grantedAt     DateTime  @default(now())
-  expiresAt     DateTime? // مهلت استفاده از مجوز؛ خالی یعنی بدون مهلت
+  // بازهٔ باز بودن صفحهٔ آزمون؛ فقط زمانِ ورود و شروع را کنترل می‌کند و
+  // در مهلت خودِ آزمون (زمان هر سؤال) هیچ اثری ندارد.
+  startsAt      DateTime? // آغاز بازه؛ خالی یعنی از همان لحظهٔ صدور باز است
+  expiresAt     DateTime? // پایان بازه؛ خالی یعنی بدون محدودیت زمانی
   usedAt        DateTime? // لحظه‌ای که آزمون با این مجوز باز شد
   attemptId     String?   @unique // تلاشی که این مجوز خرج آن شد
   revoked       Boolean   @default(false)

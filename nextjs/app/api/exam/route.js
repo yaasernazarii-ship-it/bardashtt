@@ -8,7 +8,7 @@ import {
   EXAM_WEIGHT,
   pickRandom,
 } from '@/lib/exam';
-import { findUsablePermit, isAttemptOver, syncCursor } from '@/lib/examRun';
+import { findPendingPermit, isAttemptOver, permitNotOpenYet, syncCursor } from '@/lib/examRun';
 
 // آزمون فارغ‌التحصیلی مخصوص هنرجوست؛ مدیر و ادیتور هم برای بازبینی می‌توانند آن را باز کنند.
 // هنرجو بدون مجوزِ صادرشده نمی‌تواند شروع کند، ولی مدیر/ادیتور برای بازبینی مجوز لازم ندارد.
@@ -42,13 +42,16 @@ function attemptSummary(a) {
   };
 }
 
-function permitInfo(p) {
+function permitInfo(p, now) {
   if (!p) return null;
   return {
     id: p.id,
     grantedByName: p.grantedByName,
     grantedAt: p.grantedAt.toISOString(),
+    // بازهٔ باز بودن صفحهٔ آزمون؛ ربطی به مهلت خودِ آزمون ندارد.
+    startsAt: p.startsAt ? p.startsAt.toISOString() : null,
     expiresAt: p.expiresAt ? p.expiresAt.toISOString() : null,
+    notOpenYet: permitNotOpenYet(p, now),
     note: p.note,
     classScore: p.classScore,
   };
@@ -66,7 +69,8 @@ export async function GET() {
     prisma.examQuestion.count({ where: { active: true } }),
     prisma.examAttempt.findMany({ where: { userId: user.id }, orderBy: { startedAt: 'desc' }, take: 10 }),
     prisma.certificate.findFirst({ where: { userId: user.id, revoked: false }, orderBy: { issuedAt: 'desc' } }),
-    findUsablePermit(user.id, now),
+    // مجوزِ زمان‌بندی‌شده هم گرفته می‌شود تا هنرجو به‌جای «اجازه ندارید»، زمان باز شدن آزمون را ببیند.
+    findPendingPermit(user.id, now),
   ]);
 
   const passedBefore = attempts.some((a) => a.passed);
@@ -110,12 +114,13 @@ export async function GET() {
       examWeight: EXAM_WEIGHT,
     },
     bankSize,
-    permit: permitInfo(permit),
+    permit: permitInfo(permit, now),
     // مدیر/ادیتور برای بازبینی آزمون به مجوز نیاز ندارد و نتیجه‌اش گواهی صادر نمی‌کند.
     permitExempt: isManager(user),
-    // اجازهٔ بدون نمرهٔ کلاسی (مربوط به پیش از راه‌اندازی این قاعده) آزمون را باز نمی‌کند.
+    // اجازهٔ بدون نمرهٔ کلاسی (مربوط به پیش از راه‌اندازی این قاعده) آزمون را باز نمی‌کند،
+    // و اجازه‌ای که بازه‌اش هنوز نرسیده هم دکمهٔ شروع را فعال نمی‌کند.
     canStart: !open && !passedBefore && bankSize > 0
-      && ((!!permit && permit.classScore !== null) || isManager(user)),
+      && ((!!permit && permit.classScore !== null && !permitNotOpenYet(permit, now)) || isManager(user)),
     passedBefore,
     expiredAttemptId: open && over ? open.id : null,
     current,
@@ -145,13 +150,24 @@ export async function POST() {
 
   // بدون اجازهٔ مدیر یا ادیتور، آزمون باز نمی‌شود. خودِ مدیر/ادیتور برای بازبینی مستثناست.
   const exempt = isManager(user);
-  const permit = exempt ? null : await findUsablePermit(user.id, now);
+  const permit = exempt ? null : await findPendingPermit(user.id, now);
   if (!permit && !exempt) {
     return Response.json({
       ok: false,
       error: 'برای شرکت در آزمون باید مدیر یا ادیتور به شما اجازه بدهد. پس از صدور اجازه، همین صفحه دکمهٔ شروع را نشان می‌دهد.',
       needsPermit: true,
     }, { status: 403 });
+  }
+  // خارج از بازهٔ تعیین‌شده، صفحهٔ آزمون باز نمی‌شود. مجوزی که بازه‌اش تمام شده باشد
+  // اصلاً در findPendingPermit نمی‌آید، پس فقط بازهٔ شروع‌نشده می‌ماند.
+  if (permitNotOpenYet(permit, now)) {
+    const at = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'long', timeStyle: 'short', timeZone: 'Asia/Tehran' })
+      .format(permit.startsAt);
+    return Response.json({
+      ok: false,
+      error: `آزمون شما هنوز باز نشده است. از ${at} می‌توانید آن را شروع کنید.`,
+      notOpenYet: true,
+    }, { status: 409 });
   }
   // نمرهٔ کلاسی باید پیش از شروع ثبت شده باشد، وگرنه نمرهٔ نهایی قابل محاسبه نیست.
   if (permit && permit.classScore === null) {

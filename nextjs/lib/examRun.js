@@ -5,8 +5,14 @@ import { issueCertificate } from './certificate';
 import { notifyUsers } from './notifications';
 
 // ── مجوز آزمون ────────────────────────────────────────────────
-// یک مجوز وقتی قابل استفاده است که باطل نشده باشد، هنوز خرج نشده باشد و مهلتش نگذشته باشد.
-export function usablePermitWhere(userId, now = new Date()) {
+// هر مجوز یک بازهٔ زمانی دارد که در آن، صفحهٔ آزمون برای هنرجو باز است:
+// از startsAt (خالی = از لحظهٔ صدور) تا expiresAt (خالی = بدون محدودیت).
+// این بازه فقط زمانِ ورود و شروع را تعیین می‌کند؛ پس از شروع، آزمون با مهلت
+// خودش (زمان هر سؤال) جلو می‌رود و پایانِ بازه آن را قطع نمی‌کند.
+
+// مجوزی که هنوز زنده است: باطل نشده، خرج نشده و بازه‌اش تمام نشده.
+// شاملِ مجوزِ زمان‌بندی‌شده‌ای هم می‌شود که هنوز بازه‌اش نرسیده است.
+export function pendingPermitWhere(userId, now = new Date()) {
   return {
     userId,
     revoked: false,
@@ -15,11 +21,33 @@ export function usablePermitWhere(userId, now = new Date()) {
   };
 }
 
+// مجوزی که همین حالا قابل استفاده است: بازه‌اش هم شروع شده باشد.
+export function usablePermitWhere(userId, now = new Date()) {
+  return {
+    ...pendingPermitWhere(userId, now),
+    AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }],
+  };
+}
+
 export function findUsablePermit(userId, now = new Date()) {
   return prisma.examPermit.findFirst({
     where: usablePermitWhere(userId, now),
     orderBy: { grantedAt: 'asc' }, // قدیمی‌ترین مجوز اول خرج می‌شود
   });
+}
+
+// برای نمایش وضعیت به هنرجو؛ مجوزِ زمان‌بندی‌شده را هم برمی‌گرداند تا
+// به‌جای «اجازه ندارید»، زمان باز شدن آزمون را ببیند.
+export function findPendingPermit(userId, now = new Date()) {
+  return prisma.examPermit.findFirst({
+    where: pendingPermitWhere(userId, now),
+    orderBy: { grantedAt: 'asc' },
+  });
+}
+
+// آیا بازهٔ این مجوز هنوز شروع نشده است؟
+export function permitNotOpenYet(permit, now = new Date()) {
+  return !!(permit && permit.startsAt && permit.startsAt > now);
 }
 
 // ── حرکت رو به جلوی سؤال‌ها ────────────────────────────────────

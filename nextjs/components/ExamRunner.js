@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
+const dateTimeFmt = new Intl.DateTimeFormat('fa-IR', {
+  year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tehran',
+});
 const fa = (n) => new Intl.NumberFormat('fa-IR', { useGrouping: false }).format(n ?? 0);
 
 function clock(ms) {
@@ -12,12 +15,26 @@ function clock(ms) {
   return `${fa(m)}:${String(s).padStart(2, '0').replace(/\d/g, (d) => fa(d))}`;
 }
 
+// فاصلهٔ زمانی تا باز شدن آزمون، به زبان ساده.
+function untilText(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const days = Math.floor(total / 86400);
+  const hours = Math.floor((total % 86400) / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = total % 60;
+  if (days > 0) return `${fa(days)} روز و ${fa(hours)} ساعت`;
+  if (hours > 0) return `${fa(hours)} ساعت و ${fa(minutes)} دقیقه`;
+  if (minutes > 0) return `${fa(minutes)} دقیقه و ${fa(seconds)} ثانیه`;
+  return `${fa(seconds)} ثانیه`;
+}
+
 export default function ExamRunner() {
   const [state, setState] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [choice, setChoice] = useState(null);
   const [remaining, setRemaining] = useState(0);
+  const [opensIn, setOpensIn] = useState(0);
   const [result, setResult] = useState(null);
   const [confirming, setConfirming] = useState(false);
   const submittingRef = useRef(false);
@@ -103,6 +120,28 @@ export default function ExamRunner() {
     const t = setInterval(tick, 500);
     return () => clearInterval(t);
   }, [state?.current, goNext]);
+
+  // شمارش معکوس تا باز شدن بازهٔ آزمون؛ با رسیدن زمان، وضعیت یک بار از سرور تازه می‌شود
+  // تا هنرجو بدون رفرش دستی، دکمهٔ شروع را ببیند.
+  const permitStartsAt = state?.permit?.notOpenYet ? state.permit.startsAt : null;
+  useEffect(() => {
+    if (!permitStartsAt) return undefined;
+    const at = new Date(permitStartsAt).getTime();
+    let timer = null;
+    let reloaded = false;
+    const tick = () => {
+      const left = at - Date.now();
+      setOpensIn(left);
+      if (left <= 0 && !reloaded) {
+        reloaded = true;
+        if (timer) clearInterval(timer);
+        load();
+      }
+    };
+    tick();
+    if (!reloaded) timer = setInterval(tick, 1000);
+    return () => { if (timer) clearInterval(timer); };
+  }, [permitStartsAt, load]);
 
   // آزمون شروع‌شده وقفه ندارد؛ اگر کاربر بخواهد صفحه را ببندد، مرورگر هشدار می‌دهد.
   useEffect(() => {
@@ -345,12 +384,26 @@ export default function ExamRunner() {
               اجازهٔ شرکت در آزمون صادر شده، اما نمرهٔ تکلیف کلاسی شما هنوز ثبت نشده است.
               چون نمرهٔ نهایی از جمع این دو ساخته می‌شود، آزمون تا ثبت آن توسط مدیر یا ادیتور شروع نمی‌شود.
             </div>
+          ) : state.permit.notOpenYet ? (
+            <div className="alert alert--info">
+              اجازهٔ شرکت در آزمون برای شما صادر شده، اما زمان آن هنوز نرسیده است.
+              <div style={{ marginTop: 8 }}>
+                آزمون <strong>{dateTimeFmt.format(new Date(state.permit.startsAt))}</strong> باز می‌شود
+                {state.permit.expiresAt ? ` و تا ${dateTimeFmt.format(new Date(state.permit.expiresAt))} فرصت شروع دارید.` : '.'}
+              </div>
+              <div style={{ marginTop: 8 }}>
+                زمان باقی‌مانده تا باز شدن آزمون: <strong>{untilText(opensIn)}</strong>
+              </div>
+              <div style={{ marginTop: 8, opacity: 0.85 }}>
+                لازم نیست صفحه را ببندید؛ با رسیدن زمان، دکمهٔ «شروع آزمون» خودکار همین‌جا ظاهر می‌شود.
+              </div>
+            </div>
           ) : (
             <>
               <div className="alert alert--success" style={{ marginBottom: 14 }}>
                 اجازهٔ شرکت در آزمون برای شما صادر شده است
                 {state.permit.grantedByName ? ` (توسط ${state.permit.grantedByName})` : ''}
-                {state.permit.expiresAt ? ` — تا ${dateFmt.format(new Date(state.permit.expiresAt))} فرصت شروع دارید.` : '.'}
+                {state.permit.expiresAt ? ` — تا ${dateTimeFmt.format(new Date(state.permit.expiresAt))} فرصت شروع دارید.` : '.'}
                 <div style={{ marginTop: 6 }}>
                   نمرهٔ تکلیف و فعالیت کلاسی ثبت‌شدهٔ شما: <strong>{fa(state.permit.classScore)} از {fa(cfg.classScoreMax)}</strong>
                   {' '}— این نمره در پایان به نمرهٔ آزمون اضافه می‌شود.
