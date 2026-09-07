@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
+import { privateDocumentUrl } from '@/lib/privateDocuments';
 
 export async function GET() {
   const user = await getSessionUser();
@@ -28,7 +29,7 @@ export async function GET() {
       nationalId: r.nationalId,
       branch: r.branch,
       birthDate: r.birthDate,
-      idCardImage: r.idCardImage,
+      idCardImage: privateDocumentUrl(r.idCardImage),
       goal: r.goal,
       status: r.status,
       username: r.username || (r.userId ? byId[r.userId]?.username : null) || null,

@@ -24,14 +24,14 @@ export async function sendMessage(text) {
   return res.json().catch(() => ({ ok: false }));
 }
 
-// ارسال یک سند (PDF) به همراه کپشن.
-export async function sendDocument(buffer, filename, caption) {
+// ارسال یک فایل به همراه کپشن.
+export async function sendDocument(buffer, filename, caption, contentType = 'application/pdf') {
   const { token, chatId, ok } = config();
   if (!ok) return { ok: false, error: 'BALE not configured' };
   const form = new FormData();
   form.append('chat_id', String(chatId));
   if (caption) form.append('caption', caption);
-  form.append('document', new Blob([buffer], { type: 'application/pdf' }), filename);
+  form.append('document', new Blob([buffer], { type: contentType }), filename);
   const res = await fetch(`${API_BASE}/bot${token}/sendDocument`, { method: 'POST', body: form });
   return res.json().catch(() => ({ ok: false }));
 }

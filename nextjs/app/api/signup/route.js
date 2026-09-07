@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { normalizePhone } from '@/lib/auth';
 import { notifySignup } from '@/lib/signupNotify';
-import { siteUrl } from '@/lib/siteUrl';
+import { privateDocumentName } from '@/lib/privateDocuments';
 
 const BRANCHES = ['تهران', 'ساری'];
 const ROLES = ['student', 'filmmaker'];
@@ -33,7 +33,7 @@ export async function POST(request) {
       if (!phone) return Response.json({ ok: false, error: 'شماره تماس معتبر نیست.' }, { status: 400 });
       if (!branch) return Response.json({ ok: false, error: 'شعبه را انتخاب کنید (تهران یا ساری).' }, { status: 400 });
       if (!birthDate) return Response.json({ ok: false, error: 'تاریخ تولد را وارد کنید.' }, { status: 400 });
-      if (!/^\/media\/[A-Za-z0-9._-]+$/.test(idCardImage)) {
+      if (!privateDocumentName(idCardImage)) {
         return Response.json({ ok: false, error: 'عکس شناسنامه یا کارت ملی را بارگذاری کنید.' }, { status: 400 });
       }
     } else {
@@ -71,9 +71,8 @@ export async function POST(request) {
       },
     });
 
-    // گزارش آنی در «بله» بدون بلاک‌کردن پاسخ (خطا مسیر ثبت‌نام را مختل نمی‌کند).
-    const origin = await siteUrl();
-    notifySignup(created, { idCardUrl: idCardImage ? `${origin}${idCardImage}` : null }).catch(() => {});
+    // مدرک خصوصی به‌صورت فایل در بله فرستاده می‌شود و URL عمومی ندارد.
+    notifySignup(created).catch(() => {});
 
     return Response.json({ ok: true });
   } catch {

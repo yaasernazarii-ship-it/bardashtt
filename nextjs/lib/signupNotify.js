@@ -1,5 +1,7 @@
 // گزارش درخواست‌های ثبت‌نامِ حساب کاربری در «بله».
-import { sendMessage, isBaleConfigured } from './bale.js';
+import { readFile } from 'node:fs/promises';
+import { sendDocument, sendMessage, isBaleConfigured } from './bale.js';
+import { privateDocumentName, privateDocumentPath } from './privateDocuments.js';
 
 const ROLE_FA = { student: 'هنرجو', filmmaker: 'فیلمساز' };
 
@@ -28,10 +30,17 @@ function details(request, { idCardUrl = null } = {}) {
 
 // گزارش آنیِ هر درخواست ثبت‌نام تازه.
 // عمداً خطا را بالا نمی‌دهد تا مسیر ثبت‌نام کاربر مختل نشود.
-export async function notifySignup(request, { idCardUrl = null } = {}) {
+export async function notifySignup(request) {
   try {
     if (!isBaleConfigured()) return;
-    await sendMessage(['درخواست ثبت‌نام جدید', ...details(request, { idCardUrl })].join('\n'));
+    const text = ['درخواست ثبت‌نام جدید', ...details(request)].join('\n');
+    const name = privateDocumentName(request.idCardImage);
+    if (name) {
+      const buffer = await readFile(privateDocumentPath(name));
+      await sendDocument(buffer, `identity-${request.id}.webp`, text, 'image/webp');
+    } else {
+      await sendMessage(text);
+    }
   } catch (err) {
     console.error('notifySignup failed:', err?.message || err);
   }

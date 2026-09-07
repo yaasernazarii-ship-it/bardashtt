@@ -3,6 +3,7 @@ import { getSessionUser, isManager } from '@/lib/auth';
 import { hashPassword } from '@/lib/password';
 import { logAction } from '@/lib/audit';
 import { removeLocalUploads } from '@/lib/uploadCleanup';
+import { privateDocumentUrl } from '@/lib/privateDocuments';
 
 const ROLES = ['member', 'student', 'filmmaker', 'editor', 'admin'];
 
@@ -45,7 +46,8 @@ export async function GET(request, { params }) {
     select: { idCardImage: true, goal: true, birthDate: true },
   });
 
-  return Response.json({ ok: true, user: { ...target, createdAt: target.createdAt.toISOString() }, signup });
+  const safeSignup = signup ? { ...signup, idCardImage: privateDocumentUrl(signup.idCardImage) } : null;
+  return Response.json({ ok: true, user: { ...target, createdAt: target.createdAt.toISOString() }, signup: safeSignup });
 }
 
 export async function PATCH(request, { params }) {

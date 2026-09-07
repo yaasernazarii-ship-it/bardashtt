@@ -18,8 +18,9 @@ dist/
 __pycache__/
 *.pyc
 
-# فایل‌هایی که کاربران در زمان اجرا آپلود می‌کنند (توسط app/media/[name] سرو می‌شوند)
+# فایل‌هایی که کاربران در زمان اجرا آپلود می‌کنند
 nextjs/uploads/
+nextjs/private_uploads/
 
 # IDE
 .idea/

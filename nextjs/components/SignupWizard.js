@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Icon from './Icon';
 
 const EMPTY = { firstName: '', lastName: '', phone: '', nationalId: '', branch: 'تهران', birthDate: '', idCardImage: '', goal: '' };
@@ -39,10 +39,15 @@ export default function SignupWizard({ content }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
+  const [idCardPreview, setIdCardPreview] = useState('');
+
+  useEffect(() => () => {
+    if (idCardPreview) URL.revokeObjectURL(idCardPreview);
+  }, [idCardPreview]);
 
   function set(k, v) { setForm((p) => ({ ...p, [k]: v })); setError(''); }
 
-  function reset() { setRole(''); setForm(EMPTY); setError(''); }
+  function reset() { setRole(''); setForm(EMPTY); setIdCardPreview(''); setError(''); }
 
   async function uploadIdCard(file) {
     if (!file) return;
@@ -53,7 +58,8 @@ export default function SignupWizard({ content }) {
       const res = await fetch('/api/signup/upload', { method: 'POST', body: fd });
       const data = await res.json();
       if (!data.ok) { setError(data.error || 'آپلود عکس ناموفق بود.'); return; }
-      set('idCardImage', data.url);
+      setIdCardPreview(URL.createObjectURL(file));
+      set('idCardImage', data.ref);
     } catch {
       setError('آپلود عکس ناموفق بود.');
     } finally {
@@ -171,7 +177,7 @@ export default function SignupWizard({ content }) {
         {uploading && <p style={{ color: 'var(--muted)', fontSize: '.82rem', marginTop: 6 }}>در حال بارگذاری عکس…</p>}
         {form.idCardImage && !uploading && (
           <div style={{ marginTop: 10 }}>
-            <img src={form.idCardImage} alt="عکس شناسنامه" style={{ maxWidth: '100%', maxHeight: 180, borderRadius: 10, border: '1px solid var(--border)' }} />
+            <img src={idCardPreview} alt="عکس شناسنامه" style={{ maxWidth: '100%', maxHeight: 180, borderRadius: 10, border: '1px solid var(--border)' }} />
             <p style={{ color: '#16A34A', fontSize: '.82rem', marginTop: 6 }}>عکس بارگذاری شد.</p>
           </div>
         )}
