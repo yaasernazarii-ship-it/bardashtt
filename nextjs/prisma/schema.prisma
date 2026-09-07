@@ -23,6 +23,7 @@ model User {
   passwordHash String?
   passwordPlain String? // رمز عبورِ صادرشده توسط مدیر، برای ارسال مجدد در صورت فراموشی
   active       Boolean      @default(true) // غیرفعال‌سازی حساب توسط ادمین/ادیتور
+  isPrimaryAdmin Boolean    @default(false) // مدیر اصلی یکتا؛ نقش و دسترسی او قابل کاهش نیست
   deletedAt    DateTime? // حساب بایگانی‌شده؛ از فهرست‌های عملیاتی مخفی است ولی رزومه/آزمون/گواهی تا حذف دستی مدیر حفظ می‌شوند
   graduated    Boolean      @default(false) // فارغ‌التحصیل؟ در این حالت تقویم کلاس از داشبورد حذف و از انتخاب اسامی کنار می‌رود
   nationalId   String?
@@ -258,6 +259,15 @@ model Certificate {
   @@index([userId])
 }
 
+model RateLimitBucket {
+  keyHash   String   @id
+  count     Int      @default(0)
+  resetAt   DateTime
+  updatedAt DateTime @default(now())
+
+  @@index([resetAt])
+}
+
 model OtpCode {
   id        String   @id @default(cuid())
   phone     String
@@ -270,12 +280,15 @@ model OtpCode {
 }
 
 model Session {
-  id        String   @id @default(cuid())
-  token     String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  tokenHash  String   @unique
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+  userAgent  String?
+  ipAddress  String?
 
   @@index([userId])
 }
@@ -712,7 +725,7 @@ model SocialAccount {
 
 model SocialSession {
   id        String        @id @default(cuid())
-  token     String        @unique
+  tokenHash String        @unique
   accountId String
   account   SocialAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
   expiresAt DateTime

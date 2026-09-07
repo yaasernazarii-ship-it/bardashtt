@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { randomBytes } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import { cookies, headers } from 'next/headers';
 import { prisma } from './prisma';
 
@@ -9,6 +9,14 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 export function isManager(user) {
   return !!user && (user.role === 'admin' || user.role === 'editor');
+}
+
+export function isPrimaryAdmin(user) {
+  return !!user && user.role === 'admin' && user.isPrimaryAdmin === true;
+}
+
+export function hashSessionToken(token) {
+  return createHash('sha256').update(String(token || ''), 'utf8').digest('hex');
 }
 
 // دسترسی به بانک بازیگران و ثبت درخواست ست‌تایم: فقط فیلمساز و ادمین/ادیتور؛ هنرجو و عضو عادی مجاز نیستند.
@@ -44,11 +52,16 @@ export function normalizePhone(input) {
 
 export async function createSession(userId, { remember = true } = {}) {
   const token = randomBytes(32).toString('hex');
+  const tokenHash = hashSessionToken(token);
   const expiresAt = new Date(Date.now() + SESSION_TTL_DAYS * DAY_MS);
-  await prisma.session.create({ data: { token, userId, expiresAt } });
+  const requestHeaders = await headers();
+  const userAgent = String(requestHeaders.get('user-agent') || '').slice(0, 500) || null;
+  const ipAddress = String(requestHeaders.get('x-forwarded-for') || requestHeaders.get('x-real-ip') || '')
+    .split(',')[0].trim().slice(0, 64) || null;
+  await prisma.session.create({ data: { tokenHash, userId, expiresAt, userAgent, ipAddress } });
 
   const store = await cookies();
-  const domain = cookieDomainForHost((await headers()).get('host'));
+  const domain = cookieDomainForHost(requestHeaders.get('host'));
   store.set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -68,8 +81,9 @@ export const getSessionUser = cache(async function getSessionUser() {
   const token = store.get(SESSION_COOKIE)?.value;
   if (!token) return null;
 
+  const tokenHash = hashSessionToken(token);
   const session = await prisma.session.findUnique({
-    where: { token },
+    where: { tokenHash },
     include: { user: true },
   });
   if (!session || session.expiresAt < new Date()) return null;
@@ -81,7 +95,7 @@ export const getSessionUser = cache(async function getSessionUser() {
   const target = new Date(Date.now() + SESSION_TTL_DAYS * DAY_MS);
   if (target.getTime() - session.expiresAt.getTime() > DAY_MS) {
     try {
-      await prisma.session.update({ where: { token }, data: { expiresAt: target } });
+      await prisma.session.update({ where: { tokenHash }, data: { expiresAt: target, lastSeenAt: new Date() } });
     } catch { /* تمدید نشست حیاتی نیست */ }
   }
   return session.user;
@@ -91,7 +105,7 @@ export async function destroySession() {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;
   if (token) {
-    await prisma.session.deleteMany({ where: { token } });
+    await prisma.session.deleteMany({ where: { tokenHash: hashSessionToken(token) } });
     const domain = cookieDomainForHost((await headers()).get('host'));
     // پاک‌کردن هر دو نسخه‌ی کوکی (دامنه‌مشترک و host-only) برای خروج کامل.
     store.set(SESSION_COOKIE, '', {

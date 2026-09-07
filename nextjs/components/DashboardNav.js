@@ -84,6 +84,7 @@ const MANAGER_GROUPS = [
     key: 'monitoring', label: 'نظارت و تنظیمات', icon: 'settings',
     items: [
       { key: 'audit', href: '/dashboard/admin/audit', icon: 'clipboard', label: 'گزارش تغییرات' },
+      { key: 'account-sessions', href: '/dashboard/admin/account-sessions', icon: 'shield', label: 'نشست‌های فعال', primaryOnly: true },
     ],
   },
 ];
@@ -111,6 +112,7 @@ export default function DashboardNav({
   role,
   isAdmin = false,
   isManager = false,
+  isPrimaryAdmin = false,
   graduated = false,
   profile = null,
   supportPhone = '',
@@ -194,7 +196,7 @@ export default function DashboardNav({
                     </button>
                     {expanded && (
                       <ul className="sidebar-group__items">
-                        {group.items.map((item) => (
+                        {group.items.filter((item) => !item.primaryOnly || isPrimaryAdmin).map((item) => (
                           <li key={item.key}>
                             <Link className={active === item.key ? 'active' : undefined} href={item.href} onClick={close}>
                               <Icon name={item.icon} size={16} className="sidebar-menu__ico" />{item.label}

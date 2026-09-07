@@ -32,6 +32,7 @@ export default async function DashboardSidebar(props) {
   return (
     <DashboardNav
       {...props}
+      isPrimaryAdmin={user?.isPrimaryAdmin === true}
       profile={profile}
       supportPhone={t('nav.support.phoneHref')}
       supportPhoneText={t('nav.support.phoneText')}
