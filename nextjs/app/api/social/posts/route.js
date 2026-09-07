@@ -132,8 +132,8 @@ export async function POST(request) {
   if (imageUrl === false) {
     return Response.json({ ok: false, error: 'عکس معتبر نیست؛ دوباره آپلود کنید.' }, { status: 400 });
   }
-  // فقط لینک آپارات پذیرفته می‌شود: ویدیو روی سرور ما ذخیره نمی‌شود و کد امبدِ دلخواه هم اجرا نمی‌گردد.
-  const rawVideo = String(body.aparatUrl || '').trim();
+  // استوری فقط عکس است؛ لینک ویدیو برای پست معنا دارد و نباید به رکورد استوری برسد.
+  const rawVideo = kind === 'post' ? String(body.aparatUrl || '').trim() : '';
   const aparatUrl = rawVideo ? (aparatEmbedUrl(rawVideo) ? rawVideo.slice(0, 300) : null) : null;
   if (rawVideo && !aparatUrl) {
     return Response.json({ ok: false, error: 'لینک آپارات معتبر نیست. نشانی صفحهٔ ویدیو در آپارات را بگذارید.' }, { status: 400 });

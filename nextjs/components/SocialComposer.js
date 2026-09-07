@@ -24,6 +24,7 @@ async function uploadSocialImage(file, kind) {
 export default function SocialComposer() {
   const [kind, setKind] = useState('post');
   const [imageUrl, setImageUrl] = useState('');
+  const [imageKind, setImageKind] = useState('');
   const [aparatUrl, setAparatUrl] = useState('');
   const [caption, setCaption] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -46,20 +47,36 @@ export default function SocialComposer() {
 
   useEffect(() => { load(); }, []);
 
+  function changeKind(nextKind) {
+    setKind(nextKind);
+    setError('');
+    if (imageUrl && imageKind && imageKind !== nextKind) {
+      setImageUrl('');
+      setImageKind('');
+      setError('نوع محتوا تغییر کرد؛ لطفاً عکس را دوباره انتخاب کنید.');
+    }
+  }
+
   async function pick(e) {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
+    const selectedKind = kind;
     setUploading(true); setError('');
-    const data = await uploadSocialImage(file, kind);
+    const data = await uploadSocialImage(file, selectedKind);
     setUploading(false);
-    if (data.ok) setImageUrl(data.url);
-    else setError(data.error || 'آپلود ناموفق بود.');
+    if (data.ok) {
+      setImageUrl(data.url);
+      setImageKind(selectedKind);
+    } else setError(data.error || 'آپلود ناموفق بود.');
   }
 
   async function submit(e) {
     e.preventDefault();
     setError(''); setOkMsg('');
     if (kind === 'story' && !imageUrl) { setError('برای استوری یک عکس انتخاب کنید.'); return; }
+    if (kind === 'story' && imageKind !== 'story') { setError('عکس استوری آماده نیست؛ لطفاً دوباره انتخاب کنید.'); return; }
+    if (kind === 'post' && imageUrl && imageKind !== 'post') { setError('عکس برای نوع دیگری آماده شده؛ لطفاً دوباره انتخاب کنید.'); return; }
     if (kind === 'post' && !imageUrl && !aparatUrl.trim()) { setError('یک عکس بگذارید یا لینک ویدیوی آپارات را وارد کنید.'); return; }
     setBusy(true);
     const res = await fetch('/api/social/posts', {
@@ -70,7 +87,7 @@ export default function SocialComposer() {
     const data = await res.json();
     setBusy(false);
     if (!data.ok) { setError(data.error || 'ثبت ناموفق بود.'); return; }
-    setImageUrl(''); setAparatUrl(''); setCaption('');
+    setImageUrl(''); setImageKind(''); setAparatUrl(''); setCaption('');
     setItems((prev) => [data.item, ...prev]);
     setOkMsg('منتشر شد.');
   }
@@ -94,10 +111,10 @@ export default function SocialComposer() {
     <div>
       <form onSubmit={submit} className="form-shell" style={{ marginBottom: 26 }}>
         <div className="cm-kind">
-          <button type="button" className={kind === 'post' ? 'active' : undefined} onClick={() => setKind('post')}>
+          <button type="button" className={kind === 'post' ? 'active' : undefined} onClick={() => changeKind('post')}>
             <Icon name="image" size={16} /> پست
           </button>
-          <button type="button" className={kind === 'story' ? 'active' : undefined} onClick={() => setKind('story')}>
+          <button type="button" className={kind === 'story' ? 'active' : undefined} onClick={() => changeKind('story')}>
             <Icon name="sparkles" size={16} /> استوری ۲۴ ساعته
           </button>
         </div>
@@ -121,7 +138,7 @@ export default function SocialComposer() {
           <div className="cm-preview">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={imageUrl} alt="پیش‌نمایش" />
-            <button type="button" onClick={() => setImageUrl('')} aria-label="حذف عکس"><Icon name="close" size={14} /></button>
+            <button type="button" onClick={() => { setImageUrl(''); setImageKind(''); }} aria-label="حذف عکس"><Icon name="close" size={14} /></button>
           </div>
         )}
 
