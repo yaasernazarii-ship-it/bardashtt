@@ -1,4 +1,4 @@
-import pdfParse from 'pdf-parse/lib/pdf-parse.js';
+import { PDFParse } from 'pdf-parse';
 import { embed } from './ai';
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
@@ -30,8 +30,13 @@ export async function extractKnowledgeText(file, pastedText = '') {
   let text = '';
 
   if (file.type === 'application/pdf' || fileName.endsWith('.pdf')) {
-    const parsed = await pdfParse(bytes);
-    text = parsed.text;
+    const parser = new PDFParse({ data: bytes });
+    try {
+      const parsed = await parser.getText();
+      text = parsed.text;
+    } finally {
+      await parser.destroy();
+    }
   } else if (TEXT_TYPES.has(file.type) || fileName.endsWith('.txt') || fileName.endsWith('.md')) {
     text = bytes.toString('utf8');
   } else {
