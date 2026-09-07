@@ -49,7 +49,7 @@ export async function POST(request, { params }) {
   if (!group.active) return Response.json({ ok: false, error: 'این گروه بسته شده است.' }, { status: 403 });
 
   const rateKey = `chatGroup:${user.id}`;
-  if (isLocked(rateKey, { max: 120 })) {
+  if (await isLocked(rateKey, { max: 120 })) {
     return Response.json({ ok: false, error: 'تعداد پیام در چند دقیقهٔ اخیر زیاد بود. کمی بعد دوباره تلاش کنید.' }, { status: 429 });
   }
 
@@ -58,7 +58,7 @@ export async function POST(request, { params }) {
   const text = cleanBody(b.body, GROUP_LIMITS.message);
   if (!text) return Response.json({ ok: false, error: 'متن پیام خالی است.' }, { status: 400 });
 
-  recordFailure(rateKey, { max: 120 });
+  await recordFailure(rateKey, { max: 120 });
   const message = await postMessage(group, user, text);
 
   return Response.json({ ok: true, message: serializeMessage(message, user.id) });

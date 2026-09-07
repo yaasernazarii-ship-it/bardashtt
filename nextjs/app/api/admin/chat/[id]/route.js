@@ -76,7 +76,7 @@ export async function POST(request, { params }) {
   if (error) return error;
 
   const rateKey = `staffChat:${user.id}`;
-  if (isLocked(rateKey, { max: 120 })) {
+  if (await isLocked(rateKey, { max: 120 })) {
     return Response.json({ ok: false, error: 'تعداد پیام در چند دقیقهٔ اخیر زیاد بود. کمی بعد دوباره تلاش کنید.' }, { status: 429 });
   }
 
@@ -85,7 +85,7 @@ export async function POST(request, { params }) {
   const text = cleanText(b.body, CHAT_LIMITS.message);
   if (!text) return Response.json({ ok: false, error: 'متن پیام خالی است.' }, { status: 400 });
 
-  recordFailure(rateKey, { max: 120 });
+  await recordFailure(rateKey, { max: 120 });
   const name = displayNameOf(user);
 
   // اگر خودش همین چند دقیقه پیش در این گفت‌وگو حرف زده، اعلان تازه نمی‌فرستیم.

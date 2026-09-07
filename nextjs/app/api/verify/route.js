@@ -24,7 +24,7 @@ export async function POST(request) {
   }
 
   const rateKey = missKey(request);
-  if (isLocked(rateKey, MISS_LIMIT)) {
+  if (await isLocked(rateKey, MISS_LIMIT)) {
     return Response.json(
       { ok: false, error: 'تعداد استعلام‌های ناموفق زیاد بود. چند دقیقه دیگر دوباره تلاش کنید.' },
       { status: 429 },
@@ -33,13 +33,13 @@ export async function POST(request) {
 
   const serial = normalizeSerial(body.serial);
   if (!serial || serial.length < 6 || serial.length > 40) {
-    recordFailure(rateKey, MISS_LIMIT);
+    await recordFailure(rateKey, MISS_LIMIT);
     return Response.json({ ok: false, error: 'کد گواهی‌نامه معتبر نیست.' }, { status: 400 });
   }
 
   const cert = await prisma.certificate.findUnique({ where: { serial } });
   if (!cert) {
-    recordFailure(rateKey, MISS_LIMIT);
+    await recordFailure(rateKey, MISS_LIMIT);
     return Response.json({ ok: false, found: false, error: 'گواهی‌نامه‌ای با این کد ثبت نشده است.' }, { status: 404 });
   }
 

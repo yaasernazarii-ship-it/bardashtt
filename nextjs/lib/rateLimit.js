@@ -1,22 +1,40 @@
-// محدودسازیِ ساده‌ی تلاش‌های ناموفق (حافظه‌ای، در سطح یک پردازش سرور).
-// برای جلوگیری از حدس‌زدنِ خودکار رمز عبور یا کد پیامکی به‌کار می‌رود.
-const buckets = new Map();
+import { createHash } from 'crypto';
+import { prisma } from './prisma';
 
-export function isLocked(key, { max = 5, windowMs = 5 * 60 * 1000 } = {}) {
-  const rec = buckets.get(key);
-  if (!rec || Date.now() > rec.resetAt) return false;
-  return rec.count >= max;
+function keyHash(key) {
+  return createHash('sha256').update(String(key || ''), 'utf8').digest('hex');
 }
 
-export function recordFailure(key, { max = 5, windowMs = 5 * 60 * 1000 } = {}) {
-  const rec = buckets.get(key);
-  if (!rec || Date.now() > rec.resetAt) {
-    buckets.set(key, { count: 1, resetAt: Date.now() + windowMs });
-    return;
+export async function isLocked(key, { max = 5 } = {}) {
+  const hash = keyHash(key);
+  const record = await prisma.rateLimitBucket.findUnique({ where: { keyHash: hash } });
+  if (!record) return false;
+  if (record.resetAt <= new Date()) {
+    await prisma.rateLimitBucket.deleteMany({ where: { keyHash: hash, resetAt: { lte: new Date() } } });
+    return false;
   }
-  rec.count += 1;
+  return record.count >= max;
 }
 
-export function clearAttempts(key) {
-  buckets.delete(key);
+export async function recordFailure(key, { windowMs = 5 * 60 * 1000 } = {}) {
+  const hash = keyHash(key);
+  const resetAt = new Date(Date.now() + windowMs);
+  await prisma.$executeRaw`
+    INSERT INTO "RateLimitBucket" ("keyHash", "count", "resetAt", "updatedAt")
+    VALUES (${hash}, 1, ${resetAt}, NOW())
+    ON CONFLICT ("keyHash") DO UPDATE SET
+      "count" = CASE
+        WHEN "RateLimitBucket"."resetAt" <= NOW() THEN 1
+        ELSE "RateLimitBucket"."count" + 1
+      END,
+      "resetAt" = CASE
+        WHEN "RateLimitBucket"."resetAt" <= NOW() THEN EXCLUDED."resetAt"
+        ELSE "RateLimitBucket"."resetAt"
+      END,
+      "updatedAt" = NOW()
+  `;
+}
+
+export async function clearAttempts(key) {
+  await prisma.rateLimitBucket.deleteMany({ where: { keyHash: keyHash(key) } });
 }

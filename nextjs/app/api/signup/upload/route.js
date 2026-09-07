@@ -15,7 +15,7 @@ const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp']);
 export async function POST(request) {
   const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
   const key = `signup-document:${forwarded || 'unknown'}`;
-  if (isLocked(key, { max: HOURLY_UPLOADS, windowMs: 60 * 60 * 1000 })) {
+  if (await isLocked(key, { max: HOURLY_UPLOADS, windowMs: 60 * 60 * 1000 })) {
     return Response.json({ ok: false, error: 'تعداد بارگذاری‌ها زیاد بوده؛ کمی بعد دوباره تلاش کنید.' }, { status: 429 });
   }
 
@@ -48,7 +48,7 @@ export async function POST(request) {
     await mkdir(dir, { recursive: true });
     const name = `idcard-${Date.now()}-${randomBytes(12).toString('hex')}.webp`;
     await writeFile(path.join(dir, name), buffer, { mode: 0o600 });
-    recordFailure(key, { max: HOURLY_UPLOADS, windowMs: 60 * 60 * 1000 });
+    await recordFailure(key, { max: HOURLY_UPLOADS, windowMs: 60 * 60 * 1000 });
 
     return Response.json({ ok: true, ref: privateDocumentRef(name) });
   } catch {

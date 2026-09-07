@@ -64,7 +64,7 @@ export async function POST(request) {
 
   // سدِ سادهٔ ضدِ ارسال انبوه (در سطح همین پردازش سرور).
   const rateKey = `staffReport:${user.id}`;
-  if (isLocked(rateKey, { max: 30 })) {
+  if (await isLocked(rateKey, { max: 30 })) {
     return Response.json({ ok: false, error: 'تعداد ثبت در چند دقیقهٔ اخیر زیاد بود. کمی بعد دوباره تلاش کنید.' }, { status: 429 });
   }
 
@@ -78,7 +78,7 @@ export async function POST(request) {
   if (title.length < 3) return Response.json({ ok: false, error: 'عنوان گزارش را بنویسید (حداقل ۳ نویسه).' }, { status: 400 });
   if (!text) return Response.json({ ok: false, error: 'متن گزارش خالی است.' }, { status: 400 });
 
-  recordFailure(rateKey, { max: 30 });
+  await recordFailure(rateKey, { max: 30 });
   const name = displayNameOf(user);
   // گیرنده: یک همکار مشخص یا (اگر انتخاب نشده باشد) کلِ تیم.
   const { targetId, targetName } = await resolveTarget(body.targetId, user.id);

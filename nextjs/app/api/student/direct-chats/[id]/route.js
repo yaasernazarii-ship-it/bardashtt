@@ -57,7 +57,7 @@ export async function POST(request, { params }) {
   }
 
   const rateKey = `directChat:${user.id}`;
-  if (isLocked(rateKey, { max: 120 })) {
+  if (await isLocked(rateKey, { max: 120 })) {
     return Response.json({ ok: false, error: 'تعداد پیام‌ها زیاد بود. کمی بعد دوباره تلاش کنید.' }, { status: 429 });
   }
   let body = {};
@@ -65,7 +65,7 @@ export async function POST(request, { params }) {
   const text = cleanBody(body.body, DIRECT_LIMITS.message);
   if (!text) return Response.json({ ok: false, error: 'متن پیام خالی است.' }, { status: 400 });
 
-  recordFailure(rateKey, { max: 120 });
+  await recordFailure(rateKey, { max: 120 });
   const message = await postDirectMessage(chat, user, text);
   return Response.json({ ok: true, message: serializeDirectMessage(message, user.id) });
 }

@@ -17,7 +17,7 @@ export async function POST(request) {
 
     // جلوگیری از حدس‌زدنِ خودکار کدِ ۴رقمی: بعد از چند تلاش ناموفق، کمی قفل می‌شود.
     const rateKey = `otp:${phone}`;
-    if (isLocked(rateKey)) {
+    if (await isLocked(rateKey)) {
       return Response.json({ ok: false, error: 'کد تأیید نادرست یا منقضی شده است.' }, { status: 400 });
     }
 
@@ -26,10 +26,10 @@ export async function POST(request) {
       orderBy: { createdAt: 'desc' },
     });
     if (!otp) {
-      recordFailure(rateKey);
+      await recordFailure(rateKey);
       return Response.json({ ok: false, error: 'کد تأیید نادرست یا منقضی شده است.' }, { status: 400 });
     }
-    clearAttempts(rateKey);
+    await clearAttempts(rateKey);
 
     // کد را همین‌جا مصرف می‌کنیم تا قابل استفاده‌ی مجدد نباشد، حتی اگر در ادامه ورود رد شود.
     await prisma.otpCode.update({ where: { id: otp.id }, data: { used: true } });

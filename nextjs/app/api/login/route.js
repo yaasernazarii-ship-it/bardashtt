@@ -15,7 +15,7 @@ export async function POST(request) {
     }
 
     const rateKey = `login:${username}`;
-    if (isLocked(rateKey)) {
+    if (await isLocked(rateKey)) {
       return Response.json(
         { ok: false, error: 'تلاش‌های ناموفق زیاد بود. چند دقیقه دیگر دوباره امتحان کنید.' },
         { status: 429 },
@@ -24,10 +24,10 @@ export async function POST(request) {
 
     const user = await prisma.user.findFirst({ where: { username } });
     if (!user || !user.passwordHash || !verifyPassword(password, user.passwordHash)) {
-      recordFailure(rateKey);
+      await recordFailure(rateKey);
       return Response.json({ ok: false, error: 'نام کاربری یا رمز عبور نادرست است.' }, { status: 401 });
     }
-    clearAttempts(rateKey);
+    await clearAttempts(rateKey);
     if (user.active === false) {
       return Response.json({ ok: false, error: 'حساب کاربری شما غیرفعال شده است. با پشتیبانی خانواده برداشت تماس بگیرید.' }, { status: 403 });
     }

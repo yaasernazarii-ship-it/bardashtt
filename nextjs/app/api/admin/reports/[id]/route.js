@@ -80,7 +80,7 @@ export async function POST(request, { params }) {
   const { id } = await params;
 
   const rateKey = `staffComment:${user.id}`;
-  if (isLocked(rateKey, { max: 60 })) {
+  if (await isLocked(rateKey, { max: 60 })) {
     return Response.json({ ok: false, error: 'تعداد پاسخ در چند دقیقهٔ اخیر زیاد بود. کمی بعد دوباره تلاش کنید.' }, { status: 429 });
   }
 
@@ -92,7 +92,7 @@ export async function POST(request, { params }) {
   const report = await prisma.staffReport.findUnique({ where: { id }, select: { id: true, title: true, authorId: true, targetId: true } });
   if (!report) return Response.json({ ok: false, error: 'گزارش پیدا نشد.' }, { status: 404 });
 
-  recordFailure(rateKey, { max: 60 });
+  await recordFailure(rateKey, { max: 60 });
   const name = displayNameOf(user);
   await prisma.staffReportComment.create({
     data: { reportId: id, authorId: user.id, authorName: name, authorRole: user.role, body: text },
