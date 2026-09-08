@@ -45,10 +45,10 @@ export default function AdminLiveClasses({ isAdmin }) {
     load();
   }
 
-  async function saveEmbed(id, field, url) {
+  async function saveRecording(id, url) {
     setBusyId(id); setError('');
     const res = await fetch(`/api/admin/sessions/${id}`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [field]: url }),
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ recordingUrl: url }),
     });
     const data = await res.json();
     setBusyId(null);
@@ -103,8 +103,7 @@ export default function AdminLiveClasses({ isAdmin }) {
               onStart={() => act(session.id, 'start')}
               onFinish={() => act(session.id, 'finish', 'آیا مطمئن هستید که می‌خواهید کلاس را به پایان برسانید؟')}
               onReopen={() => act(session.id, 'reopen', 'این جلسهٔ پایان‌یافته دوباره باز شود؟')}
-              onSaveLiveUrl={(url) => saveEmbed(session.id, 'liveUrl', url)}
-              onSaveRecording={(url) => saveEmbed(session.id, 'recordingUrl', url)} />
+              onSaveRecording={(url) => saveRecording(session.id, url)} />
           ))}
         </div>
       )}
@@ -112,9 +111,8 @@ export default function AdminLiveClasses({ isAdmin }) {
   );
 }
 
-function SessionRow({ session: s, isAdmin, busy, open, onToggle, onStart, onFinish, onReopen, onSaveLiveUrl, onSaveRecording }) {
+function SessionRow({ session: s, isAdmin, busy, open, onToggle, onStart, onFinish, onReopen, onSaveRecording }) {
   const date = new Date(s.startsAt);
-  const [liveUrl, setLiveUrl] = useState(s.liveUrl || '');
   const [recording, setRecording] = useState(s.recordingUrl || '');
   const isLive = s.liveStatus === 'live';
 
@@ -139,7 +137,6 @@ function SessionRow({ session: s, isAdmin, busy, open, onToggle, onStart, onFini
         <div className="live-admin__details">
           <div><span>زمان شروع واقعی</span><strong>{s.liveStartedAt ? timeFmt.format(new Date(s.liveStartedAt)) : '—'}</strong></div>
           <div><span>زمان پایان واقعی</span><strong>{s.liveFinishedAt ? timeFmt.format(new Date(s.liveFinishedAt)) : '—'}</strong></div>
-          <label className="live-admin__recording"><span>لینک یا iframe کلاس آنلاین</span><input className="form-input" dir="ltr" placeholder="https://… یا کد iframe سرویس کلاس" value={liveUrl} onChange={(e) => setLiveUrl(e.target.value)} /><button type="button" className="btn btn--outline btn--sm" onClick={() => onSaveLiveUrl(liveUrl)} disabled={busy}>ذخیره</button></label>
           {s.liveStatus === 'finished' && (
             <label className="live-admin__recording"><span>ویدیوی ضبط‌شده</span><input className="form-input" placeholder="لینک یا کد ویدیوی ضبط‌شده" value={recording} onChange={(e) => setRecording(e.target.value)} /><button type="button" className="btn btn--outline btn--sm" onClick={() => onSaveRecording(recording)} disabled={busy}>ذخیره</button></label>
           )}

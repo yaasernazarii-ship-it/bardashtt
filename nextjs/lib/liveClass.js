@@ -1,15 +1,14 @@
-import { normalizeEmbedUrl } from '@/lib/embed';
-
-// منطق مشترک «کلاس آنلاین زنده». نشانی هر جلسه در پنل مدیریت ثبت می‌شود و
-// پنل هنرجو/استاد فقط نشانیِ پاک‌سازی‌شدهٔ برگشتی از سرور را دریافت می‌کند.
+// منطق مشترک «کلاس آنلاین زنده». نکتهٔ مهم: موتور پخش (فعلاً آپارات) فقط همین‌جا شناخته می‌شود؛
+// پنل هنرجو/استاد فقط به liveStatus و embedSrcِ برگشتی از سرور کار دارند، نه به جزئیات آپارات.
+// اگر در آینده موتور پخش عوض شود، فقط کافی است getLiveEmbedSrc تغییر کند.
 
 export const LIVE_STATUS = { SCHEDULED: 'scheduled', LIVE: 'live', FINISHED: 'finished' };
 
-// برای جلسه‌های قدیمی که پیش از قابل‌تنظیم‌شدن سرویس ساخته شده‌اند، پخش فعلی حفظ می‌شود.
-const LEGACY_LIVE_EMBED = 'https://www.aparat.com/embed/live/BARDASHTT';
+// امبد ثابتِ کانال زندهٔ آپارات خانواده برداشت.
+const APARAT_LIVE_EMBED = 'https://www.aparat.com/embed/live/BARDASHTT';
 
-export function getLiveEmbedSrc(liveUrl) {
-  return normalizeEmbedUrl(liveUrl || LEGACY_LIVE_EMBED);
+export function getLiveEmbedSrc() {
+  return APARAT_LIVE_EMBED;
 }
 
 // آیا این کاربر مجاز به دیدنِ پخش زندهٔ همین جلسه است؟
