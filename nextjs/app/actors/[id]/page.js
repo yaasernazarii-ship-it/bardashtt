@@ -5,6 +5,7 @@ import { getSessionUser, isFilmmakerOrManager } from '@/lib/auth';
 import SimplePage from '@/components/SimplePage';
 import Icon from '@/components/Icon';
 import ActorBooking from '@/components/ActorBooking';
+import ActorGallery from '@/components/ActorGallery';
 import ShortlistButton from '@/components/ShortlistButton';
 import { embedSrc } from '@/lib/embed';
 import { siteUrl } from '@/lib/siteUrl';
@@ -12,6 +13,9 @@ import { siteUrl } from '@/lib/siteUrl';
 export const dynamic = 'force-dynamic';
 
 const GENDER = { male: 'آقا', female: 'خانم' };
+
+// ویدیوی رزومه یا فایلِ آپلودشده روی خودِ سایت است یا امبدِ آپارات/ویو.
+const isLocalVideo = (url) => /^\/media\//.test(url);
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
@@ -31,35 +35,69 @@ export default async function ActorDetailPage({ params }) {
   // بانک بازیگران فقط ویژه‌ی فیلم‌سازان و ادمین/ادیتور است؛ هنرجو و عضو عادی دسترسی ندارند.
   if (!isFilmmakerOrManager(user)) redirect('/dashboard');
 
-  const a = await prisma.actorResume.findFirst({ where: { id, isPublic: true } });
+  const a = await prisma.actorResume.findFirst({
+    where: { id, isPublic: true },
+    include: {
+      photos: { orderBy: { sortOrder: 'asc' } },
+      videos: { orderBy: { sortOrder: 'asc' } },
+    },
+  });
   if (!a) notFound();
 
-  const inShortlist = !!(await prisma.actorShortlist.findUnique({
-    where: { userId_actorId: { userId: user.id, actorId: a.id } },
-    select: { id: true },
-  }));
+  const [inShortlist, fieldDefs] = await Promise.all([
+    prisma.actorShortlist.findUnique({
+      where: { userId_actorId: { userId: user.id, actorId: a.id } },
+      select: { id: true },
+    }),
+    prisma.resumeFieldDef.findMany({
+      where: { active: true },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+      select: { key: true, label: true, type: true },
+    }),
+  ]);
 
   const skills = a.skills ? a.skills.split(/[,،]/).map((s) => s.trim()).filter(Boolean) : [];
-  const introSrc = embedSrc(a.selfVideoUrl);
+
+  // فقط فیلدهای سفارشیِ فعالی که برای این رزومه پر شده‌اند نمایش داده می‌شوند.
+  const custom = fieldDefs
+    .map((def) => ({ def, value: a.customValues?.[def.key] }))
+    .filter(({ value }) => value !== undefined && value !== null && value !== '')
+    .map(({ def, value }) => ({
+      key: def.key,
+      label: def.label,
+      text: def.type === 'boolean' ? (value ? 'بله' : 'خیر') : String(value),
+      long: def.type === 'textarea',
+    }));
 
   return (
     <SimplePage title={a.fullName} subtitle={a.headline || 'رزومه بازیگری'} tag="بازیگران" cta={false}>
       <div style={{ marginBottom: 18, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <Link href="/actors" className="btn btn--outline btn--sm">→ بازگشت به فهرست</Link>
-        <ShortlistButton actorId={a.id} initial={inShortlist} />
+        <ShortlistButton actorId={a.id} initial={!!inShortlist} />
       </div>
       <div className="actor-detail">
-        <div className="actor-detail__photo" style={a.photoUrl ? { backgroundImage: `url(${a.photoUrl})` } : undefined}>
-          {!a.photoUrl && <Icon name="masks" size={56} strokeWidth={1.3} />}
-        </div>
+        <ActorGallery photos={a.photos} alt={a.fullName} />
         <div className="actor-detail__body">
           {a.bio && <p className="body-lg">{a.bio}</p>}
           <ul className="actor-facts">
             {a.gender && <li><span>جنسیت</span><strong>{GENDER[a.gender]}</strong></li>}
             {a.city && <li><span>شهر</span><strong>{a.city}</strong></li>}
-            {a.birthYear && <li><span>سال تولد</span><strong>{a.birthYear}</strong></li>}
-            {a.heightCm && <li><span>قد</span><strong>{a.heightCm} سانتی‌متر</strong></li>}
+            {a.age && <li><span>سن</span><strong>{a.age.toLocaleString('fa-IR')} سال</strong></li>}
+            {a.birthYear && <li><span>سال تولد</span><strong>{a.birthYear.toLocaleString('fa-IR')}</strong></li>}
+            {a.heightCm && <li><span>قد</span><strong>{a.heightCm.toLocaleString('fa-IR')} سانتی‌متر</strong></li>}
+            {a.weightKg && <li><span>وزن</span><strong>{a.weightKg.toLocaleString('fa-IR')} کیلوگرم</strong></li>}
+            {custom.filter((c) => !c.long).map((c) => (
+              <li key={c.key}><span>{c.label}</span><strong>{c.text}</strong></li>
+            ))}
           </ul>
+
+          {custom.filter((c) => c.long).map((c) => (
+            <div key={c.key} style={{ marginTop: 16 }}>
+              <h3 style={{ marginBottom: 10 }}>{c.label}</h3>
+              <p style={{ whiteSpace: 'pre-line', color: 'var(--text)', lineHeight: 2 }}>{c.text}</p>
+            </div>
+          ))}
+
           {skills.length > 0 && (
             <div style={{ marginTop: 16 }}>
               <h3 style={{ marginBottom: 10 }}>مهارت‌ها</h3>
@@ -74,20 +112,35 @@ export default async function ActorDetailPage({ params }) {
               <p style={{ whiteSpace: 'pre-line', color: 'var(--text)', lineHeight: 2 }}>{a.experience}</p>
             </div>
           )}
-          {introSrc && (
+
+          {a.videos.length > 0 && (
             <div style={{ marginTop: 20 }}>
-              <h3 style={{ marginBottom: 10 }} className="icon-inline"><Icon name="video" size={18} /> ویدیوی معرفی</h3>
-              <div style={{ position: 'relative', aspectRatio: '16 / 9', borderRadius: 'var(--radius)', overflow: 'hidden', background: '#000' }}>
-                <iframe
-                  src={introSrc}
-                  title={`ویدیوی معرفی ${a.fullName}`}
-                  allowFullScreen
-                  loading="lazy"
-                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}
-                />
+              <h3 style={{ marginBottom: 10 }} className="icon-inline">
+                <Icon name="video" size={18} /> ویدیوهای رزومه
+              </h3>
+              <div className="actor-videos">
+                {a.videos.map((v) => {
+                  const local = isLocalVideo(v.url);
+                  const src = local ? v.url : embedSrc(v.url);
+                  if (!src) return null;
+                  return (
+                    <div key={v.id} className="actor-video">
+                      <div className="actor-video__frame">
+                        {local ? (
+                          <video src={src} controls preload="metadata" playsInline />
+                        ) : (
+                          <iframe src={src} title={v.title || `ویدیوی ${a.fullName}`} allowFullScreen loading="lazy" />
+                        )}
+                      </div>
+                      {v.title && <strong className="actor-video__title">{v.title}</strong>}
+                      {v.description && <p className="actor-video__desc">{v.description}</p>}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
+
           {a.showreelUrl && (
             <div style={{ marginTop: 20 }}>
               <a href={a.showreelUrl} target="_blank" rel="noopener noreferrer" className="btn btn--dark">مشاهده نمونه‌کار</a>

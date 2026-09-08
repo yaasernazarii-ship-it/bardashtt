@@ -7,11 +7,6 @@ import { privateDocumentUrl } from '@/lib/privateDocuments';
 
 const ROLES = ['member', 'student', 'filmmaker', 'editor', 'admin'];
 
-function str(v, max) {
-  if (typeof v !== 'string') return null;
-  const t = v.trim().slice(0, max);
-  return t || null;
-}
 function intOrNull(v, min, max) {
   if (v === undefined || v === null || v === '') return null;
   const n = parseInt(v, 10);
@@ -19,7 +14,8 @@ function intOrNull(v, min, max) {
   return n;
 }
 
-// جزئیات کامل پنل یک کاربر برای ادمین/ادیتور: رزومه، ثبت‌نام‌ها، مدارک بارگذاری‌شده.
+// جزئیات کامل پنل یک کاربر برای ادمین/ادیتور: ثبت‌نام‌ها و مدارک بارگذاری‌شده.
+// رزومه‌های بازیگری عمداً این‌جا نیستند؛ آن‌ها پرونده‌های مستقل «بانک رزومه» هستند.
 export async function GET(request, { params }) {
   const user = await getSessionUser();
   if (!user) return Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 });
@@ -33,7 +29,6 @@ export async function GET(request, { params }) {
       passwordPlain: true, active: true, deletedAt: true, branch: true, graduated: true, courseTitle: true, nationalId: true, createdAt: true,
       photoUrl: true,
       progressOverride: true,
-      resume: true,
       enrollments: { orderBy: { createdAt: 'desc' } },
     },
   });
@@ -61,71 +56,10 @@ export async function PATCH(request, { params }) {
   try {
     const body = await request.json();
 
-    // مدیریت محتوای بارگذاری‌شده‌ی کاربر (رزومه) توسط ادمین/ادیتور
-    if (body.moderate) {
-      const action = String(body.moderate);
-      const currentResume = await prisma.actorResume.findUnique({
-        where: { userId: id },
-        select: { id: true, photoUrl: true, showreelUrl: true, selfVideoUrl: true },
-      });
-      let removedUrls = [];
-
-      if (action === 'deleteResumePhoto') {
-        await prisma.actorResume.updateMany({ where: { userId: id }, data: { photoUrl: null } });
-        removedUrls = [currentResume?.photoUrl];
-      } else if (action === 'deleteShowreel') {
-        await prisma.actorResume.updateMany({ where: { userId: id }, data: { showreelUrl: null } });
-        removedUrls = [currentResume?.showreelUrl];
-      } else if (action === 'deleteSelfVideo') {
-        await prisma.actorResume.updateMany({ where: { userId: id }, data: { selfVideoUrl: null } });
-        removedUrls = [currentResume?.selfVideoUrl];
-      } else if (action === 'hideResume') {
-        await prisma.actorResume.updateMany({ where: { userId: id }, data: { isPublic: false } });
-      } else if (action === 'deleteResume') {
-        if (currentResume) await prisma.actorShortlist.deleteMany({ where: { actorId: currentResume.id } });
-        await prisma.actorResume.deleteMany({ where: { userId: id } });
-        removedUrls = [currentResume?.photoUrl, currentResume?.showreelUrl, currentResume?.selfVideoUrl];
-      } else {
-        return Response.json({ ok: false, error: 'عملیات نامعتبر است.' }, { status: 400 });
-      }
-
-      await removeLocalUploads(removedUrls);
-      return Response.json({ ok: true, moderated: action });
-    }
-
     const account = await prisma.user.findUnique({ where: { id }, select: { deletedAt: true } });
     if (!account) return Response.json({ ok: false, error: 'کاربر یافت نشد.' }, { status: 404 });
     if (account.deletedAt) {
       return Response.json({ ok: false, error: 'حساب بایگانی‌شده فقط برای مشاهده و حذف دستی مدارک در دسترس است.' }, { status: 409 });
-    }
-
-    // ساخت/ویرایش رزومه‌ی هنرجو توسط ادمین/ادیتور (هنرجو خودش دسترسی ویرایش ندارد)
-    if (body.resume && typeof body.resume === 'object') {
-      const b = body.resume;
-      const target = await prisma.user.findUnique({ where: { id }, select: { displayName: true } });
-      if (!target) return Response.json({ ok: false, error: 'کاربر یافت نشد.' }, { status: 404 });
-      const fullName = str(b.fullName, 80) || target.displayName || 'هنرجو';
-      const rData = {
-        fullName,
-        headline: str(b.headline, 100),
-        bio: str(b.bio, 600),
-        gender: ['male', 'female'].includes(b.gender) ? b.gender : null,
-        city: str(b.city, 60),
-        birthYear: intOrNull(b.birthYear, 1300, 1420),
-        heightCm: intOrNull(b.heightCm, 100, 230),
-        skills: str(b.skills, 300),
-        experience: str(b.experience, 1500),
-        photoUrl: str(b.photoUrl, 500),
-        showreelUrl: str(b.showreelUrl, 500),
-        selfVideoUrl: str(b.selfVideoUrl, 500),
-        isPublic: !!b.isPublic,
-      };
-      const resume = await prisma.actorResume.upsert({
-        where: { userId: id },
-        update: rData,
-        create: { userId: id, ...rData },
-      });
-      return Response.json({ ok: true, resume });
     }
 
     const data = {};
@@ -238,7 +172,6 @@ export async function DELETE(request, { params }) {
       role: true,
       deletedAt: true,
       photoUrl: true,
-      resume: { select: { id: true } },
       enrollments: { select: { videoUrl: true } },
       _count: { select: { examAttempts: true, certificates: true } },
     },
@@ -249,9 +182,7 @@ export async function DELETE(request, { params }) {
     return Response.json({ ok: false, error: 'حساب مدیریتی از این بخش قابل حذف نیست.' }, { status: 403 });
   }
 
-  const preserveDocuments = Boolean(
-    target.resume || target._count.examAttempts || target._count.certificates
-  );
+  const preserveDocuments = Boolean(target._count.examAttempts || target._count.certificates);
 
   const [signups, submissions] = await Promise.all([
     prisma.signupRequest.findMany({ where: { userId: id }, select: { idCardImage: true } }),
@@ -266,11 +197,8 @@ export async function DELETE(request, { params }) {
       await tx.notification.deleteMany({ where: { userId: id } });
       await tx.bookOrder.deleteMany({ where: { userId: id } });
 
-      if (target.resume) {
-        await tx.actorShortlist.deleteMany({ where: { OR: [{ userId: id }, { actorId: target.resume.id }] } });
-      } else {
-        await tx.actorShortlist.deleteMany({ where: { userId: id } });
-      }
+      // فقط لیست کوتاهِ خودِ این کاربر پاک می‌شود؛ رزومه‌ها پرونده‌های مستقل‌اند و به حساب او وابسته نیستند.
+      await tx.actorShortlist.deleteMany({ where: { userId: id } });
 
       await tx.assignmentSubmission.deleteMany({ where: { userId: id } });
       await tx.assignment.deleteMany({ where: { userId: id } });
@@ -293,7 +221,6 @@ export async function DELETE(request, { params }) {
       await tx.session.deleteMany({ where: { userId: id } });
 
       if (preserveDocuments) {
-        await tx.actorResume.updateMany({ where: { userId: id }, data: { isPublic: false } });
         await tx.user.update({
           where: { id },
           data: {
@@ -329,7 +256,7 @@ export async function DELETE(request, { params }) {
     targetType: 'user',
     targetId: id,
     summary: preserveDocuments
-      ? `حساب «${who}» بایگانی شد؛ رزومه، آزمون‌ها و گواهی‌ها برای حذف دستی مدیریت حفظ شدند.`
+      ? `حساب «${who}» بایگانی شد؛ آزمون‌ها و گواهی‌ها برای حذف دستی مدیریت حفظ شدند.`
       : `حساب «${who}» و تمام اطلاعات وابسته از سایت حذف شد.`,
   }).catch(() => {});
 

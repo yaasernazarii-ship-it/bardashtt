@@ -25,10 +25,14 @@ export async function GET() {
   const actors = rows.length
     ? await prisma.actorResume.findMany({
         where: { id: { in: rows.map((r) => r.actorId) }, isPublic: true },
-        select: { id: true, fullName: true, headline: true, city: true, photoUrl: true },
+        select: {
+          id: true, fullName: true, headline: true, city: true,
+          photos: { orderBy: { sortOrder: 'asc' }, take: 1, select: { url: true } },
+        },
       })
     : [];
-  const byId = new Map(actors.map((a) => [a.id, a]));
+  // کارت لیست کوتاه فقط عکس اصلی را می‌خواهد، نه گالری کامل رزومه.
+  const byId = new Map(actors.map(({ photos, ...a }) => [a.id, { ...a, photoUrl: photos[0]?.url || null }]));
 
   const items = rows
     .filter((r) => byId.has(r.actorId))

@@ -18,19 +18,28 @@ export default async function ActorsPage() {
   // بانک بازیگران فقط ویژه‌ی فیلم‌سازان و ادمین/ادیتور است؛ هنرجو و عضو عادی دسترسی ندارند.
   if (!isFilmmakerOrManager(user)) redirect('/dashboard');
 
-  const [actors, shortlist, t] = await Promise.all([
+  const [rows, shortlist, t] = await Promise.all([
     prisma.actorResume.findMany({
       where: { isPublic: true },
       orderBy: { updatedAt: 'desc' },
       select: {
-        id: true, fullName: true, headline: true, city: true, photoUrl: true,
-        gender: true, birthYear: true, heightCm: true, skills: true,
-        experience: true, selfVideoUrl: true, showreelUrl: true,
+        id: true, fullName: true, headline: true, city: true,
+        gender: true, birthYear: true, age: true, heightCm: true, skills: true,
+        experience: true, showreelUrl: true,
+        photos: { orderBy: { sortOrder: 'asc' }, take: 1, select: { url: true } },
+        _count: { select: { videos: true } },
       },
     }),
     prisma.actorShortlist.findMany({ where: { userId: user.id }, select: { actorId: true } }),
     loadContent(),
   ]);
+
+  // کارت بازیگر فقط به عکس اصلی و «داشتنِ ویدیو» نیاز دارد، نه به کل رسانه‌های رزومه.
+  const actors = rows.map(({ photos, _count, ...rest }) => ({
+    ...rest,
+    photoUrl: photos[0]?.url || null,
+    hasVideo: _count.videos > 0,
+  }));
 
   return (
     <SimplePage title={t('actors.title')} subtitle={t('actors.subtitle')} tag={t('actors.tag')} cta={false} slides={splitLines(t('actors.slides'))}>

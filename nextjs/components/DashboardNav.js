@@ -50,7 +50,7 @@ const MANAGER_GROUPS = [
       { key: 'live-classes', href: '/dashboard/admin/live-classes', icon: 'video', label: 'کلاس‌های آنلاین' },
       { key: 'exam-admin', href: '/dashboard/admin/exam', icon: 'check', label: 'آزمون و بانک سؤال' },
       { key: 'certificates', href: '/dashboard/admin/certificates', icon: 'fileText', label: 'گواهی‌نامه‌ها' },
-      { key: 'resumes', href: '/dashboard/admin/resumes', icon: 'user', label: 'رزومه هنرجویان' },
+      { key: 'resumes', href: '/dashboard/admin/resumes', icon: 'user', label: 'بانک رزومه' },
       { key: 'growth-admin', href: '/dashboard/admin/growth', icon: 'flag', label: 'مسیر رشد هنرجویان' },
     ],
   },

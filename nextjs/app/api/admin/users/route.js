@@ -14,7 +14,6 @@ export async function GET(request) {
       id: true, phone: true, displayName: true, city: true, role: true, createdAt: true,
       username: true, passwordPlain: true, active: true, branch: true, graduated: true,
       photoUrl: true, gender: true, nationalId: true, courseTitle: true, deletedAt: true,
-      resume: { select: { id: true, isPublic: true } },
     },
   });
 

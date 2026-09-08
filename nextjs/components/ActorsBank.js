@@ -29,7 +29,8 @@ const toNum = (v) => {
   return s ? Number(s) : null;
 };
 
-const ageOf = (a) => (a.birthYear ? CURRENT_YEAR - a.birthYear : null);
+// سن یا مستقیم در رزومه ثبت شده، یا از سال تولد شمسی حساب می‌شود.
+const ageOf = (a) => a.age ?? (a.birthYear ? CURRENT_YEAR - a.birthYear : null);
 
 export default function ActorsBank({ actors, shortlistIds = [], emptyText }) {
   const [q, setQ] = useState('');
@@ -79,7 +80,7 @@ export default function ActorsBank({ actors, shortlistIds = [], emptyText }) {
       if (skill && !splitSkills(a.skills).includes(skill)) return false;
       if (onlySaved && !savedSet.has(a.id)) return false;
       if (hasPhoto && !a.photoUrl) return false;
-      if (hasVideo && !a.selfVideoUrl) return false;
+      if (hasVideo && !a.hasVideo) return false;
       if (hasShowreel && !a.showreelUrl) return false;
       if (aMin != null || aMax != null) {
         const years = ageOf(a);
@@ -201,7 +202,7 @@ export default function ActorsBank({ actors, shortlistIds = [], emptyText }) {
             </div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 12 }}>
               {chip(hasPhoto, () => setHasPhoto((v) => !v), 'image', 'دارای عکس')}
-              {chip(hasVideo, () => setHasVideo((v) => !v), 'video', 'دارای ویدیوی معرفی')}
+              {chip(hasVideo, () => setHasVideo((v) => !v), 'video', 'دارای ویدیو')}
               {chip(hasShowreel, () => setHasShowreel((v) => !v), 'clapperboard', 'دارای نمونه‌کار')}
             </div>
           </div>
@@ -230,9 +231,9 @@ export default function ActorsBank({ actors, shortlistIds = [], emptyText }) {
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
                 {a.city && <span className="tag tag--gold">{a.city}</span>}
                 {a.gender && <span className="tag">{GENDER[a.gender]}</span>}
-                {a.birthYear && <span className="tag">{(CURRENT_YEAR - a.birthYear).toLocaleString('fa-IR')} ساله</span>}
+                {ageOf(a) && <span className="tag">{ageOf(a).toLocaleString('fa-IR')} ساله</span>}
                 {a.heightCm && <span className="tag">{a.heightCm.toLocaleString('fa-IR')} سانتی‌متر</span>}
-                {a.selfVideoUrl && <span className="tag"><Icon name="video" size={13} /> ویدیوی معرفی</span>}
+                {a.hasVideo && <span className="tag"><Icon name="video" size={13} /> ویدیو دارد</span>}
                 {a.showreelUrl && <span className="tag"><Icon name="clapperboard" size={13} /> نمونه‌کار</span>}
               </div>
               <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>

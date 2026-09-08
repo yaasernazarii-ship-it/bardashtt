@@ -38,7 +38,6 @@ model User {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   sessions     Session[]
-  resume       ActorResume?
   enrollments  Enrollment[]
   attendances  Attendance[]
   payments     Payment[]
@@ -308,27 +307,78 @@ model ClassEvent {
   @@index([startsAt])
 }
 
+// رزومهٔ بازیگری. عمداً هیچ رابطه‌ای با User ندارد: رزومه یک پروندهٔ مستقل است که
+// فقط ادمین/ادیتور می‌سازد و ویرایش می‌کند و به حساب کاربری هیچ‌کس گره نمی‌خورد.
 model ActorResume {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  fullName    String
-  headline    String?
-  bio         String?
-  gender      String?
-  city        String?
-  birthYear   Int?
-  heightCm    Int?
-  skills      String?
-  experience  String?
-  photoUrl    String?
-  showreelUrl String?
-  selfVideoUrl String? // ویدیوی معرفی که خودِ هنرجو بارگذاری می‌کند (لینک آپارات/درایو/…)
-  isPublic    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String        @id @default(cuid())
+  firstName    String
+  lastName     String
+  fullName     String // «نام + نام خانوادگی»؛ ذخیره می‌شود تا جست‌وجو و نمایش ساده بماند
+  headline     String?
+  bio          String?
+  gender       String?
+  city         String?
+  birthYear    Int?
+  age          Int?
+  heightCm     Int?
+  weightKg     Int?
+  contactPhone String? // شمارهٔ تماسِ خودِ فرد؛ ربطی به حساب کاربری ندارد
+  skills       String?
+  experience   String?
+  showreelUrl  String?
+  customValues Json? // مقدار فیلدهای سفارشی: { [ResumeFieldDef.key]: value }
+  isPublic     Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  photos       ResumePhoto[]
+  videos       ResumeVideo[]
 
   @@index([isPublic])
+  @@index([fullName])
+}
+
+// عکس‌های رزومه؛ هر رزومه می‌تواند چند عکس داشته باشد (آپلود مستقیم یا لینک بیرونی).
+model ResumePhoto {
+  id        String      @id @default(cuid())
+  resumeId  String
+  resume    ActorResume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  url       String
+  caption   String?
+  sortOrder Int         @default(0)
+  createdAt DateTime    @default(now())
+
+  @@index([resumeId, sortOrder])
+}
+
+// ویدیوهای رزومه؛ لینک آپارات/ویو یا فایلِ آپلودشده، هرکدام با عنوان و توضیح.
+model ResumeVideo {
+  id          String      @id @default(cuid())
+  resumeId    String
+  resume      ActorResume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  url         String
+  title       String?
+  description String?
+  sortOrder   Int         @default(0)
+  createdAt   DateTime    @default(now())
+
+  @@index([resumeId, sortOrder])
+}
+
+// فیلدهای دلخواهِ رزومه که مدیر از پنل می‌سازد؛ مقدارشان در ActorResume.customValues می‌نشیند.
+model ResumeFieldDef {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  label     String
+  type      String   @default("text") // text | textarea | number | select | boolean
+  options   String? // گزینه‌های select، هر گزینه در یک خط
+  hint      String?
+  required  Boolean  @default(false)
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, sortOrder])
 }
 
 model GalleryItem {
