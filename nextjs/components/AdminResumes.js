@@ -18,19 +18,28 @@ export default function AdminResumes() {
   const [busyId, setBusyId] = useState('');
 
   const loadFields = useCallback(async () => {
-    const res = await fetch('/api/admin/resume-fields');
-    const d = await res.json();
-    if (d.ok) setFields(d.fields);
-    else setError(d.error || 'خطا در بارگذاری فیلدها.');
+    try {
+      const res = await fetch('/api/admin/resume-fields');
+      const d = await res.json();
+      if (d.ok) setFields(d.fields);
+      else setError(d.error || 'خطا در بارگذاری فیلدها.');
+    } catch {
+      setError('ارتباط با سرور برقرار نشد.');
+    }
   }, []);
 
   const loadResumes = useCallback(async () => {
-    const res = await fetch('/api/admin/resumes');
-    const d = await res.json();
-    if (d.ok) setResumes(d.resumes);
-    else setError(d.error || 'خطا در بارگذاری رزومه‌ها.');
+    try {
+      const res = await fetch('/api/admin/resumes');
+      const d = await res.json();
+      if (d.ok) setResumes(d.resumes);
+      else setError(d.error || 'خطا در بارگذاری رزومه‌ها.');
+    } catch {
+      setError('ارتباط با سرور برقرار نشد.');
+    }
   }, []);
 
+  // اگر خواندن از سرور شکست بخورد باید پیام خطا دیده شود، نه «در حال بارگذاری…»ِ همیشگی.
   useEffect(() => {
     (async () => {
       await Promise.all([loadResumes(), loadFields()]);

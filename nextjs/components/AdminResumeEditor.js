@@ -58,8 +58,13 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved }
     if (!resumeId) return;
     let alive = true;
     (async () => {
-      const res = await fetch(`/api/admin/resumes/${resumeId}`);
-      const d = await res.json();
+      let d;
+      try {
+        const res = await fetch(`/api/admin/resumes/${resumeId}`);
+        d = await res.json();
+      } catch {
+        d = { ok: false, error: 'ارتباط با سرور برقرار نشد.' };
+      }
       if (!alive) return;
       if (!d.ok) { setError(d.error || 'خطا در بارگذاری رزومه.'); setLoading(false); return; }
       const r = d.resume;
@@ -116,12 +121,17 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved }
       photos: photos.map((p) => ({ url: p.url, caption: p.caption })),
       videos: videos.map((v) => ({ url: v.url, title: v.title, description: v.description })),
     };
-    const res = await fetch(resumeId ? `/api/admin/resumes/${resumeId}` : '/api/admin/resumes', {
-      method: resumeId ? 'PATCH' : 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const d = await res.json();
+    let d;
+    try {
+      const res = await fetch(resumeId ? `/api/admin/resumes/${resumeId}` : '/api/admin/resumes', {
+        method: resumeId ? 'PATCH' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      d = await res.json();
+    } catch {
+      d = { ok: false, error: 'ارتباط با سرور برقرار نشد.' };
+    }
     setBusy(false);
     if (!d.ok) { setError(d.error || 'ذخیره نشد.'); return; }
     onSaved(d.resume);
