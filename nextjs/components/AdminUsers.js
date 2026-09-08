@@ -7,7 +7,7 @@ import UserPhotoThumb from './UserPhotoThumb';
 const ROLE_LABEL = { member: 'عضو', student: 'هنرجو', filmmaker: 'فیلمساز', editor: 'ادیتور', admin: 'ادمین' };
 const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
 
-export default function AdminUsers() {
+export default function AdminUsers({ resumeOnly = false }) {
   const [users, setUsers] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -106,21 +106,30 @@ export default function AdminUsers() {
   if (loading) return <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p>;
 
   const q = query.trim().toLowerCase();
+  const availableUsers = resumeOnly ? users.filter((u) => u.role === 'student') : users;
   const filtered = q
-    ? users.filter((u) => [u.displayName, u.username, u.phone].some((v) => (v || '').toLowerCase().includes(q)))
-    : users;
+    ? availableUsers.filter((u) => [u.displayName, u.username, u.phone].some((v) => (v || '').toLowerCase().includes(q)))
+    : availableUsers;
 
   return (
     <div>
       {error && <div className="alert alert--error" style={{ marginBottom: 14 }}>{error}</div>}
 
+      {resumeOnly && (
+        <div className="alert alert--info" style={{ marginBottom: 14 }}>
+          برای ساخت یا ویرایش رزومه، هنرجو را از فهرست انتخاب کنید. فرم کامل رزومه مستقیم باز می‌شود.
+        </div>
+      )}
+
       <div style={{ marginBottom: 14, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        <input className="form-input" placeholder="جست‌وجو بر اساس نام، نام کاربری یا موبایل…" value={query}
+        <input className="form-input" placeholder={resumeOnly ? 'جست‌وجوی هنرجو بر اساس نام، نام کاربری یا موبایل…' : 'جست‌وجو بر اساس نام، نام کاربری یا موبایل…'} value={query}
           onChange={(e) => setQuery(e.target.value)} style={{ maxWidth: 360 }} />
-        <button type="button" className={`btn btn--sm ${archivedMode ? 'btn--dark' : 'btn--outline'}`}
-          onClick={() => { setArchivedMode((current) => !current); setOpenId(''); setPanelId(null); }}>
-          {archivedMode ? 'بازگشت به حساب‌های فعال' : 'رزومه، آزمون و گواهی حساب‌های حذف‌شده'}
-        </button>
+        {!resumeOnly && (
+          <button type="button" className={`btn btn--sm ${archivedMode ? 'btn--dark' : 'btn--outline'}`}
+            onClick={() => { setArchivedMode((current) => !current); setOpenId(''); setPanelId(null); }}>
+            {archivedMode ? 'بازگشت به حساب‌های فعال' : 'رزومه، آزمون و گواهی حساب‌های حذف‌شده'}
+          </button>
+        )}
       </div>
 
       {archivedMode && (
@@ -130,7 +139,7 @@ export default function AdminUsers() {
       )}
 
       {filtered.length === 0 ? (
-        <p style={{ color: 'var(--muted)' }}>کاربری یافت نشد.</p>
+        <p style={{ color: 'var(--muted)' }}>{resumeOnly ? 'هنرجویی یافت نشد.' : 'کاربری یافت نشد.'}</p>
       ) : (
         <div className="su-list">
           {filtered.map((u) => {
@@ -138,12 +147,18 @@ export default function AdminUsers() {
             const isSelf = u.id === currentUserId;
             return (
               <div key={u.id} className="su-item" style={u.active === false ? { opacity: 0.7 } : undefined}>
-                <button type="button" className="su-head" aria-expanded={open}
-                  onClick={() => setOpenId(open ? '' : u.id)}>
+                <button type="button" className="su-head" aria-expanded={resumeOnly ? undefined : open}
+                  onClick={() => resumeOnly ? setPanelId(u.id) : setOpenId(open ? '' : u.id)}>
                   <UserPhotoThumb src={u.photoUrl} name={u.displayName || u.username || u.phone} />
                   <span className="su-head__name">{u.displayName || u.username || u.phone}</span>
                   <span className="su-tags">
-                    {u.deletedAt ? (
+                    {resumeOnly ? (
+                      <>
+                        <span className={`su-tag ${u.resume ? 'su-tag--ok' : 'su-tag--off'}`}>{u.resume ? 'رزومه ثبت‌شده' : 'بدون رزومه'}</span>
+                        {u.resume?.isPublic && <span className="su-tag su-tag--grad">عمومی</span>}
+                        <span className="su-tag su-tag--muted">ساخت / ویرایش رزومه</span>
+                      </>
+                    ) : u.deletedAt ? (
                       <span className="su-tag su-tag--off">حساب حذف‌شده</span>
                     ) : (
                       <>
@@ -155,10 +170,12 @@ export default function AdminUsers() {
                       </>
                     )}
                   </span>
-                  <svg className={`su-chev ${open ? 'is-open' : ''}`} width="16" height="16" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
+                  {!resumeOnly && (
+                    <svg className={`su-chev ${open ? 'is-open' : ''}`} width="16" height="16" viewBox="0 0 24 24"
+                      fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  )}
                 </button>
 
                 {open && (
@@ -234,14 +251,14 @@ export default function AdminUsers() {
         </div>
       )}
 
-      {panelId && <UserPanel userId={panelId} onClose={() => setPanelId(null)} />}
+      {panelId && <UserPanel userId={panelId} startEditing={resumeOnly} onClose={() => { setPanelId(null); if (resumeOnly) load(false); }} />}
     </div>
   );
 }
 
 const EMPTY_RESUME = { fullName: '', headline: '', gender: '', city: '', birthYear: '', heightCm: '', skills: '', bio: '', experience: '', photoUrl: '', showreelUrl: '', selfVideoUrl: '', isPublic: false };
 
-function UserPanel({ userId, onClose }) {
+function UserPanel({ userId, onClose, startEditing = false }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -257,6 +274,7 @@ function UserPanel({ userId, onClose }) {
     if (d.ok) {
       setData(d);
       const r = d.user?.resume;
+      setEditResume(startEditing);
       setForm(r ? {
         fullName: r.fullName || d.user?.displayName || '', headline: r.headline || '', gender: r.gender || '',
         city: r.city || '', birthYear: r.birthYear || '', heightCm: r.heightCm || '', skills: r.skills || '',
