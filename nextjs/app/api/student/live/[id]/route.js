@@ -42,6 +42,6 @@ export async function GET(request, { params }) {
       recordingSrc: session.liveStatus === 'finished' ? embedSrc(session.recordingUrl) : null,
     },
     // فقط دقیقاً وقتی جلسه LIVE است آدرس پخش برمی‌گردد.
-    embedSrc: session.liveStatus === 'live' ? getLiveEmbedSrc() : null,
+    embedSrc: session.liveStatus === 'live' ? getLiveEmbedSrc(session.liveUrl) : null,
   });
 }

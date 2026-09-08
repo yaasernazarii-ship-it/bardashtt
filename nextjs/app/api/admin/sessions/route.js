@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { notifyUsers } from '@/lib/notifications';
 import { enqueueSmsForUsers, processSmsQueue } from '@/lib/smsQueue';
+import { normalizeEmbedUrl } from '@/lib/embed';
 
 const sessionDateFmt = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'full', timeStyle: 'short', timeZone: 'Asia/Tehran' });
 
@@ -34,6 +35,11 @@ export async function POST(request) {
     if (!groupId) return Response.json({ ok: false, error: 'کلاس مشخص نیست.' }, { status: 400 });
     if (!title) return Response.json({ ok: false, error: 'عنوان جلسه الزامی است.' }, { status: 400 });
     if (Number.isNaN(startsAt.getTime())) return Response.json({ ok: false, error: 'تاریخ نامعتبر است.' }, { status: 400 });
+    const rawLiveUrl = String(b.liveUrl || '').trim();
+    const liveUrl = rawLiveUrl ? normalizeEmbedUrl(rawLiveUrl) : null;
+    if (rawLiveUrl && !liveUrl) {
+      return Response.json({ ok: false, error: 'لینک کلاس باید یک نشانی عمومی و امن HTTPS یا کد iframe معتبر باشد.' }, { status: 400 });
+    }
 
     const group = await prisma.classGroup.findUnique({ where: { id: groupId } });
     if (!group) return Response.json({ ok: false, error: 'کلاس یافت نشد.' }, { status: 404 });
@@ -47,6 +53,7 @@ export async function POST(request) {
           chartDescription: b.chartDescription ? String(b.chartDescription).trim().slice(0, 2000) : null,
           tools: b.tools ? String(b.tools).trim().slice(0, 1000) : null,
           homework: b.homework ? String(b.homework).trim().slice(0, 2000) : null,
+          liveUrl,
           createdById: user.id,
         },
       });

@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { getSessionUser, isManager } from '@/lib/auth';
 import { notifyUsers } from '@/lib/notifications';
 import { enqueueSmsForUsers, processSmsQueue } from '@/lib/smsQueue';
+import { normalizeEmbedUrl } from '@/lib/embed';
 
 const sessionDateFmt = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'full', timeStyle: 'short', timeZone: 'Asia/Tehran' });
 
@@ -26,8 +27,21 @@ export async function PATCH(request, { params }) {
     if (b.chartDescription !== undefined) data.chartDescription = b.chartDescription ? String(b.chartDescription).trim().slice(0, 2000) : null;
     if (b.tools !== undefined) data.tools = b.tools ? String(b.tools).trim().slice(0, 1000) : null;
     if (b.homework !== undefined) data.homework = b.homework ? String(b.homework).trim().slice(0, 2000) : null;
+    if (b.liveUrl !== undefined) {
+      const rawLiveUrl = String(b.liveUrl || '').trim();
+      data.liveUrl = rawLiveUrl ? normalizeEmbedUrl(rawLiveUrl) : null;
+      if (rawLiveUrl && !data.liveUrl) {
+        return Response.json({ ok: false, error: 'لینک کلاس باید یک نشانی عمومی و امن HTTPS یا کد iframe معتبر باشد.' }, { status: 400 });
+      }
+    }
     // ویدیوی ضبط‌شدهٔ این جلسه (فقط برای جلسهٔ پایان‌یافته در پنل هنرجو نمایش داده می‌شود)
-    if (b.recordingUrl !== undefined) data.recordingUrl = b.recordingUrl ? String(b.recordingUrl).trim().slice(0, 2000) : null;
+    if (b.recordingUrl !== undefined) {
+      const rawRecordingUrl = String(b.recordingUrl || '').trim();
+      data.recordingUrl = rawRecordingUrl ? normalizeEmbedUrl(rawRecordingUrl) : null;
+      if (rawRecordingUrl && !data.recordingUrl) {
+        return Response.json({ ok: false, error: 'لینک ویدیوی ضبط‌شده باید HTTPS عمومی یا کد iframe معتبر باشد.' }, { status: 400 });
+      }
+    }
 
     const timeChanged = data.startsAt !== undefined;
     const { session, members, smsQueued } = await prisma.$transaction(async (tx) => {

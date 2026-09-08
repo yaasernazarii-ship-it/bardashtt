@@ -90,7 +90,8 @@ model ClassSession {
   liveStartedByName    String? // نام او در همان لحظه (کپی، مثل سایر لاگ‌های سیستم)
   liveFinishedById     String?
   liveFinishedByName   String?
-  recordingUrl         String? // لینک/کد امبد ویدیوی ضبط‌شدهٔ این جلسه (در صورت وجود)، بعد از پایان کلاس به هنرجو نشان داده می‌شود
+  liveUrl              String? // لینک HTTPS یا src استخراج‌شده از iframe سرویس کلاس آنلاین
+  recordingUrl         String? // لینک امن ویدیوی ضبط‌شدهٔ این جلسه (در صورت وجود)، بعد از پایان کلاس به هنرجو نشان داده می‌شود
 
   @@index([groupId, startsAt])
   @@index([liveStatus])

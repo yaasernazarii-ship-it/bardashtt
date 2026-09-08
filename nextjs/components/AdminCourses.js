@@ -140,8 +140,8 @@ export default function AdminCourses() {
         </div>
 
         <div className="form-group">
-          <label className="form-label">تیزر رایگان (کد امبد یا لینک)</label>
-          <textarea className="form-input" dir="ltr" rows={2} value={form.teaserUrl} onChange={(e) => set('teaserUrl', e.target.value)} placeholder="لینک آپارات یا کد امبدِ سرویسِ محدودسازی دامنه (ویدپروتکت/نگاوید)" />
+          <label className="form-label">تیزر رایگان (لینک HTTPS یا کد iframe هر سرویس)</label>
+          <textarea className="form-input" dir="ltr" rows={2} value={form.teaserUrl} onChange={(e) => set('teaserUrl', e.target.value)} placeholder="لینک امن یا کد iframe سرویس دلخواه؛ دامنه به‌صورت خودکار مجاز می‌شود" />
           <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>این ویدیو برای همه (حتی قبل از خرید) نمایش داده می‌شود.</span>
         </div>
 
@@ -165,7 +165,7 @@ export default function AdminCourses() {
                   </div>
                 </div>
                 <input className="form-input" style={{ marginBottom: 8 }} value={l.title} onChange={(e) => setLesson(i, 'title', e.target.value)} placeholder="عنوان ویدیو (مثلاً: جلسهٔ ۱ — آشنایی با قاب)" />
-                <textarea className="form-input" dir="ltr" rows={2} value={l.videoUrl} onChange={(e) => setLesson(i, 'videoUrl', e.target.value)} placeholder="کد امبد یا لینک ویدیو (آپارات یا سرویس محدودسازی دامنه)" />
+                <textarea className="form-input" dir="ltr" rows={2} value={l.videoUrl} onChange={(e) => setLesson(i, 'videoUrl', e.target.value)} placeholder="لینک HTTPS یا کد iframe هر سرویس؛ دامنه خودکار مجاز می‌شود" />
               </div>
             ))}
           </div>

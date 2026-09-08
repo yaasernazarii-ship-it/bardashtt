@@ -24,6 +24,7 @@ export async function GET() {
       liveFinishedAt: s.liveFinishedAt ? s.liveFinishedAt.toISOString() : null,
       liveStartedByName: s.liveStartedByName,
       liveFinishedByName: s.liveFinishedByName,
+      liveUrl: s.liveUrl,
       recordingUrl: s.recordingUrl,
       group: {
         id: s.group.id,
