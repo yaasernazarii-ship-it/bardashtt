@@ -1,0 +1,1186 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String       @id @default(cuid())
+  phone        String       @unique
+  displayName  String?
+  city         String?
+  birthYear    Int?
+  role         String       @default("member") // member | student | filmmaker | staff | editor | admin
+  gender       String? // male | female — مبنای درج «آقای/خانم» روی گواهی‌نامه
+  contactPhone String? // شماره تماس تکمیلی که کاربر (به‌ویژه فیلمساز) در پروفایل پر می‌کند
+  company      String? // نام گروه/شرکت فیلم‌سازی (فقط فیلمساز)
+  activityField String? // حوزهٔ فعالیت فیلمساز: سینما، سریال، تبلیغات، مستند…
+  photoUrl     String? // عکس پرسنلی ۳×۴ که خود کاربر در پروفایلش آپلود می‌کند
+  username     String?      @unique
+  passwordHash String?
+  passwordPlain String? // رمز عبورِ صادرشده توسط مدیر، برای ارسال مجدد در صورت فراموشی
+  active       Boolean      @default(true) // غیرفعال‌سازی حساب توسط ادمین/ادیتور
+  isPrimaryAdmin Boolean    @default(false) // مدیر اصلی یکتا؛ نقش و دسترسی او قابل کاهش نیست
+  staffAccessEnabled Boolean @default(false) // دسترسی پنل برای همکار محدود فعال است؟
+  staffPermissions String[]  @default([]) // کلیدهای بخش‌هایی که همکار محدود اجازهٔ مدیریت دارد
+  staffTitle   String? // عنوان کاری همکار در تیم
+  staffAccessUpdatedAt DateTime?
+  staffAccessUpdatedBy String?
+  deletedAt    DateTime? // حساب بایگانی‌شده؛ از فهرست‌های عملیاتی مخفی است ولی رزومه/آزمون/گواهی تا حذف دستی مدیر حفظ می‌شوند
+  graduated    Boolean      @default(false) // فارغ‌التحصیل؟ در این حالت تقویم کلاس از داشبورد حذف و از انتخاب اسامی کنار می‌رود
+  nationalId   String?
+  branch       String? // تهران | ساری
+  courseTitle  String? // دوره‌ای که هنرجو در آن است
+  classGroupId String? // کلاس/گروه هنرجو
+  classGroup   ClassGroup?  @relation(fields: [classGroupId], references: [id])
+  scheduleSeenAt DateTime? // آخرین باری که هنرجو برنامه‌اش را دید (برای نوتیفیکیشن)
+  notificationsReadAt DateTime? // آخرین باری که کاربر اعلان‌هایش را دید (برای شمارش خوانده‌نشده‌ها)
+  staffReportsSeenAt DateTime? // آخرین باری که ادمین/ادیتور تابلوی گزارش کار تیمی را باز کرد (مبنای شمارش خوانده‌نشده)
+  progressOverride Int? // درصد پیشرفتِ دستیِ تعیین‌شده توسط ادمین/ادیتور؛ اگر تنظیم شود جای محاسبهٔ خودکار (بر پایه‌ی حضور) را می‌گیرد
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  sessions     Session[]
+  enrollments  Enrollment[]
+  attendances  Attendance[]
+  payments     Payment[]
+  courseAccesses CourseAccess[] // دوره‌های آنلاینی که این کاربر خریده/دسترسی دارد
+  examAttempts ExamAttempt[] // تلاش‌های آزمون فارغ‌التحصیلی
+  examPermits  ExamPermit[] // اجازه‌های شرکت در آزمون که مدیر/ادیتور صادر کرده
+  certificates Certificate[] // گواهی‌نامه‌های صادرشده
+  socialAccount SocialAccount?
+
+  @@index([classGroupId])
+  @@index([deletedAt])
+}
+
+model ClassGroup {
+  id            String         @id @default(cuid())
+  name          String // نام کلاس/گروه
+  branch        String // تهران | ساری
+  courseTitle   String? // دوره
+  coverImage    String? // عکس کلاس؛ در پنل مدیریت و در برنامهٔ هنرجو نمایش داده می‌شود
+  teacherName   String? // نام نمایشیِ استاد این کلاس (متن ساده، مثل ClassEvent.teacher)؛ در کارت کلاس آنلاین به هنرجو نشان داده می‌شود
+  totalSessions Int            @default(8) // تعداد کل جلسات این دوره (مبنای محاسبه‌ی درصد پیشرفت هنرجو)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  members       User[]
+  sessions      ClassSession[]
+
+  @@index([branch])
+}
+
+model ClassSession {
+  id               String       @id @default(cuid())
+  groupId          String
+  group            ClassGroup   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  title            String
+  startsAt         DateTime
+  chartDescription String? // چارت درسی جلسه
+  tools            String? // ابزار لازم برای جلسه
+  homework         String? // تمرین و اتود جلسه
+  createdById      String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  attendances      Attendance[]
+
+  // --- کلاس آنلاین زنده (پخش زنده روی همین جلسه) ---
+  liveStatus          String    @default("scheduled") // scheduled | live | finished
+  scheduledEndAt       DateTime? // پایان برنامه‌ریزی‌شدهٔ جلسه (اختیاری)
+  liveStartedAt        DateTime? // زمان واقعیِ شروع پخش زنده
+  liveFinishedAt       DateTime? // زمان واقعیِ پایان پخش زنده
+  liveStartedById      String? // ادمین/ادیتوری که پخش را شروع کرد
+  liveStartedByName    String? // نام او در همان لحظه (کپی، مثل سایر لاگ‌های سیستم)
+  liveFinishedById     String?
+  liveFinishedByName   String?
+  recordingUrl         String? // لینک/کد امبد ویدیوی ضبط‌شدهٔ این جلسه (در صورت وجود)، بعد از پایان کلاس به هنرجو نشان داده می‌شود
+
+  @@index([groupId, startsAt])
+  @@index([liveStatus])
+}
+
+model Attendance {
+  id        String       @id @default(cuid())
+  sessionId String
+  session   ClassSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    String       @default("absent") // present | absent
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@unique([sessionId, userId])
+  @@index([userId])
+}
+
+model SignupRequest {
+  id         String   @id @default(cuid())
+  role       String // student | filmmaker
+  firstName  String
+  lastName   String
+  phone      String
+  nationalId String? // کد ملی (برای فیلمساز)
+  branch     String? // تهران | ساری (برای هنرجو)
+  birthDate  String? // تاریخ تولد (برای هنرجو)
+  idCardImage String? // عکس شناسنامه یا کارت ملی (برای هنرجو)
+  goal       String? // هدف از انتخاب خانواده برداشت (برای فیلمساز)
+  status     String   @default("pending") // pending | approved | rejected
+  username   String? // نام کاربری ساخته‌شده هنگام تأیید
+  userId     String? // حساب کاربری ساخته‌شده پس از تأیید
+  adminNote  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([status])
+  @@index([phone])
+}
+
+model BookingRequest {
+  id          String   @id @default(cuid())
+  actorId     String // شناسهٔ رزومهٔ بازیگر
+  actorName   String // نام بازیگر (کپی برای نمایش سریع)
+  userId      String? // فیلمساز/کاربر ثبت‌کننده
+  name        String // نام تماس‌گیرنده
+  phone       String // شماره تماس
+  message     String // پیام/توضیح ست تایم
+  status      String   @default("new") // new | contacted | done | rejected
+  adminNote   String? // یادداشت ادمین/ادیتور (خصوصی — فیلمساز نمی‌بیند)
+  reply       String? // پاسخ پشتیبانی که خودِ فیلمساز در داشبوردش می‌بیند
+  replyAt     DateTime? // زمان ثبت/به‌روزرسانی پاسخ
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([actorId])
+  @@index([userId])
+}
+
+// «لیست کوتاه» فیلمساز: بازیگرانی که برای بررسی بعدی نشان کرده است.
+model ActorShortlist {
+  id        String   @id @default(cuid())
+  userId    String // فیلمساز
+  actorId   String // ActorResume.id
+  note      String? // یادداشت شخصیِ فیلمساز دربارهٔ این بازیگر
+  createdAt DateTime @default(now())
+
+  @@unique([userId, actorId])
+  @@index([userId])
+}
+
+// بانک سوالات آزمون فارغ‌التحصیلی. هر آزمون، سوالاتش را به‌صورت تصادفی از سوالاتِ فعال برمی‌دارد،
+// پس بانک می‌تواند بسیار بزرگ‌تر از تعداد سوالِ هر آزمون باشد.
+model ExamQuestion {
+  id          String   @id @default(cuid())
+  text        String // متن سوال
+  options     Json // آرایه‌ی گزینه‌ها (۴ گزینه)
+  correct     Int // اندیس گزینهٔ درست، از ۰
+  topic       String? // سرفصل/موضوع سوال
+  active      Boolean  @default(true) // سوالِ غیرفعال در آزمون‌های جدید نمی‌آید
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([active])
+  @@index([topic])
+}
+
+// مجوز شرکت در آزمون. بدون یک مجوزِ استفاده‌نشده، هیچ‌کس نمی‌تواند آزمون را شروع کند.
+// هر مجوز فقط یک بار مصرف می‌شود و به همان تلاشی که با آن باز شده گره می‌خورد.
+model ExamPermit {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  grantedById   String? // مدیر یا ادیتوری که اجازه را صادر کرده
+  grantedByName String?
+  grantedAt     DateTime  @default(now())
+  // بازهٔ باز بودن صفحهٔ آزمون؛ فقط زمانِ ورود و شروع را کنترل می‌کند و
+  // در مهلت خودِ آزمون (زمان هر سؤال) هیچ اثری ندارد.
+  startsAt      DateTime? // آغاز بازه؛ خالی یعنی از همان لحظهٔ صدور باز است
+  expiresAt     DateTime? // پایان بازه؛ خالی یعنی بدون محدودیت زمانی
+  usedAt        DateTime? // لحظه‌ای که آزمون با این مجوز باز شد
+  attemptId     String?   @unique // تلاشی که این مجوز خرج آن شد
+  revoked       Boolean   @default(false)
+  note          String?
+  classScore    Float? // نمرهٔ تکلیف/فعالیت کلاسی از ۲۰ (تا یک رقم اعشار)؛ همراه با صدور اجازه و پیش از شروع آزمون ثبت می‌شود
+
+  @@index([userId, revoked])
+  @@index([grantedAt])
+}
+
+// یک بار شرکت هنرجو در آزمون. سوالات در لحظهٔ شروع قفل می‌شوند تا رفرش صفحه سوال‌ها را عوض نکند.
+// آزمون تک‌سواله جلو می‌رود: «cursor» فقط زیاد می‌شود و بازگشت به سوال قبلی ممکن نیست.
+model ExamAttempt {
+  id             String       @id @default(cuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionIds    Json // ترتیب ثابت سوالاتِ همین تلاش
+  answers        Json         @default("{}") // { questionId: اندیس گزینهٔ انتخابی }
+  total          Int // تعداد سوالات این آزمون
+  cursor         Int          @default(0) // شمارهٔ سوال جاری (از ۰)؛ هرگز کم نمی‌شود
+  perQuestionSec Int          @default(60) // مهلت پاسخ به هر سوال، به ثانیه
+  questionEndsAt DateTime? // پایان مهلتِ سوال جاری
+  score          Int? // تعداد پاسخ درست (پس از تصحیح)
+  percent        Int? // درصد نمرهٔ آزمون (فقط پاسخ‌های درست)
+  classScore     Float? // نمرهٔ کلاسیِ کپی‌شده از مجوز در لحظهٔ شروع؛ بعد از شروع تغییر نمی‌کند
+  finalPercent   Float? // نمرهٔ نهایی از ۱۰۰ = سهم آزمون + نمرهٔ کلاسی؛ ملاک قبولی و گواهی
+  passed         Boolean      @default(false)
+  startedAt      DateTime     @default(now())
+  expiresAt      DateTime // پایان مهلت کل آزمون
+  submittedAt    DateTime? // خالی یعنی آزمون هنوز باز است
+  certificate    Certificate?
+
+  @@index([userId, startedAt])
+  @@index([submittedAt])
+}
+
+// گواهی‌نامهٔ پایان دوره. اطلاعات در لحظهٔ صدور کپی می‌شود تا تغییرات بعدیِ پروفایل،
+// گواهیِ صادرشده و استعلام‌شده را عوض نکند.
+model Certificate {
+  id          String       @id @default(cuid())
+  serial      String       @unique // کد استعلام، مثل TB-1404-0001
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attemptId   String?      @unique
+  attempt     ExamAttempt? @relation(fields: [attemptId], references: [id])
+  fullName    String
+  gender      String? // male | female — برای «آقای/خانم»
+  nationalId  String?
+  courseTitle String?
+  branch      String?
+  // نسخهٔ مستقلِ عکس پرسنلیِ پروفایل در لحظهٔ صدور. کاربر می‌تواند بعداً عکس پروفایلش را
+  // عوض یا حذف کند (فایل قبلی هم پاک می‌شود)، ولی عکسِ روی گواهیِ صادرشده نباید تغییر کند.
+  photoUrl    String?
+  percent     Float? // نمرهٔ نهایی از ۱۰۰ که روی گواهی درج می‌شود (تا یک رقم اعشار)
+  examPercent Int? // ریز نمره: درصد آزمون (همیشه عدد صحیح)
+  classScore  Float? // ریز نمره: نمرهٔ کلاسی از ۲۰ (تا یک رقم اعشار)
+  revoked     Boolean      @default(false) // ابطال توسط مدیر؛ در استعلام «باطل» نشان داده می‌شود
+  issuedById  String?
+  issuedAt    DateTime     @default(now())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([userId])
+}
+
+model RateLimitBucket {
+  keyHash   String   @id
+  count     Int      @default(0)
+  resetAt   DateTime
+  updatedAt DateTime @default(now())
+
+  @@index([resetAt])
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  tokenHash  String   @unique
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+  userAgent  String?
+  ipAddress  String?
+
+  @@index([userId])
+}
+
+model ClassEvent {
+  id          String   @id @default(cuid())
+  title       String
+  teacher     String?
+  description String?
+  location    String?
+  startsAt    DateTime
+  durationMin Int?
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([startsAt])
+}
+
+// رزومهٔ بازیگری. عمداً هیچ رابطه‌ای با User ندارد: رزومه یک پروندهٔ مستقل است که
+// فقط ادمین/ادیتور می‌سازد و ویرایش می‌کند و به حساب کاربری هیچ‌کس گره نمی‌خورد.
+model ActorResume {
+  id           String        @id @default(cuid())
+  firstName    String
+  lastName     String
+  fullName     String // «نام + نام خانوادگی»؛ ذخیره می‌شود تا جست‌وجو و نمایش ساده بماند
+  headline     String?
+  bio          String?
+  gender       String?
+  city         String?
+  birthYear    Int?
+  age          Int?
+  heightCm     Int?
+  weightKg     Int?
+  contactPhone String? // شمارهٔ تماسِ خودِ فرد؛ ربطی به حساب کاربری ندارد
+  skills       String?
+  experience   String?
+  showreelUrl  String?
+  customValues Json? // مقدار فیلدهای سفارشی: { [ResumeFieldDef.key]: value }
+  isPublic     Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  photos       ResumePhoto[]
+  videos       ResumeVideo[]
+
+  @@index([isPublic])
+  @@index([fullName])
+}
+
+// عکس‌های رزومه؛ هر رزومه می‌تواند چند عکس داشته باشد (آپلود مستقیم یا لینک بیرونی).
+model ResumePhoto {
+  id        String      @id @default(cuid())
+  resumeId  String
+  resume    ActorResume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  url       String
+  caption   String?
+  sortOrder Int         @default(0)
+  createdAt DateTime    @default(now())
+
+  @@index([resumeId, sortOrder])
+}
+
+// ویدیوهای رزومه؛ لینک آپارات/ویو یا فایلِ آپلودشده، هرکدام با عنوان و توضیح.
+model ResumeVideo {
+  id          String      @id @default(cuid())
+  resumeId    String
+  resume      ActorResume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  url         String
+  title       String?
+  description String?
+  sortOrder   Int         @default(0)
+  createdAt   DateTime    @default(now())
+
+  @@index([resumeId, sortOrder])
+}
+
+// فیلدهای دلخواهِ رزومه که مدیر از پنل می‌سازد؛ مقدارشان در ActorResume.customValues می‌نشیند.
+model ResumeFieldDef {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  label     String
+  type      String   @default("text") // text | textarea | number | select | boolean
+  options   String? // گزینه‌های select، هر گزینه در یک خط
+  hint      String?
+  required  Boolean  @default(false)
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, sortOrder])
+}
+
+model GalleryItem {
+  id          String   @id @default(cuid())
+  imageUrl    String
+  caption     String?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model BookChunk {
+  id        String   @id @default(cuid())
+  idx       Int
+  content   String
+  embedding Json
+  createdAt DateTime @default(now())
+
+  @@index([idx])
+}
+
+// منابع تکمیلی که مدیر جدا از کتاب «متد پنج سوال» به دستیار هوشمند اضافه می‌کند.
+model AiKnowledgeDocument {
+  id            String             @id @default(cuid())
+  title         String
+  fileName      String?
+  mimeType      String?
+  chunkCount    Int                @default(0)
+  createdByName String?
+  createdAt     DateTime           @default(now())
+  chunks        AiKnowledgeChunk[]
+
+  @@index([createdAt])
+}
+
+model AiKnowledgeChunk {
+  id         String              @id @default(cuid())
+  documentId String
+  document   AiKnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  idx        Int
+  content    String
+  embedding  Json
+  createdAt  DateTime            @default(now())
+
+  @@unique([documentId, idx])
+  @@index([documentId])
+}
+
+model SupportConversation {
+  id            String           @id @default(cuid())
+  visitorName   String
+  visitorPhone  String?
+  status        String           @default("open") // open | closed
+  lastMessageAt DateTime         @default(now())
+  adminUnread   Int              @default(0)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  messages      SupportMessage[]
+
+  @@index([lastMessageAt])
+}
+
+model SupportMessage {
+  id             String              @id @default(cuid())
+  conversationId String
+  conversation   SupportConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String // visitor | admin
+  body           String
+  createdAt      DateTime            @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  section     String    @default("news") // بخش مقصد: news, blog, works-*, gallery, course-video
+  category    String? // دستهٔ وبلاگ (فقط وقتی section = blog کاربرد دارد؛ مقادیر مجاز در lib/blogCategories.js)
+  excerpt     String? // خلاصهٔ کوتاه برای فهرست
+  body        String // متن اصلی (پاراگراف‌ها با خط جدید)
+  coverImage  String? // نشانی عکس کاور (آپلودی یا URL)
+  sourceUrl   String? // لینک مطلب در سایت منبع؛ اگر پر باشد کارت مطلب مستقیم به همان سایت باز می‌شود
+  aparatUrl   String? // لینک ویدیوی آپارات
+  audioUrl    String? // نشانی فایل صوتی (آپلودی یا URL) — برای مطالبِ صوتی
+  published   Boolean   @default(true)
+  publishAt   DateTime? // زمان انتشار زمان‌بندی‌شده؛ خالی یعنی فوری
+  createdById String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([published, createdAt])
+  @@index([section, published, publishAt])
+}
+
+// اعلان داخلیِ سایت. userId خالی یعنی «همگانی» (برای همهٔ کاربران واردشده)؛
+// userId پرشده یعنی اعلانِ اختصاصیِ همان کاربر (مثلاً تعیین زمان کلاسِ او).
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String? // null = همگانی
+  title     String
+  body      String?
+  href      String? // لینک مقصد هنگام کلیک
+  kind      String   @default("content") // content | class | system
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
+}
+
+model SiteContent {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model Enrollment {
+  id          String   @id @default(cuid())
+  courseKey   String // شناسه دوره (۰۱ تا ۰۵)
+  courseTitle String
+  fullName    String
+  phone       String
+  status      String   @default("submitted") // submitted | approved | rejected
+  answers     Json? // پاسخ‌های تست آنلاین
+  actorType   String? // تیپ بازیگری تشخیص‌داده‌شده توسط هوش مصنوعی
+  aiAnalysis  String? // تحلیل متنی هوش مصنوعی
+  videoUrl    String? // لینک ویدیوی ارسالی هنرجو
+  nationalId  String? // کد ملی هنرجو (برای تطبیق ویدیوی فرم با درخواست)
+  adminNote   String? // یادداشت/دلیل ادمین
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([phone])
+}
+
+// پرداختِ هنرجو: شهریهٔ هر دوره، یا هزینه‌های جدا (بیمه/پلاتو، لوکیشن/تغذیه، افیشِ متفرقه).
+// هر پرداخت یک مبلغِ متغیر و یک «بابت/دلیل» دارد و می‌تواند به یکی از ۵ دوره وصل باشد یا جدا (courseKey خالی).
+model Payment {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String // بابت/دلیل پرداخت (مثلاً «شهریهٔ دورهٔ تکمیلی» یا «هزینهٔ بیمه و پلاتو»)
+  courseKey   String? // اگر مربوط به یکی از ۵ دوره باشد (۰۱ تا ۰۵)؛ برای پرداخت‌های جدا خالی است
+  courseTitle String? // عنوان دورهٔ مرتبط (در صورت وجود)
+  courseId    String? // اگر پرداختِ خریدِ یک دورهٔ آنلاین (Course) باشد؛ با paid شدن، دسترسی خودکار داده می‌شود
+  amount      Int // مبلغ به تومان (متغیر؛ ادمین هنگام ساخت وارد می‌کند)
+  status      String    @default("pending") // pending | paid | canceled
+  method      String? // روش پرداخت: online | manual (بعد از اتصال درگاه پر می‌شود)
+  paidAt      DateTime? // زمان پرداخت موفق
+  gatewayTrackId String? // شناسهٔ تراکنشِ زیبال (trackId) — هنگام شروعِ پرداخت پر می‌شود
+  gatewayRefId   String? // شمارهٔ پیگیری/مرجعِ درگاه پس از verify موفق
+  createdById String? // ادمین/ادیتوری که این پرداخت را ساخته
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId, status])
+  @@index([status])
+  @@index([courseId])
+  @@index([gatewayTrackId])
+}
+
+// دورهٔ آنلاینِ فروشی: یک تیزر رایگان (teaserUrl) دارد که همه می‌بینند،
+// و مجموعه‌ای ویدیوی محافظت‌شده (CourseLesson) که فقط کاربرِ دارای دسترسی (CourseAccess) می‌بیند.
+model Course {
+  id          String         @id @default(cuid())
+  title       String
+  slug        String         @unique
+  description String? // توضیح/سرفصل دوره
+  price       Int            @default(0) // قیمت به تومان
+  coverImage  String? // عکس کاور دوره
+  teaserUrl   String? // تیزرِ رایگان (کد امبد/لینک) که برای همه نمایش داده می‌شود
+  published   Boolean        @default(true)
+  order       Int            @default(0) // ترتیب نمایش
+  createdById String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  lessons     CourseLesson[]
+  accesses    CourseAccess[]
+
+  @@index([published, order])
+}
+
+// یک ویدیوی آموزشیِ داخلِ دوره؛ فقط برای خریدار قابل مشاهده است.
+model CourseLesson {
+  id        String   @id @default(cuid())
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title     String
+  videoUrl  String // کد امبد/لینک ویدیو (آپارات یا سرویس محدودسازی دامنه مثل ویدپروتکت/نگاوید)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId, order])
+}
+
+// دسترسیِ یک کاربر به یک دوره (خریداری‌شده). وجودِ رکورد یعنی دسترسیِ فعال.
+model CourseAccess {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  source      String   @default("manual") // manual (اعطای دستیِ ادمین) | gateway (پرداخت آنلاین) | payment (پرداختِ دستیِ تأییدشده)
+  grantedById String? // ادمینی که دسترسی داد (برای اعطای دستی)
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+// کتابِ فروشی در صفحهٔ «مسئولیت اجتماعی». مبلغ را ادمین تعیین می‌کند.
+// خرید به‌صورت «ثبت سفارش» است: هرکس فرم را پر می‌کند و ادمین سفارش‌ها را پیگیری می‌کند.
+model Book {
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  author      String? // نویسنده (مثلاً آقای نظری)
+  description String? // معرفی کتاب (متن)
+  price       Int         @default(0) // قیمت به تومان (ادمین تعیین می‌کند)
+  coverImage  String? // عکس جلد
+  aparatUrl   String? // ویدیوی معرفی/تیزر کتاب (لینک آپارات) — محتوای تلفیقی
+  audioUrl    String? // نمونهٔ صوتی/معرفی صوتی کتاب (آپلودی یا URL) — محتوای تلفیقی
+  published   Boolean     @default(true)
+  order       Int         @default(0) // ترتیب نمایش
+  createdById String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orders      BookOrder[]
+
+  @@index([published, order])
+}
+
+// سفارشِ خریدِ یک کتاب. چون درگاه هنوز وصل نیست، سفارش ثبت و توسط ادمین پیگیری می‌شود.
+model BookOrder {
+  id        String   @id @default(cuid())
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  userId    String? // اگر کاربرِ واردشده سفارش داده باشد
+  name      String // نام سفارش‌دهنده
+  phone     String // شماره تماس
+  address   String? // نشانی پستی
+  postalCode String? // کد پستی ۱۰ رقمی گیرنده
+  quantity  Int      @default(1) // تعداد
+  note      String? // توضیح سفارش‌دهنده
+  amount    Int? // مبلغ کلِ سفارش به تومان (قیمت × تعداد) در لحظهٔ ثبت
+  method    String? // روش پرداخت: online | manual
+  paidAt    DateTime? // زمان پرداخت موفق آنلاین
+  gatewayTrackId String? // شناسهٔ تراکنشِ زیبال (trackId)
+  gatewayRefId   String? // شمارهٔ پیگیری/مرجعِ درگاه پس از verify موفق
+  status    String   @default("new") // new | contacted | paid | shipped | canceled
+  adminNote String? // یادداشت ادمین
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reminderSmsClaimedAt DateTime? // قفل موقت هنگام تلاش برای ارسال یادآوری (ضد race-condition)؛ اگر ارسال ناموفق شود پاک می‌شود
+  reminderSmsSentAt    DateTime? // زمان ارسال موفقِ پیامک یادآوریِ سبد رهاشده؛ فقط پس از موفقیت واقعی ثبت می‌شود
+
+  @@index([bookId])
+  @@index([status])
+  @@index([phone])
+  @@index([gatewayTrackId])
+  @@index([reminderSmsSentAt])
+}
+
+// گزارش تغییرات مدیریتی: چه کسی، کِی، چه چیزی را عوض کرد.
+// عمداً به User رابطه ندارد تا حذف یک حساب، تاریخچه‌اش را پاک نکند.
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String? // شناسهٔ کاربرِ انجام‌دهنده
+  actorName  String? // نام نمایشی در همان لحظه
+  actorRole  String? // نقش در همان لحظه (admin | editor)
+  action     String // content.update | user.role | user.password | user.active | ...
+  targetType String? // siteContent | user | ...
+  targetId   String? // شناسه یا کلیدِ هدف
+  summary    String? // توضیح کوتاه فارسی برای نمایش در پنل
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([action])
+  @@index([actorId])
+}
+
+// تابلوی گزارش کار داخلیِ تیم مدیریت: ادمین و ادیتور اینجا به هم گزارش کار می‌دهند.
+// این محتوا هرگز در سایت عمومی یا داشبورد هنرجو/فیلمساز دیده نمی‌شود و همهٔ مسیرهای آن
+// در سرور با isManager محافظت شده‌اند. نام و نقشِ نویسنده در همان لحظه کپی می‌شود تا
+// تغییر نقش یا حذف حساب، تاریخچهٔ گزارش‌ها را بی‌معنا نکند.
+model StaffReport {
+  id         String    @id @default(cuid())
+  authorId   String
+  authorName String
+  authorRole String // admin | editor (در لحظهٔ ثبت)
+  title      String
+  body       String
+  category   String    @default("report") // report | issue | request
+  status     String    @default("open") // open | done
+  targetId   String? // گیرندهٔ گزارش؛ null یعنی «همهٔ تیم»
+  targetName String? // نام گیرنده در لحظهٔ ثبت (تا تغییر نام/حذف حساب تاریخچه را خراب نکند)
+  doneById   String?
+  doneByName String?
+  doneAt     DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  comments   StaffReportComment[]
+
+  @@index([createdAt])
+  @@index([status])
+  @@index([authorId])
+  @@index([targetId])
+}
+
+model StaffReportComment {
+  id         String      @id @default(cuid())
+  reportId   String
+  report     StaffReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  authorId   String
+  authorName String
+  authorRole String
+  body       String
+  createdAt  DateTime    @default(now())
+
+  @@index([reportId, createdAt])
+}
+
+// گفت‌وگوی داخلیِ تیم مدیریت (کنار تابلوی گزارش کار). دو نوع دارد:
+// group → یک گفت‌وگوی گروهی که همهٔ ادمین/ادیتورهای فعال عضو آن‌اند،
+// direct → گفت‌وگوی خصوصیِ دونفره که فقط همان دو نفر می‌بینند (حتی ادمینِ دیگر هم نه).
+// عضویت از روی همین ستون‌ها در سرور بررسی می‌شود؛ هیچ مسیری بدون آن بررسی اجرا نمی‌شود.
+model StaffChatThread {
+  id            String   @id @default(cuid())
+  kind          String   @default("direct") // group | direct
+  pairKey       String   @unique // "group" برای گروهی، وگرنه دو شناسهٔ کاربر مرتب‌شده با «|»
+  userAId       String? // فقط در direct
+  userBId       String? // فقط در direct
+  lastMessageAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+  messages      StaffChatMessage[]
+  reads         StaffChatRead[]
+
+  @@index([lastMessageAt])
+  @@index([userAId])
+  @@index([userBId])
+}
+
+model StaffChatMessage {
+  id         String          @id @default(cuid())
+  threadId   String
+  thread     StaffChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  authorId   String
+  authorName String
+  authorRole String
+  body       String
+  createdAt  DateTime        @default(now())
+
+  @@index([threadId, createdAt])
+}
+
+// آخرین باری که هر کاربر یک گفت‌وگو را باز کرده؛ مبنای شمارندهٔ خوانده‌نشده.
+model StaffChatRead {
+  id         String          @id @default(cuid())
+  threadId   String
+  thread     StaffChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  userId     String
+  lastReadAt DateTime        @default(now())
+
+  @@unique([threadId, userId])
+  @@index([userId])
+}
+
+// ── برداشتگرام؛ نشست مستقل برای حساب‌های قدیمی، اتصال به حساب سایت برای کاربران واردشده ───────────────
+model SocialAccount {
+  id          String   @id @default(cuid())
+  userId      String?  @unique
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  phone       String   @unique
+  username    String   @unique
+  displayName String
+  photoUrl    String?
+  bio         String?
+  active      Boolean  @default(true)
+  blocked     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  sessions    SocialSession[]
+  posts       SocialPost[]
+  likes       SocialLike[]
+  comments    SocialComment[]
+  reports     SocialReport[]
+}
+
+model SocialSession {
+  id        String        @id @default(cuid())
+  tokenHash String        @unique
+  accountId String
+  account   SocialAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime      @default(now())
+
+  @@index([accountId])
+}
+
+model SocialOtpCode {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String
+  purpose   String   // signup | login
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([phone, purpose, createdAt])
+}
+
+// یک محتوای کاربرساخته: پست ماندگار یا استوری ۲۴ ساعته؛ هر دو همان لحظهٔ ارسال منتشر می‌شوند
+// (بدون تأیید مدیر) — مدیر و ادیتور فقط می‌توانند بعداً هر مطلبی را حذف کنند.
+model SocialPost {
+  id           String    @id @default(cuid())
+  authorId     String
+  author       SocialAccount @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  kind         String    @default("post") // post | story
+  imageUrl     String? // عکسِ آپلودی (/media/…)؛ برای استوری اجباری است
+  aparatUrl    String? // ویدیوی آپارات (فقط پست) — ویدیو روی سرور خودمان ذخیره نمی‌شود
+  caption      String?
+  publishedAt  DateTime  @default(now()) // مبنای ترتیب فید
+  expiresAt    DateTime? // فقط استوری: publishedAt + ۲۴ ساعت
+  likeCount    Int       @default(0)
+  commentCount Int       @default(0)
+  reportCount  Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  likes        SocialLike[]
+  comments     SocialComment[]
+  reports      SocialReport[]
+
+  @@index([kind, publishedAt])
+  @@index([authorId, createdAt])
+  @@index([expiresAt])
+}
+
+model SocialLike {
+  id        String     @id @default(cuid())
+  postId    String
+  post      SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      SocialAccount @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+
+  @@unique([postId, userId])
+  @@index([userId])
+}
+
+model SocialComment {
+  id         String     @id @default(cuid())
+  postId     String
+  post       SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     SocialAccount @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body       String
+  createdAt  DateTime   @default(now())
+  reports    SocialReport[]
+
+  @@index([postId, createdAt])
+  @@index([authorId])
+}
+
+// گزارش تخلفِ کاربران روی یک پست یا کامنت. عمداً بدون رابطه به گزارش‌دهندهٔ حذف‌شده نمی‌ماند
+// چون reporter اختیاری است و با حذف حساب، خودِ گزارش هم بی‌معنا می‌شود.
+model SocialReport {
+  id         String         @id @default(cuid())
+  postId     String?
+  post       SocialPost?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  commentId  String?
+  comment    SocialComment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  reporterId String?
+  reporter   SocialAccount? @relation(fields: [reporterId], references: [id], onDelete: SetNull)
+  reason     String
+  status     String         @default("open") // open | done
+  createdAt  DateTime       @default(now())
+
+  @@index([status, createdAt])
+  @@index([postId])
+}
+
+// ===================== مسیر رشد (Growth) =====================
+// همهٔ مدل‌های زیر مالکیتِ سبک دارند: فقط userId به‌صورت String ذخیره می‌شود،
+// بدون relation دیتابیسی به User (طبق تصمیم Phase 1 — بدون تغییر در User Model).
+
+model GrowthGoal {
+  id             String          @id @default(cuid())
+  userId         String
+  title          String
+  description    String?
+  startDate      DateTime?
+  endDate        DateTime?
+  priority       String          @default("medium") // low | medium | high
+  status         String          @default("active") // active | completed | archived
+  progress       Int             @default(0) // درصد محاسبه‌شده (کش) بین ۰ تا ۱۰۰
+  manualProgress Int? // درصد دستی وقتی Milestone/Task متصل نیست
+  courseId       String? // اتصال اختیاری به Course موجود؛ فقط id، بدون relation (اگر دوره حذف شود UI باید fallback نشان دهد)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  milestones     GoalMilestone[]
+  tasks          GrowthTask[]
+  habits         Habit[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([courseId])
+}
+
+model GoalMilestone {
+  id          String     @id @default(cuid())
+  goalId      String
+  goal        GrowthGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  dueDate     DateTime?
+  status      String     @default("pending") // pending | in_progress | done
+  progress    Int        @default(0)
+  order       Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([goalId])
+}
+
+model GrowthTask {
+  id          String      @id @default(cuid())
+  userId      String
+  goalId      String?
+  goal        GrowthGoal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  title       String
+  description String?
+  dueDate     DateTime?
+  dueTime     String? // ساعت اختیاری، فرمت HH:mm
+  priority    String      @default("medium") // low | medium | high
+  status      String      @default("pending") // pending | done
+  completedAt DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId, status])
+  @@index([userId, dueDate])
+  @@index([goalId])
+}
+
+model Habit {
+  id              String      @id @default(cuid())
+  userId          String
+  goalId          String?
+  goal            GrowthGoal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  title           String
+  description     String?
+  frequencyType   String // daily | weekly_days | weekly_count | monthly_count
+  frequencyConfig Json? // مثلاً {"days":[1,3,5]} یا {"count":3}
+  startDate       DateTime    @default(now())
+  active          Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  logs            HabitLog[]
+
+  @@index([userId, active])
+  @@index([goalId])
+}
+
+// logDate با تابع متمرکز tehranDateKey() در lib/growth.js محاسبه می‌شود (Asia/Tehran، فرمت YYYY-MM-DD)
+// تا ثبت نیمه‌شب هنرجو مستقل از timezone سرور، در روز درستِ ایران بنشیند.
+model HabitLog {
+  id        String   @id @default(cuid())
+  habitId   String
+  habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  userId    String // دنرمالایز برای فیلتر/مجوز سریع بدون join
+  loggedAt  DateTime @default(now())
+  logDate   String // YYYY-MM-DD به وقت Asia/Tehran
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@unique([habitId, logDate])
+  @@index([userId, logDate])
+}
+
+model Assignment {
+  id          String                 @id @default(cuid())
+  userId      String // هنرجوی مقصد
+  createdById String? // ادمین/ادیتوری که تعریف کرده
+  title       String
+  description String?
+  dueDate     DateTime?
+  status      String                 @default("assigned") // assigned | submitted | approved | needs_revision
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+  submissions AssignmentSubmission[]
+
+  @@index([userId, status])
+}
+
+model AssignmentSubmission {
+  id           String     @id @default(cuid())
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  userId       String
+  content      String?
+  fileUrl      String?
+  status       String     @default("submitted") // submitted | approved | needs_revision
+  feedback     String?
+  reviewedById String?
+  reviewedAt   DateTime?
+  submittedAt  DateTime   @default(now())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([assignmentId])
+  @@index([userId])
+}
+
+// private هرگز در Queryهای سمت مدیریت نمایش داده نمی‌شود (فیلتر در سمت Server، نه فقط UI)
+model JournalEntry {
+  id         String   @id @default(cuid())
+  userId     String
+  content    String
+  visibility String   @default("private") // private | shared
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId, visibility])
+  @@index([userId, createdAt])
+}
+
+model Assessment {
+  id             String           @id @default(cuid())
+  userId         String
+  createdById    String?
+  generalComment String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  items          AssessmentItem[]
+
+  @@index([userId])
+}
+
+model AssessmentItem {
+  id           String     @id @default(cuid())
+  assessmentId String
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  skill        String // کلید مهارت از lib/growthSkills.js
+  score        Int // ۰ تا ۱۰۰
+  comment      String?
+
+  @@index([assessmentId])
+}
+
+// یادداشتِ خصوصیِ Manager دربارهٔ هنرجو؛ هرگز برای خودِ هنرجو نمایش داده نمی‌شود.
+model MentorNote {
+  id          String   @id @default(cuid())
+  userId      String // هنرجوی مربوطه
+  createdById String?
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// نظر استاد دربارهٔ پیشرفت که پس از ثبت برای خود هنرجو نیز نمایش داده می‌شود.
+model StudentProgressComment {
+  id          String   @id @default(cuid())
+  userId      String
+  createdById String?
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId, createdAt])
+}
+
+// ===================== گروه‌های گفت‌وگوی هنرجویان =====================
+// فضای گفت‌وگوی گروهی که فقط مدیر آن را می‌سازد و اعضایش را خودش انتخاب می‌کند.
+// هیچ کاربری نمی‌تواند خودش عضو شود؛ عضویت فقط هنرجوی فعال است و غیرهنرجو حتی وجود گروه را نمی‌بیند.
+// مثل بقیهٔ ماژول‌های تازه، userId فقط String است و relation دیتابیسی به User اضافه نمی‌شود.
+
+model ChatGroup {
+  id            String             @id @default(cuid())
+  name          String
+  description   String? // معرفیِ کوتاه گروه؛ در پروفایل گروه به اعضا نشان داده می‌شود
+  photoUrl      String? // عکس گروه (آپلود مدیر)
+  active        Boolean            @default(true) // گروه بسته‌شده: اعضا می‌بینند ولی پیام تازه نمی‌فرستند
+  createdById   String?
+  lastMessageAt DateTime           @default(now())
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  members       ChatGroupMember[]
+  messages      ChatGroupMessage[]
+  reads         ChatGroupRead[]
+
+  @@index([lastMessageAt])
+}
+
+model ChatGroupMember {
+  id        String    @id @default(cuid())
+  groupId   String
+  group     ChatGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime  @default(now())
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
+
+model ChatGroupMessage {
+  id         String    @id @default(cuid())
+  groupId    String
+  group      ChatGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  authorId   String
+  authorName String
+  authorRole String // student | admin | editor
+  body       String
+  createdAt  DateTime  @default(now())
+
+  @@index([groupId, createdAt])
+}
+
+// آخرین باری که هر عضو گروه را باز کرده؛ مبنای شمارندهٔ خوانده‌نشده.
+model ChatGroupRead {
+  id         String    @id @default(cuid())
+  groupId    String
+  group      ChatGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId     String
+  lastReadAt DateTime  @default(now())
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
+
+// گفت‌وگوی خصوصی دو هنرجو که دست‌کم در یک گروه مدیریت‌شده عضو مشترک هستند.
+// شناسه‌های userA و userB همیشه به ترتیب الفبایی ذخیره می‌شوند تا برای هر دو نفر فقط یک گفت‌وگو ساخته شود.
+model DirectChat {
+  id            String              @id @default(cuid())
+  userAId       String
+  userBId       String
+  lastMessageAt DateTime            @default(now())
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  messages      DirectChatMessage[]
+  reads         DirectChatRead[]
+
+  @@unique([userAId, userBId])
+  @@index([userAId, lastMessageAt])
+  @@index([userBId, lastMessageAt])
+}
+
+model DirectChatMessage {
+  id         String     @id @default(cuid())
+  chatId     String
+  chat       DirectChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  authorId   String
+  authorName String
+  body       String
+  createdAt  DateTime   @default(now())
+
+  @@index([chatId, createdAt])
+}
+
+model DirectChatRead {
+  id         String     @id @default(cuid())
+  chatId     String
+  chat       DirectChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  userId     String
+  lastReadAt DateTime   @default(now())
+
+  @@unique([chatId, userId])
+  @@index([userId])
+}
+
+// صف پایدار پیامک‌های اطلاع‌رسانی. خطای پنل یا اتمام اعتبار فقط زمان تلاش بعدی را عقب می‌اندازد.
+model SmsNotificationQueue {
+  id            String    @id @default(cuid())
+  dedupeKey     String    @unique
+  userId        String?
+  phone         String
+  kind          String // class_session | group_message
+  body          String
+  status        String    @default("pending") // pending | sending | sent
+  attempts      Int       @default(0)
+  nextAttemptAt DateTime  @default(now())
+  providerId    String?
+  lastError     String?
+  sentAt        DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status, nextAttemptAt])
+  @@index([userId, createdAt])
+}
