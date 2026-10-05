@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic';
 export default async function AboutPage() {
   const t = await loadContent();
   // اسلایدهای بالای صفحه از فیلد چند‌عکسی جدید خوانده می‌شوند؛ اگر خالی بود، به اسلایدهای قدیمی برمی‌گردیم.
-  const aboutSlides = splitLines(t('about.slides'));
+  const aboutSlides = splitLines(t('about.header.slides'));
   const legacySlides = [t('about.slide1.image'), t('about.slide2.image'), t('about.slide3.image')].filter(Boolean);
   const heroImages = aboutSlides.length ? aboutSlides : legacySlides;
   return (
@@ -54,6 +54,20 @@ export default async function AboutPage() {
         .edu-cert img { width:100%;aspect-ratio:4/3;object-fit:cover;object-position:top;display:block; }
         .edu-cert__cap { display:block;padding:8px 10px;font-size:.72rem;font-weight:700;color:var(--muted);text-align:center;border-top:1px solid var(--border); }
         @media(max-width:480px){ .edu-certs{grid-template-columns:1fr;} }
+        .editorial-path-section { background:var(--dark)!important; color:#fff; position:relative; overflow:hidden; }
+        .editorial-path-section::after { content:'PATH / ۰۱—۰۶'; position:absolute; left:5%; bottom:28px; color:rgba(255,255,255,.14); font-size:.68rem; letter-spacing:.16em; direction:ltr; }
+        .editorial-path-head { display:grid; grid-template-columns:1.1fr .9fr; gap:48px; align-items:end; text-align:right!important; max-width:none!important; margin-bottom:44px!important; }
+        .editorial-path-head .tag { color:var(--gold); border-color:rgba(255,215,0,.45); background:transparent; }
+        .editorial-path-head .heading { color:#fff; font-size:clamp(1.9rem,4vw,3.6rem); letter-spacing:-.05em; }
+        .editorial-path-head .line { display:none; }
+        .editorial-path-head p { color:rgba(255,255,255,.62)!important; font-size:.9rem; line-height:2; margin:0!important; border-right:2px solid var(--gold); padding-right:22px; }
+        .editorial-path-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0; border-top:1px solid rgba(255,255,255,.2); }
+        .editorial-path-item { background:transparent!important; border:0!important; border-bottom:1px solid rgba(255,255,255,.2)!important; border-radius:0!important; padding:26px 22px 28px 0!important; min-height:156px; }
+        .editorial-path-item:nth-child(3n+2), .editorial-path-item:nth-child(3n+3) { border-right:1px solid rgba(255,255,255,.2)!important; padding-right:22px!important; }
+        .editorial-path-item .vnum { color:var(--gold)!important; font-size:1.45rem!important; margin-bottom:18px!important; }
+        .editorial-path-item h3 { color:#fff!important; font-size:1rem!important; margin-bottom:8px!important; }
+        .editorial-path-item p { color:rgba(255,255,255,.6)!important; font-size:.78rem!important; line-height:1.9!important; }
+        .editorial-path-cta { margin-top:30px!important; }
         .skills-groups { display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:920px;margin:0 auto; }
         .skills-group { background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:26px 24px; }
         .skills-group__label { display:inline-block;font-size:.8rem;font-weight:800;color:var(--gold);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--gold); }
@@ -75,8 +89,12 @@ export default async function AboutPage() {
           .resume-grid{grid-template-columns:1fr;}
           .skills-groups{grid-template-columns:1fr;}
           .about-cards{grid-template-columns:1fr;}
+          .editorial-path-head{grid-template-columns:1fr;gap:18px;}
+          .editorial-path-grid{grid-template-columns:1fr 1fr;}
+          .editorial-path-item:nth-child(3n+2), .editorial-path-item:nth-child(3n+3){border-right:0!important;padding-right:0!important;}
+          .editorial-path-item:nth-child(even){border-right:1px solid rgba(255,255,255,.2)!important;padding-right:22px!important;}
         }
-        @media(max-width:640px){ .cred-grid{grid-template-columns:1fr;} }
+        @media(max-width:640px){ .cred-grid{grid-template-columns:1fr;} .editorial-path-grid{grid-template-columns:1fr;} .editorial-path-item:nth-child(even){border-right:0!important;padding-right:0!important;} }
       `}</style>
 
       <div id="about-slider">
@@ -124,9 +142,9 @@ export default async function AboutPage() {
       </section>
 
       {/* مسیر آموزشی */}
-      <section id="about-path" style={{ background: 'var(--white)' }}>
+      <section id="about-path" className="editorial-path-section" style={{ background: 'var(--white)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: 36, maxWidth: 780, marginInline: 'auto' }}>
+          <div className="editorial-path-head" style={{ textAlign: 'center', marginBottom: 36, maxWidth: 780, marginInline: 'auto' }}>
             <span className="tag tag--gold">مسیر رشد هنرجو</span>
             <h2 className="heading" style={{ marginTop: 14 }}>از علاقه تا تجربهٔ واقعی بازیگری</h2>
             <div className="line line--center" />
@@ -134,7 +152,7 @@ export default async function AboutPage() {
               آموزش در خانواده برداشت فقط به حضور در کلاس محدود نیست؛ هنرجو در یک مسیر مرحله‌به‌مرحله با تمرین، بازخورد، کار گروهی و تجربهٔ جلوی دوربین رشد می‌کند.
             </p>
           </div>
-          <div className="values-grid">
+          <div className="editorial-path-grid">
             {[
               ['۰۱', 'آموزش پایه', 'شناخت بدن، بیان، تمرکز و اصول حضور در صحنه و مقابل دوربین.'],
               ['۰۲', 'تمرین و بازخورد', 'تمرین‌های منظم فردی و گروهی برای تبدیل آموخته‌ها به مهارت عملی.'],
@@ -143,7 +161,7 @@ export default async function AboutPage() {
               ['۰۵', 'ارزیابی و گواهینامه', 'بررسی شرایط آموزشی و آزمون پایانی برای هنرجیانی که مسیر را کامل می‌کنند.'],
               ['۰۶', 'ساخت رزومه', 'ثبت تجربه‌ها و معرفی توانایی‌های هنرجو برای ادامهٔ مسیر حرفه‌ای.'],
             ].map(([num, title, text]) => (
-              <div key={num} className="value-item">
+              <div key={num} className="editorial-path-item">
                 <div className="vnum">{num}</div>
                 <h3>{title}</h3>
                 <p>{text}</p>
@@ -151,7 +169,7 @@ export default async function AboutPage() {
             ))}
           </div>
           <div style={{ textAlign: 'center', marginTop: 30 }}>
-            <Link href="/courses" className="btn btn--gold">مشاهدهٔ دوره‌ها</Link>
+            <Link href="/courses" className="btn btn--gold editorial-path-cta">مشاهدهٔ دوره‌ها</Link>
           </div>
         </div>
       </section>

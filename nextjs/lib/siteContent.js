@@ -127,6 +127,7 @@ export const CONTENT_GROUPS = [
       // تماس (پایین صفحه)
       { key: 'about.contact.eyebrow', label: 'تماس — برچسب', type: 'text', default: 'تماس با ما' },
       { key: 'about.contact.heading', label: 'تماس — عنوان', type: 'text', default: 'در تماسیم' },
+      { key: 'about.header.slides', label: 'عکس‌های پس‌زمینهٔ هدر (اسلایدی؛ افزودن/حذف/جابه‌جایی)', type: 'images', default: '' },
     ],
   },
   {
