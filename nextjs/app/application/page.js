@@ -38,12 +38,16 @@ export default function ApplicationPage() {
           <article className={`${styles.card} ${styles.ios}`}>
             <span className={styles.platform}>iPhone و iPad</span>
             <h2 className="subheading">افزودن به صفحهٔ اصلی</h2>
-            <p>در iPhone یا iPad، سایت را با Safari باز کنید و این سه گام را انجام دهید:</p>
-            <ol className={styles.steps}>
-              <li>در پایین Safari، دکمهٔ <strong>Share</strong> را بزنید.</li>
-              <li>گزینهٔ <strong>Add to Home Screen</strong> را انتخاب کنید.</li>
-              <li>روی <strong>Add</strong> بزنید تا آیکون خانواده برداشت به صفحهٔ اصلی اضافه شود.</li>
-            </ol>
+            <p>برای نصب اپلیکیشن روی iPhone یا iPad، راهنمای زیر را باز کنید.</p>
+            <details className={styles.iosGuide}>
+              <summary className="btn btn--dark">راهنمای نصب در iOS</summary>
+              <ol className={styles.steps}>
+                <li>سایت را در مرورگر <strong>Safari</strong> باز کنید.</li>
+                <li>در پایین Safari، دکمهٔ <strong>Share</strong> را بزنید.</li>
+                <li>گزینهٔ <strong>Add to Home Screen</strong> را انتخاب کنید.</li>
+                <li>روی <strong>Add</strong> بزنید تا آیکون خانواده برداشت به صفحهٔ اصلی اضافه شود.</li>
+              </ol>
+            </details>
           </article>
         </div>
       </section>

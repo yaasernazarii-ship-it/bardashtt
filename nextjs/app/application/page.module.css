@@ -8,6 +8,9 @@
 .card h2 { margin-bottom: 14px; }
 .card p { color: var(--muted); line-height: 1.9; }
 .actions { display: grid; gap: 10px; margin-top: 28px; }
+.iosGuide { margin-top: 28px; }
+.iosGuide summary { width: fit-content; list-style: none; }
+.iosGuide summary::-webkit-details-marker { display: none; }
 .steps { display: grid; gap: 13px; margin: 22px 0 0; padding: 0 24px 0 0; color: var(--body); line-height: 1.9; }
 .steps li::marker { color: var(--gold); font-weight: 900; }
 .steps strong { direction: ltr; unicode-bidi: isolate; }
