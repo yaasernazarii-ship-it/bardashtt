@@ -253,6 +253,25 @@ export const CONTENT_GROUPS = [
     ],
   },
   {
+    id: 'application',
+    title: 'صفحهٔ اپلیکیشن',
+    fields: [
+      { key: 'application.tag', label: 'برچسب بالای صفحه', type: 'text', default: 'اپلیکیشن خانواده برداشت' },
+      { key: 'application.title', label: 'عنوان اصلی', type: 'text', default: 'خانواده برداشت، همیشه همراه شما' },
+      { key: 'application.intro', label: 'متن معرفی', type: 'textarea', default: 'اپلیکیشن را روی گوشی خود نصب کنید تا سریع‌تر به دوره‌ها، حساب کاربری و جامعهٔ برداشت دسترسی داشته باشید.' },
+      { key: 'application.android.platform', label: 'کارت اندروید — برچسب', type: 'text', default: 'اندروید' },
+      { key: 'application.android.title', label: 'کارت اندروید — عنوان', type: 'text', default: 'دریافت برای Android' },
+      { key: 'application.android.text', label: 'کارت اندروید — متن', type: 'textarea', default: 'می‌توانید اپلیکیشن را مستقیم دریافت کنید یا از کافه‌بازار نصب کنید.' },
+      { key: 'application.android.direct', label: 'دکمهٔ دانلود مستقیم', type: 'text', default: 'دانلود مستقیم APK' },
+      { key: 'application.android.bazaar', label: 'دکمهٔ کافه‌بازار', type: 'text', default: 'دانلود از کافه‌بازار' },
+      { key: 'application.ios.platform', label: 'کارت iOS — برچسب', type: 'text', default: 'iPhone و iPad' },
+      { key: 'application.ios.title', label: 'کارت iOS — عنوان', type: 'text', default: 'افزودن به صفحهٔ اصلی' },
+      { key: 'application.ios.text', label: 'کارت iOS — متن', type: 'textarea', default: 'برای نصب اپلیکیشن روی iPhone یا iPad، راهنمای زیر را باز کنید.' },
+      { key: 'application.ios.guide', label: 'دکمهٔ راهنمای iOS', type: 'text', default: 'راهنمای نصب در iOS' },
+      { key: 'application.ios.steps', label: 'راهنمای iOS — مراحل (هر مورد یک خط)', type: 'list', default: 'سایت را در مرورگر Safari باز کنید.\nدر پایین Safari، دکمهٔ Share را بزنید.\nگزینهٔ Add to Home Screen را انتخاب کنید.\nروی Add بزنید تا آیکون خانواده برداشت به صفحهٔ اصلی اضافه شود.' },
+    ],
+  },
+  {
     id: 'contact',
     title: 'اطلاعات تماس (مشترک همهٔ صفحات)',
     fields: [
@@ -482,6 +501,7 @@ export const CONTENT_GROUPS = [
       { key: 'nav.support.phoneText', label: 'شمارهٔ نمایشی تماس', type: 'text', default: '021-91090934' },
       { key: 'nav.support.phoneHref', label: 'شمارهٔ تماس برای دکمهٔ شماره‌گیری (فقط رقم)', type: 'text', default: '02191090934' },
       { key: 'nav.btn.login', label: 'دکمهٔ ورود', type: 'text', default: 'حساب کاربری' },
+      { key: 'nav.btn.application', label: 'دکمهٔ اپلیکیشن', type: 'text', default: 'اپلیکیشن' },
       { key: 'nav.btn.dashboard', label: 'دکمهٔ داشبورد (کاربر واردشده)', type: 'text', default: 'داشبورد' },
       { key: 'nav.btn.logout', label: 'دکمهٔ خروج', type: 'text', default: 'خروج' },
       { key: 'nav.drawer.title', label: 'عنوان منوی موبایل', type: 'text', default: 'منوی سایت' },

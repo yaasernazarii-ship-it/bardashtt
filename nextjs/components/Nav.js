@@ -52,6 +52,7 @@ const FALLBACK_TEXT = {
   phoneText: '021-91090934',
   phoneHref: '02191090934',
   btnLogin: 'حساب کاربری',
+  btnApplication: 'اپلیکیشن',
   btnDashboard: 'داشبورد',
   btnLogout: 'خروج',
   drawerTitle: 'منوی سایت',
@@ -191,7 +192,7 @@ export default function Nav({ onOpenChat, logo, content }) {
                 <li><a href={`tel:${String(c.phoneHref || '').replace(/[^0-9+]/g, '')}`}><span className="drop-icon"><Icon name="phone" size={18} /></span><span>{c.callLabel}<span className="drop-phone">{c.phoneText}</span></span></a></li>
               </ul>
             </div>
-            <Link href="/application" className="btn btn--outline btn--sm">اپلیکیشن</Link>
+            <Link href="/application" className="btn btn--outline btn--sm">{c.btnApplication}</Link>
             {user ? (
               <>
                 <Link href="/dashboard" className="btn btn--dark btn--sm">{c.btnDashboard}</Link>
@@ -251,7 +252,7 @@ export default function Nav({ onOpenChat, logo, content }) {
         </div>
         <div className="mobile-drawer__actions">
           <button type="button" className="btn btn--outline" onClick={onOpenChat}>{c.supportChat}</button>
-          <Link href="/application" className="btn btn--outline">اپلیکیشن</Link>
+          <Link href="/application" className="btn btn--outline">{c.btnApplication}</Link>
           {user ? (
             <>
               <Link href="/dashboard" className="btn btn--dark">{c.btnDashboard}</Link>

@@ -1,4 +1,5 @@
 import PageLayout from '@/components/PageLayout';
+import { loadContent, splitLines } from '@/lib/siteContent';
 import styles from './page.module.css';
 
 export const metadata = {
@@ -6,15 +7,17 @@ export const metadata = {
   description: 'روش نصب و دریافت اپلیکیشن خانواده برداشت در اندروید و iOS.',
 };
 
-export default function ApplicationPage() {
+export default async function ApplicationPage() {
+  const t = await loadContent();
+  const iosSteps = splitLines(t('application.ios.steps'));
   return (
     <PageLayout>
       <section className={styles.hero}>
         <div className="container container--sm">
-          <span className="tag tag--gold">اپلیکیشن خانواده برداشت</span>
-          <h1 className="heading" style={{ marginTop: 16 }}>خانواده برداشت، همیشه همراه شما</h1>
+          <span className="tag tag--gold">{t('application.tag')}</span>
+          <h1 className="heading" style={{ marginTop: 16 }}>{t('application.title')}</h1>
           <p className="body-lg" style={{ marginTop: 16 }}>
-            اپلیکیشن را روی گوشی خود نصب کنید تا سریع‌تر به دوره‌ها، حساب کاربری و جامعهٔ برداشت دسترسی داشته باشید.
+            {t('application.intro')}
           </p>
         </div>
       </section>
@@ -22,30 +25,27 @@ export default function ApplicationPage() {
       <section className={styles.platforms}>
         <div className={`container container--sm ${styles.grid}`}>
           <article className={`${styles.card} ${styles.android}`}>
-            <span className={styles.platform}>اندروید</span>
-            <h2 className="subheading">دریافت برای Android</h2>
-            <p>می‌توانید اپلیکیشن را مستقیم دریافت کنید یا از کافه‌بازار نصب کنید.</p>
+            <span className={styles.platform}>{t('application.android.platform')}</span>
+            <h2 className="subheading">{t('application.android.title')}</h2>
+            <p>{t('application.android.text')}</p>
             <div className={styles.actions}>
               <a href="https://github.com/yaasernazarii-ship-it/bardashtt/releases/download/v1.0.0/bardashtt.apk" className="btn btn--dark" download>
-                دانلود مستقیم APK
+                {t('application.android.direct')}
               </a>
               <a href="https://cafebazaar.ir/app/com.bardashtt.app" className="btn btn--gold" target="_blank" rel="noopener noreferrer">
-                دانلود از کافه‌بازار
+                {t('application.android.bazaar')}
               </a>
             </div>
           </article>
 
           <article className={`${styles.card} ${styles.ios}`}>
-            <span className={styles.platform}>iPhone و iPad</span>
-            <h2 className="subheading">افزودن به صفحهٔ اصلی</h2>
-            <p>برای نصب اپلیکیشن روی iPhone یا iPad، راهنمای زیر را باز کنید.</p>
+            <span className={styles.platform}>{t('application.ios.platform')}</span>
+            <h2 className="subheading">{t('application.ios.title')}</h2>
+            <p>{t('application.ios.text')}</p>
             <details className={styles.iosGuide}>
-              <summary className="btn btn--dark">راهنمای نصب در iOS</summary>
+              <summary className="btn btn--dark">{t('application.ios.guide')}</summary>
               <ol className={styles.steps}>
-                <li>سایت را در مرورگر <strong>Safari</strong> باز کنید.</li>
-                <li>در پایین Safari، دکمهٔ <strong>Share</strong> را بزنید.</li>
-                <li>گزینهٔ <strong>Add to Home Screen</strong> را انتخاب کنید.</li>
-                <li>روی <strong>Add</strong> بزنید تا آیکون خانواده برداشت به صفحهٔ اصلی اضافه شود.</li>
+                {iosSteps.map((step, index) => <li key={index}>{step}</li>)}
               </ol>
             </details>
           </article>
