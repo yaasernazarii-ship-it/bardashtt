@@ -1,0 +1,317 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import Icon from './Icon';
+import UserPhotoThumb from './UserPhotoThumb';
+
+const ROLE_LABEL = { member: 'عضو', student: 'هنرجو', filmmaker: 'فیلمساز', editor: 'ادیتور', admin: 'ادمین' };
+const dateFmt = new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
+
+export default function AdminUsers() {
+  const [users, setUsers] = useState([]);
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [savingId, setSavingId] = useState(null);
+  const [query, setQuery] = useState('');
+  const [panelId, setPanelId] = useState(null);
+  const [openId, setOpenId] = useState('');
+  const [archivedMode, setArchivedMode] = useState(false);
+
+  async function load(archived = archivedMode) {
+    setLoading(true);
+    const res = await fetch(`/api/admin/users${archived ? '?archived=1' : ''}`);
+    const data = await res.json();
+    if (data.ok) {
+      setUsers(data.users);
+      setCurrentUserId(data.currentUserId);
+    } else {
+      setError(data.error || 'خطا در بارگذاری.');
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => { load(archivedMode); }, [archivedMode]);
+
+  async function patch(id, payload) {
+    setSavingId(id);
+    setError('');
+    const res = await fetch(`/api/admin/users/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    setSavingId(null);
+    if (!data.ok) { setError(data.error || 'خطا در ذخیره.'); return null; }
+    setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, ...data.user } : u)));
+    return data.user;
+  }
+
+  function changeRole(id, role) { patch(id, { role }); }
+
+  function toggleActive(u) {
+    const next = !u.active;
+    if (!next && !window.confirm(`حساب «${u.displayName || u.username || u.phone}» غیرفعال شود؟ این فرد دیگر نمی‌تواند وارد شود.`)) return;
+    patch(u.id, { active: next });
+  }
+
+  function toggleGraduated(u) {
+    const next = !u.graduated;
+    const name = u.displayName || u.username || u.phone;
+    if (next && !window.confirm(`«${name}» فارغ‌التحصیل شود؟ تقویم کلاس از داشبورد او حذف و نامش از انتخاب اسامیِ تقویم کنار می‌رود.`)) return;
+    patch(u.id, { graduated: next });
+  }
+
+  async function deleteAccount(u) {
+    const name = u.displayName || u.username || u.phone;
+    if (!window.confirm(`حساب «${name}» از تمام فهرست‌های سایت حذف شود؟ اگر آزمون یا گواهی داشته باشد فقط همان مدارک در آرشیو مدیریت باقی می‌مانند؛ در غیر این صورت حساب و اطلاعات وابسته کاملاً پاک می‌شوند.`)) return;
+
+    setSavingId(u.id);
+    setError('');
+    const res = await fetch(`/api/admin/users/${u.id}`, { method: 'DELETE' });
+    const data = await res.json();
+    setSavingId(null);
+    if (!data.ok) {
+      setError(data.error || 'حذف حساب انجام نشد.');
+      return;
+    }
+
+    setUsers((current) => current.filter((item) => item.id !== u.id));
+    setOpenId('');
+    if (panelId === u.id) setPanelId(null);
+  }
+
+  async function resetPassword(u) {
+    const name = u.displayName || u.username || u.phone;
+    const pass = window.prompt(`رمز عبور جدید برای «${name}» را وارد کنید (حداقل ۶ کاراکتر):`);
+    if (pass === null) return;
+    if (pass.trim().length < 6) { setError('رمز عبور حداقل ۶ کاراکتر باشد.'); return; }
+    await patch(u.id, { password: pass.trim() });
+  }
+
+  // بدون نام کاربری، رمز عبور بی‌فایده است؛ چون ورود با «نام کاربری + رمز» انجام می‌شود.
+  async function setUsername(u) {
+    const name = u.displayName || u.phone;
+    const val = window.prompt(`نام کاربری برای «${name}» (حروف انگلیسی کوچک، عدد، نقطه، خط تیره — ۳ تا ۳۲ نویسه):`, u.username || '');
+    if (val === null) return;
+    const clean = val.trim().toLowerCase();
+    if (clean && !/^[a-z0-9._-]{3,32}$/.test(clean)) {
+      setError('نام کاربری فقط حروف انگلیسی کوچک، عدد، نقطه، خط تیره و زیرخط (۳ تا ۳۲ نویسه).');
+      return;
+    }
+    await patch(u.id, { username: clean });
+  }
+
+  if (loading) return <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p>;
+
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? users.filter((u) => [u.displayName, u.username, u.phone].some((v) => (v || '').toLowerCase().includes(q)))
+    : users;
+
+  return (
+    <div>
+      {error && <div className="alert alert--error" style={{ marginBottom: 14 }}>{error}</div>}
+
+      <div style={{ marginBottom: 14, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+        <input className="form-input" placeholder="جست‌وجو بر اساس نام، نام کاربری یا موبایل…" value={query}
+          onChange={(e) => setQuery(e.target.value)} style={{ maxWidth: 360 }} />
+        <button type="button" className={`btn btn--sm ${archivedMode ? 'btn--dark' : 'btn--outline'}`}
+          onClick={() => { setArchivedMode((current) => !current); setOpenId(''); setPanelId(null); }}>
+          {archivedMode ? 'بازگشت به حساب‌های فعال' : 'آزمون و گواهی حساب‌های حذف‌شده'}
+        </button>
+      </div>
+
+      {archivedMode && (
+        <div className="alert alert--info" style={{ marginBottom: 14 }}>
+          این افراد در هیچ فهرست عملیاتی یا بخش عمومی سایت دیده نمی‌شوند. فقط مدارک باقی‌مانده را از اینجا باز و در صورت نیاز دستی حذف کنید.
+        </div>
+      )}
+
+      {filtered.length === 0 ? (
+        <p style={{ color: 'var(--muted)' }}>کاربری یافت نشد.</p>
+      ) : (
+        <div className="su-list">
+          {filtered.map((u) => {
+            const open = openId === u.id;
+            const isSelf = u.id === currentUserId;
+            return (
+              <div key={u.id} className="su-item" style={u.active === false ? { opacity: 0.7 } : undefined}>
+                <button type="button" className="su-head" aria-expanded={open}
+                  onClick={() => setOpenId(open ? '' : u.id)}>
+                  <UserPhotoThumb src={u.photoUrl} name={u.displayName || u.username || u.phone} />
+                  <span className="su-head__name">{u.displayName || u.username || u.phone}</span>
+                  <span className="su-tags">
+                    {u.deletedAt ? (
+                      <span className="su-tag su-tag--off">حساب حذف‌شده</span>
+                    ) : (
+                      <>
+                        <span className="su-tag su-tag--muted">{ROLE_LABEL[u.role] || u.role}{isSelf ? ' (شما)' : ''}</span>
+                        <span className={`su-tag ${u.active === false ? 'su-tag--off' : 'su-tag--ok'}`}>{u.active === false ? 'غیرفعال' : 'فعال'}</span>
+                        {u.role === 'student' && (
+                          <span className={`su-tag ${u.graduated ? 'su-tag--grad' : 'su-tag--enrolled'}`}>{u.graduated ? 'فارغ‌التحصیل' : 'در حال تحصیل'}</span>
+                        )}
+                      </>
+                    )}
+                  </span>
+                  <svg className={`su-chev ${open ? 'is-open' : ''}`} width="16" height="16" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+
+                {open && (
+                  <div className="su-body">
+                    <div style={{ color: 'var(--muted)', fontSize: '.88rem', lineHeight: 2 }}>
+                      {u.deletedAt ? (
+                        <div>تاریخ حذف حساب: {dateFmt.format(new Date(u.deletedAt))}</div>
+                      ) : (
+                        <>
+                          <div>موبایل: <span dir="ltr">{u.phone}</span></div>
+                          <div>نام کاربری: <b dir="ltr">{u.username || '—'}</b></div>
+                          <div>رمز عبور: <b dir="ltr" style={{ fontFamily: 'monospace' }}>{u.passwordPlain || '—'}</b></div>
+                          <div>تاریخ عضویت: {dateFmt.format(new Date(u.createdAt))}</div>
+                        </>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginTop: 12, borderTop: '1px solid var(--border)', paddingTop: 12 }}>
+                      <button type="button" className="btn btn--sm btn--dark" onClick={() => setPanelId(u.id)}>مشاهدهٔ پنل کامل</button>
+
+                      {!u.deletedAt && (
+                        <>
+                      {/* نام کاربری و رمز عبور برای هر حسابی — از جمله حساب خودتان — قابل تغییر است،
+                          چون کاربر دیگر از پروفایلش رمز عوض نمی‌کند و تنها راه، همین‌جاست. */}
+                      <button type="button" className="btn btn--sm btn--outline" disabled={savingId === u.id} onClick={() => setUsername(u)}>
+                        {u.username ? 'تغییر نام کاربری' : 'تعیین نام کاربری'}
+                      </button>
+                      <button type="button" className="btn btn--sm btn--outline" disabled={savingId === u.id} onClick={() => resetPassword(u)}>
+                        {u.username ? 'رمز جدید' : 'تعیین رمز'}
+                      </button>
+
+                      {isSelf ? (
+                        <span style={{ color: 'var(--muted)', fontSize: '.82rem' }}>نقش و فعال/غیرفعال‌کردنِ حساب خودتان از این‌جا قابل تغییر نیست.</span>
+                      ) : (
+                        <>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.82rem', color: 'var(--muted)' }}>
+                            نقش:
+                            <select className="form-input role-select" value={u.role} disabled={savingId === u.id}
+                              onChange={(e) => changeRole(u.id, e.target.value)}>
+                              <option value="member">عضو</option>
+                              <option value="student">هنرجو</option>
+                              <option value="filmmaker">فیلمساز</option>
+                              <option value="editor">ادیتور</option>
+                              <option value="admin">ادمین</option>
+                            </select>
+                          </label>
+                          {u.role === 'student' && (
+                            <button type="button" className={`btn btn--sm ${u.graduated ? 'btn--dark' : 'btn--outline'}`}
+                              disabled={savingId === u.id} onClick={() => toggleGraduated(u)}>
+                              {u.graduated ? 'بازگرداندن به تحصیل' : 'فارغ‌التحصیل'}
+                            </button>
+                          )}
+                          <button type="button" className={`btn btn--sm ${u.active === false ? 'btn--dark' : 'btn--danger'}`}
+                            disabled={savingId === u.id} onClick={() => toggleActive(u)}>
+                            {u.active === false ? 'فعال‌سازی' : 'غیرفعال'}
+                          </button>
+                          {u.role !== 'admin' && u.role !== 'editor' && (
+                            <button type="button" className="btn btn--sm btn--danger"
+                              disabled={savingId === u.id} onClick={() => deleteAccount(u)}>
+                              {savingId === u.id ? 'در حال حذف…' : 'حذف حساب از سایت'}
+                            </button>
+                          )}
+                        </>
+                      )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {panelId && <UserPanel userId={panelId} onClose={() => setPanelId(null)} />}
+    </div>
+  );
+}
+
+function UserPanel({ userId, onClose }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const res = await fetch(`/api/admin/users/${userId}`);
+      const d = await res.json();
+      if (!alive) return;
+      if (d.ok) setData(d);
+      else setError(d.error || 'خطا در بارگذاری.');
+      setLoading(false);
+    })();
+    return () => { alive = false; };
+  }, [userId]);
+
+  const u = data?.user;
+  const signup = data?.signup;
+
+  return (
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', zIndex: 1300, display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: 20, overflowY: 'auto' }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: '#fff', borderRadius: 16, width: 'min(680px,100%)', maxHeight: '92vh', overflowY: 'auto', padding: 22 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <h2 className="heading" style={{ fontSize: '1.15rem', margin: 0 }}>پنل کاربر</h2>
+          <button type="button" className="btn btn--sm btn--ghost" onClick={onClose}><Icon name="close" size={14} /> بستن</button>
+        </div>
+
+        {loading ? <p style={{ color: 'var(--muted)' }}>در حال بارگذاری…</p> : error ? <div className="alert alert--error">{error}</div> : (
+          <div style={{ display: 'grid', gap: 18 }}>
+            {/* هویت */}
+            <div style={{ background: 'var(--surface)', borderRadius: 12, padding: 14, lineHeight: 2, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+              <UserPhotoThumb src={u.photoUrl} name={u.displayName} size={66} />
+              <div>
+              <div><b>{u.displayName || '—'}</b> · {ROLE_LABEL[u.role] || u.role} {u.active === false && <span style={{ color: '#B91C1C' }}>(غیرفعال)</span>}</div>
+              <div style={{ fontSize: '.88rem', color: 'var(--muted)' }}>
+                موبایل: <span dir="ltr">{u.phone}</span>
+                {u.username && <> · نام کاربری: <b dir="ltr">{u.username}</b></>}
+                {u.passwordPlain && <> · رمز: <b dir="ltr">{u.passwordPlain}</b></>}
+              </div>
+              {u.branch && <div style={{ fontSize: '.88rem', color: 'var(--muted)' }}>شعبه: {u.branch}{u.courseTitle ? ` · دوره: ${u.courseTitle}` : ''}</div>}
+              {u.nationalId && <div style={{ fontSize: '.88rem', color: 'var(--muted)' }}>کد ملی: <span dir="ltr">{u.nationalId}</span></div>}
+              </div>
+            </div>
+
+            {/* مدارک ثبت‌نام */}
+            {signup?.idCardImage && (
+              <div>
+                <h3 style={{ fontWeight: 800, marginBottom: 8 }}>مدرک بارگذاری‌شده (شناسنامه/کارت ملی)</h3>
+                <a href={signup.idCardImage} target="_blank" rel="noopener noreferrer">
+                  <img src={signup.idCardImage} alt="" style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 10, border: '1px solid var(--border)' }} />
+                </a>
+              </div>
+            )}
+
+            {/* ثبت‌نام دوره‌ها و ویدیوها */}
+            {u.enrollments?.length > 0 && (
+              <div>
+                <h3 style={{ fontWeight: 800, marginBottom: 8 }}>ثبت‌نام دوره‌ها</h3>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 8 }}>
+                  {u.enrollments.map((en) => (
+                    <li key={en.id} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: '8px 12px', fontSize: '.88rem' }}>
+                      <b>{en.courseTitle}</b> — {en.status}
+                      {en.videoUrl && <> · <a href={en.videoUrl} target="_blank" rel="noopener noreferrer" dir="ltr">ویدیوی ارسالی</a></>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

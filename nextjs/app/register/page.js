@@ -16,7 +16,7 @@ export default async function RegisterPage() {
   const benefits = parsePairs(t('register.benefits'));
   return (
     <PageLayout>
-      <style>{`@media(max-width:800px){.register-steps-grid{grid-template-columns:1fr 1fr!important;}}@media(max-width:480px){.register-steps-grid{grid-template-columns:1fr!important;}}`}</style>
+      <style>{`@media(max-width:800px){.register-steps-grid{grid-template-columns:1fr 1fr!important;}}@media(max-width:480px){.register-steps-grid{grid-template-columns:1fr!important;}}.register-editorial{background:var(--white)!important;padding:68px 0 24px!important}.register-editorial .container{max-width:1000px}.register-editorial-head{display:block;margin-bottom:32px}.register-editorial-head .subheading{font-size:clamp(1.8rem,4vw,3.2rem);line-height:1.2;letter-spacing:-.05em}.register-editorial-head p{color:var(--muted);line-height:2;font-size:.88rem;border-right:2px solid var(--gold);padding-right:20px;margin:0}.register-editorial .register-steps-grid{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:0!important;border-top:1px solid var(--dark);margin-top:0}.register-editorial .feature-list__item{display:block;background:transparent;border:0;border-bottom:1px solid var(--border);border-radius:0;padding:22px 16px 24px 0}.register-editorial .feature-list__item:not(:last-child){border-left:1px solid var(--border);padding-left:16px}.register-editorial .feature-list__icon{background:transparent;color:#b6b1a8;width:auto;height:auto;display:block;font-size:1.65rem;font-weight:900;margin-bottom:16px}.register-editorial .feature-list__item strong{font-size:.95rem;margin-bottom:7px}.register-editorial .feature-list__item span{font-size:.78rem;line-height:1.9}.register-editorial + section{padding-top:74px}@media(max-width:800px){.register-editorial-head{grid-template-columns:1fr;gap:18px}.register-editorial .register-steps-grid{grid-template-columns:1fr 1fr!important}.register-editorial .feature-list__item:nth-child(2){border-left:0}.register-editorial .feature-list__item:nth-child(odd){padding-left:16px;border-left:1px solid var(--border)}}@media(max-width:480px){.register-editorial .register-steps-grid{grid-template-columns:1fr!important}.register-editorial .feature-list__item{border-left:0!important;padding-left:0!important}}`}</style>
       <div className="page-header">
         <div className="page-header__inner">
           <div className="page-header__tag">{t('register.tag')}</div>
@@ -25,9 +25,9 @@ export default async function RegisterPage() {
           <div className="breadcrumb"><Link href="/">خانه</Link> › ثبت‌نام</div>
         </div>
       </div>
-      <section aria-labelledby="register-steps-title" style={{ background: 'var(--white)', padding: '28px 0 8px' }}>
+      <section className="register-editorial" aria-labelledby="register-steps-title" style={{ background: 'var(--white)', padding: '28px 0 8px' }}>
         <div className="container">
-          <h2 id="register-steps-title" className="subheading">مراحل ثبت‌نام دوره بازیگری</h2>
+          <div className="register-editorial-head"><h2 id="register-steps-title" className="subheading">مراحل ثبت‌نام دوره بازیگری</h2></div>
           <div className="feature-list register-steps-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
             {[
               ['۱', 'تکمیل فرم', 'اطلاعات اولیه و مسیر موردنظر خود را وارد کنید.'],

@@ -21,9 +21,9 @@ async function uploadSocialImage(file, kind) {
   }
 }
 
-export default function SocialComposer() {
-  const [kind, setKind] = useState('post');
-  const currentKind = useRef('post');
+export default function SocialComposer({ initialKind = 'post' }) {
+  const [kind, setKind] = useState(initialKind);
+  const currentKind = useRef(initialKind);
   const uploadVersion = useRef(0);
   const [imageUrl, setImageUrl] = useState('');
   const [imageKind, setImageKind] = useState('');

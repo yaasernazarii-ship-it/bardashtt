@@ -1,0 +1,22 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.bardashtt.app",
+      "sha256_cert_fingerprints": [
+        "96:CB:65:10:9F:F7:50:D2:DD:53:2C:BF:6B:E1:11:23:9B:9C:2F:D8:C8:0D:ED:B8:C8:5F:91:AD:E8:B4:96:2F"
+      ]
+    }
+  },
+  {
+    "relation": ["check_validation"],
+    "target": {
+      "namespace": "cafebazaar_twa",
+      "package_name": "com.bardashtt.app",
+      "sha256_cert_fingerprints": [
+        "96:CB:65:10:9F:F7:50:D2:DD:53:2C:BF:6B:E1:11:23:9B:9C:2F:D8:C8:0D:ED:B8:C8:5F:91:AD:E8:B4:96:2F"
+      ]
+    }
+  }
+]
