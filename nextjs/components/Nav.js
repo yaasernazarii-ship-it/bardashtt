@@ -1,0 +1,267 @@
+'use client';
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import NotificationBell from './NotificationBell';
+import Icon from './Icon';
+
+// آیتم‌های منو از پنل («متن صفحات» ← «منوی بالای سایت») می‌آیند و به‌صورت prop
+// می‌رسند. فهرست زیر فقط پشتیبانِ حالتی است که content ارسال نشده باشد.
+const FALLBACK_LINKS = [
+  { href: '/', label: 'خانه' },
+  { href: '/about', label: 'درباره ما' },
+  {
+    label: 'دوره‌های جامع',
+    children: [
+      { href: '/courses', label: 'دوره جامع حضوری' },
+      { href: '/online-learning', label: 'دوره جامع غیر حضوری' },
+    ],
+  },
+  { href: '/actors', label: 'بازیگران' },
+  {
+    label: 'برداشت من',
+    children: [
+      { href: '/community', label: 'برداشتگرام' },
+      { href: '/dashboard', label: 'حساب کاربری' },
+      { href: '/verify', label: 'استعلام گواهینامه' },
+    ],
+  },
+  {
+    label: 'آثار',
+    children: [
+      { href: '/gallery', label: 'گالری دوره‌ها' },
+      { type: 'sep' },
+      { href: '/works/output', label: 'خروجی خانواده برداشت' },
+      { type: 'sep' },
+      { href: '/works/advertising', label: 'تولیدات تبلیغاتی' },
+      { type: 'sep' },
+      { href: '/works/resume', label: 'پشتوانه علمی و هنری' },
+    ],
+  },
+  { href: '/news', label: 'اخبار' },
+  { href: '/blog', label: 'مجله برداشت' },
+  { href: '/social-responsibility', label: 'مسئولیت اجتماعی' },
+];
+
+const FALLBACK_TEXT = {
+  supportButton: 'پشتیبانی',
+  supportFaq: 'سؤالات متداول',
+  supportChat: 'پشتیبانی آنلاین',
+  supportChatHint: 'گفت‌وگوی زنده با تیم ما',
+  callLabel: 'تماس با ما',
+  phoneText: '021-91090934',
+  phoneHref: '02191090934',
+  btnLogin: 'حساب کاربری',
+  btnDashboard: 'داشبورد',
+  btnLogout: 'خروج',
+  drawerTitle: 'منوی سایت',
+  drawerSubtitle: 'خانواده برداشت',
+};
+
+export default function Nav({ onOpenChat, logo, content }) {
+  const c = { ...FALLBACK_TEXT, ...(content || {}) };
+  const navLinks = content?.menu?.length ? content.menu : FALLBACK_LINKS;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
+  const [openIndex, setOpenIndex] = useState(null);
+  const [openSub, setOpenSub] = useState(false);
+  const [user, setUser] = useState(null);
+  const pathname = usePathname();
+  const supportRef = useRef(null);
+  const linksRef = useRef(null);
+
+  function closeMobileMenu() {
+    setMenuOpen(false);
+  }
+
+  useEffect(() => {
+    closeMobileMenu();
+    setSupportOpen(false);
+    setOpenIndex(null);
+    setOpenSub(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    function handler(e) {
+      if (supportRef.current && !supportRef.current.contains(e.target)) setSupportOpen(false);
+      if (linksRef.current && !linksRef.current.contains(e.target)) { setOpenIndex(null); setOpenSub(false); }
+    }
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/me').then((r) => r.json()).then((d) => { if (alive) setUser(d.ok ? d.user : null); }).catch(() => {});
+    return () => { alive = false; };
+  }, [pathname]);
+
+  async function logout() {
+    try { await fetch('/api/logout', { method: 'POST' }); } catch { /* ignore */ }
+    window.location.href = '/';
+  }
+
+  useEffect(() => {
+    document.body.classList.toggle('nav-open', menuOpen);
+    document.documentElement.classList.toggle('nav-open', menuOpen);
+    if (menuOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = '';
+    return () => {
+      document.body.style.overflow = '';
+      document.body.classList.remove('nav-open');
+      document.documentElement.classList.remove('nav-open');
+    };
+  }, [menuOpen]);
+
+  const isActive = (href) => pathname === href || (href !== '/' && pathname.startsWith(href));
+
+  return (
+    <>
+      <nav className="nav" aria-label="ناوبری اصلی">
+        <div className="nav__inner">
+          <Link href="/" className="nav__logo" onClick={closeMobileMenu} aria-label="صفحه اصلی خانواده برداشت">
+            <img src={logo || '/imgg.png'} alt="خانواده برداشت" width={90} height={30} style={{ height: 30, width: 'auto' }} />
+          </Link>
+          <ul className="nav__links" ref={linksRef}>
+            {navLinks.map((item, i) => (
+              item.children ? (
+                <li key={i} className={`has-dropdown${openIndex === i ? ' is-open' : ''}`}>
+                  <button
+                    type="button"
+                    className="nav__dropdown-toggle"
+                    aria-haspopup="true"
+                    aria-expanded={openIndex === i}
+                    onClick={() => setOpenIndex((p) => (p === i ? null : i))}
+                  >
+                    <span>{item.label}</span>
+                    <span className="nav__caret" aria-hidden="true" />
+                  </button>
+                  <ul className="dropdown" style={{ minWidth: 210 }}>
+                    {item.children.map((child, j) => (
+                      child.type === 'sep' ? (
+                        <li key={j} className="drop-sep" />
+                      ) : child.sub ? (
+                        <li key={j} className={`has-submenu${openSub ? ' is-open' : ''}`}>
+                          <button
+                            type="button"
+                            className="nav__submenu-toggle"
+                            aria-haspopup="true"
+                            aria-expanded={openSub}
+                            onClick={(e) => { e.stopPropagation(); setOpenSub((p) => !p); }}
+                          >
+                            <span>{child.label}</span>
+                            <span className="nav__caret nav__caret--sub" aria-hidden="true" />
+                          </button>
+                          <ul className="submenu">
+                            {child.sub.map((s, k) => (
+                              <li key={k}><Link href={s.href} onClick={() => { setOpenIndex(null); setOpenSub(false); }}>{s.label}</Link></li>
+                            ))}
+                          </ul>
+                        </li>
+                      ) : (
+                        <li key={j}><Link href={child.href} onClick={() => setOpenIndex(null)}>{child.label}</Link></li>
+                      )
+                    ))}
+                  </ul>
+                </li>
+              ) : (
+                <li key={i}>
+                  <Link href={item.href} className={isActive(item.href) ? 'active' : ''} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</Link>
+                </li>
+              )
+            ))}
+          </ul>
+          <div className="nav__actions">
+            <div className={`nav__support${supportOpen ? ' open' : ''}`} ref={supportRef}>
+              <button type="button" className="nav__support-btn" onClick={() => setSupportOpen(p => !p)} aria-haspopup="true" aria-expanded={supportOpen}>
+                <span className="nav__support-dot" />{c.supportButton}
+                <span className="nav__caret" aria-hidden="true" />
+              </button>
+              <ul className="hdr-support-drop">
+                <li><Link href="/faq" onClick={() => setSupportOpen(false)}><span className="drop-icon"><Icon name="clipboard" size={18} /></span>{c.supportFaq}</Link></li>
+                <li className="drop-sep" />
+                <li>
+                  <button type="button" onClick={() => { onOpenChat?.(); setSupportOpen(false); }}>
+                    <span className="drop-icon"><Icon name="chat" size={18} /></span>
+                    <span>{c.supportChat}<span className="drop-phone">{c.supportChatHint}</span></span>
+                    <span className="drop-online-dot" />
+                  </button>
+                </li>
+                <li className="drop-sep" />
+                <li><a href={`tel:${String(c.phoneHref || '').replace(/[^0-9+]/g, '')}`}><span className="drop-icon"><Icon name="phone" size={18} /></span><span>{c.callLabel}<span className="drop-phone">{c.phoneText}</span></span></a></li>
+              </ul>
+            </div>
+            <Link href="/application" className="btn btn--outline btn--sm">اپلیکیشن</Link>
+            {user ? (
+              <>
+                <Link href="/dashboard" className="btn btn--dark btn--sm">{c.btnDashboard}</Link>
+                <button type="button" className="btn btn--outline btn--sm" onClick={logout}>{c.btnLogout}</button>
+              </>
+            ) : (
+              <Link href="/auth" className="btn btn--outline btn--sm">{c.btnLogin}</Link>
+            )}
+          </div>
+          {user && <NotificationBell />}
+          <button
+            type="button"
+            className="nav__menu-btn"
+            onClick={() => setMenuOpen((current) => !current)}
+            aria-label={menuOpen ? 'بستن منو' : 'باز کردن منو'}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+          >
+            <Icon name={menuOpen ? 'close' : 'menu'} size={24} />
+          </button>
+        </div>
+      </nav>
+      <button
+        type="button"
+        className={`nav__backdrop${menuOpen ? ' active' : ''}`}
+        onClick={closeMobileMenu}
+        aria-label="بستن منو"
+      />
+      <aside id="mobile-menu" className={`mobile-drawer${menuOpen ? ' mobile-drawer--open' : ''}`} aria-hidden={!menuOpen}>
+        <div className="mobile-drawer__head">
+          <div>
+            <strong>{c.drawerTitle}</strong>
+            <span>{c.drawerSubtitle}</span>
+          </div>
+          <button type="button" className="mobile-drawer__close" onClick={closeMobileMenu} aria-label="بستن منو"><Icon name="close" size={22} /></button>
+        </div>
+        <div className="mobile-drawer__links">
+          {navLinks.map((item, i) => (
+            item.children ? (
+              <details key={i} className="mobile-drawer__group">
+                <summary>{item.label}</summary>
+                <div className="mobile-drawer__sub">
+                  {item.children.map((child, j) => (
+                    child.type === 'sep' ? null : child.sub ? (
+                      <details key={j} className="mobile-drawer__group mobile-drawer__group--nested">
+                        <summary>{child.label}</summary>
+                        <div className="mobile-drawer__sub">
+                          {child.sub.map((s, k) => <Link key={k} href={s.href}>{s.label}</Link>)}
+                        </div>
+                      </details>
+                    ) : <Link key={j} href={child.href}>{child.label}</Link>
+                  ))}
+                </div>
+              </details>
+            ) : <Link key={i} href={item.href} className={isActive(item.href) ? 'active' : ''} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</Link>
+          ))}
+        </div>
+        <div className="mobile-drawer__actions">
+          <button type="button" className="btn btn--outline" onClick={onOpenChat}>{c.supportChat}</button>
+          <Link href="/application" className="btn btn--outline">اپلیکیشن</Link>
+          {user ? (
+            <>
+              <Link href="/dashboard" className="btn btn--dark">{c.btnDashboard}</Link>
+              <button type="button" className="btn btn--outline" onClick={logout}>{c.btnLogout}</button>
+            </>
+          ) : (
+            <Link href="/auth" className="btn btn--outline">{c.btnLogin}</Link>
+          )}
+        </div>
+      </aside>
+    </>
+  );
+}
