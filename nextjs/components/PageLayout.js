@@ -1,5 +1,6 @@
 import ClientChrome from './ClientChrome';
-import { loadContent, defaultFor } from '@/lib/siteContent';
+import PageHeaderSlides from './PageHeaderSlides';
+import { loadContent, defaultFor, splitLines } from '@/lib/siteContent';
 import { parseMenu } from '@/lib/navMenu';
 
 export default async function PageLayout({ children }) {
@@ -24,6 +25,24 @@ export default async function PageLayout({ children }) {
     drawerTitle: t('nav.drawer.title'),
     drawerSubtitle: t('nav.drawer.subtitle'),
   };
+  const pageHeaderSlides = {
+    '/news': splitLines(t('header.news.slides')),
+    '/blog': splitLines(t('header.blog.slides')),
+    '/gallery': splitLines(t('header.gallery.slides')),
+    '/actors': splitLines(t('header.actors.slides')),
+    '/online-learning': splitLines(t('header.online-learning.slides')),
+    '/social-responsibility': splitLines(t('header.social-responsibility.slides')),
+    '/works/output': splitLines(t('header.works-output.slides')),
+    '/works/advertising': splitLines(t('header.works-advertising.slides')),
+    '/works/resume': splitLines(t('header.works-resume.slides')),
+    '/faq': splitLines(t('header.faq.slides')),
+    '/register': splitLines(t('header.register.slides')),
+    '/auth': splitLines(t('header.auth.slides')),
+    '/audition': splitLines(t('header.audition.slides')),
+    '/certificate': splitLines(t('header.certificate.slides')),
+    '/insurance': splitLines(t('header.insurance.slides')),
+    '/application': splitLines(t('header.application.slides')),
+  };
 
   const footer = {
     copyright: t('footer.copyright'),
@@ -36,6 +55,7 @@ export default async function PageLayout({ children }) {
 
   return (
     <ClientChrome logo={t('site.logo')} nav={nav} footer={footer}>
+      <PageHeaderSlides slides={pageHeaderSlides} />
       {children}
     </ClientChrome>
   );

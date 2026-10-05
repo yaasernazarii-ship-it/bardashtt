@@ -65,11 +65,8 @@ export default async function HomePage() {
 
       <section className="seo-intro" aria-labelledby="seo-intro-title">
         <div className="container">
-          <h2 id="seo-intro-title" className="heading">آموزش رایگان بازیگری سینما در تهران</h2>
-          <p className="body-lg">
-            خانواده برداشت، آموزشگاه رایگان بازیگری سینما در تهران است که از سال ۱۳۹۷ فعالیت می‌کند.
-            دوره‌های جامع حضوری و غیرحضوری بازیگری برای کودکان، نوجوانان و بزرگسالان را به‌صورت ۱۰۰ درصد رایگان برگزار می‌کند.
-          </p>
+          <h2 id="seo-intro-title" className="heading">{t('home.seo.heading')}</h2>
+          <p className="body-lg">{t('home.seo.text')}</p>
         </div>
       </section>
 
