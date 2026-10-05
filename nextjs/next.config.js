@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    proxyClientMaxBodySize: '16mb',
+    proxyClientMaxBodySize: '36mb',
   },
   // پیش‌نمایشِ نسخهٔ آزمایشی زیر یک مسیر روی همان دامنه سرو می‌شود، چون فایروال ارائه‌دهنده
   // فقط ۸۰/۴۴۳ را باز گذاشته و پورت جداگانه از بیرون در دسترس نیست. در بیلد پروداکشن این

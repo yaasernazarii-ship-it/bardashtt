@@ -6,7 +6,7 @@ import { getSessionUser, isManager } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 
-const MAX_BYTES = 12 * 1024 * 1024; // 12MB برای تصویر
+const MAX_BYTES = 30 * 1024 * 1024; // 30MB برای تصویر
 const MAX_AUDIO_BYTES = 40 * 1024 * 1024; // 40MB برای فایل صوتی
 const MAX_VIDEO_BYTES = 60 * 1024 * 1024; // 60MB برای ویدیوی کوتاه؛ ویدیوی بلند با لینک آپارات/ویو اضافه می‌شود
 const EXT_BY_TYPE = {
@@ -56,7 +56,7 @@ export async function POST(request) {
     let buf = Buffer.from(await file.arrayBuffer());
     const limit = videoExt ? MAX_VIDEO_BYTES : audioExt ? MAX_AUDIO_BYTES : MAX_BYTES;
     if (buf.length > limit) {
-      const mb = videoExt ? '۶۰' : audioExt ? '۴۰' : '۱۲';
+      const mb = videoExt ? '۶۰' : audioExt ? '۴۰' : '۳۰';
       return Response.json({ ok: false, error: `حجم فایل نباید بیشتر از ${mb} مگابایت باشد.` }, { status: 400 });
     }
 
