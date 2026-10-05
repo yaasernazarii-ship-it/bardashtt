@@ -1659,6 +1659,8 @@ summary:focus-visible {
 
 .post-article { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: clamp(20px, 4vw, 40px); }
 .post-article__cover { width: 100%; border-radius: 12px; margin-bottom: 20px; }
+.post-article__gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 0 0 20px; }
+.post-article__gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; }
 .post-article__p { color: var(--text); line-height: 2.1; margin: 0 0 16px; font-size: 1rem; }
 .post-article__h2 { color: var(--dark); font-size: 1.35rem; margin: 28px 0 14px; }
 .post-article__h3 { color: var(--dark); font-size: 1.1rem; margin: 20px 0 10px; }
@@ -2595,19 +2597,29 @@ summary:focus-visible {
   .staff-bubble__del { opacity: 1; }
 }
 
+
+.app-download { padding: 46px 0; background: var(--surface); }
+.app-download__inner { display: flex; align-items: center; justify-content: space-between; gap: 28px; }
+.app-download p { max-width: 650px; color: var(--muted); line-height: 1.9; margin-top: 10px; }
+.app-download__actions { display: grid; gap: 10px; flex: none; text-align: center; }
+.app-download__actions span { color: var(--muted); font-size: .8rem; direction: ltr; }
+@media (max-width: 700px) {
+  .app-download { padding: 34px 0; }
+  .app-download__inner { align-items: stretch; flex-direction: column; gap: 20px; }
+  .app-download__actions .btn { width: 100%; }
+}
+
 /* ═══════════════════════════════════════════
    شبکهٔ اجتماعی برداشت (/community و پنل)
 ═══════════════════════════════════════════ */
 .cm-muted { color: var(--muted); font-size: 0.85rem; }
-body:has(.cm-page-section) .page-header { padding: 44px 24px 36px; }
-body:has(.cm-page-section) .nav { background: #1b1b1b; backdrop-filter: none; -webkit-backdrop-filter: none; }
-.cm-page-section { padding: 32px 0 68px; }
-.cm-page-section .cm-intro { margin-bottom: 18px; }
+body:has(.cm-page) .nav { background: #1b1b1b; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.cm-page { padding: 36px 0 68px; background: var(--bg); }
+.cm-page__title { color: var(--dark); font-size: clamp(1.55rem, 3vw, 2.15rem); margin: 0 0 22px; }
 @media (max-width: 700px) {
-  body:has(.cm-page-section) .page-header { padding: 32px 16px 28px; }
-  .cm-page-section { padding: 22px 0 48px; }
+  .cm-page { padding: 22px 0 48px; }
+  .cm-page__title { margin-bottom: 16px; }
 }
-.cm-intro { color: var(--body); line-height: 2.1; margin-bottom: 24px; }
 .cm-wrap { display: block; }
 
 .cm-avatar {
@@ -2626,10 +2638,25 @@ body:has(.cm-page-section) .nav { background: #1b1b1b; backdrop-filter: none; -w
 .cm-compose-cta:hover { background: #111; transform: translateY(-2px); }
 
 /* نوار استوری */
+.cm-stories-row { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
 .cm-stories {
-  display: flex; gap: 14px; overflow-x: auto; padding: 4px 2px 16px;
-  margin-bottom: 20px; border-bottom: 1px solid var(--border);
+  display: flex; flex: 1; min-width: 0; gap: 14px; overflow-x: auto; padding: 4px 2px 16px;
 }
+.cm-create { width: 78px; flex: none; position: relative; z-index: 3; }
+.cm-create summary { list-style: none; cursor: pointer; text-align: center; padding-top: 4px; }
+.cm-create summary::-webkit-details-marker { display: none; }
+.cm-create__circle {
+  display: inline-flex; align-items: center; justify-content: center; width: 68px; height: 68px;
+  border-radius: 50%; border: 2px dashed var(--gold); background: var(--white); color: var(--dark);
+}
+.cm-create[open] .cm-create__circle { background: var(--gold); border-style: solid; }
+.cm-create__menu {
+  position: absolute; top: calc(100% + 8px); inset-inline-start: 0; min-width: 140px;
+  padding: 6px; border: 1px solid var(--border); border-radius: 12px;
+  background: var(--white); box-shadow: var(--shadow-md);
+}
+.cm-create__menu a { display: block; padding: 10px 12px; border-radius: 8px; color: var(--dark); font-weight: 700; font-size: .86rem; }
+.cm-create__menu a:hover, .cm-create__menu a:focus-visible { background: var(--surface); }
 .cm-story { background: none; border: 0; cursor: pointer; text-align: center; width: 78px; flex: none; }
 .cm-story__ring {
   display: inline-flex; padding: 3px; border-radius: 50%;
@@ -2690,15 +2717,16 @@ body:has(.cm-page-section) .nav { background: #1b1b1b; backdrop-filter: none; -w
 }
 .cm-empty p { margin-top: 10px; }
 .cm-rules {
-  margin-top: 34px; background: var(--white); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 22px 24px;
+  margin-top: 28px; border-top: 1px solid var(--border); padding: 16px 0;
+  color: var(--muted);
 }
-.cm-rules h2 { font-size: 1.05rem; color: var(--dark); margin-bottom: 12px; }
-.cm-rules ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
-.cm-rules li { position: relative; padding-inline-start: 18px; color: var(--body); font-size: 0.88rem; line-height: 1.9; }
+.cm-rules summary { width: fit-content; cursor: pointer; font-size: .84rem; font-weight: 700; }
+.cm-rules[open] summary { color: var(--dark); margin-bottom: 14px; }
+.cm-rules ul { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.cm-rules li { position: relative; padding-inline-start: 16px; font-size: 0.82rem; line-height: 1.9; }
 .cm-rules li::before {
   content: ''; position: absolute; inset-inline-start: 0; top: 11px;
-  width: 6px; height: 6px; border-radius: 50%; background: var(--gold);
+  width: 5px; height: 5px; border-radius: 50%; background: var(--gold);
 }
 
 /* پروفایل عمومی */
