@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { getSessionUser } from '@/lib/auth';
+import { getSessionUser, isManager } from '@/lib/auth';
 import { finalizeAttempt } from '@/lib/examRun';
 
 // تصحیح و ثبت نهایی. اگر مهلت تمام شده باشد هم همین مسیر تصحیح می‌کند،
@@ -14,7 +14,10 @@ export async function POST(request) {
   } catch { /* بدنهٔ خالی مجاز است */ }
 
   const attemptId = String(body.attemptId || '');
-  const attempt = await prisma.examAttempt.findFirst({ where: { id: attemptId, userId: user.id } });
+  const attempt = await prisma.examAttempt.findFirst({
+    where: { id: attemptId, userId: user.id },
+    include: { certificate: { select: { serial: true, issuedAt: true } } },
+  });
   if (!attempt) return Response.json({ ok: false, error: 'آزمون یافت نشد.' }, { status: 404 });
 
   if (attempt.submittedAt) {
@@ -28,6 +31,8 @@ export async function POST(request) {
         finalPercent: attempt.finalPercent,
         passed: attempt.passed,
       },
+      certificate: attempt.certificate ? { serial: attempt.certificate.serial, issuedAt: attempt.certificate.issuedAt.toISOString() } : null,
+      certificateError: attempt.passed && !attempt.certificate && !isManager(user),
       alreadySubmitted: true,
     });
   }
