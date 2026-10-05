@@ -370,12 +370,12 @@ export async function buildCertificatePdf(cert) {
   write(doc, 'bardashtt.com/verify', CX - 95, footY + qrBox + 10, 190, { size: 9, color: MUTED, align: 'center', raw: true });
 
   // چپ: نشانِ یکپارچهٔ مهر، امضا و شمارهٔ ثبتِ مدیریت آموزشگاه.
-  // این تصویر جای بلوک قبلیِ مهر و امضای جداگانه را می‌گیرد و عنوان متنی زیر آن ندارد.
   const signW = 214;
   const signX = PX + 28;
   if (fs.existsSync(SEAL_SIGNATURE)) {
     doc.image(SEAL_SIGNATURE, signX + 20, footY - 25, { fit: [174, 130], align: 'center', valign: 'center' });
   }
+  write(doc, 'مهر و امضای مدیریت آموزشگاه', signX, footY + 72, signW, { size: 10.5, color: MUTED, align: 'center' });
 
   if (cert.revoked) {
     doc.save();
