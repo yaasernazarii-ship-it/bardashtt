@@ -56,9 +56,11 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
   const [permitHours, setPermitHours] = useState('3');
   const [permitNote, setPermitNote] = useState('');
   const [permitScore, setPermitScore] = useState('');
-  const [permitSearch, setPermitSearch] = useState('');
+  const [studentSearch, setStudentSearch] = useState('');
+  const [permitListSearch, setPermitListSearch] = useState('');
   const [bulkUsers, setBulkUsers] = useState([]);
   const [bulkScores, setBulkScores] = useState({});
+  const [bulkScoreForAll, setBulkScoreForAll] = useState('');
   const [bulkBusy, setBulkBusy] = useState(false);
   const [grantMode, setGrantMode] = useState('bulk');
   const [editScoreId, setEditScoreId] = useState(null);
@@ -166,7 +168,7 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
       const data = await res.json();
       if (!data.ok) { setError(data.error || 'صدور گروهی اجازه ناموفق بود.'); return; }
       setNotice(`برای ${data.items.length} نفر اجازهٔ آزمون صادر شد${data.skipped ? `؛ ${data.skipped} نفر قبلاً اجازه داشتند یا قبول شده بودند.` : '.'}`);
-      setBulkUsers([]); setBulkScores({}); await loadPermits();
+      setBulkUsers([]); setBulkScores({}); setBulkScoreForAll(''); await loadPermits();
     } finally {
       setBulkBusy(false);
     }
@@ -180,6 +182,22 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
     const available = students.filter((s) => !passedIds.includes(s.id)).map((s) => s.id);
     setBulkUsers((current) => current.length === available.length ? [] : available);
   }
+
+  // یک نمره برای همهٔ انتخاب‌شده‌ها؛ اگر خالی باشد نمره‌های واردشده پاک می‌شوند.
+  function applyScoreToAll() {
+    const v = bulkScoreForAll;
+    setBulkScores(Object.fromEntries(bulkUsers.map((id) => [id, v])));
+  }
+
+  // فقط هنرجوهایی که انتخاب شده‌اند، برای مرحلهٔ ثبت نمره.
+  const selectedStudents = students.filter((s) => bulkUsers.includes(s.id));
+  const filledCount = selectedStudents.filter((s) => String(bulkScores[s.id] ?? '').trim() !== '' && !Number.isNaN(Number(bulkScores[s.id]))).length;
+  const invalidCount = selectedStudents.filter((s) => {
+    const raw = String(bulkScores[s.id] ?? '').trim();
+    if (raw === '') return false;
+    const n = Number(raw);
+    return Number.isNaN(n) || n < 0 || n > classScoreMax;
+  }).length;
 
   async function revokePermit(p) {
     const who = p.user?.displayName || p.user?.username || p.user?.phone || 'این هنرجو';
@@ -372,14 +390,14 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
             {grantMode === 'bulk' ? (
               <form onSubmit={grantBulkPermits}>
                 <div className="exam-picker-tools">
-                  <input className="form-input" placeholder="جست‌وجوی نام یا شماره…" value={permitSearch} onChange={(e) => setPermitSearch(e.target.value)} />
+                  <input className="form-input" placeholder="جست‌وجوی نام یا شماره…" value={studentSearch} onChange={(e) => setStudentSearch(e.target.value)} />
                   <button type="button" className="btn btn--outline" onClick={toggleAllBulkUsers}>
                     {bulkUsers.length > 0 && bulkUsers.length === students.filter((s) => !passedIds.includes(s.id)).length ? 'لغو همه' : 'انتخاب همه'}
                   </button>
                 </div>
                 <div className="exam-student-picker">
                   {students.filter((s) => {
-                    const q = permitSearch.trim();
+                    const q = studentSearch.trim();
                     return !q || `${s.displayName || ''} ${s.username || ''} ${s.phone || ''}`.includes(q);
                   }).map((s) => {
                     const disabled = passedIds.includes(s.id);
@@ -388,13 +406,31 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
                       <label key={s.id} className={`exam-student ${selected ? 'is-selected' : ''} ${disabled ? 'is-disabled' : ''}`}>
                         <input type="checkbox" checked={selected} disabled={disabled} onChange={() => toggleBulkUser(s.id)} />
                         <span className="exam-student__name">{s.displayName || s.username || s.phone}<small>{s.branch || s.phone || ''}</small></span>
-                        {disabled ? <span className="exam-student__passed">قبول شده</span> : selected && <input className="form-input exam-score-input" type="number" min={0} max={classScoreMax} step={0.1} required dir="ltr" placeholder="نمره" value={bulkScores[s.id] || ''} onChange={(e) => setBulkScores((current) => ({ ...current, [s.id]: e.target.value }))} />}
+                        {disabled ? <span className="exam-student__passed">قبول شده</span> : selected && <span className="exam-student__selected">انتخاب شده</span>}
                       </label>
                     );
                   })}
                 </div>
+                {selectedStudents.length > 0 && (
+                  <section className="exam-score-sheet">
+                    <div className="exam-score-sheet__head">
+                      <div><span className="exam-eyebrow">مرحلهٔ دوم</span><h3>ثبت نمرهٔ کلاسی</h3><p>{fa(filledCount)} از {fa(selectedStudents.length)} نمره وارد شده است.</p></div>
+                      <div className="exam-score-sheet__apply"><input className="form-input" type="number" min={0} max={classScoreMax} step={0.1} dir="ltr" placeholder="یک نمره برای همه" value={bulkScoreForAll} onChange={(e) => setBulkScoreForAll(e.target.value)} /><button type="button" className="btn btn--sm btn--outline" onClick={applyScoreToAll}>اعمال برای همه</button></div>
+                    </div>
+                    <div className="exam-score-sheet__rows">
+                      {selectedStudents.map((s, i) => (
+                        <label key={s.id} className="exam-score-row">
+                          <span className="exam-score-row__number">{fa(i + 1)}</span>
+                          <span className="exam-score-row__name">{s.displayName || s.username || s.phone}<small>{s.branch || s.phone || ''}</small></span>
+                          <span className="exam-score-row__input"><input className="form-input" type="number" min={0} max={classScoreMax} step={0.1} required dir="ltr" placeholder={`از ${fa(classScoreMax)}`} value={bulkScores[s.id] || ''} onChange={(e) => setBulkScores((current) => ({ ...current, [s.id]: e.target.value }))} /></span>
+                        </label>
+                      ))}
+                    </div>
+                    {invalidCount > 0 && <p className="exam-score-sheet__error">نمره‌ها باید بین ۰ تا {fa(classScoreMax)} باشند.</p>}
+                  </section>
+                )}
                 <PermitWindowFields />
-                <button className="btn btn--dark exam-submit" disabled={bulkBusy || bulkUsers.length === 0}>{bulkBusy ? 'در حال صدور…' : `صدور اجازه برای ${fa(bulkUsers.length)} نفر`}</button>
+                <button className="btn btn--dark exam-submit" disabled={bulkBusy || bulkUsers.length === 0 || filledCount !== selectedStudents.length || invalidCount > 0}>{bulkBusy ? 'در حال صدور…' : `صدور اجازه برای ${fa(bulkUsers.length)} نفر`}</button>
               </form>
             ) : (
               <form onSubmit={grantPermit}>
@@ -411,10 +447,10 @@ export default function AdminExam({ questionCount, passPercent, secondsPerQuesti
               <div><span className="exam-eyebrow">پیگیری</span><h2>اجازه‌های صادرشده</h2></div>
               <span className="exam-count">{fa(permits.length)} مورد</span>
             </div>
-            <input className="form-input exam-permit-search" placeholder="جست‌وجوی نام یا شماره…" value={permitSearch} onChange={(e) => setPermitSearch(e.target.value)} />
+            <input className="form-input exam-permit-search" placeholder="جست‌وجو در اجازه‌های صادرشده…" value={permitListSearch} onChange={(e) => setPermitListSearch(e.target.value)} />
             {permits.length === 0 ? <p className="exam-empty">هنوز اجازه‌ای صادر نشده است.</p> : (
               <div className="exam-permit-list">
-                {permits.filter((p) => { const q = permitSearch.trim(); return !q || `${p.user?.displayName || ''} ${p.user?.username || ''} ${p.user?.phone || ''}`.includes(q); }).map((p) => {
+                {permits.filter((p) => { const q = permitListSearch.trim(); return !q || `${p.user?.displayName || ''} ${p.user?.username || ''} ${p.user?.phone || ''}`.includes(q); }).map((p) => {
                   const st = permitStatus(p);
                   return <article key={p.id} className={`exam-permit ${p.revoked ? 'is-revoked' : ''}`}>
                     <div className="exam-permit__identity"><strong>{p.user?.displayName || p.user?.username || '—'}</strong><span dir="ltr">{p.user?.phone}</span><small>صدور: {dateFmt.format(new Date(p.grantedAt))}</small></div>
