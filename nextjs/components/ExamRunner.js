@@ -237,6 +237,11 @@ export default function ExamRunner() {
           <div style={{ marginTop: 4, fontWeight: 800 }}>
             نمرهٔ نهایی: {fa(result.finalPercent ?? result.percent)} از ۱۰۰
           </div>
+          {!result.passed && (
+            <div style={{ marginTop: 6 }}>
+              برای شرکت مجدد در آزمون، لازم است ابتدا دورهٔ تکمیلی را از نو بگذرانید.
+            </div>
+          )}
           {result.certificate && (
             <div style={{ marginTop: 6 }}>
               کد استعلام گواهی شما: <strong dir="ltr">{result.certificate.serial}</strong>
@@ -376,6 +381,9 @@ export default function ExamRunner() {
             <li>درست یا غلط بودن پاسخ‌ها در حین آزمون نمایش داده نمی‌شود؛ نتیجه فقط در پایان اعلام می‌شود.</li>
             <li>آزمون پس از شروع <strong>وقفه ندارد</strong>؛ زمان روی سرور می‌گذرد و با بستن صفحه یا قطعی اینترنت متوقف نمی‌شود.</li>
             <li>در پایان، نمرهٔ آزمون با نمرهٔ کلاسی جمع می‌شود و گواهی بر اساس نمرهٔ نهایی صادر می‌گردد.</li>
+            <li>
+              در صورت کسب‌نکردن نمرهٔ قبولی، برای شرکت مجدد در آزمون باید <strong>ابتدا دورهٔ تکمیلی را از نو بگذرانید</strong>.
+            </li>
           </ul>
 
           {state.passedBefore ? (
@@ -426,7 +434,6 @@ export default function ExamRunner() {
             <>
               <div className="alert alert--success" style={{ marginBottom: 14 }}>
                 اجازهٔ شرکت در آزمون برای شما صادر شده است
-                {state.permit.grantedByName ? ` (توسط ${state.permit.grantedByName})` : ''}
                 {state.permit.expiresAt ? ` — تا ${dateTimeFmt.format(new Date(state.permit.expiresAt))} فرصت شروع دارید.` : '.'}
                 <div style={{ marginTop: 6 }}>
                   نمرهٔ تکلیف و فعالیت کلاسی ثبت‌شدهٔ شما: <strong>{fa(state.permit.classScore)} از {fa(cfg.classScoreMax)}</strong>
