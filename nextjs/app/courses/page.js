@@ -61,7 +61,7 @@ export default async function CoursesPage() {
         <div className="courses-intro-card"><div><h2 id="courses-summary-title" className="subheading">{t('courses.intro.heading')}</h2>
         <p className="body-lg">{t('courses.intro.text')}</p></div>
         <div className="courses-editorial-intro__actions">
-          <Link href="/register" className="btn btn--gold">{t('courses.intro.register')}</Link>
+          <Link href="/audition" className="btn btn--gold">{t('courses.intro.register')}</Link>
           <Link href="/about#about-path" className="btn btn--outline">{t('courses.intro.path')}</Link>
         </div></div>
         <div className="courses-editorial-table">
