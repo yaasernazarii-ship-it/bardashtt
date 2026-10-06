@@ -102,6 +102,20 @@ export default async function HomePage() {
           <span className="contact-value">{t('contact.bale')}</span>
         </a>
       </div>
+      <section
+        className="contact-addresses"
+        aria-label="نشانی شعب آموزشگاه"
+        style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', background: '#171717' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '22px max(28px, calc((100vw - 1180px) / 2))', color: 'var(--gold)' }}>
+          <Icon name="mapPin" size={24} />
+          <div style={{ display: 'grid', gap: 3, color: 'rgba(255,255,255,.68)', lineHeight: 1.85 }}><strong style={{ color: '#fff' }}>شعبهٔ تهران</strong><span>{t('contact.tehranAddress')}</span></div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '22px max(28px, calc((100vw - 1180px) / 2))', color: 'var(--gold)', borderRight: '1px solid rgba(255,255,255,.08)' }}>
+          <Icon name="mapPin" size={24} />
+          <div style={{ display: 'grid', gap: 3, color: 'rgba(255,255,255,.68)', lineHeight: 1.85 }}><strong style={{ color: '#fff' }}>شعبهٔ مازندران</strong><span>{t('contact.mazandaranAddress')}</span></div>
+        </div>
+      </section>
     </PageLayout>
   );
 }

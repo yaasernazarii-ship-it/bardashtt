@@ -307,6 +307,8 @@ export const CONTENT_GROUPS = [
     title: 'اطلاعات تماس (مشترک همهٔ صفحات)',
     fields: [
       { key: 'contact.phone', label: 'شمارهٔ تماس', type: 'text', default: '02191090934' },
+      { key: 'contact.tehranAddress', label: 'نشانی شعبهٔ تهران', type: 'text', default: 'تهران، میدان فاطمی' },
+      { key: 'contact.mazandaranAddress', label: 'نشانی شعبهٔ مازندران', type: 'text', default: 'ساری، بلوار طالقانی، روبه‌روی شهابی، طالقانی ۱۰، خانهٔ برداشت' },
       { key: 'contact.instagram', label: 'اینستاگرام (نام کاربری)', type: 'text', default: '@bardashtt' },
       { key: 'contact.instagramUrl', label: 'اینستاگرام (لینک کامل)', type: 'text', default: 'https://instagram.com/bardashtt' },
       { key: 'contact.bale', label: 'کانال بله (نام کاربری)', type: 'text', default: '@bardasht_family' },

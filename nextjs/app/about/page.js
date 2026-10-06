@@ -329,6 +329,17 @@ export default async function AboutPage() {
               </div>
             ))}
           </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 14, maxWidth: 720, margin: '14px auto 0' }}>
+            {[
+              { branch: 'شعبهٔ تهران', address: t('contact.tehranAddress') },
+              { branch: 'شعبهٔ مازندران', address: t('contact.mazandaranAddress') },
+            ].map(({ branch, address }) => (
+              <div key={branch} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.1)', borderRadius: 'var(--radius)', padding: '16px' }}>
+                <span style={{ color: 'var(--gold)', flex: '0 0 auto' }}><Icon name="mapPin" size={22} /></span>
+                <p style={{ color: 'rgba(255,255,255,.72)', lineHeight: 1.9 }}><strong style={{ color: '#fff', display: 'block' }}>{branch}</strong>{address}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </PageLayout>
