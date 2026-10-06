@@ -27,15 +27,16 @@
 .text { max-width: 310px; margin: 0; font-size: 1.02rem; font-weight: 600; line-height: 2; }
 .android .text { color: rgba(255, 255, 255, .94); }
 .ios .text { color: #16213d; }
-.actions, .iosGuide { display: grid; gap: 13px; width: min(100%, 405px); margin-top: auto; }
-.cta { display: grid; grid-template-columns: 38px 1fr 22px; align-items: center; gap: 10px; min-height: 61px; padding: 9px 19px; border: 1px solid transparent; border-radius: 999px; font-family: inherit; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
-.cta:hover { transform: translateY(-2px); }
-.ctaYellow { color: #17223b; background: #ffd500; box-shadow: 0 7px 0 rgba(93, 61, 0, .15); }
-.ctaOutline { color: #fff; border-color: #b5e2ff; background: rgba(3, 21, 50, .52); }
-.ctaNavy { width: 100%; color: #fff; background: #082a62; cursor: pointer; }
-.ctaIcon { display: grid; place-items: center; }
-.ctaLabel { font-size: 1.08rem; font-weight: 900; text-align: center; }
-.chevron { transform: rotate(180deg); }
+.actions, .iosGuide { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; margin-top: auto; }
+.cta { display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 9px 16px; border: 1px solid transparent; border-radius: 999px; font-family: inherit; text-decoration: none; box-shadow: 0 8px 18px rgba(0, 0, 0, .18), 0 2px 4px rgba(0, 0, 0, .12); transition: transform .2s ease, box-shadow .2s ease; }
+.cta:hover { transform: translateY(-3px); box-shadow: 0 12px 22px rgba(0, 0, 0, .22), 0 3px 6px rgba(0, 0, 0, .14); }
+.ctaYellow { color: #17223b; background: #ffd500; }
+.ctaOutline { color: #fff; border-color: rgba(181, 226, 255, .55); background: rgba(10, 28, 58, .78); backdrop-filter: blur(2px); }
+.ctaNavy { color: #fff; background: #082a62; cursor: pointer; }
+.ctaIcon { display: grid; flex: 0 0 auto; place-items: center; width: 26px; height: 26px; }
+.ctaIcon svg { width: 18px; height: 18px; }
+.ctaLabel { font-size: .92rem; font-weight: 800; white-space: nowrap; }
+.chevron { width: 14px; height: 14px; flex: 0 0 auto; transform: rotate(180deg); }
 .iosArt { background: linear-gradient(90deg, transparent 32%, rgba(255, 255, 255, .3)); }
 .appTile { width: 104px; height: 104px; padding: 9px; background: #fff; box-shadow: 0 7px 20px rgba(0, 0, 0, .2); }
 .appTile img { width: 100%; height: 100%; border-radius: 19px; object-fit: cover; }
@@ -75,6 +76,6 @@
   .addBubble { bottom: 91px; left: 137px; width: 159px; padding: 10px; font-size: .72rem; }
   .addIcon { width: 35px; height: 35px; }
   .actions, .iosGuide { width: 100%; }
-  .cta { min-height: 56px; padding: 8px 15px; }
-  .ctaLabel { font-size: .95rem; }
+  .cta { min-height: 40px; padding: 8px 13px; }
+  .ctaLabel { font-size: .84rem; }
 }
