@@ -1,24 +1,80 @@
 .hero { padding-bottom: 48px; background: linear-gradient(135deg, var(--surface), #fff); }
-.platforms { padding-top: 0; }
-.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
-.card { min-height: 330px; padding: 32px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--white); box-shadow: var(--shadow-sm); }
-.android { border-top: 4px solid var(--gold); }
-.ios { border-top: 4px solid var(--blue-soft); }
-.platform { display: block; margin-bottom: 12px; color: var(--muted); font-size: .78rem; font-weight: 800; }
-.card h2 { margin-bottom: 14px; }
-.card p { color: var(--muted); line-height: 1.9; }
-.actions { display: grid; gap: 10px; margin-top: 28px; }
-.iosGuide { margin-top: 28px; }
-.iosGuide summary { width: fit-content; list-style: none; }
+.platforms { padding: 0 0 72px; background: #f5f2ec; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; max-width: 1160px; }
+.card { position: relative; isolation: isolate; min-height: 565px; overflow: hidden; border-radius: 28px; padding: 34px; box-shadow: 0 18px 42px rgba(25, 30, 43, .16); }
+.body { position: relative; z-index: 2; display: flex; flex-direction: column; min-height: 497px; }
+.android { color: #fff; background: radial-gradient(circle at 110% 100%, rgba(255, 24, 49, .72), transparent 33%), radial-gradient(circle at -5% -10%, #193e78, transparent 43%), #06152e; }
+.ios { color: #0d172d; background: radial-gradient(circle at 90% 8%, rgba(102, 178, 250, .35), transparent 30%), linear-gradient(126deg, #fff4e2 0%, #eef6ff 58%, #d9edff 100%); }
+.androidArt, .iosArt { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.brush { position: absolute; width: 110%; height: 98px; right: -28%; top: 34%; background: #ed1729; transform: rotate(-21deg); filter: saturate(1.25); opacity: .93; }
+.brushTwo { top: 48%; right: -38%; height: 29px; background: #1375ee; transform: rotate(-21deg); }
+.phone { position: absolute; width: 218px; height: 402px; overflow: hidden; border-radius: 35px; transform: rotate(-14deg); box-shadow: -12px 14px 30px rgba(0, 0, 0, .4); }
+.phoneDark { left: -13px; bottom: -112px; border: 5px solid #394b71; background: linear-gradient(145deg, #080d26, #112347); }
+.phoneLight { left: 28px; bottom: -106px; border: 7px solid #19233b; background: linear-gradient(145deg, #ff6b4e, #4059f5 47%, #15154f); }
+.notch { position: absolute; z-index: 2; top: -1px; right: 50%; width: 88px; height: 22px; border-radius: 0 0 15px 15px; background: #071025; transform: translateX(50%); }
+.androidTile, .appTile { position: absolute; top: 106px; right: 50%; display: grid; width: 124px; height: 124px; place-items: center; overflow: hidden; border-radius: 24px; transform: translateX(50%); }
+.androidTile { color: #9bea13; background: linear-gradient(145deg, #142752, #07122a); border: 1px solid rgba(131, 222, 255, .55); box-shadow: 0 0 26px rgba(86, 139, 255, .7); }
+.downloadDot { position: absolute; top: 258px; right: 50%; display: grid; width: 62px; height: 62px; place-items: center; color: #e9f6ff; border: 2px solid currentColor; border-radius: 50%; transform: translateX(50%); }
+.platform { display: inline-flex; align-items: center; align-self: flex-end; gap: 9px; padding: 8px 16px; border: 1px solid; border-radius: 999px; font-size: .95rem; font-weight: 800; }
+.platformDark { color: #fff; border-color: rgba(135, 211, 255, .85); background: rgba(3, 22, 57, .45); }
+.platformLight { color: #fff; border-color: transparent; background: #111d39; }
+.platformIcon { display: inline-grid; color: #a8e919; }
+.platformLight .platformIcon { color: #fff; }
+.title { max-width: 350px; margin: 28px 0 15px; font-size: clamp(2rem, 4vw, 3.55rem); font-weight: 950; line-height: 1.12; letter-spacing: -.065em; }
+.titleLight { color: #fff; }
+.titleDark { color: #111; }
+.script { display: block; margin-top: -2px; color: #ff3340; font-family: Georgia, serif; font-size: 1.16em; font-style: italic; font-weight: 900; letter-spacing: -.09em; line-height: .9; transform: rotate(-4deg); }
+.text { max-width: 310px; margin: 0; font-size: 1.02rem; font-weight: 600; line-height: 2; }
+.android .text { color: rgba(255, 255, 255, .94); }
+.ios .text { color: #16213d; }
+.actions, .iosGuide { display: grid; gap: 13px; width: min(100%, 405px); margin-top: auto; }
+.cta { display: grid; grid-template-columns: 38px 1fr 22px; align-items: center; gap: 10px; min-height: 61px; padding: 9px 19px; border: 1px solid transparent; border-radius: 999px; font-family: inherit; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
+.cta:hover { transform: translateY(-2px); }
+.ctaYellow { color: #17223b; background: #ffd500; box-shadow: 0 7px 0 rgba(93, 61, 0, .15); }
+.ctaOutline { color: #fff; border-color: #b5e2ff; background: rgba(3, 21, 50, .52); }
+.ctaNavy { width: 100%; color: #fff; background: #082a62; cursor: pointer; }
+.ctaIcon { display: grid; place-items: center; }
+.ctaLabel { font-size: 1.08rem; font-weight: 900; text-align: center; }
+.chevron { transform: rotate(180deg); }
+.iosArt { background: linear-gradient(90deg, transparent 32%, rgba(255, 255, 255, .3)); }
+.appTile { width: 104px; height: 104px; padding: 9px; background: #fff; box-shadow: 0 7px 20px rgba(0, 0, 0, .2); }
+.appTile img { width: 100%; height: 100%; border-radius: 19px; object-fit: cover; }
+.arrow { position: absolute; bottom: 137px; left: 196px; width: 116px; height: 62px; border-bottom: 4px solid #fff; border-radius: 50%; transform: rotate(2deg); }
+.arrow::after { content: ''; position: absolute; left: -4px; bottom: -5px; width: 15px; height: 15px; border-bottom: 4px solid #fff; border-left: 4px solid #fff; transform: rotate(-32deg); }
+.addBubble { position: absolute; bottom: 66px; left: 196px; display: flex; align-items: center; gap: 11px; width: 180px; padding: 13px; color: #10182b; border-radius: 17px; background: rgba(255, 255, 255, .94); box-shadow: 0 10px 22px rgba(40, 54, 71, .17); direction: ltr; font-size: .86rem; font-weight: 700; line-height: 1.25; }
+.addIcon { display: grid; width: 40px; height: 40px; place-items: center; border: 2px solid #17223b; border-radius: 11px; }
+.squiggle { position: relative; display: inline-block; }
+.squiggle::after { content: ''; position: absolute; right: 0; bottom: -10px; width: 102%; height: 8px; border-radius: 50%; background: #1188e9; transform: rotate(-2deg); }
+.iosGuide summary { list-style: none; }
 .iosGuide summary::-webkit-details-marker { display: none; }
-.steps { display: grid; gap: 13px; margin: 22px 0 0; padding: 0 24px 0 0; color: var(--body); line-height: 1.9; }
-.steps li::marker { color: var(--gold); font-weight: 900; }
+.steps { display: grid; gap: 10px; margin: 5px 0 0; padding: 18px 30px 18px 18px; color: #0d2445; border-radius: 18px; background: rgba(255, 255, 255, .72); line-height: 1.9; }
+.steps li::marker { color: #e66426; font-weight: 900; }
 .steps strong { direction: ltr; unicode-bidi: isolate; }
 
-@media (max-width: 700px) {
-  .hero { padding: 58px 0 34px; }
-  .platforms { padding: 34px 0 64px; }
-  .grid { grid-template-columns: 1fr; }
-  .card { min-height: 0; padding: 26px 22px; }
-  .actions :global(.btn) { width: 100%; }
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; max-width: 620px; }
+  .card { min-height: 540px; }
+}
+
+@media (max-width: 560px) {
+  .hero { padding: 48px 0 29px; }
+  .platforms { padding-bottom: 32px; }
+  .grid { gap: 17px; padding: 0 12px; }
+  .card { min-height: 610px; padding: 20px; border-radius: 20px; }
+  .body { min-height: 570px; }
+  .platform { align-self: flex-start; font-size: .83rem; }
+  .title { max-width: 260px; margin-top: 24px; font-size: 2.45rem; }
+  .text { max-width: 260px; font-size: .93rem; }
+  .phone { width: 184px; height: 340px; }
+  .phoneDark { left: -33px; bottom: -72px; }
+  .phoneLight { left: -20px; bottom: -83px; }
+  .androidTile { top: 89px; width: 105px; height: 105px; }
+  .downloadDot { top: 218px; }
+  .appTile { top: 88px; width: 90px; height: 90px; }
+  .arrow { bottom: 160px; left: 136px; width: 90px; }
+  .addBubble { bottom: 91px; left: 137px; width: 159px; padding: 10px; font-size: .72rem; }
+  .addIcon { width: 35px; height: 35px; }
+  .actions, .iosGuide { width: 100%; }
+  .cta { min-height: 56px; padding: 8px 15px; }
+  .ctaLabel { font-size: .95rem; }
 }
