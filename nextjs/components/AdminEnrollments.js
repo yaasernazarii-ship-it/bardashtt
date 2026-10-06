@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Icon from './Icon';
-import { QUESTIONS } from '@/lib/enrollmentData';
 
 const STATUS_LABEL = { submitted: 'در انتظار بررسی', approved: 'تأییدشده', rejected: 'ردشده' };
 
@@ -158,22 +157,12 @@ export default function AdminEnrollments() {
                         <div><span>ویدیوی معرفی</span><strong>{r.videoUrl ? 'ارسال شده' : 'ارسال نشده'}</strong></div>
                       </div>
 
-                      {r.aiAnalysis && <div className="su-note enrollment-review__analysis"><span>تحلیل بازیگری</span><p>{r.aiAnalysis}</p></div>}
+                      <div className="su-note enrollment-review__analysis">
+                        <span>خلاصهٔ تحلیل تست</span>
+                        <p>{r.aiAnalysis || 'تحلیلی برای این تست ثبت نشده است.'}</p>
+                        <small>پاسخ‌های کامل تست در گزارش PDF ارسال‌شده به بله موجود است.</small>
+                      </div>
                       {r.adminNote && <div className="su-note"><span>یادداشت مدیریت</span><p>{r.adminNote}</p></div>}
-
-                      {Array.isArray(r.answers) && r.answers.length > 0 && (
-                        <div className="enrollment-review__answers">
-                          <div className="su-section-title"><strong>پاسخ‌های تست آنلاین</strong><span>پاسخ‌هایی که متقاضی پیش از ارسال ویدیو ثبت کرده است.</span></div>
-                          <div className="enrollment-review__answer-grid">
-                            {r.answers.map((answer, answerIndex) => (
-                              <div key={answerIndex}>
-                                <span>{QUESTIONS[answerIndex]?.q || `سؤال ${(answerIndex + 1).toLocaleString('fa-IR')}`}</span>
-                                <strong>{QUESTIONS[answerIndex]?.options?.[Number(answer)] || '—'}</strong>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
 
                       {r.videoUrl && (
                         <a className="enrollment-review__video" href={r.videoUrl} target="_blank" rel="noopener noreferrer">
@@ -185,16 +174,16 @@ export default function AdminEnrollments() {
 
                       {r.status === 'submitted' && (
                         <div className="su-approval enrollment-review__approval">
-                          <div className="su-section-title"><strong>تصمیم نهایی درخواست</strong><span>با تأیید، حساب کاربری متقاضی خودکار ساخته می‌شود. «رد» فقط وضعیت را تغییر می‌دهد و اطلاعات را نگه می‌دارد تا بعداً خودتان دربارهٔ حذف آن تصمیم بگیرید؛ برای حذف فوری و کامل از «حذف کامل اطلاعات» استفاده کنید.</span></div>
-                          <div className="su-actions">
-                            <button className="btn btn--dark" disabled={busyId === r.id} onClick={() => act(r.id, 'approve')}>
+                          <div className="su-section-title"><strong>تصمیم نهایی درخواست</strong><span>«رد» اطلاعات را نگه می‌دارد؛ «حذف کامل» پس از ارسال PDF به بله، اطلاعات را پاک می‌کند.</span></div>
+                          <div className="su-actions enrollment-review__actions">
+                            <button type="button" className="btn btn--sm btn--dark" disabled={busyId === r.id} onClick={() => act(r.id, 'approve')}>
                               {busyId === r.id ? 'در حال ثبت…' : 'تأیید و ساخت حساب'}
                             </button>
-                            <button className="btn btn--outline" disabled={busyId === r.id} onClick={() => act(r.id, 'reject')}>
-                              {busyId === r.id ? 'در حال ثبت…' : 'رد'}
+                            <button type="button" className="btn btn--sm btn--outline" disabled={busyId === r.id} onClick={() => act(r.id, 'reject')}>
+                              رد
                             </button>
-                            <button className="btn btn--danger" disabled={busyId === r.id} onClick={() => act(r.id, 'delete')}>
-                              {busyId === r.id ? 'در حال ارسال آرشیو…' : 'حذف کامل اطلاعات'}
+                            <button type="button" className="btn btn--sm enrollment-review__delete" disabled={busyId === r.id} onClick={() => act(r.id, 'delete')}>
+                              حذف کامل اطلاعات
                             </button>
                           </div>
                         </div>
@@ -202,10 +191,10 @@ export default function AdminEnrollments() {
 
                       {r.status === 'rejected' && (
                         <div className="su-approval enrollment-review__approval">
-                          <div className="su-section-title"><strong>این درخواست ردشده است</strong><span>اطلاعات و ویدیوی ارسالی همچنان نگه داشته شده‌اند. اگر دیگر نیازی به آن‌ها نیست، گزارش و PDF به ربات بله ارسال و سپس برای همیشه حذف می‌شوند.</span></div>
-                          <div className="su-actions">
-                            <button className="btn btn--danger" disabled={busyId === r.id} onClick={() => act(r.id, 'delete')}>
-                              {busyId === r.id ? 'در حال ارسال آرشیو…' : 'حذف کامل اطلاعات'}
+                          <div className="su-section-title"><strong>درخواست ردشده</strong><span>اطلاعات نگه داشته شده است؛ در صورت نیاز می‌توانید آن را کامل حذف کنید.</span></div>
+                          <div className="su-actions enrollment-review__actions">
+                            <button type="button" className="btn btn--sm enrollment-review__delete" disabled={busyId === r.id} onClick={() => act(r.id, 'delete')}>
+                              {busyId === r.id ? 'در حال حذف…' : 'حذف کامل اطلاعات'}
                             </button>
                           </div>
                         </div>
