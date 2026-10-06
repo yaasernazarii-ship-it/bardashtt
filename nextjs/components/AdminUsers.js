@@ -64,14 +64,17 @@ export default function AdminUsers() {
     patch(u.id, { graduated: next });
   }
 
-  async function deleteAccount(u) {
+  async function deleteAccount(u, force = false) {
     const name = u.displayName || u.username || u.phone;
-    if (!window.confirm(`حساب «${name}» از تمام فهرست‌های سایت حذف شود؟ اگر آزمون یا گواهی داشته باشد فقط همان مدارک در آرشیو مدیریت باقی می‌مانند؛ در غیر این صورت حساب و اطلاعات وابسته کاملاً پاک می‌شوند.`)) return;
+    const message = force
+      ? `حساب «${name}» و همهٔ اطلاعات، آزمون‌ها و گواهی‌های آن برای همیشه حذف شود؟ این کار برگشت‌پذیر نیست.`
+      : `حساب «${name}» از فهرست‌های سایت حذف شود؟ اگر آزمون یا گواهی داشته باشد، ابتدا فقط بایگانی می‌شود تا دربارهٔ حذف همیشگی مدارک خودتان تصمیم بگیرید.`;
+    if (!window.confirm(message)) return;
 
     setSavingId(u.id);
     setError('');
     try {
-      const res = await fetch(`/api/admin/users/${u.id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/admin/users/${u.id}${force ? '?force=1' : ''}`, { method: 'DELETE' });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.ok) {
         setError(data.error || 'حذف حساب انجام نشد. دوباره تلاش کنید.');
@@ -81,6 +84,10 @@ export default function AdminUsers() {
       setUsers((current) => current.filter((item) => item.id !== u.id));
       setOpenId('');
       if (panelId === u.id) setPanelId(null);
+
+      if (data.archived && window.confirm(`حساب «${name}» بایگانی شد تا آزمون‌ها و گواهی‌ها حفظ شوند. آیا می‌خواهید همین حالا آن‌ها و حساب را نیز برای همیشه حذف کنید؟`)) {
+        await deleteAccount(u, true);
+      }
     } catch {
       setError('ارتباط با سرور برقرار نشد. دوباره تلاش کنید.');
     } finally {
@@ -135,7 +142,7 @@ export default function AdminUsers() {
 
       {archivedMode && (
         <div className="alert alert--info" style={{ marginBottom: 14 }}>
-          این افراد در هیچ فهرست عملیاتی یا بخش عمومی سایت دیده نمی‌شوند. فقط مدارک باقی‌مانده را از اینجا باز و در صورت نیاز دستی حذف کنید.
+          این افراد در هیچ فهرست عملیاتی یا بخش عمومی سایت دیده نمی‌شوند. برای هر حساب می‌توانید با «حذف کامل حساب» دربارهٔ پاک‌شدن همیشگی آن و مدارکش تصمیم بگیرید.
         </div>
       )}
 
@@ -187,9 +194,13 @@ export default function AdminUsers() {
                     </div>
 
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginTop: 12, borderTop: '1px solid var(--border)', paddingTop: 12 }}>
-                      <button type="button" className="btn btn--sm btn--dark" onClick={() => setPanelId(u.id)}>مشاهدهٔ پنل کامل</button>
+                      {!u.deletedAt && <button type="button" className="btn btn--sm btn--dark" onClick={() => setPanelId(u.id)}>مشاهدهٔ پنل کامل</button>}
 
-                      {!u.deletedAt && (
+                      {u.deletedAt ? (
+                        <button type="button" className="btn btn--sm btn--danger" disabled={savingId === u.id} onClick={() => deleteAccount(u, true)}>
+                          {savingId === u.id ? 'در حال حذف…' : 'حذف کامل حساب'}
+                        </button>
+                      ) : (
                         <>
                       {/* نام کاربری و رمز عبور برای هر حسابی — از جمله حساب خودتان — قابل تغییر است،
                           چون کاربر دیگر از پروفایلش رمز عوض نمی‌کند و تنها راه، همین‌جاست. */}
@@ -221,14 +232,14 @@ export default function AdminUsers() {
                               {u.graduated ? 'بازگرداندن به تحصیل' : 'فارغ‌التحصیل'}
                             </button>
                           )}
-                          <button type="button" className={`btn btn--sm ${u.active === false ? 'btn--dark' : 'btn--danger'}`}
+                          <button type="button" className={`btn btn--sm ${u.active === false ? 'btn--dark' : 'btn--outline'}`}
                             disabled={savingId === u.id} onClick={() => toggleActive(u)}>
-                            {u.active === false ? 'فعال‌سازی' : 'غیرفعال'}
+                            {u.active === false ? 'فعال‌سازی مجدد' : 'غیرفعال‌سازی موقت'}
                           </button>
                           {u.role !== 'admin' && u.role !== 'editor' && (
                             <button type="button" className="btn btn--sm btn--danger"
                               disabled={savingId === u.id} onClick={() => deleteAccount(u)}>
-                              {savingId === u.id ? 'در حال حذف…' : 'حذف حساب از سایت'}
+                              {savingId === u.id ? 'در حال حذف…' : 'حذف کامل حساب'}
                             </button>
                           )}
                         </>
