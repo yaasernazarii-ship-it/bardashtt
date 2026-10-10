@@ -1410,6 +1410,8 @@ summary:focus-visible {
   cursor: pointer;
 }
 .actor-gallery__thumb.is-active { border-color: var(--gold, #c9a227); }
+.actor-gallery__item { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 94px; text-align: center; font-size: .72rem; color: var(--muted); }
+.actor-gallery__item .actor-gallery__thumb { flex: none; }
 
 /* ویدیوهای رزومه */
 .actor-videos {

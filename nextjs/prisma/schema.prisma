@@ -51,6 +51,7 @@ model User {
   examPermits  ExamPermit[] // اجازه‌های شرکت در آزمون که مدیر/ادیتور صادر کرده
   certificates Certificate[] // گواهی‌نامه‌های صادرشده
   socialAccount SocialAccount?
+  actorResume   ActorResume?
 
   @@index([classGroupId])
   @@index([deletedAt])
@@ -313,10 +314,11 @@ model ClassEvent {
   @@index([startsAt])
 }
 
-// رزومهٔ بازیگری. عمداً هیچ رابطه‌ای با User ندارد: رزومه یک پروندهٔ مستقل است که
-// فقط ادمین/ادیتور می‌سازد و ویرایش می‌کند و به حساب کاربری هیچ‌کس گره نمی‌خورد.
+// پروندهٔ معرفی بازیگر؛ پرونده‌های قدیمی مستقل می‌مانند و معرفی هنرجو به حسابش وصل می‌شود.
 model ActorResume {
   id           String        @id @default(cuid())
+  userId       String?       @unique
+  user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
   firstName    String
   lastName     String
   fullName     String // «نام + نام خانوادگی»؛ ذخیره می‌شود تا جست‌وجو و نمایش ساده بماند
@@ -350,10 +352,15 @@ model ResumePhoto {
   resume    ActorResume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   url       String
   caption   String?
-  sortOrder Int         @default(0)
+  pose      String? // front | profile | threeQuarter
+  look           String? // beard | cleanShaven | makeup | noMakeup
+  approvalStatus String  @default("approved") // pending | approved | rejected
+  sortOrder      Int     @default(0)
   createdAt DateTime    @default(now())
 
   @@index([resumeId, sortOrder])
+  @@index([resumeId, approvalStatus])
+  @@index([url])
 }
 
 // ویدیوهای رزومه؛ لینک آپارات/ویو یا فایلِ آپلودشده، هرکدام با عنوان و توضیح.
