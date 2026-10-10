@@ -74,42 +74,44 @@ export async function issueCertificate(user, {
     if (existing) return existing;
   }
 
+  // هر هنرجو فقط یک گواهی دارد؛ صدور دستیِ قبلی هم باید از صدور مجدد پس از آزمون جلوگیری کند.
+  const existingForUser = await prisma.certificate.findFirst({
+    where: { userId: user.id },
+    orderBy: { issuedAt: 'desc' },
+  });
+  if (existingForUser) return existingForUser;
+
   const normalizedNationalId = normalizeNationalId(nationalId || user.nationalId);
   if (!isValidNationalId(normalizedNationalId)) throw new Error('national_id_required');
+  const serial = buildSerial(normalizedNationalId);
+  const existingForNationalId = await prisma.certificate.findUnique({ where: { serial } });
+  if (existingForNationalId) throw new Error('certificate_already_issued_for_national_id');
+
   const photoUrl = await snapshotPhoto(photoOverride || user.photoUrl);
 
   try {
-    // کد استعلام از کد ملی معتبر ساخته می‌شود؛ صدور گواهی بدون کد ملی مجاز نیست.
-    for (let seq = 1; seq <= 20; seq++) {
-      const serial = buildSerial(normalizedNationalId, seq);
-      try {
-        return await prisma.certificate.create({
-          data: {
-            serial,
-            userId: user.id,
-            attemptId,
-            fullName: fullName || user.displayName || user.username || user.phone,
-            gender: gender || user.gender || null,
-            nationalId: normalizedNationalId,
-            courseTitle: courseTitle || user.courseTitle || null,
-            branch: branch || user.branch || null,
-            photoUrl,
-            percent,
-            examPercent,
-            classScore,
-            issuedById,
-            ...(issuedAt ? { issuedAt } : {}),
-          },
-        });
-      } catch (err) {
-        // فقط برخورد شمارهٔ تکراری قابل تکرار است؛ بقیهٔ خطاها باید بالا بروند.
-        if (err?.code !== 'P2002') throw err;
-      }
-    }
-    throw new Error('serial_generation_failed');
+    return await prisma.certificate.create({
+      data: {
+        serial,
+        userId: user.id,
+        attemptId,
+        fullName: fullName || user.displayName || user.username || user.phone,
+        gender: gender || user.gender || null,
+        nationalId: normalizedNationalId,
+        courseTitle: courseTitle || user.courseTitle || null,
+        branch: branch || user.branch || null,
+        photoUrl,
+        percent,
+        examPercent,
+        classScore,
+        issuedById,
+        ...(issuedAt ? { issuedAt } : {}),
+      },
+    });
   } catch (err) {
     // گواهی ثبت نشد، پس کپیِ عکس هم بی‌صاحب می‌ماند و باید پاک شود.
     if (photoUrl) await unlink(path.join(UPLOADS, photoUrl.slice('/media/'.length))).catch(() => {});
+    if (err?.code === 'P2002') throw new Error('certificate_already_issued_for_national_id');
     throw err;
   }
 }
