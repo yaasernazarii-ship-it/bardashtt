@@ -107,7 +107,7 @@ export async function finalizeAttempt(user, attempt) {
 
   // آزمونِ بازبینیِ مدیر/ادیتور فقط نمره می‌گیرد؛ گواهی صادر نمی‌شود و فارغ‌التحصیل ثبت نمی‌شود.
   let certificate = null;
-  let certificateError = false;
+  let certificateError = null;
   if (result.passed && !isManager(user)) {
     try {
       // نمرهٔ درج‌شده روی گواهی، نمرهٔ نهایی است؛ ریز نمره هم برای استعلام ذخیره می‌شود.
@@ -117,9 +117,10 @@ export async function finalizeAttempt(user, attempt) {
         examPercent: result.percent,
         classScore: result.classScore,
       });
-    } catch {
-      // نمرهٔ آزمون ثبت شده؛ خطای صدور باید به هنرجو نشان داده شود تا پیگیری شود.
-      certificateError = true;
+    } catch (err) {
+      certificateError = err?.message === 'national_id_required'
+        ? 'نمرهٔ قبولی ثبت شد، اما تا زمان ثبت کد ملی معتبر، گواهی صادر نمی‌شود.'
+        : 'نمرهٔ قبولی ثبت شد، اما صدور گواهی انجام نشد. لطفاً با آموزشگاه تماس بگیرید.';
     }
 
     if (certificate) {

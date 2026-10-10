@@ -222,7 +222,7 @@ export default function ExamRunner() {
       {error && <div className="alert alert--error">{error}</div>}
       {state?.certificateError && (
         <div className="alert alert--error">
-          نمرهٔ قبولی شما ثبت شده، اما صدور گواهی هنوز انجام نشده است. لطفاً با آموزشگاه تماس بگیرید.
+          {state.certificateError}
         </div>
       )}
 
@@ -254,7 +254,7 @@ export default function ExamRunner() {
           )}
           {result.certificateError && (
             <div style={{ marginTop: 6 }}>
-              نمرهٔ قبولی ثبت شد، اما صدور گواهی انجام نشد. لطفاً با آموزشگاه تماس بگیرید تا گواهی شما صادر شود.
+              {result.certificateError}
             </div>
           )}
         </div>

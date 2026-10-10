@@ -80,7 +80,7 @@ export async function GET() {
   });
 
   const passedBefore = attempts.some((a) => a.passed);
-  let certificateError = false;
+  let certificateError = '';
   let resolvedCertificate = certificate;
   // قبولی‌های قدیمی که پیش‌تر به‌دلیل ناقص‌بودن پروفایل گواهی نگرفته‌اند، با ورود دوباره
   // به صفحه بازیابی می‌شوند؛ attemptId یکتا است و از صدور تکراری جلوگیری می‌کند.
@@ -94,8 +94,10 @@ export async function GET() {
         classScore: passedAttempt.classScore,
       });
       await prisma.user.update({ where: { id: user.id }, data: { graduated: true } });
-    } catch {
-      certificateError = true;
+    } catch (err) {
+      certificateError = err?.message === 'national_id_required'
+        ? 'نمرهٔ قبولی شما ثبت شده است، اما تا زمان ثبت کد ملی معتبر، گواهی صادر نمی‌شود.'
+        : 'نمرهٔ قبولی شما ثبت شده است، اما صدور گواهی انجام نشد. لطفاً با آموزشگاه تماس بگیرید.';
     }
   }
   let open = attempts.find((a) => !a.submittedAt) || null;

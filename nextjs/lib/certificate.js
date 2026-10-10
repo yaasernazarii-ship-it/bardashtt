@@ -75,16 +75,13 @@ export async function issueCertificate(user, {
   }
 
   const normalizedNationalId = normalizeNationalId(nationalId || user.nationalId);
-  const hasValidNationalId = isValidNationalId(normalizedNationalId);
+  if (!isValidNationalId(normalizedNationalId)) throw new Error('national_id_required');
   const photoUrl = await snapshotPhoto(photoOverride || user.photoUrl);
 
   try {
-    // گواهی آزمون برای هنرجوی قدیمیِ فاقد کد ملی هم باید صادر شود؛ در این حالت کد تصادفیِ
-    // غیرقابل‌حدس جایگزینِ کد ملی در شناسهٔ استعلام می‌شود.
+    // کد استعلام از کد ملی معتبر ساخته می‌شود؛ صدور گواهی بدون کد ملی مجاز نیست.
     for (let seq = 1; seq <= 20; seq++) {
-      const serial = hasValidNationalId
-        ? buildSerial(normalizedNationalId, seq)
-        : `TB-${Date.now().toString(36).toUpperCase()}-${randomBytes(6).toString('hex').toUpperCase()}`;
+      const serial = buildSerial(normalizedNationalId, seq);
       try {
         return await prisma.certificate.create({
           data: {
@@ -93,7 +90,7 @@ export async function issueCertificate(user, {
             attemptId,
             fullName: fullName || user.displayName || user.username || user.phone,
             gender: gender || user.gender || null,
-            nationalId: hasValidNationalId ? normalizedNationalId : null,
+            nationalId: normalizedNationalId,
             courseTitle: courseTitle || user.courseTitle || null,
             branch: branch || user.branch || null,
             photoUrl,
