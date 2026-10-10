@@ -17,6 +17,7 @@ from .config import AUTO_PUBLISH, DATABASE_URL, GAPGPT_API_KEY, GAPGPT_BASE_URL,
 from .prompts import CATEGORIES, blog_prompt, news_prompt
 
 MAX_ARTICLE_CHARS = 18000
+DEFAULT_IMAGE_ALT = 'تصویر مرتبط با خدمات آموزشی و هنری خانه برداشت'
 
 
 def slugify(value):
@@ -94,6 +95,8 @@ class ContentWorker:
         title, article, image_url = self.fetch_article(source, url, fallback_title)
         messages = news_prompt(source.name, article) if section == 'news' else blog_prompt(source.name, article)
         generated = self.generate(messages)
+        if not isinstance(generated.get('image_alt'), str) or not generated['image_alt'].strip():
+            generated['image_alt'] = DEFAULT_IMAGE_ALT
         self.validate_generated(generated, section)
         cover = self.download_image(source, image_url, digest) if image_url else None
         post_id = self.cuid()

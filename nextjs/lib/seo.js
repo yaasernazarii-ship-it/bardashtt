@@ -2,16 +2,26 @@ import { siteUrl } from './siteUrl';
 
 export { siteUrl };
 
-const MAX_PAGE_TITLE_LENGTH = 40;
+export const DEFAULT_SEO_DESCRIPTION = 'آموزشگاه بازیگری برداشت - خانه هنر، سینما و تولید فیلم در تهران و ساری.';
+export const DEFAULT_IMAGE_ALT = 'تصویر مرتبط با خدمات آموزشی و هنری خانه برداشت';
+
+const TITLE_SUFFIX = ' | برداشت';
+const MAX_PAGE_TITLE_LENGTH = 60;
 
 export function seoTitle(value, fallback = 'مطلب') {
   const title = String(value || fallback).trim() || fallback;
-  return title.length > MAX_PAGE_TITLE_LENGTH ? `${title.slice(0, MAX_PAGE_TITLE_LENGTH - 1).trimEnd()}…` : title;
+  const maxTitleLength = MAX_PAGE_TITLE_LENGTH - TITLE_SUFFIX.length;
+  const compactTitle = title.length > maxTitleLength ? `${title.slice(0, maxTitleLength - 1).trimEnd()}…` : title;
+  return { absolute: `${compactTitle}${TITLE_SUFFIX}` };
 }
 
 export function seoDescription(post) {
-  const description = String(post.metaDescription || post.excerpt || '').trim();
-  return description || `${post.title}؛ مطلبی آموزشی از آموزشگاه بازیگری خانواده برداشت.`;
+  const description = String(post.metaDescription || post.excerpt || post.body || '').replace(/^#{1,3}\s*/gm, '').trim();
+  return description ? description.slice(0, 160) : DEFAULT_SEO_DESCRIPTION;
+}
+
+export function seoImageAlt(value) {
+  return String(value || '').trim() || DEFAULT_IMAGE_ALT;
 }
 
 // schema.org Article — برای صفحهٔ جزئیات مطلب (وبلاگ/اخبار).

@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import { livePostBySlug } from '@/lib/content';
 import { aparatEmbedUrl } from '@/lib/aparat';
-import { articleJsonLd, breadcrumbJsonLd, faqJsonLd, jsonLdScript, seoDescription, seoTitle } from '@/lib/seo';
+import { articleJsonLd, breadcrumbJsonLd, faqJsonLd, jsonLdScript, seoDescription, seoImageAlt, seoTitle } from '@/lib/seo';
 import { siteUrl } from '@/lib/siteUrl';
 
 export const dynamic = 'force-dynamic';
@@ -86,7 +86,7 @@ export default async function BlogPostPage({ params }) {
           <article className="post-article">
             {post.coverImage && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img className="post-article__cover" src={post.coverImage} alt={post.imageAlt || post.title} loading="lazy" decoding="async" />
+              <img className="post-article__cover" src={post.coverImage} alt={seoImageAlt(post.imageAlt || post.title)} loading="lazy" decoding="async" />
             )}
             {galleryImages.length > 0 && (
               <div className="post-article__gallery">
