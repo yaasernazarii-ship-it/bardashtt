@@ -26,15 +26,20 @@ export default function VerifyForm({ content }) {
   const [scannerOpen, setScannerOpen] = useState(false);
   const [scannerError, setScannerError] = useState('');
   const videoRef = useRef(null);
+  const canvasRef = useRef(null);
   const streamRef = useRef(null);
 
   const run = useCallback(async (serial) => {
+    const value = String(serial || '').trim();
+    const certificateCode = (() => {
+      try { return new URL(value).searchParams.get('code') || value; } catch { return value; }
+    })();
     setLoading(true); setError(''); setCert(null);
     try {
       const res = await fetch('/api/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ serial }),
+        body: JSON.stringify({ serial: certificateCode }),
       });
       const data = await res.json();
       if (!data.ok) { setError(data.error || 'استعلام ناموفق بود.'); return; }
@@ -66,8 +71,8 @@ export default function VerifyForm({ content }) {
   }
 
   async function openScanner() {
-    if (!('BarcodeDetector' in window) || !navigator.mediaDevices?.getUserMedia) {
-      setScannerError('اسکن QR در مرورگر شما پشتیبانی نمی‌شود. کد گواهی را وارد کنید.');
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setScannerError('دسترسی به دوربین در مرورگر شما پشتیبانی نمی‌شود. کد گواهی را وارد کنید.');
       return;
     }
 
@@ -81,10 +86,12 @@ export default function VerifyForm({ content }) {
     let stopped = false;
     let timer = null;
     let detector = null;
+    let decode = null;
 
     async function start() {
       try {
-        detector = new window.BarcodeDetector({ formats: ['qr_code'] });
+        if ('BarcodeDetector' in window) detector = new window.BarcodeDetector({ formats: ['qr_code'] });
+        else decode = (await import('jsqr')).default;
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
         if (stopped) {
           stream.getTracks().forEach((track) => track.stop());
@@ -96,11 +103,20 @@ export default function VerifyForm({ content }) {
         timer = setInterval(async () => {
           if (stopped || videoRef.current.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
           try {
-            const matches = await detector.detect(videoRef.current);
-            if (!matches[0]?.rawValue) return;
-            const raw = matches[0].rawValue.trim();
+            const nativeMatch = detector ? (await detector.detect(videoRef.current))[0] : null;
+            const canvas = canvasRef.current;
+            const context = canvas?.getContext('2d', { willReadFrequently: true });
+            if (!nativeMatch && (!canvas || !context)) return;
+            let raw = nativeMatch?.rawValue;
+            if (!raw) {
+              canvas.width = videoRef.current.videoWidth;
+              canvas.height = videoRef.current.videoHeight;
+              context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+              raw = decode(context.getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height, { inversionAttempts: 'dontInvert' })?.data;
+            }
+            if (!raw) return;
             const scanned = (() => {
-              try { return new URL(raw).searchParams.get('code') || raw; } catch { return raw; }
+              try { return new URL(raw.trim()).searchParams.get('code') || raw.trim(); } catch { return raw.trim(); }
             })();
             setCode(scanned);
             closeScanner();
@@ -153,6 +169,7 @@ export default function VerifyForm({ content }) {
             {scannerOpen && (
               <div style={{ marginTop: 18, display: 'grid', gap: 10 }}>
                 <video ref={videoRef} muted playsInline style={{ width: '100%', borderRadius: 12, background: '#111', maxHeight: 360 }} />
+                <canvas ref={canvasRef} hidden />
                 <button type="button" className="btn btn--outline" onClick={closeScanner}>بستن دوربین</button>
               </div>
             )}
