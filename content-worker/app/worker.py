@@ -2,7 +2,7 @@ import hashlib
 import json
 import re
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from io import BytesIO
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
@@ -13,7 +13,7 @@ import psycopg
 from bs4 import BeautifulSoup
 from PIL import Image
 
-from .config import AUTO_PUBLISH, DATABASE_URL, GAPGPT_API_KEY, GAPGPT_BASE_URL, GAPGPT_MODEL, UPLOADS_DIR
+from .config import AUTO_PUBLISH, DATABASE_URL, GAPGPT_API_KEY, GAPGPT_BASE_URL, GAPGPT_MODEL, PUBLISH_SPACING_MINUTES, UPLOADS_DIR
 from .prompts import CATEGORIES, blog_prompt, news_prompt
 
 MAX_ARTICLE_CHARS = 18000
@@ -100,10 +100,16 @@ class ContentWorker:
         slug = f"{slugify(generated['slug'])}-{digest[:8]}"
         tags = generated.get('tags', []) if section == 'blog' else []
         tags = ', '.join(tag.strip() for tag in tags if isinstance(tag, str) and tag.strip())[:500]
+        publish_at = None
+        if AUTO_PUBLISH:
+            with self.db.cursor() as cursor:
+                cursor.execute('SELECT MAX("publishAt") FROM "Post" WHERE "published" = true AND "publishAt" >= NOW()')
+                last_publish_at = cursor.fetchone()[0]
+            publish_at = max(datetime.now(timezone.utc), last_publish_at or datetime.now(timezone.utc)) + timedelta(minutes=PUBLISH_SPACING_MINUTES)
         with self.db.cursor() as cursor:
             cursor.execute(
-                'INSERT INTO "Post" ("id", "title", "slug", "section", "category", "excerpt", "metaTitle", "metaDescription", "tags", "body", "coverImage", "imageAlt", "sourceName", "sourceReferenceUrl", "faq", "published", "createdAt", "updatedAt") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())',
-                (post_id, generated['title'], slug, section, generated.get('category') if section == 'blog' else None, generated['excerpt'], generated['meta_title'], generated['meta_description'], tags or None, generated['body'], cover, generated['image_alt'], source.name, url, json.dumps(generated['faq'], ensure_ascii=False), AUTO_PUBLISH),
+                'INSERT INTO "Post" ("id", "title", "slug", "section", "category", "excerpt", "metaTitle", "metaDescription", "tags", "body", "coverImage", "imageAlt", "sourceName", "sourceReferenceUrl", "faq", "published", "publishAt", "createdAt", "updatedAt") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())',
+                (post_id, generated['title'], slug, section, generated.get('category') if section == 'blog' else None, generated['excerpt'], generated['meta_title'], generated['meta_description'], tags or None, generated['body'], cover, generated['image_alt'], source.name, url, json.dumps(generated['faq'], ensure_ascii=False), AUTO_PUBLISH, publish_at),
             )
             cursor.execute('UPDATE "ContentAutomationItem" SET "postId" = %s, "status" = %s, "updatedAt" = NOW() WHERE "sourceHash" = %s', (post_id, 'published' if AUTO_PUBLISH else 'draft', digest))
         self.db.commit()

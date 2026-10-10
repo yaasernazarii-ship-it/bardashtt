@@ -44,7 +44,7 @@ export async function generateMetadata({ params }) {
 export default async function PostPage({ params }) {
   const { slug } = await params;
   const post = await findPost(slug);
-  if (!post || !post.published) notFound();
+  if (!post || !post.published || (post.publishAt && post.publishAt > new Date())) notFound();
   // خبری که از سایت دیگری برداشته شده هیچ‌وقت داخل سایت ما باز نمی‌شود؛
   // حتی ورود مستقیم به این نشانی هم به سایت منبع فرستاده می‌شود.
   if (post.sourceUrl) redirect(post.sourceUrl);
