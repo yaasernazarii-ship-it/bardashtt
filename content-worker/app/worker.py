@@ -150,7 +150,7 @@ class ContentWorker:
                 raise ValueError(f'خروجی {key} معتبر نیست.')
             item[key] = value.strip()
         meta_description = item.get('meta_description')
-        if not isinstance(meta_description, str) or not 130 <= len(meta_description.strip()) <= 160:
+        if not isinstance(meta_description, str) or not 80 <= len(meta_description.strip()) <= 200:
             raise ValueError('خروجی meta_description معتبر نیست.')
         item['meta_description'] = meta_description.strip()
         faq = item.get('faq')
