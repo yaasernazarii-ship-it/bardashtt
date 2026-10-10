@@ -19,6 +19,13 @@ from .prompts import CATEGORIES, blog_prompt, news_prompt
 MAX_ARTICLE_CHARS = 18000
 
 
+def slugify(value):
+    slug = re.sub(r'[^a-z0-9آ-ی]+', '-', value.lower()).strip('-')
+    if len(slug) < 3:
+        raise ValueError('اسلاگ معتبر نیست.')
+    return slug[:80]
+
+
 def is_article_url(source, section, url):
     parsed = urlparse(url)
     host = (parsed.hostname or '').lower()
@@ -90,13 +97,13 @@ class ContentWorker:
         self.validate_generated(generated, section)
         cover = self.download_image(source, image_url, digest) if image_url else None
         post_id = self.cuid()
-        slug = f'{section}-{digest[:16]}'
+        slug = f"{slugify(generated['slug'])}-{digest[:8]}"
         tags = generated.get('tags', []) if section == 'blog' else []
         tags = ', '.join(tag.strip() for tag in tags if isinstance(tag, str) and tag.strip())[:500]
         with self.db.cursor() as cursor:
             cursor.execute(
-                'INSERT INTO "Post" ("id", "title", "slug", "section", "category", "excerpt", "metaDescription", "tags", "body", "coverImage", "published", "createdAt", "updatedAt") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())',
-                (post_id, generated['title'], slug, section, generated.get('category') if section == 'blog' else None, generated['excerpt'], generated['excerpt'], tags or None, generated['body'], cover, AUTO_PUBLISH),
+                'INSERT INTO "Post" ("id", "title", "slug", "section", "category", "excerpt", "metaTitle", "metaDescription", "tags", "body", "coverImage", "imageAlt", "sourceName", "sourceReferenceUrl", "faq", "published", "createdAt", "updatedAt") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW())',
+                (post_id, generated['title'], slug, section, generated.get('category') if section == 'blog' else None, generated['excerpt'], generated['meta_title'], generated['meta_description'], tags or None, generated['body'], cover, generated['image_alt'], source.name, url, json.dumps(generated['faq'], ensure_ascii=False), AUTO_PUBLISH),
             )
             cursor.execute('UPDATE "ContentAutomationItem" SET "postId" = %s, "status" = %s, "updatedAt" = NOW() WHERE "sourceHash" = %s', (post_id, 'published' if AUTO_PUBLISH else 'draft', digest))
         self.db.commit()
@@ -131,11 +138,19 @@ class ContentWorker:
             raise ValueError('پاسخ مدل JSON معتبر نیست.') from error
 
     def validate_generated(self, item, section):
-        for key, limit in [('title', 200), ('excerpt', 300), ('body', 20000)]:
+        for key, limit in [('title', 200), ('excerpt', 300), ('body', 20000), ('slug', 100), ('meta_title', 60), ('image_alt', 160)]:
             value = item.get(key)
             if not isinstance(value, str) or not value.strip() or len(value.strip()) > limit:
                 raise ValueError(f'خروجی {key} معتبر نیست.')
             item[key] = value.strip()
+        meta_description = item.get('meta_description')
+        if not isinstance(meta_description, str) or not 130 <= len(meta_description.strip()) <= 160:
+            raise ValueError('خروجی meta_description معتبر نیست.')
+        item['meta_description'] = meta_description.strip()
+        faq = item.get('faq')
+        if not isinstance(faq, list) or len(faq) != 3 or any(not isinstance(entry, dict) or not isinstance(entry.get('q'), str) or not isinstance(entry.get('a'), str) or not entry['q'].strip() or not entry['a'].strip() for entry in faq):
+            raise ValueError('خروجی faq معتبر نیست.')
+        item['faq'] = [{'q': entry['q'].strip()[:240], 'a': entry['a'].strip()[:500]} for entry in faq]
         if section == 'blog' and item.get('category') not in CATEGORIES:
             raise ValueError('دسته‌بندی مقاله معتبر نیست.')
 

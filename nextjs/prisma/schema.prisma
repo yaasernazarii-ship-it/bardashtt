@@ -495,8 +495,13 @@ model Post {
   section     String    @default("news") // بخش مقصد: news, blog, works-*, gallery, course-video
   category    String? // دستهٔ وبلاگ (فقط وقتی section = blog کاربرد دارد؛ مقادیر مجاز در lib/blogCategories.js)
   excerpt     String? // خلاصهٔ کوتاه برای فهرست
+  metaTitle       String? // عنوان اختصاصی موتور جست‌وجو
   metaDescription String? // توضیح اختصاصی موتور جست‌وجو
-  tags        String? // برچسب‌ها، با ویرگول جدا شده
+  tags            String? // برچسب‌ها، با ویرگول جدا شده
+  imageAlt        String? // متن جایگزین تصویر کاور
+  sourceName      String? // نام ناشر یا خبرگزاری منبع
+  sourceReferenceUrl String? // نشانی مرجع بدون تغییر رفتار sourceUrl
+  faq             Json? // پرسش‌های متداول [{ q, a }]
   body        String // متن اصلی (پاراگراف‌ها با خط جدید)
   coverImage  String? // نشانی عکس کاور (آپلودی یا URL)
   images      String? // نشانی عکس‌های داخل مطلب، هر نشانی در یک خط
