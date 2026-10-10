@@ -54,7 +54,7 @@ GAPGPT_MODEL = os.getenv('GAPGPT_MODEL') or os.getenv('AI_CHAT_MODEL') or 'gpt-4
 AUTO_PUBLISH = os.getenv('AUTO_PUBLISH', 'false').lower() == 'true'
 NEWS_INTERVAL_HOURS = int(os.getenv('NEWS_INTERVAL_HOURS', '2'))
 BLOG_INTERVAL_HOURS = int(os.getenv('BLOG_INTERVAL_HOURS', '12'))
-PUBLISH_SPACING_MINUTES = int(os.getenv('PUBLISH_SPACING_MINUTES', '120'))
+PUBLISH_SPACING_MINUTES = int(os.getenv('PUBLISH_SPACING_MINUTES', '60'))
 NEWS_SOURCES = sources('NEWS_FEEDS_JSON')
 BLOG_SOURCES = sources('BLOG_FEEDS_JSON')
 UPLOADS_DIR = os.getenv('UPLOADS_DIR', '/app/site-uploads')
