@@ -4,6 +4,7 @@ import HomeHeroBg from '@/components/HomeHeroBg';
 import Icon from '@/components/Icon';
 import { loadContent, splitLines } from '@/lib/siteContent';
 import { pageMetadata } from '@/lib/pageMeta';
+import IdentityFaq from '@/components/IdentityFaq';
 
 export async function generateMetadata() {
   return pageMetadata('home');
@@ -69,6 +70,7 @@ export default async function HomePage() {
           <p className="body-lg">{t('home.seo.text')}</p>
         </div>
       </section>
+      <IdentityFaq />
 
       {/* آمار */}
       <section id="stats" style={{ background: 'var(--dark)', padding: '36px 0' }}>

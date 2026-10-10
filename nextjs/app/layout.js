@@ -69,8 +69,9 @@ export default async function RootLayout({ children }) {
                 {
                   '@type': 'EducationalOrganization',
                   '@id': `${base}/#organization`,
-                  name: 'خانواده برداشت',
-                  alternateName: ['خانه برداشت', 'آموزشگاه آزاد سینمایی تک برداشت'],
+                  name: 'خانه برداشت',
+                  legalName: 'آموزشگاه آزاد سینمایی تک برداشت',
+                  alternateName: 'خانواده برداشت',
                   description: 'آموزشگاه بازیگری سینما و فیلم‌سازی با فعالیت آموزشی در تهران و مازندران.',
                   url: base,
                   mainEntityOfPage: `${base}/khane-bardasht`,
@@ -79,9 +80,11 @@ export default async function RootLayout({ children }) {
                   sameAs: ['https://instagram.com/bardashtt', 'https://ble.ir/bardasht_family'],
                   contactPoint: { '@type': 'ContactPoint', telephone: '+982191090934', contactType: 'customer service', availableLanguage: 'fa' },
                   location: [
-                    { '@type': 'Place', name: 'شعبهٔ تهران خانه برداشت', address: { '@type': 'PostalAddress', addressLocality: 'تهران', streetAddress: 'میدان فاطمی', addressCountry: 'IR' } },
-                    { '@type': 'Place', name: 'شعبهٔ مازندران خانه برداشت', address: { '@type': 'PostalAddress', addressLocality: 'ساری', streetAddress: 'بلوار طالقانی، روبه‌روی شهابی، طالقانی ۱۰، خانهٔ برداشت', addressCountry: 'IR' } },
+                    { '@type': 'Place', '@id': `${base}/#tehran-campus`, name: 'شعبهٔ تهران خانه برداشت', address: { '@type': 'PostalAddress', addressLocality: 'تهران', streetAddress: 'میدان فاطمی', addressCountry: 'IR' } },
+                    { '@type': 'Place', '@id': `${base}/#sari-campus`, name: 'شعبهٔ مازندران خانه برداشت', address: { '@type': 'PostalAddress', addressLocality: 'ساری', streetAddress: 'بلوار طالقانی، روبه‌روی شهابی، طالقانی ۱۰، خانهٔ برداشت', addressCountry: 'IR' } },
                   ],
+                  foundingLocation: [{ '@id': `${base}/#tehran-campus` }, { '@id': `${base}/#sari-campus` }],
+                  founder: { '@id': `${base}/yaser-nazari#person` },
                   areaServed: 'IR',
                   knowsAbout: [
                     'آموزش بازیگری سینما',
