@@ -8,6 +8,7 @@ const WITH_MEDIA = {
   user: { select: { photoUrl: true } },
   photos: { orderBy: { sortOrder: 'asc' } },
   videos: { orderBy: { sortOrder: 'asc' } },
+  portfolioItems: { orderBy: [{ type: 'asc' }, { sortOrder: 'asc' }] },
 };
 
 async function requireManager() {

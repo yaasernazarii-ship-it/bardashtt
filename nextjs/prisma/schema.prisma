@@ -338,8 +338,9 @@ model ActorResume {
   isPublic     Boolean       @default(false)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  photos       ResumePhoto[]
-  videos       ResumeVideo[]
+  photos         ResumePhoto[]
+  videos         ResumeVideo[]
+  portfolioItems ActorPortfolioItem[]
 
   @@index([isPublic])
   @@index([fullName])
@@ -375,6 +376,27 @@ model ResumeVideo {
   createdAt   DateTime    @default(now())
 
   @@index([resumeId, sortOrder])
+}
+
+// نمونه‌کارهای هنرجو؛ فایل اولیه خصوصی می‌ماند تا مدیریت انتشار را تأیید کند.
+model ActorPortfolioItem {
+  id          String      @id @default(cuid())
+  resumeId    String
+  resume      ActorResume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  type        String      // image | video
+  sourceUrl   String
+  aparatUrl   String?
+  title       String?
+  description String?
+  status      String      @default("pending") // pending | approved | rejected
+  sortOrder   Int         @default(0)
+  reviewedAt  DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([resumeId, type, sortOrder])
+  @@index([resumeId, status])
+  @@index([sourceUrl])
 }
 
 // فیلدهای دلخواهِ رزومه که مدیر از پنل می‌سازد؛ مقدارشان در ActorResume.customValues می‌نشیند.

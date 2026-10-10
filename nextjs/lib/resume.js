@@ -66,6 +66,7 @@ export function serializeResume(r) {
     updatedAt: r.updatedAt,
     photos: (r.photos || []).map((p) => ({ id: p.id, url: p.url, caption: p.caption, pose: p.pose, look: p.look, approvalStatus: p.approvalStatus, sortOrder: p.sortOrder })),
     videos: (r.videos || []).map((v) => ({ id: v.id, url: v.url, title: v.title, description: v.description, sortOrder: v.sortOrder })),
+    portfolioItems: (r.portfolioItems || []).map((item) => ({ id: item.id, type: item.type, sourceUrl: item.sourceUrl, aparatUrl: item.aparatUrl, title: item.title, description: item.description, status: item.status, sortOrder: item.sortOrder, createdAt: item.createdAt })),
   };
 }
 

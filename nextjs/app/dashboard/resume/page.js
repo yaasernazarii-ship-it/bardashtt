@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getSessionUser } from '@/lib/auth';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import ActorIntroductionForm from '@/components/ActorIntroductionForm';
+import ActorPortfolioForm from '@/components/ActorPortfolioForm';
 
 export const metadata = { title: 'معرفی بازیگر' };
 
@@ -19,6 +20,7 @@ export default async function StudentIntroductionPage() {
           <p className="dash-head__sub">مشخصات و عکس‌های معرفی شما برای مشاهده در بانک بازیگران.</p>
         </div>
         <ActorIntroductionForm />
+        <ActorPortfolioForm />
       </main>
     </div>
   );

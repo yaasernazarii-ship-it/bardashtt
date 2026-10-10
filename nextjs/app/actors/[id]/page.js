@@ -39,6 +39,7 @@ export default async function ActorDetailPage({ params }) {
       photos: { where: { approvalStatus: 'approved' }, orderBy: { sortOrder: 'asc' } },
       user: { select: { photoUrl: true } },
       videos: { orderBy: { sortOrder: 'asc' } },
+      portfolioItems: { where: { status: 'approved' }, orderBy: [{ type: 'asc' }, { sortOrder: 'asc' }] },
     },
   });
   if (!a) notFound();
@@ -109,6 +110,19 @@ export default async function ActorDetailPage({ params }) {
             <div style={{ marginTop: 16 }}>
               <h3 style={{ marginBottom: 10 }}>سوابق و تجربه‌ها</h3>
               <p style={{ whiteSpace: 'pre-line', color: 'var(--text)', lineHeight: 2 }}>{a.experience}</p>
+            </div>
+          )}
+
+          {a.portfolioItems.filter((item) => item.type === 'image').length > 0 && (
+            <div style={{ marginTop: 20 }}>
+              <h3 style={{ marginBottom: 10 }}>عکس‌های نمونه‌کار</h3>
+              <div className="rz-photos">{a.portfolioItems.filter((item) => item.type === 'image').map((item) => <figure className="rz-photo" key={item.id}><img src={item.sourceUrl} alt={item.title || `نمونه‌کار ${a.fullName}`} /><figcaption className="rz-photo__body">{item.title}{item.description && <><br /><span>{item.description}</span></>}</figcaption></figure>)}</div>
+            </div>
+          )}
+          {a.portfolioItems.filter((item) => item.type === 'video' && item.aparatUrl).length > 0 && (
+            <div style={{ marginTop: 20 }}>
+              <h3 style={{ marginBottom: 10 }} className="icon-inline"><Icon name="video" size={18} /> ویدئوهای نمونه‌کار</h3>
+              <div className="actor-videos">{a.portfolioItems.filter((item) => item.type === 'video' && item.aparatUrl).map((item) => <div key={item.id} className="actor-video"><div className="actor-video__frame"><iframe src={embedSrc(item.aparatUrl)} title={item.title || `ویدیوی نمونه‌کار ${a.fullName}`} allowFullScreen loading="lazy" /></div>{item.title && <strong className="actor-video__title">{item.title}</strong>}{item.description && <p className="actor-video__desc">{item.description}</p>}</div>)}</div>
             </div>
           )}
 

@@ -51,6 +51,7 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
   const [photos, setPhotos] = useState([]);
   const [linkedPhoto, setLinkedPhoto] = useState(null);
   const [videos, setVideos] = useState([]);
+  const [portfolioItems, setPortfolioItems] = useState([]);
   const [loading, setLoading] = useState(!!resumeId);
   const [busy, setBusy] = useState(false);
   const [reviewing, setReviewing] = useState('');
@@ -84,6 +85,7 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
       setLinkedPhoto(r.userId ? { url: r.profilePhotoUrl } : null);
       setPhotos(r.photos.map((p) => ({ ...p, key: rowKey() })));
       setVideos(r.videos.map((v) => ({ ...v, key: rowKey() })));
+      setPortfolioItems(r.portfolioItems || []);
       setLoading(false);
     })();
     return () => { alive = false; };
@@ -123,7 +125,38 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
     setReviewing('');
   }
 
-  function move(list, setList, index, delta) {
+  async function reviewPortfolio(item, status) {
+    setReviewing(item.id);
+    setError('');
+    const aparatUrl = item.aparatUrl || '';
+    try {
+      const response = await fetch(`/api/admin/resumes/${resumeId}/portfolio/${item.id}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, aparatUrl, title: item.title, description: item.description }),
+      });
+      const data = await response.json();
+      if (!data.ok) setError(data.error || 'بررسی نمونه‌کار انجام نشد.');
+      else setPortfolioItems((previous) => previous.map((current) => current.id === item.id ? data.item : current));
+    } catch { setError('ارتباط با سرور برقرار نشد.'); }
+    setReviewing('');
+  }
+
+  async function savePortfolioDetails(item) {
+    setReviewing(item.id);
+    setError('');
+    try {
+      const response = await fetch(`/api/admin/resumes/${resumeId}/portfolio/${item.id}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ aparatUrl: item.aparatUrl || '', title: item.title, description: item.description }),
+      });
+      const data = await response.json();
+      if (!data.ok) setError(data.error || 'ذخیرهٔ نمونه‌کار انجام نشد.');
+      else setPortfolioItems((previous) => previous.map((current) => current.id === item.id ? data.item : current));
+    } catch { setError('ارتباط با سرور برقرار نشد.'); }
+    setReviewing('');
+  }
+
+
     const next = [...list];
     const target = index + delta;
     if (target < 0 || target >= next.length) return;
@@ -326,6 +359,18 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
           </div>
         )}
       </section>
+
+      {resumeId && portfolioItems.length > 0 && <section className="rz-card">
+        <div className="rz-card__head"><h3>صف بررسی نمونه‌کار</h3><p>عکس تأییدشده عمومی می‌شود. برای ویدئو ابتدا لینک آپارات را ثبت و سپس انتشار را تأیید کنید.</p></div>
+        <div className="rz-videos">{portfolioItems.map((item) => <div className="rz-video" key={item.id}>
+          <div className="rz-video__head"><strong>{item.type === 'image' ? 'عکس نمونه‌کار' : 'ویدئوی نمونه‌کار'}</strong><span className={`su-tag ${item.status === 'approved' ? 'su-tag--ok' : item.status === 'rejected' ? 'su-tag--muted' : 'su-tag--grad'}`}>{item.status === 'approved' ? 'تأییدشده' : item.status === 'rejected' ? 'ردشده' : 'در انتظار بررسی'}</span></div>
+          {item.type === 'image' ? <img src={item.sourceUrl} alt={item.title || 'نمونه‌کار'} style={{ width: 160, maxHeight: 180, objectFit: 'cover', borderRadius: 8 }} /> : <a className="btn btn--sm btn--outline" href={item.sourceUrl}>دانلود فایل ویدئو</a>}
+          <input className="form-input" placeholder="عنوان نمونه‌کار" value={item.title || ''} onChange={(event) => setPortfolioItems((previous) => previous.map((current) => current.id === item.id ? { ...current, title: event.target.value } : current))} />
+          <textarea className="form-input" rows={2} placeholder="توضیح نمونه‌کار" value={item.description || ''} onChange={(event) => setPortfolioItems((previous) => previous.map((current) => current.id === item.id ? { ...current, description: event.target.value } : current))} />
+          {item.type === 'video' && <input className="form-input" dir="ltr" placeholder="https://www.aparat.com/v/..." value={item.aparatUrl || ''} onChange={(event) => setPortfolioItems((previous) => previous.map((current) => current.id === item.id ? { ...current, aparatUrl: event.target.value } : current))} />}
+          <div className="rz-photo__actions"><button type="button" className="btn btn--sm btn--outline" disabled={!!reviewing} onClick={() => savePortfolioDetails(item)}>ذخیرهٔ اطلاعات</button>{item.status === 'pending' && <><button type="button" className="btn btn--sm btn--dark" disabled={!!reviewing} onClick={() => reviewPortfolio(item, 'approved')}>تأیید انتشار</button><button type="button" className="btn btn--sm btn--danger" disabled={!!reviewing} onClick={() => reviewPortfolio(item, 'rejected')}>رد</button></>}</div>
+        </div>)}</div>
+      </section>}
 
       <section className="rz-card">
         <div className="rz-card__head">

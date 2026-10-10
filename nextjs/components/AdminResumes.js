@@ -90,7 +90,7 @@ export default function AdminResumes({ startNew = false, canReview = false }) {
   const q = query.trim().toLowerCase();
   const filtered = (q
     ? resumes.filter((r) => [r.fullName, r.headline, r.city].some((v) => (v || '').toLowerCase().includes(q)))
-    : resumes).filter((r) => !pendingOnly || r.pendingCount > 0);
+    : resumes).filter((r) => !pendingOnly || r.pendingCount > 0 || r.portfolioPendingCount > 0);
 
   return (
     <div>
@@ -112,7 +112,7 @@ export default function AdminResumes({ startNew = false, canReview = false }) {
           <div className="rz-toolbar">
             <input className="form-input" placeholder="جست‌وجو بر اساس نام، عنوان یا شهر…" value={query}
               onChange={(e) => setQuery(e.target.value)} />
-            <label className="rz-check"><input type="checkbox" checked={pendingOnly} onChange={(e) => setPendingOnly(e.target.checked)} /> فقط عکس‌های در انتظار تأیید ({resumes.reduce((count, resume) => count + resume.pendingCount, 0).toLocaleString('fa-IR')})</label>
+            <label className="rz-check"><input type="checkbox" checked={pendingOnly} onChange={(e) => setPendingOnly(e.target.checked)} /> فقط موارد در انتظار تأیید ({resumes.reduce((count, resume) => count + resume.pendingCount + resume.portfolioPendingCount, 0).toLocaleString('fa-IR')})</label>
             <button type="button" className="btn btn--dark" onClick={() => setEditorFor({ id: null })}>+ رزومهٔ جدید</button>
           </div>
 
@@ -132,13 +132,15 @@ export default function AdminResumes({ startNew = false, canReview = false }) {
                       <span className={`su-tag ${r.isPublic ? 'su-tag--ok' : 'su-tag--muted'}`}>{r.isPublic ? 'در بانک بازیگران' : 'منتشرنشده'}</span>
                       <span className="su-tag su-tag--muted">{r.photoCount.toLocaleString('fa-IR')} عکس</span>
                       {r.pendingCount > 0 && <span className="su-tag su-tag--grad">{r.pendingCount.toLocaleString('fa-IR')} عکس در انتظار تأیید</span>}
+                      {r.portfolioPendingCount > 0 && <span className="su-tag su-tag--grad">{r.portfolioPendingCount.toLocaleString('fa-IR')} نمونه‌کار در انتظار</span>}
+                      {r.portfolioCount > 0 && <span className="su-tag su-tag--muted">{r.portfolioCount.toLocaleString('fa-IR')} نمونه‌کار</span>}
                       <span className="su-tag su-tag--muted">{r.videoCount.toLocaleString('fa-IR')} ویدیو</span>
                       {r.city && <span className="su-tag su-tag--muted">{r.city}</span>}
                     </div>
                     <span className="rz-card-item__date">آخرین ویرایش: {dateFmt.format(new Date(r.updatedAt))}</span>
                   </div>
                   <div className="rz-card-item__actions">
-                    {(!r.userId || canReview) && <button type="button" className="btn btn--sm btn--dark" onClick={() => setEditorFor({ id: r.id })}>{r.pendingCount ? 'بررسی عکس‌ها' : 'ویرایش'}</button>}
+                    {(!r.userId || canReview) && <button type="button" className="btn btn--sm btn--dark" onClick={() => setEditorFor({ id: r.id })}>{r.pendingCount || r.portfolioPendingCount ? 'بررسی موارد' : 'ویرایش'}</button>}
                     <button type="button" className="btn btn--sm btn--outline" disabled={busyId === r.id} onClick={() => togglePublic(r)}>
                       {r.isPublic ? 'خارج‌کردن از بانک' : 'انتشار در بانک'}
                     </button>

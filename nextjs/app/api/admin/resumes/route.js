@@ -22,6 +22,7 @@ export async function GET() {
       userId: true, user: { select: { photoUrl: true } },
       city: true, isPublic: true, updatedAt: true,
       photos: { orderBy: { sortOrder: 'asc' }, select: { url: true, approvalStatus: true } },
+      portfolioItems: { select: { status: true } },
       _count: { select: { videos: true } },
     },
   });
@@ -39,6 +40,8 @@ export async function GET() {
       coverUrl: r.userId ? r.user?.photoUrl || null : r.photos.find((photo) => photo.approvalStatus === 'approved')?.url || null,
       photoCount: r.photos.filter((photo) => photo.approvalStatus !== 'rejected').length,
       pendingCount: ['admin', 'editor'].includes(user.role) && r.userId ? r.photos.filter((photo) => photo.approvalStatus === 'pending').length : 0,
+      portfolioPendingCount: ['admin', 'editor'].includes(user.role) && r.userId ? r.portfolioItems.filter((item) => item.status === 'pending').length : 0,
+      portfolioCount: r.portfolioItems.length,
       videoCount: r._count.videos,
     })),
   });

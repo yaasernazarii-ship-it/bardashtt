@@ -17,6 +17,9 @@ const CONTENT_TYPE = {
   ogg: 'audio/ogg',
   wav: 'audio/wav',
   weba: 'audio/webm',
+  mp4: 'video/mp4',
+  webm: 'video/webm',
+  mov: 'video/quicktime',
 };
 
 export async function GET(request, { params }) {
@@ -30,6 +33,7 @@ export async function GET(request, { params }) {
   if (!type) return new Response('Not found', { status: 404 });
 
   const intro = name.startsWith('intro-');
+  const portfolio = name.startsWith('portfolio-');
   if (intro) {
     const photo = await prisma.resumePhoto.findFirst({
       where: { url: `/media/${name}` },
@@ -43,13 +47,26 @@ export async function GET(request, { params }) {
       }
     }
   }
+  if (portfolio) {
+    const item = await prisma.actorPortfolioItem.findFirst({
+      where: { sourceUrl: `/media/${name}` },
+      select: { type: true, status: true, resume: { select: { userId: true } } },
+    });
+    if (!item) return new Response('Not found', { status: 404 });
+    if (!(item.type === 'image' && item.status === 'approved')) {
+      const user = await getSessionUser();
+      if (!user || (user.id !== item.resume.userId && !['admin', 'editor'].includes(user.role))) {
+        return new Response('Not found', { status: 404 });
+      }
+    }
+  }
 
   try {
     const buf = await readFile(path.join(process.cwd(), 'uploads', name));
     return new Response(buf, {
       headers: {
         'Content-Type': type,
-        'Cache-Control': intro ? 'private, no-store' : 'public, max-age=31536000, immutable',
+        'Cache-Control': intro || portfolio ? 'private, no-store' : 'public, max-age=31536000, immutable',
       },
     });
   } catch {
