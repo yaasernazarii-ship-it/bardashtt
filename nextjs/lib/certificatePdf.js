@@ -199,7 +199,7 @@ function rosette(doc, cx, cy, rx, ry, count) {
 function drawQr(doc, payload, x, y, box) {
   const m = qrMatrix(payload);
   const n = m.length;
-  const quiet = 3; // حاشیهٔ سفیدِ لازم برای خوانده‌شدن کد
+  const quiet = 4; // حاشیهٔ استانداردِ چهار ماژولی برای خوانده‌شدن در اسکنرهای موبایل
   const unit = box / (n + quiet * 2);
 
   doc.rect(x, y, box, box).fillColor('#ffffff').fill();
@@ -364,7 +364,7 @@ export async function buildCertificatePdf(cert) {
   write(doc, `تلفن آموزشگاه: ${SCHOOL_PHONE}`, infoX, infoY, infoW, { size: 10.5, color: MUTED });
 
   // وسط: QR استعلام آنلاین
-  const qrBox = 76;
+  const qrBox = 88;
   drawQr(doc, `${VERIFY_BASE}?code=${cert.serial}`, CX - qrBox / 2, footY - 10, qrBox);
   write(doc, 'استعلام آنلاین اعتبار', CX - 95, footY + qrBox - 3, 190, { size: 9, color: MUTED, align: 'center' });
   write(doc, 'bardashtt.com/verify', CX - 95, footY + qrBox + 10, 190, { size: 9, color: MUTED, align: 'center', raw: true });

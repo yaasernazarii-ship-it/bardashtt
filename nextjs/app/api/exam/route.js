@@ -9,6 +9,7 @@ import {
   pickRandom,
 } from '@/lib/exam';
 import { findPendingPermit, isAttemptOver, permitNotOpenYet, syncCursor } from '@/lib/examRun';
+import { issueCertificate } from '@/lib/certificate';
 
 // آزمون فارغ‌التحصیلی مخصوص هنرجوست؛ مدیر و ادیتور هم برای بازبینی می‌توانند آن را باز کنند.
 // هنرجو بدون مجوزِ صادرشده نمی‌تواند شروع کند، ولی مدیر/ادیتور برای بازبینی مجوز لازم ندارد.
@@ -79,6 +80,24 @@ export async function GET() {
   });
 
   const passedBefore = attempts.some((a) => a.passed);
+  let certificateError = false;
+  let resolvedCertificate = certificate;
+  // قبولی‌های قدیمی که پیش‌تر به‌دلیل ناقص‌بودن پروفایل گواهی نگرفته‌اند، با ورود دوباره
+  // به صفحه بازیابی می‌شوند؛ attemptId یکتا است و از صدور تکراری جلوگیری می‌کند.
+  if (passedBefore && !resolvedCertificate && !isManager(user)) {
+    const passedAttempt = attempts.find((a) => a.passed);
+    try {
+      resolvedCertificate = await issueCertificate(user, {
+        attemptId: passedAttempt.id,
+        percent: passedAttempt.finalPercent,
+        examPercent: passedAttempt.percent,
+        classScore: passedAttempt.classScore,
+      });
+      await prisma.user.update({ where: { id: user.id }, data: { graduated: true } });
+    } catch {
+      certificateError = true;
+    }
+  }
   let open = attempts.find((a) => !a.submittedAt) || null;
 
   // مکان‌نما را با زمان واقعی هماهنگ می‌کنیم؛ سؤال‌هایی که مهلتشان در نبودِ هنرجو گذشته، رد می‌شوند.
@@ -130,8 +149,9 @@ export async function GET() {
     expiredAttemptId: open && over ? open.id : null,
     current,
     history: attempts.filter((a) => a.submittedAt).map(attemptSummary),
-    certificate: certificate
-      ? { serial: certificate.serial, issuedAt: certificate.issuedAt.toISOString(), percent: certificate.percent }
+    certificateError,
+    certificate: resolvedCertificate
+      ? { serial: resolvedCertificate.serial, issuedAt: resolvedCertificate.issuedAt.toISOString(), percent: resolvedCertificate.percent }
       : null,
   });
 }
