@@ -1,10 +1,6 @@
-import { siteUrl } from '@/lib/siteUrl';
-
-// باید per-request باشد تا sitemap/host با دامنهٔ همان درخواست (siteUrl()) هماهنگ بمانند.
 export const dynamic = 'force-dynamic';
 
-export default async function robots() {
-  const base = await siteUrl();
+export default function robots() {
   return {
     rules: [
       {
@@ -18,7 +14,7 @@ export default async function robots() {
         disallow: ['/api/', '/dashboard/', '/profile', '/panel'],
       },
     ],
-    sitemap: `${base}/sitemap.xml`,
-    host: base,
+    sitemap: 'https://www.bardashtt.com/sitemap.xml',
+    host: 'www.bardashtt.com',
   };
 }
