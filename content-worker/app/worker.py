@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime, timezone
 from io import BytesIO
 from pathlib import Path
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import feedparser
 import httpx
@@ -17,6 +17,19 @@ from .config import AUTO_PUBLISH, DATABASE_URL, GAPGPT_API_KEY, GAPGPT_BASE_URL,
 from .prompts import CATEGORIES, blog_prompt, news_prompt
 
 MAX_ARTICLE_CHARS = 18000
+
+
+def is_article_url(source, section, url):
+    parsed = urlparse(url)
+    host = (parsed.hostname or '').lower()
+    path = parsed.path.rstrip('/')
+    if section == 'news':
+        return path.startswith('/news/')
+    if host.endswith('backstage.com'):
+        return path.startswith('/magazine/article/')
+    if host.endswith('studiobinder.com'):
+        return path.startswith('/blog/')
+    return False
 
 
 class ContentWorker:
@@ -41,10 +54,17 @@ class ContentWorker:
             for link in soup.find_all('a', href=True):
                 url = urljoin(str(response.url), link['href'])
                 title = link.get_text(' ', strip=True)
-                if source.permits(url) and url != str(response.url) and len(title) >= 15 and '?' not in url and '#' not in url:
+                if (
+                    source.permits(url)
+                    and is_article_url(source, section, url)
+                    and url != str(response.url)
+                    and len(title) >= 15
+                    and '?' not in url
+                    and '#' not in url
+                ):
                     entries.append((url, title))
         for url, title in entries[:20]:
-            if not source.permits(url):
+            if not source.permits(url) or not is_article_url(source, section, url):
                 continue
             try:
                 self.import_entry(source, section, url, title)
