@@ -202,6 +202,7 @@ export default async function AboutPage() {
               <p className="founder-bio">
                 {t('about.founder.bio3')}
               </p>
+              <p style={{ marginTop: 18 }}><Link href="/yaser-nazari" className="text-link">معرفی و سوابق یاسر نظری</Link></p>
             </div>
           </div>
         </div>
