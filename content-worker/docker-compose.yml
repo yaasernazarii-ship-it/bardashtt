@@ -1,7 +1,9 @@
 services:
   content-worker:
     build: .
-    env_file: .env
+    env_file:
+      - /var/www/bardasht-nextjs/.env
+      - .env
     restart: unless-stopped
     volumes:
       - /var/www/bardasht-nextjs/uploads:/app/site-uploads

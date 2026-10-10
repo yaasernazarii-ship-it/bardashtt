@@ -29,13 +29,25 @@ class ContentWorker:
         self.db.close()
 
     def run_source(self, source, section):
-        feed = feedparser.parse(self.client.get(source.feed_url).content)
-        for entry in feed.entries[:20]:
-            url = entry.get('link', '')
+        response = self.client.get(source.url)
+        response.raise_for_status()
+        if not source.permits(str(response.url)):
+            raise ValueError('نشانی فهرست منبع خارج از دامنهٔ مجاز است.')
+        feed = feedparser.parse(response.content)
+        entries = [(entry.get('link', ''), entry.get('title', '')) for entry in feed.entries]
+        if not entries:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            entries = []
+            for link in soup.find_all('a', href=True):
+                url = urljoin(str(response.url), link['href'])
+                title = link.get_text(' ', strip=True)
+                if source.permits(url) and url != str(response.url) and len(title) >= 15 and '?' not in url and '#' not in url:
+                    entries.append((url, title))
+        for url, title in entries[:20]:
             if not source.permits(url):
                 continue
             try:
-                self.import_entry(source, section, url, entry.get('title', ''))
+                self.import_entry(source, section, url, title)
             except Exception as error:
                 self.record_failure(source.name, section, url, str(error))
 
