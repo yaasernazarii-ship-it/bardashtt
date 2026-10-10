@@ -44,7 +44,7 @@ export default async function BlogPostPage({ params }) {
 
   const embed = aparatEmbedUrl(post.aparatUrl);
   const galleryImages = String(post.images || '').split('\n').map((url) => url.trim()).filter(Boolean);
-  const paragraphs = post.body.split(/\n{2,}/).map((s) => s.trim()).filter(Boolean);
+  const contentBlocks = post.body.split('\n').map((s) => s.trim()).filter(Boolean);
   const site = await siteUrl();
   const url = `${site}/blog/${post.slug}`;
   const image = post.coverImage ? `${site}${post.coverImage}` : `${site}/imgg.png`;
@@ -103,9 +103,11 @@ export default async function BlogPostPage({ params }) {
             {post.audioUrl && (
               <audio src={post.audioUrl} controls preload="none" style={{ width: '100%', margin: '8px 0 20px' }} />
             )}
-            {paragraphs.map((para, i) => (
-              <p key={i} className="post-article__p">{para}</p>
-            ))}
+            {contentBlocks.map((block, i) => {
+              if (block.startsWith('### ')) return <h3 key={i}>{block.slice(4)}</h3>;
+              if (block.startsWith('## ')) return <h2 key={i}>{block.slice(3)}</h2>;
+              return <p key={i} className="post-article__p">{block}</p>;
+            })}
             {Array.isArray(post.faq) && post.faq.length > 0 && (
               <section><h2>پرسش‌های متداول</h2>{post.faq.map((item) => <div key={item.q}><h3>{item.q}</h3><p className="post-article__p">{item.a}</p></div>)}</section>
             )}
