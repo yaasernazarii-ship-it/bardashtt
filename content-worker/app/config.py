@@ -44,14 +44,6 @@ def postgres_connection_url(url: str) -> str:
         for key, value in parse_qsl(parsed.query, keep_blank_values=True)
         if key not in PRISMA_DATABASE_PARAMS
     ]
-    host_override = os.getenv('DATABASE_HOST_OVERRIDE')
-    if host_override:
-        user_info, separator, _ = parsed.netloc.rpartition('@')
-        netloc = f'{user_info}@' if separator else ''
-        netloc += host_override
-        if parsed.port:
-            netloc += f':{parsed.port}'
-        parsed = parsed._replace(netloc=netloc)
     return urlunparse(parsed._replace(query=urlencode(query)))
 
 
