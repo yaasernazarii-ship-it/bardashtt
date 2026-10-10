@@ -270,12 +270,14 @@ export default function ExamRunner() {
             {' — '}تاریخ صدور: {dateFmt.format(new Date(state.certificate.issuedAt))}
           </p>
           <a
-            className="btn btn--gold"
-            href={`/api/certificate/${encodeURIComponent(state.certificate.serial)}`}
-            target="_blank"
-            rel="noopener noreferrer"
+            className="certificate-download"
+            href={`/api/certificate/${encodeURIComponent(state.certificate.serial)}?download=1`}
+            download
           >
-            دریافت فایل گواهی (PDF)
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M5 21h14" />
+            </svg>
+            <span><strong>دانلود گواهی</strong><small>فایل PDF</small></span>
           </a>
         </div>
       )}
