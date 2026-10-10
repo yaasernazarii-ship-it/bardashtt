@@ -155,8 +155,7 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
     } catch { setError('ارتباط با سرور برقرار نشد.'); }
     setReviewing('');
   }
-
-
+  function move(list, setList, index, delta) {
     const next = [...list];
     const target = index + delta;
     if (target < 0 || target >= next.length) return;
