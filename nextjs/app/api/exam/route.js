@@ -66,12 +66,14 @@ export async function GET() {
   }
 
   const now = new Date();
-  const [bankSize, attempts, certificate, pendingPermit] = await Promise.all([
+  const [bankSize, attempts, certificate, pendingPermit, latestPassedAttempt] = await Promise.all([
     prisma.examQuestion.count({ where: { active: true } }),
     prisma.examAttempt.findMany({ where: { userId: user.id }, orderBy: { startedAt: 'desc' }, take: 10 }),
     prisma.certificate.findFirst({ where: { userId: user.id, revoked: false }, orderBy: { issuedAt: 'desc' } }),
     // مجوزِ زمان‌بندی‌شده هم گرفته می‌شود تا هنرجو به‌جای «اجازه ندارید»، زمان باز شدن آزمون را ببیند.
     findPendingPermit(user.id, now),
+    // بازیابی صدور گواهی نباید به ده تلاش اخیر محدود شود؛ ممکن است قبولیِ هنرجو قدیمی‌تر باشد.
+    prisma.examAttempt.findFirst({ where: { userId: user.id, passed: true }, orderBy: { startedAt: 'desc' } }),
   ]);
 
   const permit = pendingPermit || await prisma.examPermit.findFirst({
@@ -79,19 +81,18 @@ export async function GET() {
     orderBy: { expiresAt: 'desc' },
   });
 
-  const passedBefore = attempts.some((a) => a.passed);
+  const passedBefore = !!latestPassedAttempt;
   let certificateError = '';
   let resolvedCertificate = certificate;
   // قبولی‌های قدیمی که پیش‌تر به‌دلیل ناقص‌بودن پروفایل گواهی نگرفته‌اند، با ورود دوباره
   // به صفحه بازیابی می‌شوند؛ attemptId یکتا است و از صدور تکراری جلوگیری می‌کند.
-  if (passedBefore && !resolvedCertificate && !isManager(user)) {
-    const passedAttempt = attempts.find((a) => a.passed);
+  if (latestPassedAttempt && !resolvedCertificate && !isManager(user)) {
     try {
       resolvedCertificate = await issueCertificate(user, {
-        attemptId: passedAttempt.id,
-        percent: passedAttempt.finalPercent,
-        examPercent: passedAttempt.percent,
-        classScore: passedAttempt.classScore,
+        attemptId: latestPassedAttempt.id,
+        percent: latestPassedAttempt.finalPercent,
+        examPercent: latestPassedAttempt.percent,
+        classScore: latestPassedAttempt.classScore,
       });
       await prisma.user.update({ where: { id: user.id }, data: { graduated: true } });
     } catch (err) {
