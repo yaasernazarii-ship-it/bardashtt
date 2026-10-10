@@ -37,6 +37,7 @@ export default function ExamRunner() {
   const [opensIn, setOpensIn] = useState(0);
   const [result, setResult] = useState(null);
   const [confirming, setConfirming] = useState(false);
+  const [downloadingCertificate, setDownloadingCertificate] = useState(false);
   const submittingRef = useRef(false);
   const movingRef = useRef(false);
 
@@ -179,6 +180,34 @@ export default function ExamRunner() {
     }
   }
 
+  async function downloadCertificate() {
+    const serial = state?.certificate?.serial;
+    if (!serial || downloadingCertificate) return;
+    setDownloadingCertificate(true);
+    setError('');
+    try {
+      const res = await fetch(`/api/certificate/${encodeURIComponent(serial)}?download=1`);
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || 'دریافت فایل گواهی ممکن نشد.');
+        return;
+      }
+      const pdf = await res.blob();
+      const url = URL.createObjectURL(pdf);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `certificate-${serial}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      setError('دریافت فایل گواهی ممکن نشد؛ اتصال اینترنت را بررسی کنید.');
+    } finally {
+      setDownloadingCertificate(false);
+    }
+  }
+
   // انتخاب گزینه قطعی است: بعد از ثبت، نه عوض می‌شود و نه برداشته می‌شود.
   async function pick(questionId, index) {
     const current = state?.current;
@@ -269,16 +298,17 @@ export default function ExamRunner() {
             کد استعلام: <strong dir="ltr">{state.certificate.serial}</strong>
             {' — '}تاریخ صدور: {dateFmt.format(new Date(state.certificate.issuedAt))}
           </p>
-          <a
+          <button
             className="certificate-download"
-            href={`/api/certificate/${encodeURIComponent(state.certificate.serial)}?download=1`}
-            download
+            type="button"
+            onClick={downloadCertificate}
+            disabled={downloadingCertificate}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M5 21h14" />
             </svg>
-            <span><strong>دانلود گواهی</strong><small>فایل PDF</small></span>
-          </a>
+            <span><strong>{downloadingCertificate ? 'در حال آماده‌سازی…' : 'دانلود گواهی'}</strong><small>فایل PDF</small></span>
+          </button>
         </div>
       )}
 
