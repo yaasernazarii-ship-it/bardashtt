@@ -2,6 +2,18 @@ import { siteUrl } from './siteUrl';
 
 export { siteUrl };
 
+const MAX_PAGE_TITLE_LENGTH = 40;
+
+export function seoTitle(value, fallback = 'مطلب') {
+  const title = String(value || fallback).trim() || fallback;
+  return title.length > MAX_PAGE_TITLE_LENGTH ? `${title.slice(0, MAX_PAGE_TITLE_LENGTH - 1).trimEnd()}…` : title;
+}
+
+export function seoDescription(post) {
+  const description = String(post.metaDescription || post.excerpt || '').trim();
+  return description || `${post.title}؛ مطلبی آموزشی از آموزشگاه بازیگری خانواده برداشت.`;
+}
+
 // schema.org Article — برای صفحهٔ جزئیات مطلب (وبلاگ/اخبار).
 // image باید از قبل توسط فراخواننده (با siteUrl() همان درخواست) مطلق ساخته شده باشد.
 // site: آدرس پایهٔ همان درخواست (siteUrl()) — فقط برای ساختِ لوگوی سازمان در publisher.

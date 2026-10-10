@@ -4,7 +4,7 @@ import PageLayout from '@/components/PageLayout';
 import { prisma } from '@/lib/prisma';
 import { aparatEmbedUrl } from '@/lib/aparat';
 import { decodeSlug } from '@/lib/slug';
-import { articleJsonLd, breadcrumbJsonLd, faqJsonLd, jsonLdScript } from '@/lib/seo';
+import { articleJsonLd, breadcrumbJsonLd, faqJsonLd, jsonLdScript, seoDescription, seoTitle } from '@/lib/seo';
 import { siteUrl } from '@/lib/siteUrl';
 
 export const dynamic = 'force-dynamic';
@@ -23,21 +23,22 @@ export async function generateMetadata({ params }) {
   const site = await siteUrl();
   const url = `${site}/news/${post.slug}`;
   const image = post.coverImage ? `${site}${post.coverImage}` : `${site}/imgg.png`;
+  const description = seoDescription(post);
   return {
-    title: post.metaTitle || post.title,
-    description: post.metaDescription || post.excerpt || undefined,
+    title: seoTitle(post.metaTitle || post.title),
+    description,
     // برای مطلبِ برداشته‌شده، نسخهٔ اصلی در سایت منبع است.
     alternates: { canonical: post.sourceUrl || url },
     robots: post.sourceUrl ? { index: false, follow: true } : undefined,
     openGraph: {
       type: 'article',
       title: post.title,
-      description: post.metaDescription || post.excerpt || undefined,
+      description,
       url,
       images: [{ url: image }],
       publishedTime: new Date(post.createdAt).toISOString(),
     },
-    twitter: { card: 'summary_large_image', title: post.title, description: post.metaDescription || post.excerpt || undefined },
+    twitter: { card: 'summary_large_image', title: post.title, description },
   };
 }
 

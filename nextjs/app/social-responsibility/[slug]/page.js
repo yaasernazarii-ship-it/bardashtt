@@ -4,7 +4,7 @@ import PageLayout from '@/components/PageLayout';
 import { prisma } from '@/lib/prisma';
 import { aparatEmbedUrl } from '@/lib/aparat';
 import { decodeSlug } from '@/lib/slug';
-import { articleJsonLd, breadcrumbJsonLd, jsonLdScript } from '@/lib/seo';
+import { articleJsonLd, breadcrumbJsonLd, jsonLdScript, seoDescription, seoTitle } from '@/lib/seo';
 import { siteUrl } from '@/lib/siteUrl';
 
 export const dynamic = 'force-dynamic';
@@ -26,21 +26,22 @@ export async function generateMetadata({ params }) {
   const site = await siteUrl();
   const url = `${site}/social-responsibility/${post.slug}`;
   const image = post.coverImage ? `${site}${post.coverImage}` : `${site}/imgg.png`;
+  const description = seoDescription(post);
   return {
-    title: post.title,
-    description: post.excerpt || undefined,
+    title: seoTitle(post.metaTitle || post.title),
+    description,
     // برای مطلبِ برداشته‌شده، نسخهٔ اصلی در سایت منبع است.
     alternates: { canonical: post.sourceUrl || url },
     robots: post.sourceUrl ? { index: false, follow: true } : undefined,
     openGraph: {
       type: 'article',
       title: post.title,
-      description: post.excerpt || undefined,
+      description,
       url,
       images: [{ url: image }],
       publishedTime: new Date(post.publishAt || post.createdAt).toISOString(),
     },
-    twitter: { card: 'summary_large_image', title: post.title, description: post.excerpt || undefined },
+    twitter: { card: 'summary_large_image', title: post.title, description },
   };
 }
 
@@ -92,7 +93,7 @@ export default async function SocialPostPage({ params }) {
           <article className="post-article">
             {post.coverImage && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img className="post-article__cover" src={post.coverImage} alt={post.title} loading="lazy" decoding="async" />
+              <img className="post-article__cover" src={post.coverImage} alt={post.imageAlt || post.title} loading="lazy" decoding="async" />
             )}
             {galleryImages.length > 0 && (
               <div className="post-article__gallery">

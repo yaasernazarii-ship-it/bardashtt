@@ -144,7 +144,7 @@ class ContentWorker:
             raise ValueError('پاسخ مدل JSON معتبر نیست.') from error
 
     def validate_generated(self, item, section):
-        for key, limit in [('title', 200), ('excerpt', 300), ('body', 20000), ('slug', 100), ('meta_title', 60), ('image_alt', 160)]:
+        for key, limit in [('title', 200), ('excerpt', 300), ('body', 20000), ('slug', 100), ('meta_title', 40), ('image_alt', 160)]:
             value = item.get(key)
             if not isinstance(value, str) or not value.strip() or len(value.strip()) > limit:
                 raise ValueError(f'خروجی {key} معتبر نیست.')
