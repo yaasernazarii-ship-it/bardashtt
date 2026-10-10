@@ -76,7 +76,6 @@ export default async function RootLayout({ children }) {
                   mainEntityOfPage: `${base}/khane-bardasht`,
                   logo: `${base}/bardasht-logo.png`,
                   telephone: '+982191090934',
-                  foundingDate: '2018',
                   sameAs: ['https://instagram.com/bardashtt', 'https://ble.ir/bardasht_family'],
                   contactPoint: { '@type': 'ContactPoint', telephone: '+982191090934', contactType: 'customer service', availableLanguage: 'fa' },
                   location: [
