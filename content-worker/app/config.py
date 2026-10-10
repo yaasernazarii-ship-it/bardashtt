@@ -34,9 +34,16 @@ def sources(name: str) -> tuple[Source, ...]:
     return tuple(result)
 
 
+PRISMA_DATABASE_PARAMS = {'schema', 'connection_limit', 'pool_timeout'}
+
+
 def postgres_connection_url(url: str) -> str:
     parsed = urlparse(url)
-    query = [(key, value) for key, value in parse_qsl(parsed.query, keep_blank_values=True) if key != 'schema']
+    query = [
+        (key, value)
+        for key, value in parse_qsl(parsed.query, keep_blank_values=True)
+        if key not in PRISMA_DATABASE_PARAMS
+    ]
     return urlunparse(parsed._replace(query=urlencode(query)))
 
 
