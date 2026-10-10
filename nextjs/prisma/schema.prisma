@@ -495,6 +495,8 @@ model Post {
   section     String    @default("news") // بخش مقصد: news, blog, works-*, gallery, course-video
   category    String? // دستهٔ وبلاگ (فقط وقتی section = blog کاربرد دارد؛ مقادیر مجاز در lib/blogCategories.js)
   excerpt     String? // خلاصهٔ کوتاه برای فهرست
+  metaDescription String? // توضیح اختصاصی موتور جست‌وجو
+  tags        String? // برچسب‌ها، با ویرگول جدا شده
   body        String // متن اصلی (پاراگراف‌ها با خط جدید)
   coverImage  String? // نشانی عکس کاور (آپلودی یا URL)
   images      String? // نشانی عکس‌های داخل مطلب، هر نشانی در یک خط
@@ -509,6 +511,23 @@ model Post {
 
   @@index([published, createdAt])
   @@index([section, published, publishAt])
+}
+
+// رهگیری ورودی‌های Worker مستقل برای جلوگیری از ثبت تکراری و امکان بررسی خطا.
+model ContentAutomationItem {
+  id         String   @id
+  sourceHash String   @unique
+  sourceName String
+  sourceUrl  String
+  section    String
+  status     String   // processing | draft | published | failed
+  postId     String?
+  error      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([section, status])
+  @@index([postId])
 }
 
 // اعلان داخلیِ سایت. userId خالی یعنی «همگانی» (برای همهٔ کاربران واردشده)؛
