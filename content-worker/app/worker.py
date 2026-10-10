@@ -13,8 +13,8 @@ import psycopg
 from bs4 import BeautifulSoup
 from PIL import Image
 
-from .config import AUTO_PUBLISH, CATEGORIES, DATABASE_URL, GAPGPT_API_KEY, GAPGPT_BASE_URL, GAPGPT_MODEL, UPLOADS_DIR
-from .prompts import blog_prompt, news_prompt
+from .config import AUTO_PUBLISH, DATABASE_URL, GAPGPT_API_KEY, GAPGPT_BASE_URL, GAPGPT_MODEL, UPLOADS_DIR
+from .prompts import CATEGORIES, blog_prompt, news_prompt
 
 MAX_ARTICLE_CHARS = 18000
 
