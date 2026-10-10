@@ -5,5 +5,9 @@ services:
       - /var/www/bardasht-nextjs/.env
       - .env
     restart: unless-stopped
+    environment:
+      DATABASE_HOST_OVERRIDE: host.docker.internal
+    extra_hosts:
+      - host.docker.internal:host-gateway
     volumes:
       - /var/www/bardasht-nextjs/uploads:/app/site-uploads
