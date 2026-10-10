@@ -16,7 +16,10 @@ def run_pipeline(section, sources):
     worker = ContentWorker()
     try:
         for source in sources:
-            worker.run_source(source, section)
+            try:
+                worker.run_source(source, section)
+            except Exception:
+                logging.exception('پردازش منبع %s در جریان %s ناموفق بود.', source.name, section)
     finally:
         worker.close()
 
