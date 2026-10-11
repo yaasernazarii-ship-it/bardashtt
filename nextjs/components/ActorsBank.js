@@ -178,7 +178,7 @@ export default function ActorsBank({ actors, canShortlist = false, shortlistIds 
           )}
           {skills.length > 0 && (
             <select className="form-input" style={{ width: 'auto', minWidth: 130 }} value={skill} onChange={(e) => setSkill(e.target.value)}>
-              <option value="">همهٔ مهارت‌ها</option>
+              <option value="">همهٔ توانمندی‌ها</option>
               {skills.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           )}

@@ -422,12 +422,12 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
 
       <section className="rz-card">
         <div className="rz-card__head">
-          <h3>معرفی، مهارت و سوابق</h3>
+          <h3>معرفی، مهارت‌ها و شرایط همکاری</h3>
         </div>
         <div className="rz-grid">
           <div className="form-group rz-grid__full">
-            <label className="form-label">مهارت‌ها (با ویرگول جدا کنید)</label>
-            <input className="form-input" value={form.skills} onChange={(e) => set('skills', e.target.value)} placeholder="رقص، اسب‌سواری، گویندگی" />
+            <label className="form-label">مهارت‌ها و شرایط همکاری (با ویرگول جدا کنید)</label>
+            <input className="form-input" value={form.skills} onChange={(e) => set('skills', e.target.value)} placeholder="کار در شرایط سخت آب‌وهوایی، امکان سفر به شهرهای دیگر، سوارکاری" />
           </div>
           <div className="form-group rz-grid__full">
             <label className="form-label">معرفی کوتاه</label>

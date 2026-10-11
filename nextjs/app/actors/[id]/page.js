@@ -100,7 +100,7 @@ export default async function ActorDetailPage({ params }) {
 
           {skills.length > 0 && (
             <div style={{ marginTop: 16 }}>
-              <h3 style={{ marginBottom: 10 }}>مهارت‌ها</h3>
+              <h3 style={{ marginBottom: 10 }}>مهارت‌ها و شرایط همکاری</h3>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {skills.map((s) => <span key={s} className="tag tag--gold">{s}</span>)}
               </div>
