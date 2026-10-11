@@ -39,7 +39,7 @@ export default function ActorIntroductionForm() {
       const response = await fetch('/api/my/actor-introduction', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
       const data = await response.json();
       if (!data.ok) setNotice(data.error);
-      else { setSaved(true); setSavedGender(form.gender); setNotice('مشخصات معرفی ذخیره شد.'); }
+      else { setSaved(true); setSavedGender(form.gender); window.dispatchEvent(new Event('actor-introduction-updated')); setNotice('مشخصات معرفی ذخیره شد.'); }
     } catch { setNotice('ذخیرهٔ مشخصات ممکن نشد.'); }
     setBusy(false);
   }
@@ -58,26 +58,26 @@ export default function ActorIntroductionForm() {
       } catch { setNotice('بارگذاری عکس ممکن نشد.'); break; }
     }
     setBusy(false);
-    if (files.length) setNotice((previous) => previous || 'عکس‌ها ثبت شدند و پس از تأیید مدیر یا ادیتور نمایش عمومی خواهند داشت.');
+    if (files.length) { window.dispatchEvent(new Event('actor-introduction-updated')); setNotice((previous) => previous || 'عکس‌ها ثبت شدند و پس از تأیید مدیر یا ادیتور نمایش عمومی خواهند داشت.'); }
   }
 
   return (
     <div className="rz-editor">
       <section className="rz-card">
-        <div className="rz-card__head"><h2>معرفی بازیگر</h2><p>این اطلاعات از پروفایل حساب شما مستقل است. عکس اصلی فقط از عکس حساب کاربری گرفته می‌شود.</p></div>
+        <div className="rz-card__head"><h2>معرفی بازیگر</h2><p>برای ارسال نمونه‌کار، مشخصات اصلی و عکس حساب کاربری را کامل کنید. این اطلاعات از پروفایل حساب شما مستقل است.</p></div>
         <div className="rz-actions">
           {profilePhoto ? <img src={profilePhoto} alt="عکس اصلی حساب کاربری" width="90" height="120" style={{ objectFit: 'cover', borderRadius: 8 }} /> : <p>هنوز عکس حساب کاربری ندارید؛ از بخش پروفایل عکس بگذارید.</p>}
         </div>
         <form onSubmit={save} className="rz-grid">
           {[['firstName', 'نام', 'text'], ['lastName', 'نام خانوادگی', 'text'], ['age', 'سن', 'number'], ['heightCm', 'قد (سانتی‌متر)', 'number'], ['weightKg', 'وزن (کیلوگرم)', 'number'], ['city', 'شهر', 'text']].map(([key, label, type]) => (
-            <label className="form-group" key={key}><span className="form-label">{label}</span><input className="form-input" type={type} value={form[key]} required={key === 'firstName' || key === 'lastName'} onChange={(event) => set(key, event.target.value)} /></label>
+            <label className="form-group" key={key}><span className="form-label">{label} *</span><input className="form-input" type={type} value={form[key]} required onChange={(event) => set(key, event.target.value)} /></label>
           ))}
-          <label className="form-group"><span className="form-label">جنسیت</span><select className="form-input" value={form.gender} required disabled={photos.length > 0} onChange={(event) => { set('gender', event.target.value); setLook(''); }}><option value="">انتخاب کنید</option><option value="male">آقا</option><option value="female">خانم</option></select></label>
+          <label className="form-group"><span className="form-label">جنسیت *</span><select className="form-input" value={form.gender} required disabled={photos.length > 0} onChange={(event) => { set('gender', event.target.value); setLook(''); }}><option value="">انتخاب کنید</option><option value="male">آقا</option><option value="female">خانم</option></select></label>
           {fields.map((field) => <label className="form-group" key={field.id}><span className="form-label">{field.label}</span>{field.type === 'select' ? <select className="form-input" value={form.customValues[field.key] ?? ''} required={field.required} onChange={(event) => set('customValues', { ...form.customValues, [field.key]: event.target.value })}><option value="">انتخاب کنید</option>{parseFieldOptions(field.options).map((option) => <option key={option}>{option}</option>)}</select> : field.type === 'textarea' ? <textarea className="form-input" value={form.customValues[field.key] ?? ''} required={field.required} onChange={(event) => set('customValues', { ...form.customValues, [field.key]: event.target.value })} /> : field.type === 'boolean' ? <input type="checkbox" checked={form.customValues[field.key] === true} onChange={(event) => set('customValues', { ...form.customValues, [field.key]: event.target.checked })} /> : <input className="form-input" type={field.type === 'number' ? 'number' : 'text'} value={form.customValues[field.key] ?? ''} required={field.required} onChange={(event) => set('customValues', { ...form.customValues, [field.key]: event.target.value })} />}</label>)}
           <div className="rz-grid__full"><button className="btn btn--dark" disabled={busy}>{busy ? 'در حال ذخیره…' : 'ذخیرهٔ مشخصات'}</button></div>
         </form>
       </section>
-      <section className="rz-card"><div className="rz-card__head"><h2>آرشیو عکس‌های معرفی</h2><p>حداکثر ۱۵ عکس جدا از عکس اصلی. عکس‌های جدید پس از تأیید مدیر یا ادیتور در بانک بازیگران نمایش داده می‌شوند؛ تغییر عکس ثبت‌شده فقط در اختیار مدیریت است.</p></div>
+      <section className="rz-card"><div className="rz-card__head"><h2>آرشیو عکس‌های معرفی</h2><p>برای ارسال نمونه‌کار، عکس‌های تمام‌رخ، نیم‌رخ و سه‌رخ لازم‌اند. حداکثر ۱۵ عکس جدا از عکس اصلی می‌توانید ثبت کنید؛ عکس‌های جدید پس از تأیید مدیر یا ادیتور در بانک بازیگران نمایش داده می‌شوند.</p></div>
         <p>{activePhotoCount.toLocaleString('fa-IR')} از ۱۵ عکس تأییدشده یا در انتظار بررسی؛ {photos.filter((photo) => photo.approvalStatus === 'pending').length.toLocaleString('fa-IR')} عکس در انتظار تأیید</p>
         <div className="rz-actions">
           <label className="form-group"><span className="form-label">حالت چهره</span><select className="form-input" value={look} onChange={(event) => setLook(event.target.value)}><option value="">انتخاب کنید</option>{(LOOKS[form.gender] || []).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
