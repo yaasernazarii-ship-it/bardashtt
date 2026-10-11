@@ -204,9 +204,18 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
         <button type="submit" className="btn btn--sm btn--dark" disabled={busy}>{busy ? 'در حال ذخیره…' : 'ذخیره رزومه'}</button>
       </div>
 
+      <nav className="rz-editor__nav" aria-label="بخش‌های رزومه">
+        <a href="#resume-personal">اطلاعات فردی</a>
+        {activeFields.length > 0 && <a href="#resume-fields">فیلدهای اختصاصی</a>}
+        <a href="#resume-photos">عکس‌ها</a>
+        {resumeId && portfolioItems.length > 0 && <a href="#resume-portfolio">نمونه‌کارها</a>}
+        <a href="#resume-videos">ویدیوها</a>
+        <a href="#resume-intro">معرفی و شرایط همکاری</a>
+      </nav>
+
       {error && <div className="alert alert--error">{error}</div>}
 
-      <section className="rz-card">
+      <section id="resume-personal" className="rz-card">
         <div className="rz-card__head">
           <h3>اطلاعات فردی</h3>
           <p>{linkedPhoto ? 'این معرفی به حساب هنرجو متصل است؛ عکس اصلی از پروفایل حساب می‌آید.' : 'این رزومهٔ مستقل به حساب کاربری وصل نیست.'}</p>
@@ -261,7 +270,7 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
       </section>
 
       {activeFields.length > 0 && (
-        <section className="rz-card">
+        <section id="resume-fields" className="rz-card">
           <div className="rz-card__head">
             <h3>فیلدهای اختصاصی</h3>
             <p>فیلدهایی که خودتان در بخش «فیلدهای رزومه» ساخته‌اید.</p>
@@ -301,7 +310,7 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
         </section>
       )}
 
-      <section className="rz-card">
+      <section id="resume-photos" className="rz-card">
         <div className="rz-card__head">
           <h3>عکس‌ها</h3>
           <p>{linkedPhoto ? 'عکس اصلی از حساب کاربری هنرجو گرفته می‌شود و جزو سقف ۱۵ عکس معرفی نیست. عکس‌های معرفی را می‌توانید تغییر دهید.' : 'عکس اول، عکس اصلی رزومه است. می‌توانید فایل بارگذاری کنید یا نشانی عکس را ثبت کنید.'}</p>
@@ -362,7 +371,7 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
         )}
       </section>
 
-      {resumeId && portfolioItems.length > 0 && <section className="rz-card">
+      {resumeId && portfolioItems.length > 0 && <section id="resume-portfolio" className="rz-card">
         <div className="rz-card__head"><h3>صف بررسی نمونه‌کار</h3><p>عکس تأییدشده عمومی می‌شود. برای ویدئو ابتدا لینک آپارات را ثبت و سپس انتشار را تأیید کنید.</p></div>
         <div className="rz-videos">{portfolioItems.map((item) => <div className="rz-video" key={item.id}>
           <div className="rz-video__head"><strong>{item.type === 'certificate' ? 'گواهی‌نامهٔ فارغ‌التحصیلی' : item.type === 'image' ? 'عکس نمونه‌کار' : 'ویدئوی نمونه‌کار'}</strong><span className={`su-tag ${item.status === 'approved' ? 'su-tag--ok' : item.status === 'rejected' ? 'su-tag--muted' : 'su-tag--grad'}`}>{item.status === 'approved' ? 'تأییدشده' : item.status === 'rejected' ? 'ردشده' : 'در انتظار بررسی'}</span></div>
@@ -374,7 +383,7 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
         </div>)}</div>
       </section>}
 
-      <section className="rz-card">
+      <section id="resume-videos" className="rz-card">
         <div className="rz-card__head">
           <h3>ویدیوهای رزومه</h3>
           <p>لینک آپارات یا ویو را بچسبانید، یا ویدیوی کوتاه را مستقیم بارگذاری کنید (تا ۶۰ مگابایت). برای هر ویدیو می‌توانید عنوان و توضیح بنویسید.</p>
@@ -420,7 +429,7 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
         )}
       </section>
 
-      <section className="rz-card">
+      <section id="resume-intro" className="rz-card">
         <div className="rz-card__head">
           <h3>معرفی، مهارت‌ها و شرایط همکاری</h3>
         </div>
