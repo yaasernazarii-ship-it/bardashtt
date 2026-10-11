@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
-import { getSessionUser, isManager } from '@/lib/auth';
+import { getSessionUser } from '@/lib/auth';
+import { canUsePermission } from '@/lib/staffPermissions';
 import { logAction } from '@/lib/audit';
 import { parseResumeBody, serializeResume } from '@/lib/resume';
 
@@ -7,7 +8,7 @@ import { parseResumeBody, serializeResume } from '@/lib/resume';
 async function requireManager() {
   const user = await getSessionUser();
   if (!user) return { error: Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 }) };
-  if (!isManager(user)) return { error: Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 }) };
+  if (!canUsePermission(user, 'resumes')) return { error: Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 }) };
   return { user };
 }
 

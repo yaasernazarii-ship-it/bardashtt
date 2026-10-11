@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
-import { getSessionUser, isManager } from '@/lib/auth';
+import { getSessionUser } from '@/lib/auth';
+import { canUsePermission, isFullManager } from '@/lib/staffPermissions';
 import { logAction } from '@/lib/audit';
 import { removeLocalUploads } from '@/lib/uploadCleanup';
 import { parseResumeBody, serializeResume, resumeLocalUrls, INTRO_PHOTO_LIMIT, INTRO_LOOKS, INTRO_POSES } from '@/lib/resume';
@@ -14,7 +15,7 @@ const WITH_MEDIA = {
 async function requireManager() {
   const user = await getSessionUser();
   if (!user) return { error: Response.json({ ok: false, error: 'ابتدا وارد شوید.' }, { status: 401 }) };
-  if (!isManager(user)) return { error: Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 }) };
+  if (!canUsePermission(user, 'resumes')) return { error: Response.json({ ok: false, error: 'دسترسی لازم را ندارید.' }, { status: 403 }) };
   return { user };
 }
 
@@ -43,8 +44,9 @@ export async function PATCH(request, { params }) {
 
   // انتشار/عدم انتشار از فهرست، بدون فرستادن دوبارهٔ کل فرم
   if (body.setPublic !== undefined) {
-    const target = await prisma.actorResume.findUnique({ where: { id }, select: { id: true } });
+    const target = await prisma.actorResume.findUnique({ where: { id }, select: { id: true, userId: true } });
     if (!target) return Response.json({ ok: false, error: 'رزومه یافت نشد.' }, { status: 404 });
+    if (target.userId && !isFullManager(user)) return Response.json({ ok: false, error: 'انتشار معرفی هنرجو فقط با تأیید مدیر یا ادیتور مجاز است.' }, { status: 403 });
     const updated = await prisma.actorResume.update({
       where: { id },
       data: { isPublic: !!body.setPublic },

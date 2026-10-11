@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getSessionUser, isManager } from '@/lib/auth';
+import { canUsePermission } from '@/lib/staffPermissions';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import AdminResumes from '@/components/AdminResumes';
 
@@ -7,8 +8,7 @@ export const metadata = { title: 'بانک رزومه' };
 
 export default async function AdminResumesPage({ searchParams }) {
   const user = await getSessionUser();
-  if (!user) redirect('/auth?next=/dashboard/admin/resumes');
-  if (!isManager(user)) redirect('/dashboard');
+  if (!user || !canUsePermission(user, 'resumes')) redirect('/dashboard');
   const query = await searchParams;
   const startNew = query?.new === '1';
 

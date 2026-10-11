@@ -142,9 +142,9 @@ export default function AdminResumes({ startNew = false, canReview = false }) {
                   </div>
                   <div className="rz-card-item__actions">
                     {(!r.userId || canReview) && <button type="button" className="btn btn--sm btn--dark" onClick={() => setEditorFor({ id: r.id })}>{r.pendingCount || r.portfolioPendingCount ? 'بررسی موارد' : 'ویرایش'}</button>}
-                    <button type="button" className="btn btn--sm btn--outline" disabled={busyId === r.id} onClick={() => togglePublic(r)}>
+                    {(!r.userId || canReview) && <button type="button" className="btn btn--sm btn--outline" disabled={busyId === r.id} onClick={() => togglePublic(r)}>
                       {r.isPublic ? 'خارج‌کردن از بانک' : 'انتشار در بانک'}
-                    </button>
+                    </button>}
                     {(!r.userId || canReview) && <button type="button" className="btn btn--sm btn--danger" disabled={busyId === r.id} onClick={() => remove(r)}>حذف</button>}
                   </div>
                 </article>
