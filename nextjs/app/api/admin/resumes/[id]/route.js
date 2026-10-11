@@ -5,7 +5,7 @@ import { removeLocalUploads } from '@/lib/uploadCleanup';
 import { parseResumeBody, serializeResume, resumeLocalUrls, INTRO_PHOTO_LIMIT, INTRO_LOOKS, INTRO_POSES } from '@/lib/resume';
 
 const WITH_MEDIA = {
-  user: { select: { photoUrl: true } },
+  user: { select: { id: true, displayName: true, phone: true, photoUrl: true } },
   photos: { orderBy: { sortOrder: 'asc' } },
   videos: { orderBy: { sortOrder: 'asc' } },
   portfolioItems: { orderBy: [{ type: 'asc' }, { sortOrder: 'asc' }] },

@@ -44,8 +44,8 @@ export async function PUT(request) {
     if (existing?._count.photos && existing.gender !== body.gender) return { error: 'برای تغییر جنسیت پس از ثبت عکس، با مدیریت تماس بگیرید.' };
     const resume = await tx.actorResume.upsert({
       where: { userId: user.id },
-      update: data,
-      create: { userId: user.id, ...data, isPublic: true },
+      update: { ...data, isPublic: false },
+      create: { userId: user.id, ...data, isPublic: false },
     });
     return { resume };
   });

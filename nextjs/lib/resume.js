@@ -44,6 +44,7 @@ export function serializeResume(r) {
   return {
     id: r.id,
     userId: r.userId,
+    submittedBy: r.user ? { id: r.user.id, name: r.user.displayName || r.user.phone, phone: r.user.phone } : null,
     profilePhotoUrl: r.user?.photoUrl || null,
     firstName: r.firstName,
     lastName: r.lastName,

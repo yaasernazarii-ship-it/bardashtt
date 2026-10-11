@@ -128,6 +128,7 @@ export default function AdminResumes({ startNew = false, canReview = false }) {
                   <div className="rz-card-item__body">
                     <strong>{r.fullName}</strong>
                     {r.headline && <small>{r.headline}</small>}
+                    {r.submittedBy && <small>ثبت‌کننده: {r.submittedBy.name}</small>}
                     <div className="su-tags rz-card-item__tags">
                       <span className={`su-tag ${r.isPublic ? 'su-tag--ok' : 'su-tag--muted'}`}>{r.isPublic ? 'در بانک بازیگران' : 'منتشرنشده'}</span>
                       <span className="su-tag su-tag--muted">{r.photoCount.toLocaleString('fa-IR')} عکس</span>

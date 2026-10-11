@@ -19,7 +19,7 @@ export async function GET() {
     orderBy: { updatedAt: 'desc' },
     select: {
       id: true, fullName: true, headline: true,
-      userId: true, user: { select: { photoUrl: true } },
+      userId: true, user: { select: { displayName: true, phone: true, photoUrl: true } },
       city: true, isPublic: true, updatedAt: true,
       photos: { orderBy: { sortOrder: 'asc' }, select: { url: true, approvalStatus: true } },
       portfolioItems: { select: { status: true } },
@@ -32,6 +32,7 @@ export async function GET() {
     resumes: resumes.map((r) => ({
       id: r.id,
       userId: r.userId,
+      submittedBy: r.user ? { id: r.userId, name: r.user.displayName || r.user.phone, phone: r.user.phone } : null,
       fullName: r.fullName,
       headline: r.headline,
       city: r.city,

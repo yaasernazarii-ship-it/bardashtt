@@ -82,7 +82,7 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
         showreelUrl: r.showreelUrl || '', isPublic: !!r.isPublic,
       });
       setCustom(r.customValues || {});
-      setLinkedPhoto(r.userId ? { url: r.profilePhotoUrl } : null);
+      setLinkedPhoto(r.userId ? { url: r.profilePhotoUrl, submittedBy: r.submittedBy } : null);
       setPhotos(r.photos.map((p) => ({ ...p, key: rowKey() })));
       setVideos(r.videos.map((v) => ({ ...v, key: rowKey() })));
       setPortfolioItems(r.portfolioItems || []);
@@ -210,6 +210,7 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
         <div className="rz-card__head">
           <h3>اطلاعات فردی</h3>
           <p>{linkedPhoto ? 'این معرفی به حساب هنرجو متصل است؛ عکس اصلی از پروفایل حساب می‌آید.' : 'این رزومهٔ مستقل به حساب کاربری وصل نیست.'}</p>
+          {linkedPhoto?.submittedBy && <p>ثبت‌کننده: <strong>{linkedPhoto.submittedBy.name}</strong>{linkedPhoto.submittedBy.phone && ` — ${linkedPhoto.submittedBy.phone}`}</p>}
         </div>
         <div className="rz-grid">
           <div className="form-group">
@@ -306,7 +307,7 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
           <p>{linkedPhoto ? 'عکس اصلی از حساب کاربری هنرجو گرفته می‌شود و جزو سقف ۱۵ عکس معرفی نیست. عکس‌های معرفی را می‌توانید تغییر دهید.' : 'عکس اول، عکس اصلی رزومه است. می‌توانید فایل بارگذاری کنید یا نشانی عکس را ثبت کنید.'}</p>
         </div>
 
-        {linkedPhoto?.url && <div className="rz-photos"><div className="rz-photo"><img src={linkedPhoto.url} alt="عکس حساب کاربری هنرجو" /><div className="rz-photo__body">عکس اصلی حساب کاربری</div></div></div>}
+        {linkedPhoto?.url && <div className="rz-photos"><div className="rz-photo"><a href={linkedPhoto.url} target="_blank" rel="noopener noreferrer" title="بازکردن تصویر بزرگ"><img src={linkedPhoto.url} alt="عکس حساب کاربری هنرجو" /></a><div className="rz-photo__body">عکس اصلی حساب کاربری — برای مشاهدهٔ بزرگ کلیک کنید</div></div></div>}
         {linkedPhoto && <p>{photos.filter((photo) => photo.approvalStatus !== 'rejected').length.toLocaleString('fa-IR')} از ۱۵ عکس معرفی (تأییدشده یا در انتظار بررسی)</p>}
         <div className="rz-actions">
           <input ref={photoInput} type="file" accept="image/*" multiple hidden
@@ -328,8 +329,10 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
           <div className="rz-photos">
             {photos.map((p, i) => (
               <div key={p.key} className="rz-photo">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.url} alt="" />
+                <a href={p.url} target="_blank" rel="noopener noreferrer" title="بازکردن تصویر بزرگ">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.url} alt="" />
+                </a>
                 <div className="rz-photo__body">
                   {!linkedPhoto && i === 0 && <span className="su-tag su-tag--grad">عکس اصلی</span>}
                   {linkedPhoto && p.id && <div className="rz-photo__actions">
@@ -363,7 +366,7 @@ export default function AdminResumeEditor({ resumeId, fields, onClose, onSaved, 
         <div className="rz-card__head"><h3>صف بررسی نمونه‌کار</h3><p>عکس تأییدشده عمومی می‌شود. برای ویدئو ابتدا لینک آپارات را ثبت و سپس انتشار را تأیید کنید.</p></div>
         <div className="rz-videos">{portfolioItems.map((item) => <div className="rz-video" key={item.id}>
           <div className="rz-video__head"><strong>{item.type === 'image' ? 'عکس نمونه‌کار' : 'ویدئوی نمونه‌کار'}</strong><span className={`su-tag ${item.status === 'approved' ? 'su-tag--ok' : item.status === 'rejected' ? 'su-tag--muted' : 'su-tag--grad'}`}>{item.status === 'approved' ? 'تأییدشده' : item.status === 'rejected' ? 'ردشده' : 'در انتظار بررسی'}</span></div>
-          {item.type === 'image' ? <img src={item.sourceUrl} alt={item.title || 'نمونه‌کار'} style={{ width: 160, maxHeight: 180, objectFit: 'cover', borderRadius: 8 }} /> : <a className="btn btn--sm btn--outline" href={item.sourceUrl}>دانلود فایل ویدئو</a>}
+          {item.type === 'image' ? <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" title="بازکردن تصویر بزرگ"><img src={item.sourceUrl} alt={item.title || 'نمونه‌کار'} style={{ width: 160, maxHeight: 180, objectFit: 'cover', borderRadius: 8 }} /></a> : <a className="btn btn--sm btn--outline" href={item.sourceUrl}>دانلود فایل ویدئو</a>}
           <input className="form-input" placeholder="عنوان نمونه‌کار" value={item.title || ''} onChange={(event) => setPortfolioItems((previous) => previous.map((current) => current.id === item.id ? { ...current, title: event.target.value } : current))} />
           <textarea className="form-input" rows={2} placeholder="توضیح نمونه‌کار" value={item.description || ''} onChange={(event) => setPortfolioItems((previous) => previous.map((current) => current.id === item.id ? { ...current, description: event.target.value } : current))} />
           {item.type === 'video' && <input className="form-input" dir="ltr" placeholder="https://www.aparat.com/v/..." value={item.aparatUrl || ''} onChange={(event) => setPortfolioItems((previous) => previous.map((current) => current.id === item.id ? { ...current, aparatUrl: event.target.value } : current))} />}
