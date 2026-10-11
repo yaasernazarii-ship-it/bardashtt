@@ -2084,20 +2084,56 @@ summary:focus-visible {
 }
 
 /* کارت کتابِ فروشی در صفحهٔ مسئولیت اجتماعی */
-.book-card__head { display: flex; gap: 18px; align-items: flex-start; }
+.book-list { display: grid; gap: 20px; }
+.book-card { display: grid; gap: 20px; }
+.book-card__head { display: flex; gap: 20px; align-items: flex-start; }
 .book-card__cover {
-  flex: none; width: 130px; height: 190px; object-fit: cover;
-  border-radius: 10px; border: 1px solid var(--border);
+  flex: none; width: 136px; height: 198px; object-fit: cover;
+  border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 10px 24px rgba(0,0,0,.1);
 }
 .book-card__info { flex: 1 1 auto; min-width: 0; }
+.book-card__eyebrow { display: block; margin-bottom: 7px; color: #8a6800; font-size: .78rem; font-weight: 800; }
+.book-card__info .subheading { margin-bottom: 5px; }
+.book-card__author { color: var(--muted); margin-bottom: 12px; }
+.book-card__summary { max-width: 720px; color: var(--text); line-height: 2; margin-bottom: 14px; }
 .book-card__price {
-  display: inline-block; font-weight: 700; color: var(--dark);
+  display: inline-block; font-weight: 800; color: var(--dark);
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: 100px; padding: 6px 16px; margin: 4px 0;
+  border-radius: 100px; padding: 7px 16px;
 }
+.book-card__details { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.book-card__details summary {
+  cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between;
+  padding: 15px 2px; color: var(--dark); font-weight: 800;
+}
+.book-card__details summary::-webkit-details-marker { display: none; }
+.book-card__details summary::after { content: '⌄'; font-size: 1.3rem; transition: transform .2s ease; }
+.book-card__details[open] summary::after { transform: rotate(180deg); }
+.book-card__details-body { padding: 2px 2px 18px; }
+.book-card__details-body .post-article__p { margin: 0 0 14px; }
+.book-card__buy {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding: 16px 18px; background: var(--surface); border-radius: 16px;
+}
+.book-card__buy strong, .book-card__buy span { display: block; }
+.book-card__buy span { color: var(--muted); font-size: .84rem; margin-top: 3px; }
+.book-order { margin-top: 2px; }
+.book-order__head { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; margin-bottom: 22px; }
+.book-order__head .subheading { margin-bottom: 5px; }
+.book-order__head p, .book-order__notice { color: var(--muted); font-size: .86rem; line-height: 1.9; margin: 0; }
+.book-order__close { border: 0; background: transparent; color: var(--muted); font: inherit; cursor: pointer; padding: 6px 0; }
+.book-order__close:hover { color: var(--dark); }
+.book-order .alert { margin: 0 0 14px; }
+.book-order__footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 2px; }
+.book-order__footer p { color: var(--muted); font-size: .82rem; line-height: 1.8; margin: 0; }
+.book-order__notice { margin-top: 12px; }
+.book-order__success { margin: 2px 0 0; }
 @media (max-width: 560px) {
   .book-card__head { flex-direction: column; align-items: center; text-align: center; }
-  .book-card__cover { width: 110px; height: 160px; }
+  .book-card__cover { width: 120px; height: 175px; }
+  .book-card__buy, .book-order__head, .book-order__footer { align-items: stretch; flex-direction: column; }
+  .book-card__buy .btn, .book-order__footer .btn { width: 100%; }
+  .book-order__close { align-self: flex-start; }
 }
 
 /* پخش‌کننده‌های رسانه‌ای داخل کارت کتاب (ویدیو/صوتِ تلفیقی) */
