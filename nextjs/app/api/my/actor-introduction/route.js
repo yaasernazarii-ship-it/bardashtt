@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { getSessionUser } from '@/lib/auth';
 import { normalizeCustomValues } from '@/lib/resumeFields';
+import { syncCertificatePortfolio } from '@/lib/certificatePortfolio';
 
 const number = (raw, min, max) => {
   if (raw === '' || raw === null || raw === undefined) return null;
@@ -52,5 +53,6 @@ export async function PUT(request) {
     return { resume };
   });
   if (result.error) return Response.json({ ok: false, error: result.error }, { status: 400 });
+  await syncCertificatePortfolio(user.id).catch(() => {});
   return Response.json({ ok: true, resume: result.resume });
 }

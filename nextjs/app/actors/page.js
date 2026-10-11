@@ -25,6 +25,7 @@ export default async function ActorsPage() {
         gender: true, birthYear: true, age: true, heightCm: true, skills: true,
         experience: true, showreelUrl: true,
         photos: { where: { approvalStatus: 'approved' }, orderBy: { sortOrder: 'asc' }, take: 1, select: { url: true } },
+        portfolioItems: { where: { type: 'certificate', status: 'approved' }, select: { id: true } },
         _count: { select: { videos: true } },
       },
     }),
@@ -33,9 +34,10 @@ export default async function ActorsPage() {
   ]);
 
   // کارت بازیگر فقط به عکس اصلی و «داشتنِ ویدیو» نیاز دارد، نه به کل رسانه‌های رزومه.
-  const actors = rows.map(({ photos, user: owner, _count, ...rest }) => ({
+  const actors = rows.map(({ photos, user: owner, portfolioItems, _count, ...rest }) => ({
     ...rest,
     photoUrl: owner ? owner.photoUrl || null : photos[0]?.url || null,
+    verified: portfolioItems.length > 0,
     hasVideo: _count.videos > 0,
   }));
 

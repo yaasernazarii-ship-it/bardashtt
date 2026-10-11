@@ -53,7 +53,7 @@ export async function GET(request, { params }) {
       select: { type: true, status: true, resume: { select: { userId: true } } },
     });
     if (!item) return new Response('Not found', { status: 404 });
-    if (!(item.type === 'image' && item.status === 'approved')) {
+    if (!((item.type === 'image' || item.type === 'certificate') && item.status === 'approved')) {
       const user = await getSessionUser();
       if (!user || (user.id !== item.resume.userId && !['admin', 'editor'].includes(user.role))) {
         return new Response('Not found', { status: 404 });

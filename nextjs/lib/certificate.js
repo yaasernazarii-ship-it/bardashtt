@@ -4,6 +4,7 @@ import { randomBytes } from 'node:crypto';
 import { prisma } from '@/lib/prisma';
 import { buildSerial } from '@/lib/exam';
 import { normalizeNationalId, isValidNationalId } from '@/lib/enrollmentData';
+import { syncCertificatePortfolio } from '@/lib/certificatePortfolio';
 
 const UPLOADS = path.join(process.cwd(), 'uploads');
 const MEDIA_URL = /^\/media\/([A-Za-z0-9._-]+)$/;
@@ -90,7 +91,7 @@ export async function issueCertificate(user, {
   const photoUrl = await snapshotPhoto(photoOverride || user.photoUrl);
 
   try {
-    return await prisma.certificate.create({
+    const certificate = await prisma.certificate.create({
       data: {
         serial,
         userId: user.id,
@@ -108,6 +109,8 @@ export async function issueCertificate(user, {
         ...(issuedAt ? { issuedAt } : {}),
       },
     });
+    await syncCertificatePortfolio(user.id).catch(() => {});
+    return certificate;
   } catch (err) {
     // گواهی ثبت نشد، پس کپیِ عکس هم بی‌صاحب می‌ماند و باید پاک شود.
     if (photoUrl) await unlink(path.join(UPLOADS, photoUrl.slice('/media/'.length))).catch(() => {});

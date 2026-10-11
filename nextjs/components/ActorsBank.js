@@ -225,7 +225,7 @@ export default function ActorsBank({ actors, canShortlist = false, shortlistIds 
                 <div className="actor-photo" style={a.photoUrl ? { backgroundImage: `url(${a.photoUrl})` } : undefined}>
                   {!a.photoUrl && <Icon name="masks" size={40} strokeWidth={1.4} />}
                 </div>
-                <h3 style={{ margin: '12px 0 4px' }}>{a.fullName}</h3>
+                <h3 style={{ margin: '12px 0 4px' }}>{a.fullName}{a.verified && <span title="دارای گواهی‌نامهٔ فارغ‌التحصیلی" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 19, height: 19, marginRight: 7, borderRadius: '50%', background: '#1685e5', color: '#fff', fontSize: 13, verticalAlign: 'middle' }}>✓</span>}</h3>
                 {a.headline && <p style={{ color: 'var(--muted)', margin: 0 }}>{a.headline}</p>}
               </Link>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
