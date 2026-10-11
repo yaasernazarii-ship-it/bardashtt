@@ -1,4 +1,4 @@
-import SimplePage from '@/components/SimplePage';
+import PageLayout from '@/components/PageLayout';
 import CommunityFeed from '@/components/CommunityFeed';
 import SocialAuth from '@/components/SocialAuth';
 import { getSocialIdentity } from '@/lib/socialAuth';
@@ -17,18 +17,20 @@ export default async function CommunityPage() {
   const identity = await getSocialIdentity();
 
   return (
-    <SimplePage title={t('community.title')} subtitle={t('community.subtitle')} tag={t('community.tag')} narrow cta={false} sectionClassName="cm-page-section">
-      {t('community.intro') && <p className="cm-intro">{t('community.intro')}</p>}
-
-      {!identity.account && !identity.canModerate && <SocialAuth />}
-      <CommunityFeed />
-
-      {rules.length > 0 && (
-        <div className="cm-rules">
-          <h2>قانون‌های این فضا</h2>
-          <ul>{rules.map((r, i) => <li key={i}>{r}</li>)}</ul>
+    <PageLayout>
+      <section className="cm-page">
+        <div className="container container--sm">
+          <h1 className="cm-page__title">{t('community.title')}</h1>
+          {!identity.account && !identity.canModerate && <SocialAuth />}
+          <CommunityFeed />
+          {rules.length > 0 && (
+            <details className="cm-rules">
+              <summary>قوانین برداشتگرام</summary>
+              <ul>{rules.map((r, i) => <li key={i}>{r}</li>)}</ul>
+            </details>
+          )}
         </div>
-      )}
-    </SimplePage>
+      </section>
+    </PageLayout>
   );
 }

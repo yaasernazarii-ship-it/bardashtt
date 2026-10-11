@@ -1,0 +1,24 @@
+import { redirect } from 'next/navigation';
+import { getSessionUser, isManager } from '@/lib/auth';
+import DashboardSidebar from '@/components/DashboardSidebar';
+import AssistantChat from '@/components/AssistantChat';
+
+export const metadata = { title: 'دستیار کتاب' };
+
+export default async function AssistantPage() {
+  const user = await getSessionUser();
+  if (!user) redirect('/auth');
+
+  return (
+    <div className="dash-layout" style={{ background: 'var(--surface)' }}>
+      <DashboardSidebar active="assistant" role={user.role} isAdmin={user.role === 'admin'} isManager={isManager(user)} graduated={user.graduated} />
+      <main className="main-area">
+        <div className="dash-head" style={{ display: 'block', marginBottom: 22 }}>
+          <h1 className="dash-head__title">دستیار هوشمند کتاب</h1>
+          <p className="dash-head__sub">پرسش‌های خود را بر اساس کتاب «متد پنج سؤال طلایی» اثر یاسر نظری بپرسید.</p>
+        </div>
+        <AssistantChat />
+      </main>
+    </div>
+  );
+}

@@ -20,8 +20,7 @@ const staticRoutes = [
   '/ketab-panj-soal',
   '/projects',
   '/courses',
-  // '/actors' اینجا نیست: پشت ورود قفل است و برای مهمان با ۳۰۷ به /auth می‌رود،
-  // پس گوگل نمی‌تواند ایندکسش کند و ماندنش فقط خطای «تغییر مسیر» در سرچ‌کنسول می‌سازد.
+  '/actors',
   '/audition',
   '/blog',
   '/blog/amoozesh-bazigari-raygan-shoroe',
