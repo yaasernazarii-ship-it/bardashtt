@@ -35,7 +35,6 @@ export default function MyEnrollments() {
     return (
       <div className="enroll-empty">
         <p>هنوز در دوره‌ای ثبت‌نام نکرده‌اید.</p>
-        <a className="btn btn--dark" href="/audition">شروع ثبت‌نام در دوره</a>
       </div>
     );
   }
