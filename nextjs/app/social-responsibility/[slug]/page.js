@@ -31,7 +31,7 @@ export async function generateMetadata({ params }) {
     title: seoTitle(post.metaTitle || post.title),
     description,
     // برای مطلبِ برداشته‌شده، نسخهٔ اصلی در سایت منبع است.
-    alternates: { canonical: post.sourceUrl || url },
+    alternates: { canonical: url },
     robots: post.sourceUrl ? { index: false, follow: true } : undefined,
     openGraph: {
       type: 'article',
