@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { normalizePhone } from '@/lib/auth';
 import { notifySignup } from '@/lib/signupNotify';
 import { privateDocumentName } from '@/lib/privateDocuments';
+import { normalizeNationalId, isValidNationalId } from '@/lib/enrollmentData';
 
 const BRANCHES = ['تهران', 'ساری'];
 const ROLES = ['student', 'filmmaker'];
@@ -26,6 +27,8 @@ export async function POST(request) {
 
     if (role === 'student') {
       phone = normalizePhone(b.phone);
+      nationalId = normalizeNationalId(b.nationalId);
+      if (!isValidNationalId(nationalId)) return Response.json({ ok: false, error: 'کد ملی معتبر ۱۰ رقمی را وارد کنید.' }, { status: 400 });
       branch = BRANCHES.includes(b.branch) ? b.branch : null;
       birthDate = String(b.birthDate || '').trim().slice(0, 20);
       idCardImage = String(b.idCardImage || '').trim().slice(0, 300);
@@ -38,10 +41,10 @@ export async function POST(request) {
       }
     } else {
       // فیلمساز: نام، نام خانوادگی، کد ملی و هدف
-      nationalId = String(b.nationalId || '').replace(/[^\d]/g, '').slice(0, 10);
+      nationalId = normalizeNationalId(b.nationalId);
       goal = String(b.goal || '').trim().slice(0, 1000);
-      if (nationalId.length !== 10) {
-        return Response.json({ ok: false, error: 'کد ملی باید ۱۰ رقم باشد.' }, { status: 400 });
+      if (!isValidNationalId(nationalId)) {
+        return Response.json({ ok: false, error: 'کد ملی معتبر ۱۰ رقمی را وارد کنید.' }, { status: 400 });
       }
       if (!goal) {
         return Response.json({ ok: false, error: 'هدف خود از انتخاب خانواده برداشت را بنویسید.' }, { status: 400 });

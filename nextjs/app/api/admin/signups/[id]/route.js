@@ -73,8 +73,8 @@ export async function PATCH(request, { params }) {
 
   const account = await prisma.user.upsert({
     where: { phone: accountPhone },
-    update: { displayName, username, passwordHash, passwordPlain: password, active: true, nationalId: req.nationalId, branch: req.branch, role, graduated },
-    create: { phone: accountPhone, displayName, username, passwordHash, passwordPlain: password, nationalId: req.nationalId, branch: req.branch, role, graduated },
+    update: { displayName, username, passwordHash, passwordPlain: password, active: true, nationalId: req.nationalId, birthDate: req.birthDate, branch: req.branch, role, graduated },
+    create: { phone: accountPhone, displayName, username, passwordHash, passwordPlain: password, nationalId: req.nationalId, birthDate: req.birthDate, branch: req.branch, role, graduated },
   });
 
   await prisma.signupRequest.update({

@@ -13,6 +13,7 @@ model User {
   displayName  String?
   city         String?
   birthYear    Int?
+  birthDate    String? // تاریخ تولد ثبت‌شده هنگام عضویت هنرجو
   role         String       @default("member") // member | student | filmmaker | staff | editor | admin
   gender       String? // male | female — مبنای درج «آقای/خانم» روی گواهی‌نامه
   contactPhone String? // شماره تماس تکمیلی که کاربر (به‌ویژه فیلمساز) در پروفایل پر می‌کند
@@ -122,7 +123,7 @@ model SignupRequest {
   firstName  String
   lastName   String
   phone      String
-  nationalId String? // کد ملی (برای فیلمساز)
+  nationalId String? // کد ملی ثبت‌شده هنگام درخواست عضویت
   branch     String? // تهران | ساری (برای هنرجو)
   birthDate  String? // تاریخ تولد (برای هنرجو)
   idCardImage String? // عکس شناسنامه یا کارت ملی (برای هنرجو)

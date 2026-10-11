@@ -26,7 +26,7 @@ export async function GET(request, { params }) {
     where: { id },
     select: {
       id: true, phone: true, displayName: true, city: true, role: true, username: true,
-      passwordPlain: true, active: true, deletedAt: true, branch: true, graduated: true, courseTitle: true, nationalId: true, createdAt: true,
+      passwordPlain: true, active: true, deletedAt: true, branch: true, graduated: true, courseTitle: true, nationalId: true, birthDate: true, createdAt: true,
       photoUrl: true,
       progressOverride: true,
       enrollments: { orderBy: { createdAt: 'desc' } },
@@ -38,7 +38,7 @@ export async function GET(request, { params }) {
   const signup = await prisma.signupRequest.findFirst({
     where: { userId: id },
     orderBy: { createdAt: 'desc' },
-    select: { idCardImage: true, goal: true, birthDate: true },
+    select: { idCardImage: true, goal: true },
   });
 
   const safeSignup = signup ? { ...signup, idCardImage: privateDocumentUrl(signup.idCardImage) } : null;

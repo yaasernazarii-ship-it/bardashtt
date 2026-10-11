@@ -189,6 +189,8 @@ export default function AdminUsers() {
                           <div>نام کاربری: <b dir="ltr">{u.username || '—'}</b></div>
                           <div>رمز عبور: <b dir="ltr" style={{ fontFamily: 'monospace' }}>{u.passwordPlain || '—'}</b></div>
                           <div>تاریخ عضویت: {dateFmt.format(new Date(u.createdAt))}</div>
+                          {u.nationalId && <div>کد ملی: <b dir="ltr">{u.nationalId}</b></div>}
+                          {u.birthDate && <div>تاریخ تولد: <b dir="ltr">{u.birthDate}</b></div>}
                         </>
                       )}
                     </div>
@@ -303,6 +305,7 @@ function UserPanel({ userId, onClose }) {
               </div>
               {u.branch && <div style={{ fontSize: '.88rem', color: 'var(--muted)' }}>شعبه: {u.branch}{u.courseTitle ? ` · دوره: ${u.courseTitle}` : ''}</div>}
               {u.nationalId && <div style={{ fontSize: '.88rem', color: 'var(--muted)' }}>کد ملی: <span dir="ltr">{u.nationalId}</span></div>}
+              {u.birthDate && <div style={{ fontSize: '.88rem', color: 'var(--muted)' }}>تاریخ تولد: <span dir="ltr">{u.birthDate}</span></div>}
               </div>
             </div>
 

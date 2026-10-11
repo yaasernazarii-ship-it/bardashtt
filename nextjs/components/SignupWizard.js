@@ -134,7 +134,7 @@ export default function SignupWizard({ content }) {
           <input className="form-input" required value={form.lastName} onChange={(e) => set('lastName', e.target.value)} /></div>
         <div className="form-group"><label className="form-label">{c.labelNationalId}</label>
           <input className="form-input" dir="ltr" inputMode="numeric" maxLength={10} required placeholder="کد ملی ۱۰ رقمی"
-            value={form.nationalId} onChange={(e) => set('nationalId', e.target.value.replace(/[^\d]/g, ''))} /></div>
+            value={form.nationalId} onChange={(e) => set('nationalId', e.target.value.replace(/[^\d۰-۹]/g, ''))} /></div>
         <div className="form-group"><label className="form-label">{c.labelGoal}</label>
           <textarea className="form-input" rows={4} required placeholder={c.placeholderGoal}
             value={form.goal} onChange={(e) => set('goal', e.target.value)} /></div>
@@ -148,7 +148,7 @@ export default function SignupWizard({ content }) {
   return (
     <form className="form-shell" onSubmit={(e) => submit(e, {
       role: 'student', firstName: form.firstName, lastName: form.lastName, phone: form.phone,
-      branch: form.branch, birthDate: form.birthDate, idCardImage: form.idCardImage,
+      nationalId: form.nationalId, branch: form.branch, birthDate: form.birthDate, idCardImage: form.idCardImage,
     })}>
       <div className="form-shell__head">
         <h2>{c.studentTitle}</h2>
@@ -162,6 +162,9 @@ export default function SignupWizard({ content }) {
       <div className="form-group"><label className="form-label">{c.labelPhone}</label>
         <input className="form-input" dir="ltr" type="tel" inputMode="numeric" required placeholder="09xxxxxxxxx"
           value={form.phone} onChange={(e) => set('phone', e.target.value)} /></div>
+      <div className="form-group"><label className="form-label">{c.labelNationalId}</label>
+        <input className="form-input" dir="ltr" inputMode="numeric" maxLength={10} required placeholder="کد ملی ۱۰ رقمی"
+          value={form.nationalId} onChange={(e) => set('nationalId', e.target.value.replace(/[^\d۰-۹]/g, ''))} /></div>
       <div className="form-group"><label className="form-label">{c.labelBirthDate}</label>
         <input className="form-input" dir="ltr" required placeholder="مثلاً ۱۳۸۰/۰۵/۱۲"
           value={form.birthDate} onChange={(e) => set('birthDate', e.target.value)} /></div>
