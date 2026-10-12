@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field, HttpUrl, field_validator
 
 GAPGPT_API_KEY = os.getenv('GAPGPT_API_KEY') or os.getenv('AI_API_KEY')
 GAPGPT_BASE_URL = (os.getenv('GAPGPT_BASE_URL') or os.getenv('AI_BASE_URL') or 'https://api.gapgpt.com/v1').rstrip('/')
-MODEL_NAME = os.getenv('GA_MODEL_NAME') or os.getenv('GAPGPT_MODEL') or os.getenv('AI_CHAT_MODEL') or 'gpt-4o-mini'
+MODEL_NAME = os.getenv('GA_MODEL_NAME', 'gpt-4o')
 TEMPERATURE = float(os.getenv('GA_TEMPERATURE', '0.4'))
 MAX_TOKENS = int(os.getenv('GA_MAX_TOKENS', '4000'))
 
