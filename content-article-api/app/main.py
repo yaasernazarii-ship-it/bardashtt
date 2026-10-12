@@ -1,10 +1,11 @@
 import json
+import logging
 import os
 import re
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException, status
-from openai import OpenAI
+from openai import APIStatusError, OpenAI
 from pydantic import BaseModel, Field, HttpUrl, field_validator
 
 GAPGPT_API_KEY = os.getenv('GAPGPT_API_KEY') or os.getenv('AI_API_KEY')
@@ -155,5 +156,9 @@ def generate_article(payload: ArticleGenerateRequest):
         return article
     except (ValueError, json.JSONDecodeError) as error:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail='خروجی تولیدشده معتبر نیست.') from error
+    except APIStatusError as error:
+        logging.warning('ارائه‌دهندهٔ مدل پاسخ %s داد.', error.status_code)
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail='سرویس تولید محتوا در دسترس نیست.') from error
     except Exception as error:
+        logging.warning('فراخوانی ارائه‌دهندهٔ مدل ناموفق بود: %s', type(error).__name__)
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail='سرویس تولید محتوا در دسترس نیست.') from error
