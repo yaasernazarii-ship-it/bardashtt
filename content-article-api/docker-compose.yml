@@ -1,0 +1,7 @@
+services:
+  content-article-api:
+    build: .
+    env_file:
+      - /var/www/bardasht-nextjs/.env
+    restart: unless-stopped
+    network_mode: host

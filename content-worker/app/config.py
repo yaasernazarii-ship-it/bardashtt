@@ -51,6 +51,8 @@ DATABASE_URL = postgres_connection_url(os.environ['DATABASE_URL'])
 GAPGPT_BASE_URL = (os.getenv('GAPGPT_BASE_URL') or os.getenv('AI_BASE_URL') or 'https://api.gapgpt.app/v1').rstrip('/')
 GAPGPT_API_KEY = os.getenv('GAPGPT_API_KEY') or os.environ['AI_API_KEY']
 GAPGPT_MODEL = os.getenv('GAPGPT_MODEL') or os.getenv('AI_CHAT_MODEL') or 'gpt-4o-mini'
+ARTICLE_API_URL = os.getenv('ARTICLE_API_URL', 'http://127.0.0.1:8031/api/v1/generate-article').rstrip('/')
+VERIFIED_BRAND_NOTES = os.getenv('VERIFIED_BRAND_NOTES', '')
 AUTO_PUBLISH = os.getenv('AUTO_PUBLISH', 'false').lower() == 'true'
 NEWS_INTERVAL_HOURS = int(os.getenv('NEWS_INTERVAL_HOURS', '2'))
 BLOG_INTERVAL_HOURS = int(os.getenv('BLOG_INTERVAL_HOURS', '12'))

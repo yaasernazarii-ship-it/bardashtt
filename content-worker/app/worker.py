@@ -1,5 +1,6 @@
 import hashlib
 import json
+import logging
 import re
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -13,7 +14,7 @@ import psycopg
 from bs4 import BeautifulSoup
 from PIL import Image
 
-from .config import AUTO_PUBLISH, DATABASE_URL, GAPGPT_API_KEY, GAPGPT_BASE_URL, GAPGPT_MODEL, PUBLISH_SPACING_MINUTES, UPLOADS_DIR
+from .config import ARTICLE_API_URL, AUTO_PUBLISH, DATABASE_URL, GAPGPT_API_KEY, GAPGPT_BASE_URL, GAPGPT_MODEL, PUBLISH_SPACING_MINUTES, UPLOADS_DIR, VERIFIED_BRAND_NOTES
 from .prompts import CATEGORIES, blog_prompt, news_prompt
 
 MAX_ARTICLE_CHARS = 18000
@@ -94,7 +95,7 @@ class ContentWorker:
 
         title, article, image_url = self.fetch_article(source, url, fallback_title)
         messages = news_prompt(source.name, article) if section == 'news' else blog_prompt(source.name, article)
-        generated = self.generate(messages)
+        generated = self.generate_with_article_api(section, source.name, url, title, article, messages)
         if not isinstance(generated.get('image_alt'), str) or not generated['image_alt'].strip():
             generated['image_alt'] = DEFAULT_IMAGE_ALT
         self.validate_generated(generated, section)
@@ -133,6 +134,56 @@ class ContentWorker:
         if len(text) < 300:
             raise ValueError('متن کافی از منبع استخراج نشد.')
         return title.strip(), text, urljoin(url, image) if image else None
+
+    def generate_with_article_api(self, section, source_name, source_url, title, article, fallback_messages):
+        payload = {
+            'content_type': 'news_analysis' if section == 'news' else 'educational_guide',
+            'topic': title[:150],
+            'focus_keyword': title[:80],
+            'verified_brand_notes': VERIFIED_BRAND_NOTES or None,
+            'allowed_categories': list(CATEGORIES) if section == 'blog' else [],
+        }
+        if section == 'news':
+            payload['news_context'] = {
+                'source_name': source_name,
+                'source_url': source_url,
+                'raw_news_summary': article,
+            }
+        else:
+            payload['news_context'] = None
+
+        try:
+            response = self.client.post(ARTICLE_API_URL, json=payload)
+            response.raise_for_status()
+            return self.adapt_article_response(response.json(), section)
+        except Exception as error:
+            logging.warning('سرویس مقاله در دسترس نبود؛ از موتور قبلی استفاده شد: %s', error)
+            return self.generate(fallback_messages)
+
+    @staticmethod
+    def adapt_article_response(article, section):
+        body = article.get('content_markdown', '').strip()
+        title = article.get('title', '').strip()
+        meta_description = article.get('meta_description', '').strip()
+        slug = article.get('slug', '').strip()
+        faq_items = article.get('faq_items', [])
+        faq = [{'q': item.get('question', '').strip(), 'a': item.get('answer', '').strip()} for item in faq_items if isinstance(item, dict)]
+        excerpt = re.sub(r'[#*_>`]', '', body).replace('\n', ' ').strip()[:300]
+        result = {
+            'title': title,
+            'slug': slug,
+            'meta_title': title[:40],
+            'meta_description': meta_description,
+            'excerpt': excerpt,
+            'image_alt': DEFAULT_IMAGE_ALT,
+            'body': body,
+            'faq': faq,
+            'tags': article.get('tags', []),
+            'category': article.get('category'),
+        }
+        if section == 'blog' and result['category'] not in CATEGORIES:
+            raise ValueError('دسته‌بندی خروجی سرویس مقاله معتبر نیست.')
+        return result
 
     def generate(self, messages):
         response = self.client.post(
