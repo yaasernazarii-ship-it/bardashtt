@@ -4,6 +4,8 @@ services:
     env_file:
       - /var/www/bardasht-nextjs/.env
       - .env
+    environment:
+      GAPGPT_BASE_URL: https://api.gapgpt.com/v1
     restart: unless-stopped
     network_mode: host
     volumes:
