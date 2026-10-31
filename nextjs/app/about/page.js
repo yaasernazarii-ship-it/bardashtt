@@ -20,30 +20,68 @@ export default async function AboutPage() {
   return (
     <PageLayout>
       <style>{`
-        .founder-card { background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:52px 48px;display:grid;grid-template-columns:160px 1fr;gap:48px;align-items:center;max-width:860px;margin:0 auto; }
-        .founder-avatar { width:160px;height:160px;border-radius:50%;overflow:hidden;flex-shrink:0;background:linear-gradient(145deg,#1a1208,#2a1f0d);display:flex;align-items:center;justify-content:center;font-size:3.5rem;border:3px solid var(--gold); }
-        .founder-avatar img { width:100%;height:100%;object-fit:cover;object-position:center top;display:block; }
-        .founder-name { font-size:1.8rem;font-weight:900;color:var(--dark);margin-bottom:6px; }
-        .founder-title { font-size:.9rem;color:var(--gold);font-weight:700;margin-bottom:20px; }
+        #about-slider { position:relative; }
+        #about-slider .pslider { height:clamp(280px,26vw,420px);aspect-ratio:auto;max-height:none;border-radius:0 0 50% 50% / 0 0 14% 14%; }
+        #about-slider .pslider__slide::after { content:'';position:absolute;inset:0;background:linear-gradient(270deg,rgba(0,0,0,.15) 0%,rgba(0,0,0,.45) 45%,rgba(0,0,0,.82) 100%); }
+        #about-slider .pslider__img { filter:grayscale(.35) contrast(1.05); }
+        #about-slider .pslider__title { top:50%;bottom:auto;transform:translateY(-60%);text-align:left;padding-inline:max(24px,calc((100% - 1140px) / 2 + 24px)); }
+        #about-slider .pslider__title span { position:relative;font-size:clamp(1.5rem,4.2vw,3.2rem);font-weight:900;letter-spacing:-.02em;line-height:1.35;padding-bottom:18px;max-width:min(560px,60vw);text-align:right;text-shadow:0 4px 24px rgba(0,0,0,.6); }
+        #about-slider .pslider__title span::after { content:'';position:absolute;left:0;bottom:0;width:72px;height:4px;border-radius:4px;background:var(--gold); }
+        #about-slider .pslider__nav { top:44%; }
+        #about-slider .pslider__dots { bottom:40px; }
+        .about-hero__down { position:absolute;left:50%;bottom:-23px;transform:translateX(-50%);z-index:12;width:46px;height:46px;border-radius:50%;background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:center;border:3px solid var(--bg);box-shadow:0 8px 22px rgba(0,0,0,.22);transition:transform .25s,background .25s; }
+        .about-hero__down svg { transform:rotate(180deg); }
+        .about-hero__down:hover { background:#000;transform:translateX(-50%) translateY(3px); }
+
+        .ab-eyebrow { display:inline-flex;align-items:center;gap:12px;color:#E0A800;font-size:.78rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase; }
+        .ab-eyebrow::after { content:'';width:120px;max-width:22vw;height:1.5px;background:var(--gold); }
+        .ab-head { text-align:center;margin:0 auto 44px;max-width:780px; }
+        .ab-head .ab-eyebrow::before { content:'';width:48px;height:1.5px;background:var(--gold); }
+        .ab-head .ab-eyebrow::after { width:48px; }
+        .ab-title { font-size:clamp(1.6rem,3.4vw,2.5rem);font-weight:900;color:var(--dark);letter-spacing:-.02em;line-height:1.45;margin-top:10px; }
+        .ab-text { color:#444;line-height:2.1;font-size:.95rem; }
+
+        .ab-split { display:grid;grid-template-columns:1fr 1.05fr;gap:64px;align-items:center; }
+        .ab-split--rev .ab-split__media { order:-1; }
+        .ab-media { position:relative;margin:18px; }
+        .ab-media::before { content:'';position:absolute;inset:-18px auto -18px -18px;width:62%;border:2px solid var(--gold);border-radius:22px;z-index:0; }
+        .ab-split--rev .ab-media::before { inset:-18px -18px -18px auto; }
+        .ab-media img { position:relative;z-index:1;display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:18px;box-shadow:0 18px 44px rgba(0,0,0,.16);background:#222; }
+        .ab-media--portrait img { aspect-ratio:4/5;object-position:center top; }
+        .ab-pill { display:inline-flex;align-items:center;gap:10px;border:1.5px solid var(--gold);border-radius:999px;padding:10px 26px;color:var(--dark);font-weight:800;font-size:.88rem;background:#fff;transition:all .25s; }
+        .ab-pill::after { content:'‹';color:#E0A800;font-size:1.2rem;line-height:1; }
+        .ab-pill:hover { background:var(--gold);color:var(--dark);box-shadow:0 8px 22px rgba(255,215,0,.28); }
+        .ab-pill:hover::after { color:var(--dark); }
+
+        .ab-row { display:grid;grid-template-columns:repeat(var(--cols,3),1fr);margin-top:56px; }
+        .ab-row > * { padding:8px 32px;text-align:center;position:relative; }
+        .ab-row > * + *::before { content:'';position:absolute;right:0;top:12%;bottom:12%;width:1.5px;background:linear-gradient(180deg,transparent,var(--gold),transparent);opacity:.7; }
+        .ab-ico { display:flex;justify-content:center;color:var(--dark);margin-bottom:14px; }
+        .ab-row--grid2 > :nth-child(3n+1)::before { display:none; }
+        .ab-row h3 { font-size:1.02rem;font-weight:800;color:var(--dark);margin-bottom:10px;line-height:1.7; }
+        .ab-row p { font-size:.86rem;color:var(--muted);line-height:1.95; }
+        .ab-row .resume-list { text-align:right;max-width:380px;margin:14px auto 0; }
+        .ab-row .vnum { font-size:2rem;font-weight:900;color:var(--gold);line-height:1;margin-bottom:14px; }
+
+        .ab-quote { background:#EFEFEF;position:relative;overflow:hidden;padding:48px 0;margin-top:72px; }
+        .ab-quote::before { content:'';position:absolute;left:-60px;top:50%;width:200px;height:200px;transform:translateY(-50%);border-radius:50%;border:18px solid rgba(0,0,0,.05);box-shadow:inset 0 0 0 28px rgba(0,0,0,.025); }
+        .ab-quote__inner { display:flex;gap:18px;align-items:flex-start;justify-content:center;max-width:820px;margin:0 auto;padding:0 24px; }
+        .ab-quote__mark { font-size:4.4rem;line-height:.8;font-weight:900;color:#F2B705;font-family:Georgia,serif;flex-shrink:0; }
+        .ab-quote p { font-size:clamp(1rem,1.8vw,1.2rem);font-weight:800;color:var(--dark);line-height:2;text-align:center; }
+        .ab-quote__line { display:block;width:160px;height:1.5px;margin:16px auto 0;background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+        #about-intro { padding-bottom:0!important; }
+
+        .founder-name { font-size:1.6rem;font-weight:900;color:var(--dark);margin:18px 0 4px; }
+        .founder-title { font-size:.9rem;color:#E0A800;font-weight:700;margin-bottom:18px; }
         .founder-tags { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px; }
-        .founder-bio { font-size:.9rem;color:var(--muted);line-height:1.9; }
-        .cred-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:20px; }
-        .cred-card { background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:32px 28px;text-align:center;transition:all .3s; }
-        .cred-card:hover { border-color:var(--gold);transform:translateY(-3px);box-shadow:0 10px 32px rgba(196,146,42,.1); }
-        .cred-card .cico { font-size:2.2rem;margin-bottom:16px; }
-        .cred-card h3 { font-size:1rem;font-weight:800;color:var(--dark);margin-bottom:10px; }
-        .cred-card p { font-size:.83rem;color:var(--muted);line-height:1.7; }
-        .about-cards { display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:960px;margin:0 auto; }
-        .about-card { background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:34px 30px; }
-        .about-card__ico { font-size:2rem;margin-bottom:14px; }
-        .about-card h3 { font-size:1.15rem;font-weight:800;color:var(--dark);margin-bottom:12px; }
-        .about-card p { font-size:.88rem;color:var(--muted);line-height:1.95; }
-        .about-card b { color:var(--dark);font-weight:700; }
+        .founder-bio { font-size:.92rem;color:#444;line-height:2.05; }
+
         .resume-grid { display:grid;grid-template-columns:1fr 1fr;gap:24px; }
-        .resume-block { background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:30px 28px; }
+        .resume-block { background:#fff;border:1px solid var(--border);border-radius:18px;padding:30px 28px;position:relative;box-shadow:0 10px 30px rgba(0,0,0,.04); }
+        .resume-block::before { content:'';position:absolute;top:-1px;right:28px;width:56px;height:3px;border-radius:0 0 4px 4px;background:var(--gold); }
         .resume-block--wide { grid-column:1 / -1; }
         .resume-block h3 { display:flex;align-items:center;gap:10px;font-size:1.05rem;font-weight:800;color:var(--dark);margin-bottom:18px; }
-        .resume-block h3 .rico { font-size:1.3rem; }
+        .resume-block h3 .rico { display:flex;color:#E0A800; }
         .resume-list { list-style:none;display:flex;flex-direction:column;gap:12px;padding:0;margin:0; }
         .resume-list li { display:flex;gap:10px;font-size:.88rem;color:var(--muted);line-height:1.8; }
         .resume-list li .li-ico { color:var(--gold);flex-shrink:0;font-size:.7rem;margin-top:.45em; }
@@ -53,48 +91,34 @@ export default async function AboutPage() {
         .edu-cert:hover { border-color:var(--gold);box-shadow:0 8px 22px rgba(196,146,42,.14);transform:translateY(-2px); }
         .edu-cert img { width:100%;aspect-ratio:4/3;object-fit:cover;object-position:top;display:block; }
         .edu-cert__cap { display:block;padding:8px 10px;font-size:.72rem;font-weight:700;color:var(--muted);text-align:center;border-top:1px solid var(--border); }
-        @media(max-width:480px){ .edu-certs{grid-template-columns:1fr;} }
-        .editorial-path-section { background:var(--dark)!important; color:#fff; position:relative; overflow:hidden; }
-        .editorial-path-section::after { content:'PATH / ۰۱—۰۶'; position:absolute; left:5%; bottom:28px; color:rgba(255,255,255,.14); font-size:.68rem; letter-spacing:.16em; direction:ltr; }
-        .editorial-path-head { display:grid; grid-template-columns:1.1fr .9fr; gap:48px; align-items:end; text-align:right!important; max-width:none!important; margin-bottom:44px!important; }
-        .editorial-path-head .tag { color:var(--gold); border-color:rgba(255,215,0,.45); background:transparent; }
-        .editorial-path-head .heading { color:#fff; font-size:clamp(1.9rem,4vw,3.6rem); letter-spacing:-.05em; }
-        .editorial-path-head .line { display:none; }
-        .editorial-path-head p { color:rgba(255,255,255,.62)!important; font-size:.9rem; line-height:2; margin:0!important; border-right:2px solid var(--gold); padding-right:22px; }
-        .editorial-path-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0; border-top:1px solid rgba(255,255,255,.2); }
-        .editorial-path-item { background:transparent!important; border:0!important; border-bottom:1px solid rgba(255,255,255,.2)!important; border-radius:0!important; padding:26px 22px 28px 0!important; min-height:156px; }
-        .editorial-path-item:nth-child(3n+2), .editorial-path-item:nth-child(3n+3) { border-right:1px solid rgba(255,255,255,.2)!important; padding-right:22px!important; }
-        .editorial-path-item .vnum { color:var(--gold)!important; font-size:1.45rem!important; margin-bottom:18px!important; }
-        .editorial-path-item h3 { color:#fff!important; font-size:1rem!important; margin-bottom:8px!important; }
-        .editorial-path-item p { color:rgba(255,255,255,.6)!important; font-size:.78rem!important; line-height:1.9!important; }
-        .editorial-path-cta { margin-top:30px!important; }
         .skills-groups { display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:920px;margin:0 auto; }
-        .skills-group { background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:26px 24px; }
-        .skills-group__label { display:inline-block;font-size:.8rem;font-weight:800;color:var(--gold);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--gold); }
+        .skills-group { background:#F7F7F7;border-radius:18px;padding:26px 24px; }
+        .skills-group__label { display:inline-block;font-size:.8rem;font-weight:800;color:#E0A800;margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--gold); }
         .skills-chips { display:flex;flex-wrap:wrap;gap:10px; }
-        .skill-chip { display:inline-flex;align-items:center;gap:7px;background:var(--white);border:1px solid var(--border);border-radius:999px;padding:8px 14px;font-size:.82rem;font-weight:600;color:var(--dark);transition:all .25s; }
-        .skill-chip:hover { border-color:var(--gold);box-shadow:0 4px 14px rgba(196,146,42,.12); }
+        .skill-chip { display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--border);border-radius:999px;padding:8px 14px;font-size:.82rem;font-weight:600;color:var(--dark);transition:all .25s; }
+        .skill-chip:hover { border-color:var(--gold); }
         .skill-chip::before { content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0; }
-        .values-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:20px; }
-        .value-item { padding:36px 28px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--border); }
-        .value-item .vnum { font-size:2.5rem;font-weight:900;color:var(--border);line-height:1;margin-bottom:16px; }
-        .value-item h3 { font-size:1.05rem;font-weight:800;color:var(--dark);margin-bottom:10px; }
-        .value-item p { font-size:.85rem;color:var(--muted);line-height:1.75; }
+        #about-creds { background:#F7F7F7!important; }
+
         @media(max-width:900px){
-          .founder-card{grid-template-columns:1fr;text-align:center;padding:36px 24px;}
-          .founder-avatar{margin:0 auto;}
-          .founder-tags{justify-content:center;}
-          .cred-grid{grid-template-columns:1fr 1fr;}
-          .values-grid{grid-template-columns:1fr;}
+          .ab-split{grid-template-columns:1fr;gap:36px;}
+          .ab-split .ab-split__media{order:2;}
+          .ab-row{--cols:1!important;margin-top:36px;}
+          .ab-row > *{padding:22px 8px;}
+          .ab-row > * + *::before{left:20%;right:20%;top:0;bottom:auto;width:auto;height:1.5px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+          .ab-row--grid2{--cols:2!important;}
+          .ab-row--grid2 > * + *::before{display:none;}
+          .ab-row--grid2 > *{border-top:1px solid var(--border);}
           .resume-grid{grid-template-columns:1fr;}
           .skills-groups{grid-template-columns:1fr;}
-          .about-cards{grid-template-columns:1fr;}
-          .editorial-path-head{grid-template-columns:1fr;gap:18px;}
-          .editorial-path-grid{grid-template-columns:1fr 1fr;}
-          .editorial-path-item:nth-child(3n+2), .editorial-path-item:nth-child(3n+3){border-right:0!important;padding-right:0!important;}
-          .editorial-path-item:nth-child(even){border-right:1px solid rgba(255,255,255,.2)!important;padding-right:22px!important;}
+          .ab-media--portrait{max-width:420px;margin-inline:auto;}
         }
-        @media(max-width:640px){ .cred-grid{grid-template-columns:1fr;} .editorial-path-grid{grid-template-columns:1fr;} .editorial-path-item:nth-child(even){border-right:0!important;padding-right:0!important;} }
+        @media(max-width:640px){
+          .ab-row--grid2{--cols:1!important;}
+          #about-slider .pslider__title span{max-width:80vw;}
+          .about-hero__down{width:38px;height:38px;}
+          .ab-quote__mark{font-size:3rem;}
+        }
       `}</style>
 
       <div id="about-slider">
@@ -103,56 +127,66 @@ export default async function AboutPage() {
           count={3}
           images={heroImages}
         />
+        <a href="#about-intro" className="about-hero__down" aria-label="ادامه"><Icon name="arrowUp" size={20} /></a>
       </div>
 
       {/* معرفی آموزشگاه */}
       <section id="about-intro" style={{ background: 'var(--bg)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: 40, maxWidth: 780, marginInline: 'auto' }}>
-            <span className="tag tag--gold">{t('about.intro.eyebrow')}</span>
-            <h1 className="heading" style={{ marginTop: 14 }}>{t('about.intro.heading')}</h1>
-            <div className="line line--center" />
-            <p style={{ color: 'var(--muted)', lineHeight: 2, marginTop: 18 }}>
-              {t('about.intro.lead')}
-            </p>
+          <div className="ab-split">
+            <div>
+              <span className="ab-eyebrow">{t('about.intro.eyebrow')}</span>
+              <h1 className="ab-title">{t('about.intro.heading')}</h1>
+              <p className="ab-text" style={{ marginTop: 18 }}>
+                {t('about.intro.lead')}
+              </p>
+            </div>
+            <div className="ab-split__media">
+              <div className="ab-media"><img src={t('about.story.image')} alt="خانواده برداشت" loading="lazy" decoding="async" /></div>
+            </div>
           </div>
 
-          <div className="about-cards">
-            <div className="about-card">
-              <div className="about-card__ico"><Icon name="clapperboard" size={30} strokeWidth={1.6} /></div>
+          <div className="ab-row" style={{ '--cols': 2 }}>
+            <div>
+              <div className="ab-ico"><Icon name="clapperboard" size={34} strokeWidth={1.4} /></div>
               <h3>{t('about.card1.title')}</h3>
               <p>{t('about.card1.body')}</p>
             </div>
-            <div className="about-card">
-              <div className="about-card__ico"><Icon name="shield" size={30} strokeWidth={1.6} /></div>
+            <div>
+              <div className="ab-ico"><Icon name="shield" size={34} strokeWidth={1.4} /></div>
               <h3>{t('about.card2.title')}</h3>
               <p>{t('about.card2.body')}</p>
-              <ul className="resume-list" style={{ marginTop: 14 }}>
+              <ul className="resume-list">
                 {splitLines(t('about.card2.items')).map((it) => (
                   <li key={it}><span className="li-ico">◆</span><span>{it}</span></li>
                 ))}
               </ul>
             </div>
           </div>
+        </div>
 
-          <p style={{ textAlign: 'center', color: 'var(--muted)', lineHeight: 2, marginTop: 32, maxWidth: 780, marginInline: 'auto' }}>
-            {t('about.intro.closing')}
-          </p>
+        <div className="ab-quote">
+          <div className="ab-quote__inner">
+            <span className="ab-quote__mark" aria-hidden="true">”</span>
+            <div>
+              <p>{t('about.intro.closing')}</p>
+              <span className="ab-quote__line" />
+            </div>
+          </div>
         </div>
       </section>
 
       {/* مسیر آموزشی */}
-      <section id="about-path" className="editorial-path-section" style={{ background: 'var(--white)' }}>
+      <section id="about-path" style={{ background: 'var(--white)' }}>
         <div className="container">
-          <div className="editorial-path-head" style={{ textAlign: 'center', marginBottom: 36, maxWidth: 780, marginInline: 'auto' }}>
-            <span className="tag tag--gold">مسیر رشد هنرجو</span>
-            <h2 className="heading" style={{ marginTop: 14 }}>از علاقه تا تجربهٔ واقعی بازیگری</h2>
-            <div className="line line--center" />
-            <p style={{ color: 'var(--muted)', lineHeight: 2, marginTop: 18 }}>
+          <div className="ab-head">
+            <span className="ab-eyebrow">مسیر رشد هنرجو</span>
+            <h2 className="ab-title">از علاقه تا تجربهٔ واقعی بازیگری</h2>
+            <p className="ab-text" style={{ marginTop: 14, color: 'var(--muted)' }}>
               آموزش در خانواده برداشت فقط به حضور در کلاس محدود نیست؛ هنرجو در یک مسیر مرحله‌به‌مرحله با تمرین، بازخورد، کار گروهی و تجربهٔ جلوی دوربین رشد می‌کند.
             </p>
           </div>
-          <div className="editorial-path-grid">
+          <div className="ab-row ab-row--grid2" style={{ '--cols': 3, rowGap: 36 }}>
             {[
               ['۰۱', 'آموزش پایه', 'شناخت بدن، بیان، تمرکز و اصول حضور در صحنه و مقابل دوربین.'],
               ['۰۲', 'تمرین و بازخورد', 'تمرین‌های منظم فردی و گروهی برای تبدیل آموخته‌ها به مهارت عملی.'],
@@ -161,15 +195,15 @@ export default async function AboutPage() {
               ['۰۵', 'ارزیابی و گواهینامه', 'بررسی شرایط آموزشی و آزمون پایانی برای هنرجیانی که مسیر را کامل می‌کنند.'],
               ['۰۶', 'ساخت رزومه', 'ثبت تجربه‌ها و معرفی توانایی‌های هنرجو برای ادامهٔ مسیر حرفه‌ای.'],
             ].map(([num, title, text]) => (
-              <div key={num} className="editorial-path-item">
+              <div key={num}>
                 <div className="vnum">{num}</div>
                 <h3>{title}</h3>
                 <p>{text}</p>
               </div>
             ))}
           </div>
-          <div style={{ textAlign: 'center', marginTop: 30 }}>
-            <Link href="/courses" className="btn btn--gold editorial-path-cta">مشاهدهٔ دوره‌ها</Link>
+          <div style={{ textAlign: 'center', marginTop: 40 }}>
+            <Link href="/courses" className="ab-pill">مشاهدهٔ دوره‌ها</Link>
           </div>
         </div>
       </section>
@@ -177,15 +211,11 @@ export default async function AboutPage() {
       {/* بنیان‌گذار */}
       <section id="about-founder" style={{ background: 'var(--bg)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <span className="tag tag--dark">{t('about.founder.eyebrow')}</span>
-            <h2 className="heading" style={{ marginTop: 14 }}>{t('about.founder.heading')}</h2>
-            <div className="line line--center" />
-            <p style={{ color: 'var(--gold)', fontWeight: 700, marginTop: 10 }}>{t('about.founder.subtitle')}</p>
-          </div>
-          <div className="founder-card" style={{ alignItems: 'flex-start' }}>
-            <div className="founder-avatar"><img src={t('about.founder.image')} alt="یاسر نظری، بنیان‌گذار خانواده برداشت" loading="lazy" decoding="async" /></div>
+          <div className="ab-split ab-split--rev">
             <div>
+              <span className="ab-eyebrow">{t('about.founder.eyebrow')}</span>
+              <h2 className="ab-title">{t('about.founder.heading')}</h2>
+              <p style={{ color: '#E0A800', fontWeight: 700, marginTop: 6 }}>{t('about.founder.subtitle')}</p>
               <div className="founder-name">{t('about.founder.name')}</div>
               <div className="founder-title">{t('about.founder.title')}</div>
               <div className="founder-tags">
@@ -202,7 +232,10 @@ export default async function AboutPage() {
               <p className="founder-bio">
                 {t('about.founder.bio3')}
               </p>
-              <p style={{ marginTop: 18 }}><Link href="/yaser-nazari" className="text-link">معرفی و سوابق یاسر نظری</Link></p>
+              <p style={{ marginTop: 24 }}><Link href="/yaser-nazari" className="ab-pill">معرفی و سوابق یاسر نظری</Link></p>
+            </div>
+            <div className="ab-split__media">
+              <div className="ab-media ab-media--portrait"><img src={t('about.founder.image')} alt="یاسر نظری، بنیان‌گذار خانواده برداشت" loading="lazy" decoding="async" /></div>
             </div>
           </div>
         </div>
@@ -211,12 +244,10 @@ export default async function AboutPage() {
       {/* سوابق و افتخارات حرفه‌ای */}
       <section id="about-resume" style={{ background: 'var(--white)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <span className="tag tag--gold">{t('about.resume.eyebrow')}</span>
-            <h2 className="heading" style={{ marginTop: 14 }}>{t('about.resume.heading')}</h2>
-            <div className="line line--center" />
+          <div className="ab-head">
+            <span className="ab-eyebrow">{t('about.resume.eyebrow')}</span>
+            <h2 className="ab-title">{t('about.resume.heading')}</h2>
           </div>
-
           <div className="resume-grid">
             <div className="resume-block">
               <h3><span className="rico"><Icon name="graduationCap" size={20} /></span> {t('about.edu.heading')}</h3>
@@ -257,7 +288,7 @@ export default async function AboutPage() {
           </div>
 
           <div style={{ marginTop: 36 }}>
-            <h3 style={{ textAlign: 'center', fontSize: '1.05rem', fontWeight: 800, color: 'var(--dark)', marginBottom: 22 }}>{t('about.skills.heading')}</h3>
+            <h3 style={{ textAlign: 'center', fontSize: '1.15rem', fontWeight: 900, color: 'var(--dark)', marginBottom: 22 }}>{t('about.skills.heading')}</h3>
             <div className="skills-groups">
               <div className="skills-group">
                 <span className="skills-group__label">{t('about.skills.g1.label')}</span>
@@ -283,14 +314,14 @@ export default async function AboutPage() {
       {/* افتخارات */}
       <section id="about-creds" style={{ background: 'var(--white)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <span className="tag tag--gold">{t('about.creds.eyebrow')}</span>
-            <h2 className="heading" style={{ marginTop: 14 }}>{t('about.creds.heading')}</h2>
+          <div className="ab-head" style={{ marginBottom: 0 }}>
+            <span className="ab-eyebrow">{t('about.creds.eyebrow')}</span>
+            <h2 className="ab-title">{t('about.creds.heading')}</h2>
           </div>
-          <div className="cred-grid">
-            <div className="cred-card"><div className="cico"><Icon name="trophy" size={28} strokeWidth={1.6} /></div><h3>{t('about.cred1.title')}</h3><p>{t('about.cred1.body')}</p></div>
-            <div className="cred-card"><div className="cico"><Icon name="graduationCap" size={28} strokeWidth={1.6} /></div><h3>{t('about.cred2.title')}</h3><p>{t('about.cred2.body')}</p></div>
-            <div className="cred-card"><div className="cico"><Icon name="check" size={28} strokeWidth={1.6} /></div><h3>{t('about.cred3.title')}</h3><p>{t('about.cred3.body')}</p></div>
+          <div className="ab-row" style={{ '--cols': 3 }}>
+            <div><div className="ab-ico"><Icon name="trophy" size={34} strokeWidth={1.4} /></div><h3>{t('about.cred1.title')}</h3><p>{t('about.cred1.body')}</p></div>
+            <div><div className="ab-ico"><Icon name="graduationCap" size={34} strokeWidth={1.4} /></div><h3>{t('about.cred2.title')}</h3><p>{t('about.cred2.body')}</p></div>
+            <div><div className="ab-ico"><Icon name="check" size={34} strokeWidth={1.4} /></div><h3>{t('about.cred3.title')}</h3><p>{t('about.cred3.body')}</p></div>
           </div>
         </div>
       </section>
@@ -298,14 +329,14 @@ export default async function AboutPage() {
       {/* ارزش‌ها */}
       <section id="about-values" style={{ background: 'var(--bg)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <span className="tag tag--dark">{t('about.values.eyebrow')}</span>
-            <h2 className="heading" style={{ marginTop: 14 }}>{t('about.values.heading')}</h2>
+          <div className="ab-head" style={{ marginBottom: 0 }}>
+            <span className="ab-eyebrow">{t('about.values.eyebrow')}</span>
+            <h2 className="ab-title">{t('about.values.heading')}</h2>
           </div>
-          <div className="values-grid">
-            <div className="value-item"><div className="vnum">۰۱</div><h3>{t('about.value1.title')}</h3><p>{t('about.value1.body')}</p></div>
-            <div className="value-item"><div className="vnum">۰۲</div><h3>{t('about.value2.title')}</h3><p>{t('about.value2.body')}</p></div>
-            <div className="value-item"><div className="vnum">۰۳</div><h3>{t('about.value3.title')}</h3><p>{t('about.value3.body')}</p></div>
+          <div className="ab-row" style={{ '--cols': 3 }}>
+            <div><div className="vnum">۰۱</div><h3>{t('about.value1.title')}</h3><p>{t('about.value1.body')}</p></div>
+            <div><div className="vnum">۰۲</div><h3>{t('about.value2.title')}</h3><p>{t('about.value2.body')}</p></div>
+            <div><div className="vnum">۰۳</div><h3>{t('about.value3.title')}</h3><p>{t('about.value3.body')}</p></div>
           </div>
         </div>
       </section>
