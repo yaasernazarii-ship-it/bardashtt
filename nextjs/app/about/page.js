@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic';
 export default async function AboutPage() {
   const t = await loadContent();
   // اسلایدهای بالای صفحه از فیلد چند‌عکسی جدید خوانده می‌شوند؛ اگر خالی بود، به اسلایدهای قدیمی برمی‌گردیم.
-  const aboutSlides = splitLines(t('about.header.slides'));
+  const aboutSlides = splitLines(t('about.slides'));
   const legacySlides = [t('about.slide1.image'), t('about.slide2.image'), t('about.slide3.image')].filter(Boolean);
   const heroImages = aboutSlides.length ? aboutSlides : legacySlides;
   const sliderTitle = t('about.slider.title') || '';
@@ -25,7 +25,15 @@ export default async function AboutPage() {
   const heroLast = heroWords.length > 1 ? heroWords.pop() : '';
   const heroFirst = heroWords.join(' ');
   const founderTagIcons = ['clapperboard', 'video', 'graduationCap', 'bookOpen', 'trophy'];
-  const bandImage = heroImages[0] || t('about.story.image');
+  const bandImage = t('about.creds.image') || heroImages[0] || t('about.story.image');
+  const honorsImage = t('about.honors.image');
+  const licensesImage = t('about.licenses.image');
+  const introImage = t('about.story.image');
+  const toFa = (n) => String(n).padStart(2, '0').replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
+  const pathSteps = splitLines(t('about.path.items')).map((line) => {
+    const i = line.indexOf('|');
+    return i < 0 ? [line, ''] : [line.slice(0, i).trim(), line.slice(i + 1).trim()];
+  });
   return (
     <PageLayout>
       <style>{`
@@ -231,7 +239,7 @@ export default async function AboutPage() {
               <p className="founder-bio">
                 {t('about.founder.bio3')}
               </p>
-              <p style={{ marginTop: 18 }}><Link href="/yaser-nazari" className="ab-pill">معرفی و سوابق یاسر نظری</Link></p>
+              <p style={{ marginTop: 18 }}><Link href="/yaser-nazari" className="ab-pill">{t('about.founder.link')}</Link></p>
             </div>
             <div className="ab-split__media">
               <div className="ab-media ab-media--founder"><img src={t('about.founder.image')} alt="یاسر نظری، بنیان‌گذار خانواده برداشت" loading="lazy" decoding="async" /></div>
@@ -272,9 +280,9 @@ export default async function AboutPage() {
                 </ul>
               </div>
               <div className="ab-split__media">
-                <div className="ab-split__media">
-                  <div className="ab-deco" aria-hidden="true"><Icon name="trophy" size={96} strokeWidth={1.1} /></div>
-                </div>
+                {honorsImage
+                  ? <div className="ab-media"><img src={honorsImage} alt={t('about.honors.heading')} loading="lazy" decoding="async" /></div>
+                  : <div className="ab-deco" aria-hidden="true"><Icon name="trophy" size={96} strokeWidth={1.1} /></div>}
               </div>
             </div>
           </div>
@@ -319,7 +327,9 @@ export default async function AboutPage() {
                 </ul>
               </div>
               <div className="ab-split__media">
-                <div className="ab-deco ab-deco--light" aria-hidden="true"><Icon name="scroll" size={88} strokeWidth={1.1} /></div>
+                {licensesImage
+                  ? <div className="ab-media"><img src={licensesImage} alt={t('about.licenses.heading')} loading="lazy" decoding="async" /></div>
+                  : <div className="ab-deco ab-deco--light" aria-hidden="true"><Icon name="scroll" size={88} strokeWidth={1.1} /></div>}
               </div>
             </div>
 
@@ -352,7 +362,7 @@ export default async function AboutPage() {
       <section id="about-intro" style={{ background: 'var(--bg)' }}>
         <div className="ab-sec" style={{ paddingBottom: 0 }}>
           <div className="container">
-            <div className="ab-split ab-split--media-start">
+            <div className={introImage ? 'ab-split ab-split--media-start' : undefined}>
               <div>
                 <span className="ab-eyebrow">{t('about.intro.eyebrow')}</span>
                 <h1 className="ab-title">{t('about.intro.heading')}</h1>
@@ -360,9 +370,11 @@ export default async function AboutPage() {
                   {t('about.intro.lead')}
                 </p>
               </div>
-              <div className="ab-split__media">
-                <div className="ab-media"><img src={t('about.story.image')} alt="خانواده برداشت" loading="lazy" decoding="async" /></div>
-              </div>
+              {introImage ? (
+                <div className="ab-split__media">
+                  <div className="ab-media"><img src={introImage} alt="خانواده برداشت" loading="lazy" decoding="async" /></div>
+                </div>
+              ) : null}
             </div>
 
             <div className="ab-row" style={{ '--cols': 2, marginTop: 44 }}>
@@ -400,30 +412,23 @@ export default async function AboutPage() {
       <section id="about-path" className="ab-sec" style={{ background: 'var(--white)' }}>
         <div className="container">
           <div className="ab-head">
-            <span className="ab-eyebrow">مسیر رشد هنرجو</span>
-            <h2 className="ab-title">از علاقه تا تجربهٔ واقعی بازیگری</h2>
+            <span className="ab-eyebrow">{t('about.path.eyebrow')}</span>
+            <h2 className="ab-title">{t('about.path.heading')}</h2>
             <p className="ab-text" style={{ marginTop: 14, color: 'var(--muted)' }}>
-              آموزش در خانواده برداشت فقط به حضور در کلاس محدود نیست؛ هنرجو در یک مسیر مرحله‌به‌مرحله با تمرین، بازخورد، کار گروهی و تجربهٔ جلوی دوربین رشد می‌کند.
+              {t('about.path.text')}
             </p>
           </div>
           <div className="ab-row ab-row--grid2" style={{ '--cols': 3, rowGap: 36 }}>
-            {[
-              ['۰۱', 'آموزش پایه', 'شناخت بدن، بیان، تمرکز و اصول حضور در صحنه و مقابل دوربین.'],
-              ['۰۲', 'تمرین و بازخورد', 'تمرین‌های منظم فردی و گروهی برای تبدیل آموخته‌ها به مهارت عملی.'],
-              ['۰۳', 'تجربهٔ تولید', 'آشنایی با فضای واقعی فیلم‌سازی و همکاری در یک گروه خلاق.'],
-              ['۰۴', 'مسیر پیشرفت', 'ادامهٔ آموزش از سطح مقدماتی تا تکمیلی و پیشرفته بر اساس آمادگی هنرجو.'],
-              ['۰۵', 'ارزیابی و گواهینامه', 'بررسی شرایط آموزشی و آزمون پایانی برای هنرجیانی که مسیر را کامل می‌کنند.'],
-              ['۰۶', 'ساخت رزومه', 'ثبت تجربه‌ها و معرفی توانایی‌های هنرجو برای ادامهٔ مسیر حرفه‌ای.'],
-            ].map(([num, title, text]) => (
-              <div key={num}>
-                <div className="vnum">{num}</div>
+            {pathSteps.map(([title, text], i) => (
+              <div key={i}>
+                <div className="vnum">{toFa(i + 1)}</div>
                 <h3>{title}</h3>
                 <p>{text}</p>
               </div>
             ))}
           </div>
           <div style={{ textAlign: 'center', marginTop: 40 }}>
-            <Link href="/courses" className="ab-pill">مشاهدهٔ دوره‌ها</Link>
+            <Link href="/courses" className="ab-pill">{t('about.path.cta')}</Link>
           </div>
         </div>
       </section>
@@ -468,8 +473,8 @@ export default async function AboutPage() {
           <div className="ab-contact__grid">
             <div className="ab-contact__addr">
               {[
-                { branch: 'شعبهٔ تهران', address: t('contact.tehranAddress') },
-                { branch: 'شعبهٔ مازندران', address: t('contact.mazandaranAddress') },
+                { branch: t('contact.tehranLabel'), address: t('contact.tehranAddress') },
+                { branch: t('contact.mazandaranLabel'), address: t('contact.mazandaranAddress') },
               ].map(({ branch, address }) => (
                 <div key={branch}>
                   <span><Icon name="mapPin" size={20} /></span>
@@ -478,15 +483,15 @@ export default async function AboutPage() {
               ))}
             </div>
             <div className="ab-contact__mid">
-              <span className="ab-contact__logo"><img src="/bardasht-logo.png" alt="خانواده برداشت" loading="lazy" /></span>
+              <span className="ab-contact__logo"><img src={t('about.contact.logo')} alt="خانواده برداشت" loading="lazy" /></span>
               <div><span className="tag tag--gold">{t('about.contact.eyebrow')}</span></div>
               <h2>{t('about.contact.heading')}</h2>
             </div>
             <div className="ab-contact__links">
               {[
-                { ico: 'phone', lbl: 'تلفن', val: t('contact.phone'), href: `tel:${t('contact.phone')}` },
-                { ico: 'instagram', lbl: 'اینستاگرام', val: t('contact.instagram'), href: t('contact.instagramUrl') },
-                { ico: 'chat', lbl: 'کانال بله', val: t('contact.bale'), href: t('contact.baleUrl') },
+                { ico: 'phone', lbl: t('about.contact.phoneLabel'), val: t('contact.phone'), href: `tel:${t('contact.phone')}` },
+                { ico: 'instagram', lbl: t('contact.instagramLabel'), val: t('contact.instagram'), href: t('contact.instagramUrl') },
+                { ico: 'chat', lbl: t('contact.baleLabel'), val: t('contact.bale'), href: t('contact.baleUrl') },
               ].map(c => (
                 <a key={c.lbl} className="ab-contact__link" href={c.href} target={c.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">
                   <i><Icon name={c.ico} size={18} /></i>

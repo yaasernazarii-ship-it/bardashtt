@@ -21,21 +21,19 @@ export const CONTENT_GROUPS = [
     id: 'home',
     title: 'صفحهٔ اصلی',
     fields: [
-      { key: 'home.hero.logo', label: 'لوگوی بالای صفحهٔ اصلی', type: 'image', default: '/imgg.png' },
+      { key: 'home.hero.featuredImage', label: 'تصویر اول هدر صفحهٔ اصلی (پیش از اسلایدها؛ خالی = نمایش داده نشود)', type: 'image', default: '/home-acting-workshop.jpg' },
+      { key: 'home.story.image', label: 'داستان ما — تصویر تمرین بازیگری', type: 'image', default: '/home-acting-workshop.jpg' },
+      { key: 'home.story.imageAlt', label: 'داستان ما — توضیح تصویر', type: 'text', default: 'تمرین گروهی بازیگری در خانه برداشت' },
       { key: 'home.hero.bgImage', label: 'عکس پس‌زمینهٔ هدر صفحهٔ اصلی', type: 'image', default: '/hero-cinema-bg.png' },
       { key: 'home.hero.slides', label: 'اسلایدهای هدر صفحهٔ اصلی (چند عکس — افزودن/حذف/جابه‌جایی؛ اگر خالی باشد همان عکس پس‌زمینهٔ بالا نشان داده می‌شود)', type: 'images', default: '' },
       { key: 'home.hero.eyebrow', label: 'برچسب بالای عنوان', type: 'text', default: 'اولین آموزشگاه رایگان بازیگری سینما در ایران' },
       { key: 'home.hero.title', label: 'عنوان اصلی (شعار)', type: 'text', default: 'شاید این بار قصه زندگی تو باشد' },
-      { key: 'home.hero.subtitle', label: 'زیرعنوان شعار', type: 'text', default: 'آموزش حرفه‌ای، رایگان و قابل‌اعتماد' },
       { key: 'home.hero.ctaPrimary', label: 'دکمهٔ اصلی', type: 'text', default: 'مشاهده دوره‌ها' },
       { key: 'home.hero.ctaSecondary', label: 'دکمهٔ دوم', type: 'text', default: 'درباره ما' },
       { key: 'home.seo.heading', label: 'بخش معرفی خانه — عنوان', type: 'text', default: 'آموزش رایگان بازیگری سینما در تهران' },
       { key: 'home.seo.text', label: 'بخش معرفی خانه — متن', type: 'textarea', default: 'خانواده برداشت، آموزشگاه رایگان بازیگری سینما در تهران است که از سال ۱۳۹۷ فعالیت می‌کند. دوره‌های جامع حضوری و غیرحضوری بازیگری برای نوجوانان، جوانان و بزرگسالان را به‌صورت ۱۰۰ درصد رایگان برگزار می‌کند.' },
-      { key: 'home.branch.heading', label: 'عنوان بخش شعبه‌ها', type: 'text', default: 'ما کجاییم؟' },
-      { key: 'home.branch1.title', label: 'شعبهٔ ۱ — نام', type: 'text', default: 'تهران' },
-      { key: 'home.branch1.desc', label: 'شعبهٔ ۱ — توضیح', type: 'textarea', default: 'مرکز اصلی خانواده برداشت در پایتخت. دوره‌های تخصصی با حضور مؤسس و استادان مجرب.' },
-      { key: 'home.branch2.title', label: 'شعبهٔ ۲ — نام', type: 'text', default: 'مازندران' },
-      { key: 'home.branch2.desc', label: 'شعبهٔ ۲ — توضیح', type: 'textarea', default: 'شعبه شمال کشور — فرصتی برای استعدادهای استان مازندران و مناطق همجوار.' },
+      { key: 'home.faq.heading', label: 'پرسش‌های هویتی خانه — عنوان', type: 'text', default: 'پرسش‌های متداول خانه برداشت' },
+      { key: 'home.faq.items', label: 'پرسش‌های هویتی خانه — موارد (هر خط: سؤال | پاسخ)', type: 'list', default: 'خانواده برداشت، خانه برداشت و تک برداشت چه ارتباطی با هم دارند؟ | خانواده برداشت نام جامعه مخاطبان مجموعه است؛ خانه برداشت مرکز آموزشی و تولیدی مجموعه و آموزشگاه آزاد سینمایی تک برداشت نام رسمی آموزشی دارای مجوز آن است.\nچرا آموزش اولیه بازیگری در خانه برداشت رایگان است؟ | آموزش اولیه رایگان است تا علاقه‌مندان بتوانند بدون مانع مالی، استعداد و مسیر آموزشی خود را در بازیگری سینما آغاز کنند.\nدوره‌ها و شعب خانه برداشت در کدام شهرها فعال است؟ | خانه برداشت در تهران و ساری فعالیت آموزشی دارد و اطلاعات دوره‌ها و زمان ثبت‌نام از طریق وب‌سایت منتشر می‌شود.\nمتد آموزشی آموزشگاه چیست و توسط چه کسی هدایت می‌شود؟ | مسیر آموزشی بر متد پنج سؤال طلایی استوار است؛ این متد توسط یاسر نظری طراحی و هدایت می‌شود.' },
 
       // بخش داستان ما
       { key: 'about.story.eyebrow', label: 'داستان — برچسب', type: 'text', default: 'داستان ما' },
@@ -45,9 +43,6 @@ export const CONTENT_GROUPS = [
       { key: 'about.story.p1', label: 'داستان — پاراگراف ۱', type: 'textarea', default: 'از همان روز اول تصمیم گرفتیم درهایمان را برای همه باز بگذاریم. امروز به عنوان تنها آموزشگاه رایگان بازیگری سینما در کشور شناخته می‌شویم؛ با مجوز رسمی، دوره‌های تخصصی و کمپ‌های آموزشی که برای هنرجویان در تمامی سنین طراحی شده‌اند.' },
       { key: 'about.story.p2', label: 'داستان — پاراگراف ۲', type: 'textarea', default: 'هنرجویان علاوه بر حضور در کلاس‌ها، در آفیش‌ها و اردوهای آموزشی ۲۴ ساعته تا ۱۰ روزه شرکت می‌کنند و از نزدیک با فضای واقعی تولید آثار سینمایی آشنا می‌شوند.' },
       { key: 'about.story.p3', label: 'داستان — پاراگراف ۳', type: 'textarea', default: 'ما باور داریم هر استعدادی شایسته دیده شدن است و هر رویا می‌تواند با آموزش درست به واقعیت تبدیل شود.' },
-      { key: 'about.story.foundedLabel', label: 'داستان — برچسب سال تأسیس', type: 'text', default: 'تأسیس' },
-      { key: 'about.story.foundedYear', label: 'داستان — سال تأسیس', type: 'text', default: '۱۳۹۷' },
-      { key: 'about.story.image', label: 'داستان — عکس', type: 'image', default: '/story-venue.jpg' },
 
       // بخش آمار (چارت سال تاسیس / شعبه‌ها / رایگان / مسیر آموزشی)
       { key: 'about.stat1.num', label: 'آمار ۱ — عدد', type: 'text', default: '۱۳۹۷' },
@@ -65,6 +60,7 @@ export const CONTENT_GROUPS = [
     title: 'دربارهٔ ما',
     fields: [
       { key: 'about.intro.heading', label: 'معرفی — عنوان', type: 'text', default: 'جایی که رویاهای سینمایی به واقعیت می‌پیوندند' },
+      { key: 'about.story.image', label: 'معرفی — عکس کنار متن (خالی = بدون عکس)', type: 'image', default: '/story-venue.jpg' },
       { key: 'about.intro.lead', label: 'معرفی — متن', type: 'textarea', default: '«خانواده برداشت» فراتر از یک فضای آموزشی، یک جامعه‌ی بزرگ هنری است؛ جایی که بیش از ۲۰۰ هزار هنرجو و علاقه‌مند به سینما گرد هم آمده‌اند تا مسیر حرفه‌ای شدن را با اصالت، صداقت و آموزش‌های استاندارد طی کنند.' },
       { key: 'about.founder.name', label: 'بنیان‌گذار — نام', type: 'text', default: 'یاسر نظری' },
       { key: 'about.founder.title', label: 'بنیان‌گذار — عنوان شغلی', type: 'text', default: 'کارگردان سینما · نویسنده کتاب «پنج متد طلایی»' },
@@ -86,6 +82,7 @@ export const CONTENT_GROUPS = [
       { key: 'about.founder.heading', label: 'بنیان‌گذار — عنوان بخش', type: 'text', default: 'یاسر نظری' },
       { key: 'about.founder.subtitle', label: 'بنیان‌گذار — زیرعنوان بخش', type: 'text', default: 'سینماگر، نویسنده و تحلیلگر رفتار' },
       { key: 'about.founder.tags', label: 'بنیان‌گذار — برچسب‌ها (هر مورد یک خط)', type: 'list', default: 'کارگردان سینما\nتهیه‌کننده\nدکتری فیلم‌سازی\nارشد آکسفورد\nبرنده جایزه زاگرب' },
+      { key: 'about.founder.link', label: 'بنیان‌گذار — متن دکمهٔ معرفی و سوابق', type: 'text', default: 'معرفی و سوابق یاسر نظری' },
 
       // رزومه
       { key: 'about.resume.eyebrow', label: 'رزومه — برچسب', type: 'text', default: 'رزومه حرفه‌ای' },
@@ -96,15 +93,25 @@ export const CONTENT_GROUPS = [
       { key: 'about.edu2.cap', label: 'رزومه — عنوان گواهی ۲', type: 'text', default: 'آکسفورد · انگلستان' },
       { key: 'about.honors.heading', label: 'رزومه — عنوان افتخارات', type: 'text', default: 'افتخارات' },
       { key: 'about.honors.items', label: 'رزومه — فهرست افتخارات (هر مورد یک خط)', type: 'list', default: 'برنده جایزه بهترین کارگردان — جشنواره زاگرب، کرواسی' },
+      { key: 'about.honors.image', label: 'رزومه — عکس کنار افتخارات (خالی = نماد جام)', type: 'image', default: '' },
       { key: 'about.licenses.heading', label: 'رزومه — عنوان مجوزها', type: 'text', default: 'مجوزهای رسمی' },
       { key: 'about.licenses.items', label: 'رزومه — فهرست مجوزها (هر مورد یک خط)', type: 'list', default: 'پروانه فعالیت کارگردانی و فیلم‌نامه‌نویسی — وزارت فرهنگ و ارشاد اسلامی\nپروانه فعالیت مشاوره فرهنگی و هنری کسب‌وکار — وزارت فرهنگ و ارشاد اسلامی\nپروانه تأسیس آموزشگاه آزاد سینمایی «تک برداشت» — سازمان فنی و حرفه‌ای کشور' },
+      { key: 'about.licenses.image', label: 'رزومه — عکس کنار مجوزها (خالی = نماد طومار)', type: 'image', default: '' },
       { key: 'about.skills.heading', label: 'رزومه — عنوان مهارت‌ها', type: 'text', default: 'حوزه تخصصی و مهارت‌ها' },
       { key: 'about.skills.g1.label', label: 'مهارت‌ها — عنوان گروه ۱', type: 'text', default: 'هنری' },
       { key: 'about.skills.g1.items', label: 'مهارت‌ها — گروه ۱ (هر مورد یک خط)', type: 'list', default: 'کارگردانی سینما\nفیلم‌نامه‌نویسی\nمربیگری بازیگری' },
       { key: 'about.skills.g2.label', label: 'مهارت‌ها — عنوان گروه ۲', type: 'text', default: 'تحلیلی و مدیریتی' },
       { key: 'about.skills.g2.items', label: 'مهارت‌ها — گروه ۲ (هر مورد یک خط)', type: 'list', default: 'تحلیل رفتار\nفن بیان و سخنوری\nمشاوره کسب‌وکار فرهنگی\nمدیریت تولید و برنامه‌ریزی' },
 
+      // مسیر رشد هنرجو
+      { key: 'about.path.eyebrow', label: 'مسیر رشد — برچسب', type: 'text', default: 'مسیر رشد هنرجو' },
+      { key: 'about.path.heading', label: 'مسیر رشد — عنوان', type: 'text', default: 'از علاقه تا تجربهٔ واقعی بازیگری' },
+      { key: 'about.path.text', label: 'مسیر رشد — توضیح', type: 'textarea', default: 'آموزش در خانواده برداشت فقط به حضور در کلاس محدود نیست؛ هنرجو در یک مسیر مرحله‌به‌مرحله با تمرین، بازخورد، کار گروهی و تجربهٔ جلوی دوربین رشد می‌کند.' },
+      { key: 'about.path.items', label: 'مسیر رشد — مراحل (هر خط: عنوان | توضیح؛ شماره خودکار)', type: 'list', default: 'آموزش پایه | شناخت بدن، بیان، تمرکز و اصول حضور در صحنه و مقابل دوربین.\nتمرین و بازخورد | تمرین‌های منظم فردی و گروهی برای تبدیل آموخته‌ها به مهارت عملی.\nتجربهٔ تولید | آشنایی با فضای واقعی فیلم‌سازی و همکاری در یک گروه خلاق.\nمسیر پیشرفت | ادامهٔ آموزش از سطح مقدماتی تا تکمیلی و پیشرفته بر اساس آمادگی هنرجو.\nارزیابی و گواهینامه | بررسی شرایط آموزشی و آزمون پایانی برای هنرجویانی که مسیر را کامل می‌کنند.\nساخت رزومه | ثبت تجربه‌ها و معرفی توانایی‌های هنرجو برای ادامهٔ مسیر حرفه‌ای.' },
+      { key: 'about.path.cta', label: 'مسیر رشد — متن دکمه', type: 'text', default: 'مشاهدهٔ دوره‌ها' },
+
       // چرا ما؟
+      { key: 'about.creds.image', label: 'چرا ما؟ — عکس پس‌زمینهٔ نوار تیره (خالی = اولین اسلاید هدر)', type: 'image', default: '' },
       { key: 'about.creds.eyebrow', label: 'چرا ما؟ — برچسب', type: 'text', default: 'چرا ما؟' },
       { key: 'about.creds.heading', label: 'چرا ما؟ — عنوان', type: 'text', default: 'دلایل انتخاب خانواده برداشت' },
       { key: 'about.cred1.title', label: 'چرا ما؟ — کارت ۱ عنوان', type: 'text', default: 'جایزه بین‌المللی زاگرب' },
@@ -127,7 +134,8 @@ export const CONTENT_GROUPS = [
       // تماس (پایین صفحه)
       { key: 'about.contact.eyebrow', label: 'تماس — برچسب', type: 'text', default: 'تماس با ما' },
       { key: 'about.contact.heading', label: 'تماس — عنوان', type: 'text', default: 'در تماسیم' },
-      { key: 'about.header.slides', label: 'عکس‌های پس‌زمینهٔ هدر (اسلایدی؛ افزودن/حذف/جابه‌جایی)', type: 'images', default: '' },
+      { key: 'about.contact.logo', label: 'تماس — لوگوی وسط نوار', type: 'image', default: '/bardasht-logo.png' },
+      { key: 'about.contact.phoneLabel', label: 'تماس — برچسب تلفن', type: 'text', default: 'تلفن' },
     ],
   },
   {
@@ -273,6 +281,9 @@ export const CONTENT_GROUPS = [
       { key: 'application.android.text', label: 'کارت اندروید — متن', type: 'textarea', default: 'می‌توانید اپلیکیشن را مستقیم دریافت کنید یا از کافه‌بازار نصب کنید.' },
       { key: 'application.android.direct', label: 'دکمهٔ دانلود مستقیم', type: 'text', default: 'دانلود مستقیم APK' },
       { key: 'application.android.bazaar', label: 'دکمهٔ کافه‌بازار', type: 'text', default: 'دانلود از کافه‌بازار' },
+      { key: 'application.android.bazaarUrl', label: 'نشانی صفحهٔ کافه‌بازار', type: 'text', default: 'https://cafebazaar.ir/app/com.bardashtt.app' },
+      { key: 'application.android.apkUrl', label: 'نشانی فایل APK', type: 'text', default: 'https://github.com/yaasernazarii-ship-it/bardashtt/releases/download/v1.0.0/bardashtt.apk' },
+      { key: 'application.ios.icon', label: 'کارت iOS — آیکون اپ روی گوشی', type: 'image', default: '/pwa-192.png' },
       { key: 'application.ios.platform', label: 'کارت iOS — برچسب', type: 'text', default: 'iPhone و iPad' },
       { key: 'application.ios.title', label: 'کارت iOS — عنوان', type: 'text', default: 'افزودن به صفحهٔ اصلی' },
       { key: 'application.ios.text', label: 'کارت iOS — متن', type: 'textarea', default: 'برای نصب اپلیکیشن روی iPhone یا iPad، راهنمای زیر را باز کنید.' },
@@ -307,8 +318,13 @@ export const CONTENT_GROUPS = [
     title: 'اطلاعات تماس (مشترک همهٔ صفحات)',
     fields: [
       { key: 'contact.phone', label: 'شمارهٔ تماس', type: 'text', default: '02191090934' },
+      { key: 'contact.phoneLabel', label: 'برچسب کادر تماس (صفحهٔ اصلی)', type: 'text', default: 'تماس مستقیم' },
+      { key: 'contact.tehranLabel', label: 'نام شعبهٔ تهران', type: 'text', default: 'شعبهٔ تهران' },
       { key: 'contact.tehranAddress', label: 'نشانی شعبهٔ تهران', type: 'text', default: 'تهران، میدان فاطمی' },
+      { key: 'contact.mazandaranLabel', label: 'نام شعبهٔ مازندران', type: 'text', default: 'شعبهٔ مازندران' },
       { key: 'contact.mazandaranAddress', label: 'نشانی شعبهٔ مازندران', type: 'text', default: 'ساری، بلوار طالقانی، روبه‌روی شهابی، طالقانی ۱۰، خانهٔ برداشت' },
+      { key: 'contact.instagramLabel', label: 'برچسب اینستاگرام', type: 'text', default: 'اینستاگرام' },
+      { key: 'contact.baleLabel', label: 'برچسب کانال بله', type: 'text', default: 'کانال بله' },
       { key: 'contact.instagram', label: 'اینستاگرام (نام کاربری)', type: 'text', default: '@bardashtt' },
       { key: 'contact.instagramUrl', label: 'اینستاگرام (لینک کامل)', type: 'text', default: 'https://instagram.com/bardashtt' },
       { key: 'contact.bale', label: 'کانال بله (نام کاربری)', type: 'text', default: '@bardasht_family' },
@@ -453,7 +469,7 @@ export const CONTENT_GROUPS = [
     id: 'aboutMedia',
     title: 'دربارهٔ ما — عکس‌های هدر اسلایدی و رسانه‌ها',
     fields: [
-      { key: 'about.slides', label: 'اسلایدهای بالای صفحه (هرچند عکس که بخواهی — افزودن/حذف/جابه‌جایی)', type: 'images', default: '' },
+      { key: 'about.slides', label: 'عکس‌های پس‌زمینهٔ هدر اسلایدی (افزودن/حذف/جابه‌جایی)', type: 'images', default: '' },
       { key: 'about.slider.title', label: 'متن روی اسلایدشو', type: 'text', default: 'خانواده برداشت · درباره ما' },
       { key: 'about.founder.image', label: 'عکس بنیان‌گذار', type: 'image', default: '/founder-yaser.jpg' },
       { key: 'about.edu1.image', label: 'گواهی تحصیلی ۱', type: 'image', default: '/edu-avicenna.jpg' },

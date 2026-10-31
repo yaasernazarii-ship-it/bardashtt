@@ -101,12 +101,12 @@ export default async function ApplicationPage() {
               <AccentTitle text={t('application.android.title')} className={`${styles.title} ${styles.titleLight}`} />
               <p className={styles.text}>{t('application.android.text')}</p>
               <div className={styles.actions}>
-                <a href="https://cafebazaar.ir/app/com.bardashtt.app" className={`${styles.cta} ${styles.ctaYellow}`} target="_blank" rel="noopener noreferrer">
+                <a href={t('application.android.bazaarUrl')} className={`${styles.cta} ${styles.ctaYellow}`} target="_blank" rel="noopener noreferrer">
                   <span className={styles.ctaIcon}><BagIcon /></span>
                   <span className={styles.ctaLabel}>{t('application.android.bazaar')}</span>
                   <Chevron />
                 </a>
-                <a href="https://github.com/yaasernazarii-ship-it/bardashtt/releases/download/v1.0.0/bardashtt.apk" className={`${styles.cta} ${styles.ctaOutline}`} download>
+                <a href={t('application.android.apkUrl')} className={`${styles.cta} ${styles.ctaOutline}`} download>
                   <span className={styles.ctaIcon}><ApkIcon /></span>
                   <span className={styles.ctaLabel}>{t('application.android.direct')}</span>
                   <Chevron />
@@ -120,7 +120,7 @@ export default async function ApplicationPage() {
               <div className={`${styles.phone} ${styles.phoneLight}`}>
                 <span className={styles.notch} />
                 <span className={styles.appTile}>
-                  <img src="/pwa-192.png" alt="" width="72" height="72" />
+                  <img src={t('application.ios.icon')} alt="" width="72" height="72" />
                 </span>
               </div>
               <span className={styles.arrow} />

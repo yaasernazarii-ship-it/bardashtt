@@ -14,10 +14,10 @@ export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const t = await loadContent();
-  // اسلایدهای هدر از فیلد چند‌عکسی خوانده می‌شوند؛ اگر خالی بود، به عکس پس‌زمینهٔ تکی برمی‌گردیم.
   const heroSlides = splitLines(t('home.hero.slides'));
   const configuredHeroImages = heroSlides.length ? heroSlides : [t('home.hero.bgImage')].filter(Boolean);
-  const heroImages = ['/home-acting-workshop.jpg', ...configuredHeroImages];
+  const heroImages = [t('home.hero.featuredImage'), ...configuredHeroImages].filter(Boolean);
+  const storyImage = t('home.story.image');
   return (
     <PageLayout>
       {/* Hero */}
@@ -38,7 +38,7 @@ export default async function HomePage() {
       <section id="story" style={{ background: 'var(--white)' }}>
         <div className="container">
           <div className="home-story">
-            <div className="home-story__media"><img src="/home-acting-workshop.jpg" alt="تمرین گروهی بازیگری در خانه برداشت" loading="lazy" /></div>
+            {storyImage ? <div className="home-story__media"><img src={storyImage} alt={t('home.story.imageAlt')} loading="lazy" /></div> : null}
             <div className="story-text">
               <span className="home-kicker">{t('about.story.eyebrow')}</span>
               <h2 className="home-title">{t('about.story.heading')}</h2>
@@ -61,7 +61,7 @@ export default async function HomePage() {
           <p className="body-lg">{t('home.seo.text')}</p>
         </div>
       </section>
-      <IdentityFaq />
+      <IdentityFaq heading={t('home.faq.heading')} items={splitLines(t('home.faq.items'))} />
 
       {/* آمار */}
       <section id="stats" className="home-features">
@@ -81,17 +81,17 @@ export default async function HomePage() {
       <div id="contact" className="contact-row">
         <a className="contact-cell" href={`tel:${t('contact.phone')}`} aria-label={`تماس با شماره ${t('contact.phone')}`}>
           <div className="ico"><Icon name="phone" size={26} /></div>
-          <div className="lbl">تماس مستقیم</div>
+          <div className="lbl">{t('contact.phoneLabel')}</div>
           <span className="contact-value">{t('contact.phone')}</span>
         </a>
         <a className="contact-cell" href={t('contact.instagramUrl')} target="_blank" rel="noopener noreferrer" aria-label="مشاهده صفحه اینستاگرام">
           <div className="ico"><Icon name="instagram" size={26} /></div>
-          <div className="lbl">اینستاگرام</div>
+          <div className="lbl">{t('contact.instagramLabel')}</div>
           <span className="contact-value">{t('contact.instagram')}</span>
         </a>
         <a className="contact-cell" href={t('contact.baleUrl')} target="_blank" rel="noopener noreferrer" aria-label="مشاهده کانال بله">
           <div className="ico"><Icon name="chat" size={26} /></div>
-          <div className="lbl">کانال بله</div>
+          <div className="lbl">{t('contact.baleLabel')}</div>
           <span className="contact-value">{t('contact.bale')}</span>
         </a>
       </div>
@@ -102,11 +102,11 @@ export default async function HomePage() {
       >
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '22px max(28px, calc((100vw - 1180px) / 2))', color: 'var(--gold)' }}>
           <Icon name="mapPin" size={24} />
-          <div style={{ display: 'grid', gap: 3, color: 'rgba(255,255,255,.68)', lineHeight: 1.85 }}><strong style={{ color: '#fff' }}>شعبهٔ تهران</strong><span>{t('contact.tehranAddress')}</span></div>
+          <div style={{ display: 'grid', gap: 3, color: 'rgba(255,255,255,.68)', lineHeight: 1.85 }}><strong style={{ color: '#fff' }}>{t('contact.tehranLabel')}</strong><span>{t('contact.tehranAddress')}</span></div>
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '22px max(28px, calc((100vw - 1180px) / 2))', color: 'var(--gold)', borderRight: '1px solid rgba(255,255,255,.08)' }}>
           <Icon name="mapPin" size={24} />
-          <div style={{ display: 'grid', gap: 3, color: 'rgba(255,255,255,.68)', lineHeight: 1.85 }}><strong style={{ color: '#fff' }}>شعبهٔ مازندران</strong><span>{t('contact.mazandaranAddress')}</span></div>
+          <div style={{ display: 'grid', gap: 3, color: 'rgba(255,255,255,.68)', lineHeight: 1.85 }}><strong style={{ color: '#fff' }}>{t('contact.mazandaranLabel')}</strong><span>{t('contact.mazandaranAddress')}</span></div>
         </div>
       </section>
     </PageLayout>
