@@ -51,18 +51,18 @@ export default async function AboutPage() {
         .ab-head .ab-eyebrow::before { content:'';width:48px;height:1.5px;background:var(--gold); }
         .ab-head .ab-eyebrow::after { width:48px; }
         .ab-title { font-size:clamp(1.5rem,3.2vw,2.3rem);font-weight:900;color:var(--dark);letter-spacing:-.02em;line-height:1.45;margin-top:10px; }
-        .ab-subhead { display:flex;align-items:center;gap:18px;font-size:clamp(1.25rem,2.4vw,1.7rem);font-weight:900;color:var(--dark);line-height:1.5;margin-bottom:18px; }
+        .ab-subhead { display:flex;align-items:center;gap:18px;font-size:clamp(1.25rem,2.4vw,1.7rem);font-weight:900;color:var(--dark);line-height:1.5;margin-bottom:14px; }
         .ab-subhead::after { content:'';flex:0 0 72px;height:2px;border-radius:2px;background:var(--gold);opacity:.75; }
         .ab-text { color:#444;line-height:2.1;font-size:.95rem; }
 
-        .ab-split { display:grid;grid-template-columns:1fr 1.1fr;gap:64px;align-items:center; }
+        .ab-split { display:grid;grid-template-columns:1fr 1.1fr;gap:56px;align-items:start; }
         .ab-split--rev .ab-split__media { order:-1; }
         .ab-split--media-start .ab-split__media { order:2; }
         .ab-media { position:relative;margin:16px; }
         .ab-media::before { content:'';position:absolute;inset:-16px auto -16px -16px;width:58%;border:2px solid var(--gold);border-right:0;border-radius:22px 0 0 22px;z-index:0; }
-        .ab-media img { position:relative;z-index:1;display:block;width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:18px;box-shadow:0 18px 44px rgba(0,0,0,.16);background:#222; }
+        .ab-media img { position:relative;z-index:1;display:block;width:100%;aspect-ratio:2.2/1;max-height:340px;object-fit:cover;border-radius:18px;box-shadow:0 18px 44px rgba(0,0,0,.16);background:#222; }
         .ab-media--founder img { object-position:center 22%; }
-        .ab-pill { display:inline-flex;align-items:center;gap:10px;border:1.5px solid var(--gold);border-radius:999px;padding:9px 24px;color:var(--dark);font-weight:800;font-size:.85rem;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.06);transition:all .25s; }
+        .ab-pill { align-self:flex-start; display:inline-flex;align-items:center;gap:10px;border:1.5px solid var(--gold);border-radius:999px;padding:9px 24px;color:var(--dark);font-weight:800;font-size:.85rem;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.06);transition:all .25s; }
         .ab-pill::after { content:'‹';color:#E0A800;font-size:1.2rem;line-height:1; }
         .ab-pill:hover { background:var(--gold);color:var(--dark);transform:translateY(-2px);box-shadow:0 10px 24px rgba(255,215,0,.3); }
         .ab-pill:hover::after { color:var(--dark); }
@@ -80,7 +80,7 @@ export default async function AboutPage() {
         .ab-row .resume-list { text-align:right;max-width:380px;margin:14px auto 0; }
         .ab-row .vnum { font-size:1.9rem;font-weight:900;color:var(--gold);line-height:1;margin-bottom:12px; }
         .ab-row--grid2 > :nth-child(3n+1)::before { display:none; }
-        .ab-tags { margin-top:56px;padding-top:28px;border-top:1px solid var(--border); }
+        .ab-tags { margin-top:48px;padding-top:26px;border-top:1px solid var(--border); }
         .ab-tags > * { display:flex;flex-direction:column;align-items:center;gap:10px;font-size:.9rem;font-weight:800;color:var(--dark); }
         .ab-tags .ab-ico { margin:0; }
 
@@ -213,7 +213,7 @@ export default async function AboutPage() {
       </div>
 
       {/* بنیان‌گذار */}
-      <section id="about-founder" className="ab-sec" style={{ background: 'var(--bg)', paddingTop: 84 }}>
+      <section id="about-founder" className="ab-sec" style={{ background: 'var(--bg)', paddingTop: 76 }}>
         <div className="container">
           <div className="ab-split ab-split--media-start">
             <div>
@@ -231,7 +231,7 @@ export default async function AboutPage() {
               <p className="founder-bio">
                 {t('about.founder.bio3')}
               </p>
-              <p style={{ marginTop: 24 }}><Link href="/yaser-nazari" className="ab-pill">معرفی و سوابق یاسر نظری</Link></p>
+              <p style={{ marginTop: 18 }}><Link href="/yaser-nazari" className="ab-pill">معرفی و سوابق یاسر نظری</Link></p>
             </div>
             <div className="ab-split__media">
               <div className="ab-media ab-media--founder"><img src={t('about.founder.image')} alt="یاسر نظری، بنیان‌گذار خانواده برداشت" loading="lazy" decoding="async" /></div>
@@ -256,7 +256,7 @@ export default async function AboutPage() {
 
       {/* سوابق و افتخارات حرفه‌ای */}
       <section id="about-resume" style={{ background: 'var(--white)' }}>
-        <div className="ab-sec" style={{ paddingBottom: 56 }}>
+        <div className="ab-sec" style={{ paddingTop: 8, paddingBottom: 40 }}>
           <div className="container">
             <div className="ab-head">
               <span className="ab-eyebrow">{t('about.resume.eyebrow')}</span>
@@ -272,7 +272,9 @@ export default async function AboutPage() {
                 </ul>
               </div>
               <div className="ab-split__media">
-                <div className="ab-deco" aria-hidden="true"><Icon name="trophy" size={96} strokeWidth={1.1} /></div>
+                <div className="ab-split__media">
+                  <div className="ab-deco" aria-hidden="true"><Icon name="trophy" size={96} strokeWidth={1.1} /></div>
+                </div>
               </div>
             </div>
           </div>
@@ -321,7 +323,7 @@ export default async function AboutPage() {
               </div>
             </div>
 
-            <div style={{ marginTop: 56 }}>
+            <div style={{ marginTop: 40 }}>
               <h3 className="skills-head">{t('about.skills.heading')}</h3>
               <div className="skills-groups">
                 <div className="skills-group">
@@ -363,7 +365,7 @@ export default async function AboutPage() {
               </div>
             </div>
 
-            <div className="ab-row" style={{ '--cols': 2, marginTop: 56 }}>
+            <div className="ab-row" style={{ '--cols': 2, marginTop: 44 }}>
               <div>
                 <div className="ab-ico"><Icon name="clapperboard" size={32} strokeWidth={1.4} /></div>
                 <h3>{t('about.card1.title')}</h3>
