@@ -16,70 +16,61 @@ export default async function HomePage() {
   const t = await loadContent();
   // اسلایدهای هدر از فیلد چند‌عکسی خوانده می‌شوند؛ اگر خالی بود، به عکس پس‌زمینهٔ تکی برمی‌گردیم.
   const heroSlides = splitLines(t('home.hero.slides'));
-  const heroImages = heroSlides.length ? heroSlides : [t('home.hero.bgImage')].filter(Boolean);
+  const configuredHeroImages = heroSlides.length ? heroSlides : [t('home.hero.bgImage')].filter(Boolean);
+  const heroImages = ['/home-acting-workshop.jpg', ...configuredHeroImages];
   return (
     <PageLayout>
       {/* Hero */}
       <section id="hero" className="home-hero">
         <HomeHeroBg images={heroImages} />
         <div className="container home-hero__inner home-hero__inner--center">
-          <div className="home-hero__eyebrow">
-            <span /> {t('home.hero.eyebrow')}
+          <div className="home-hero__eyebrow">{t('home.hero.eyebrow')}</div>
+          <h1 className="home-hero__slogan">{t('home.hero.title')}</h1>
+          <div className="home-hero__actions">
+            <Link href="/courses" className="home-pill home-pill--gold">{t('home.hero.ctaPrimary')}</Link>
+            <Link href="/about" className="home-pill">{t('home.hero.ctaSecondary')}</Link>
           </div>
-          <h1 className="home-hero__slogan">
-            {t('home.hero.title')}
-          </h1>
         </div>
+        <a href="#story" className="home-hero__down" aria-label="ادامه"><Icon name="arrowUp" size={20} /></a>
       </section>
-
-      {/* دکمه‌های اقدام — زیر عکس، تا روی عکس را نپوشانند */}
-      <div className="home-hero-actions">
-        <div className="container home-hero-actions__inner">
-          <Link href="/courses" className="btn btn--gold btn--sm">{t('home.hero.ctaPrimary')}</Link>
-          <Link href="/about" className="btn btn--hero-secondary btn--sm">{t('home.hero.ctaSecondary')}</Link>
-        </div>
-      </div>
 
       {/* داستان ما */}
       <section id="story" style={{ background: 'var(--white)' }}>
         <div className="container">
-          <div className="story-text">
-            <span className="tag tag--gold">{t('about.story.eyebrow')}</span>
-            <h2 className="heading" style={{ marginTop: 16 }}>{t('about.story.heading')}</h2>
-            <div className="line" />
-            <p className="body-lg" style={{ marginBottom: 20 }}>
-              {t('about.story.intro')}<br />
-              <strong>{t('about.story.lead')}</strong>
-            </p>
-            <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 16 }}>
-              {t('about.story.p1')}
-            </p>
-            <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 16 }}>
-              {t('about.story.p2')}
-            </p>
-            <p style={{ color: 'var(--muted)', lineHeight: 1.9 }}>
-              {t('about.story.p3')}
-            </p>
+          <div className="home-story">
+            <div className="home-story__media"><img src="/home-acting-workshop.jpg" alt="تمرین گروهی بازیگری در خانه برداشت" loading="lazy" /></div>
+            <div className="story-text">
+              <span className="home-kicker">{t('about.story.eyebrow')}</span>
+              <h2 className="home-title">{t('about.story.heading')}</h2>
+              <p className="body-lg" style={{ marginBottom: 20 }}>
+                {t('about.story.intro')}<br />
+                <strong>{t('about.story.lead')}</strong>
+              </p>
+              <p>{t('about.story.p1')}</p>
+              <p>{t('about.story.p2')}</p>
+              <p>{t('about.story.p3')}</p>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="seo-intro" aria-labelledby="seo-intro-title">
+      <section className="seo-intro home-quote" aria-labelledby="seo-intro-title">
         <div className="container">
-          <h2 id="seo-intro-title" className="heading">{t('home.seo.heading')}</h2>
+          <span className="home-quote__mark" aria-hidden="true">”</span>
+          <h2 id="seo-intro-title" className="home-title">{t('home.seo.heading')}</h2>
           <p className="body-lg">{t('home.seo.text')}</p>
         </div>
       </section>
       <IdentityFaq />
 
       {/* آمار */}
-      <section id="stats" style={{ background: 'var(--dark)', padding: '36px 0' }}>
+      <section id="stats" className="home-features">
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, textAlign: 'center' }}>
+          <div className="home-features__grid">
             {[[t('about.stat1.num'),t('about.stat1.label')],[t('about.stat2.num'),t('about.stat2.label')],[t('about.stat3.num'),t('about.stat3.label')],[t('about.stat4.num'),t('about.stat4.label')]].map(([n,l]) => (
-              <div key={l} style={{ padding: '16px 8px', borderLeft: '1px solid rgba(255,255,255,.07)' }}>
-                <div style={{ fontSize: 'clamp(1.15rem,2.2vw,1.6rem)', fontWeight: 900, color: 'var(--gold)', lineHeight: 1, marginBottom: 6 }}>{n}</div>
-                <p style={{ fontSize: '.68rem', color: 'rgba(255,255,255,.4)', letterSpacing: '.03em' }}>{l}</p>
+              <div key={l} className="home-feature">
+                <div className="home-feature__num">{n}</div>
+                <p>{l}</p>
               </div>
             ))}
           </div>
