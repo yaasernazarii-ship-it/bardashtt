@@ -69,7 +69,7 @@ export default async function AboutPage() {
         .ab-media { position:relative;margin:16px; }
         .ab-media::before { content:'';position:absolute;inset:-16px auto -16px -16px;width:58%;border:2px solid var(--gold);border-right:0;border-radius:22px 0 0 22px;z-index:0; }
         .ab-media img { position:relative;z-index:1;display:block;width:100%;aspect-ratio:2.2/1;max-height:340px;object-fit:cover;border-radius:18px;box-shadow:0 18px 44px rgba(0,0,0,.16);background:#222; }
-        .ab-media--founder img { object-position:center 22%; }
+        .ab-media--founder img { aspect-ratio:auto;height:clamp(280px,40vw,560px);max-height:none;object-position:center 18%; }
         .ab-pill { align-self:flex-start; display:inline-flex;align-items:center;gap:10px;border:1.5px solid var(--gold);border-radius:999px;padding:9px 24px;color:var(--dark);font-weight:800;font-size:.85rem;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.06);transition:all .25s; }
         .ab-pill::after { content:'‹';color:#E0A800;font-size:1.2rem;line-height:1; }
         .ab-pill:hover { background:var(--gold);color:var(--dark);transform:translateY(-2px);box-shadow:0 10px 24px rgba(255,215,0,.3); }
@@ -194,6 +194,7 @@ export default async function AboutPage() {
           .ab-contact__addr div{justify-content:center;text-align:right;}
           .ab-contact__links{align-items:center;}
           .ab-reel{width:200px;height:200px;left:-90px;}
+          .ab-media--founder img{height:clamp(320px,88vw,480px);}
         }
         @media(max-width:640px){
           .ab-row--grid2{--cols:1!important;}
