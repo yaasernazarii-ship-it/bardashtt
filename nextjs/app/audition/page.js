@@ -2,6 +2,9 @@ import PageLayout from '@/components/PageLayout';
 import AuditionForm from '@/components/AuditionForm';
 import { pageMetadata } from '@/lib/pageMeta';
 
+// محتوای پنل (نوار بالا/فوتر/متن صفحه) باید در هر درخواست خوانده شود؛ نه ثابت‌شده در بیلد.
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata() {
   return pageMetadata('audition');
 }

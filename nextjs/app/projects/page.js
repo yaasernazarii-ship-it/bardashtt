@@ -2,6 +2,9 @@ import Link from 'next/link';
 import SimplePage from '@/components/SimplePage';
 import { siteUrl } from '@/lib/siteUrl';
 
+// محتوای پنل (نوار بالا/فوتر/متن صفحه) باید در هر درخواست خوانده شود؛ نه ثابت‌شده در بیلد.
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata() {
   const site = await siteUrl();
   const title = 'پروژه‌ها و آثار خانه برداشت';

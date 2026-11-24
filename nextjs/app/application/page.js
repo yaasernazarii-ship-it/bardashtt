@@ -3,6 +3,9 @@ import Icon from '@/components/Icon';
 import { loadContent, splitLines } from '@/lib/siteContent';
 import styles from './page.module.css';
 
+// محتوای پنل (نوار بالا/فوتر/متن صفحه) باید در هر درخواست خوانده شود؛ نه ثابت‌شده در بیلد.
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'اپلیکیشن خانواده برداشت',
   description: 'روش نصب و دریافت اپلیکیشن خانواده برداشت در اندروید و iOS.',
