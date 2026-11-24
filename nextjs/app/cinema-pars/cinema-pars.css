@@ -227,11 +227,15 @@
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(to left, rgba(21, 19, 21, 0.95) 0%, rgba(21, 19, 21, 0.55) 45%, rgba(21, 19, 21, 0.25) 100%),
+    linear-gradient(to right, rgba(21, 19, 21, 0.95) 0%, rgba(21, 19, 21, 0.55) 45%, rgba(21, 19, 21, 0.25) 100%),
     linear-gradient(to top, var(--cp-bg) 0%, rgba(21, 19, 21, 0) 45%);
 }
+/* متن هیرو در سمت چپ صفحه می‌نشیند (در چیدمان RTL یعنی انتهای محور درون‌خطی). */
 .cp-hero__inner {
   position: relative;
+  max-width: 600px;
+  margin-inline-start: auto;
+  text-align: right;
 }
 .cp-hero__title {
   margin: 0 0 14px;
@@ -798,6 +802,14 @@ a.cp-contact__item:hover {
   .cp-hero {
     min-height: 78vh;
     padding-block: 64px;
+  }
+  .cp-hero__inner {
+    max-width: none;
+  }
+  .cp-hero__veil {
+    background:
+      linear-gradient(to right, rgba(21, 19, 21, 0.9) 0%, rgba(21, 19, 21, 0.7) 100%),
+      linear-gradient(to top, var(--cp-bg) 0%, rgba(21, 19, 21, 0) 45%);
   }
   .cp-cards,
   .cp-contact {
