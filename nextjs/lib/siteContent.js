@@ -537,6 +537,7 @@ export const CONTENT_GROUPS = [
           '- تولیدات تبلیغاتی | /works/advertising',
           '- ---',
           '- پشتوانه علمی و هنری | /works/resume',
+          'برداشت سینمای پارس | /cinema-pars',
           'اخبار | /news',
           'مجله برداشت | /blog',
           'مسئولیت اجتماعی | /social-responsibility',
