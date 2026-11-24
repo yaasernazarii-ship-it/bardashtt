@@ -14,6 +14,7 @@ export const dynamic = 'force-dynamic';
 const staticRoutes = [
   '',
   '/about',
+  '/cinema-pars',
   '/khane-bardasht',
   '/yaser-nazari',
   '/metod-panj-soal',
