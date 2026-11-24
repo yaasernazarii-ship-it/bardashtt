@@ -1,19 +1,35 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-const SUBJECTS = [
-  'تولید فیلم و سریال',
-  'طراحی و مشاوره',
-  'خدمات رسانه‌ای',
-  'فعالیت‌های فرهنگی و هنری',
-  'سایر',
-];
+// برچسب‌ها و گزینه‌های این فرم از رجیستری محتوای پنل (کلیدهای cp.form.*) می‌آیند
+// تا مدیر بتواند متن‌ها را بدون تغییر کد عوض کند.
+const FALLBACK_SUBJECTS = ['تولید فیلم و سریال', 'طراحی و مشاوره', 'خدمات رسانه‌ای', 'فعالیت‌های فرهنگی و هنری', 'سایر'];
 
-const EMPTY = { name: '', phone: '', email: '', subject: SUBJECTS[0], message: '' };
+const DEFAULTS = {
+  name: 'نام و نام خانوادگی',
+  phone: 'شمارهٔ تماس',
+  email: 'ایمیل',
+  emailOptional: 'اختیاری',
+  subject: 'موضوع همکاری',
+  message: 'شرح درخواست',
+  placeholder: 'دربارهٔ پروژه، همکاری یا خدمات مورد نظرتان بنویسید…',
+  submit: 'ارسال درخواست',
+  sending: 'در حال ارسال…',
+  note: 'اطلاعات شما فقط برای بررسی همین درخواست استفاده می‌شود.',
+  successTitle: 'درخواست شما ثبت شد',
+  successText: 'درخواست همکاری شما در صندوق پیام مدیریت ثبت شد و تیم ما برای بررسی با شما تماس می‌گیرد.',
+  successAgain: 'ارسال درخواست دیگر',
+};
 
-export default function CinemaParsForm() {
-  const [form, setForm] = useState(EMPTY);
+export default function CinemaParsForm({ labels = {} }) {
+  const L = { ...DEFAULTS, ...labels };
+  const subjects = useMemo(() => {
+    const list = (labels.subjects || []).filter(Boolean);
+    return list.length ? list : FALLBACK_SUBJECTS;
+  }, [labels.subjects]);
+
+  const [form, setForm] = useState({ name: '', phone: '', email: '', subject: subjects[0], message: '' });
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const [sent, setSent] = useState(false);
@@ -40,7 +56,7 @@ export default function CinemaParsForm() {
         return;
       }
       setSent(true);
-      setForm(EMPTY);
+      setForm({ name: '', phone: '', email: '', subject: subjects[0], message: '' });
     } catch {
       setError('ارتباط با سرور برقرار نشد؛ اتصال اینترنت را بررسی کنید و دوباره تلاش کنید.');
     } finally {
@@ -52,9 +68,9 @@ export default function CinemaParsForm() {
     return (
       <div className="cp-form__done" role="status">
         <span className="cp-form__done-ico" aria-hidden="true">✓</span>
-        <h3>درخواست شما ثبت شد</h3>
-        <p>درخواست همکاری شما در صندوق پیام مدیریت ثبت شد و تیم ما برای بررسی با شما تماس می‌گیرد.</p>
-        <button type="button" className="cp-btn cp-btn--ghost" onClick={() => setSent(false)}>ارسال درخواست دیگر</button>
+        <h3>{L.successTitle}</h3>
+        <p>{L.successText}</p>
+        <button type="button" className="cp-btn cp-btn--ghost" onClick={() => setSent(false)}>{L.successAgain}</button>
       </div>
     );
   }
@@ -63,11 +79,11 @@ export default function CinemaParsForm() {
     <form className="cp-form" onSubmit={submit} noValidate>
       <div className="cp-form__row">
         <label className="cp-form__field">
-          <span>نام و نام خانوادگی</span>
+          <span>{L.name}</span>
           <input name="name" value={form.name} onChange={set('name')} maxLength={80} required autoComplete="name" />
         </label>
         <label className="cp-form__field">
-          <span>شمارهٔ تماس</span>
+          <span>{L.phone}</span>
           <input
             name="phone"
             value={form.phone}
@@ -83,18 +99,18 @@ export default function CinemaParsForm() {
       </div>
       <div className="cp-form__row">
         <label className="cp-form__field">
-          <span>ایمیل <em>(اختیاری)</em></span>
+          <span>{L.email} {L.emailOptional ? <em>({L.emailOptional})</em> : null}</span>
           <input name="email" value={form.email} onChange={set('email')} maxLength={120} dir="ltr" type="email" autoComplete="email" />
         </label>
         <label className="cp-form__field">
-          <span>موضوع همکاری</span>
+          <span>{L.subject}</span>
           <select name="subject" value={form.subject} onChange={set('subject')}>
-            {SUBJECTS.map((s) => <option key={s} value={s}>{s}</option>)}
+            {subjects.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </label>
       </div>
       <label className="cp-form__field">
-        <span>شرح درخواست</span>
+        <span>{L.message}</span>
         <textarea
           name="message"
           value={form.message}
@@ -102,7 +118,7 @@ export default function CinemaParsForm() {
           rows={5}
           maxLength={2000}
           required
-          placeholder="دربارهٔ پروژه، همکاری یا خدمات مورد نظرتان بنویسید…"
+          placeholder={L.placeholder}
         />
       </label>
 
@@ -110,9 +126,9 @@ export default function CinemaParsForm() {
 
       <div className="cp-form__actions">
         <button type="submit" className="cp-btn" disabled={sending}>
-          {sending ? 'در حال ارسال…' : 'ارسال درخواست'}
+          {sending ? L.sending : L.submit}
         </button>
-        <small>اطلاعات شما فقط برای بررسی همین درخواست استفاده می‌شود.</small>
+        <small>{L.note}</small>
       </div>
     </form>
   );

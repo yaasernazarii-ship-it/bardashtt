@@ -1,12 +1,14 @@
 import { prisma } from '@/lib/prisma';
 import { sendMessage, isBaleConfigured } from '@/lib/bale';
 import { isLocked, recordFailure } from '@/lib/rateLimit';
+import { loadContent, splitLines } from '@/lib/siteContent';
 
 // فرم «درخواست همکاری» صفحهٔ برداشت سینمای پارس.
 // درخواست در همان صندوق گفت‌وگوی پشتیبانیِ پنل ثبت می‌شود تا مدیر بدون زیرساخت تازه‌ای آن را ببیند،
 // و همان اعلان بله هم ارسال می‌شود. هیچ جای دیگری از دیتابیس دست نمی‌خورد.
 
-const SUBJECTS = [
+// گزینه‌های موضوع از پنل خوانده می‌شوند تا اعتبارسنجی با فهرستی که مدیر ویرایش می‌کند یکی بماند.
+const FALLBACK_SUBJECTS = [
   'تولید فیلم و سریال',
   'طراحی و مشاوره',
   'خدمات رسانه‌ای',
@@ -35,7 +37,10 @@ export async function POST(request) {
     const name = clean(data.name, 80);
     const phone = clean(data.phone, 30).replace(/[^\d+]/g, '');
     const email = clean(data.email, 120);
-    const subject = SUBJECTS.includes(clean(data.subject, 80)) ? clean(data.subject, 80) : 'سایر';
+    const t = await loadContent();
+    const subjects = splitLines(t('cp.form.subjects')).length ? splitLines(t('cp.form.subjects')) : FALLBACK_SUBJECTS;
+    const requestedSubject = clean(data.subject, 80);
+    const subject = subjects.includes(requestedSubject) ? requestedSubject : (subjects[subjects.length - 1] || 'سایر');
     const message = clean(data.message, 2000);
 
     if (name.length < 3) return Response.json({ ok: false, error: 'نام و نام خانوادگی را کامل وارد کنید.' }, { status: 400 });
