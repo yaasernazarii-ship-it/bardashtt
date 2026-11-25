@@ -62,8 +62,10 @@ export async function POST(request) {
       message,
     ].filter((line) => line !== null).join('\n');
 
+    // برچسب منبع در نام گفتگو می‌نشیند تا مدیر در فهرست پشتیبانی بدون باز کردن پیام
+    // بفهمد این مورد از فرم «درخواست همکاری» صفحهٔ برداشت سینمای پارس آمده است.
     const conversation = await prisma.supportConversation.create({
-      data: { visitorName: name, visitorPhone: phone || null },
+      data: { visitorName: `درخواست همکاری · ${name}`, visitorPhone: phone || null },
     });
     await prisma.supportMessage.create({
       data: { conversationId: conversation.id, role: 'visitor', body },
