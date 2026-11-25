@@ -228,37 +228,40 @@ export default async function CinemaParsPage() {
           </div>
         </section>
 
-        {/* همکاری با ما */}
+        {/* درخواست همکاری — یک بلوک کامل */}
         <section id="collaborate" className="cp-sec cp-sec--alt">
-          <div className={`cp-wrap${t('cp.collaborate.image') ? ' cp-split cp-split--form' : ''}`}>
-            <div>
-              {t('cp.collaborate.kicker') ? <p className="cp-kicker">{t('cp.collaborate.kicker')}</p> : null}
-              <h2 className="cp-h2">{t('cp.collaborate.heading')}</h2>
-              {t('cp.collaborate.text') ? <p className="cp-lead">{t('cp.collaborate.text')}</p> : null}
-              {t('cp.collaborate.image') ? (
-                <figure className="cp-figure cp-figure--tall">
-                  <img src={t('cp.collaborate.image')} alt={t('cp.collaborate.imageAlt')} width="666" height="1000" loading="lazy" decoding="async" />
-                </figure>
-              ) : null}
+          <div className="cp-wrap cp-collab">
+            <figure className="cp-collab__banner">
+              <img src={t('cp.collaborate.image') || '/cinema-pars/cp-workshop.webp'} alt={t('cp.collaborate.imageAlt')} width="1200" height="525" loading="lazy" decoding="async" />
+              <span className="cp-collab__note" aria-hidden="true">درخواست همکاری</span>
+            </figure>
+
+            <div className="cp-collab__head">
+              {t('cp.collaborate.kicker') ? <p className="cp-kicker cp-kicker--c">{t('cp.collaborate.kicker')}</p> : null}
+              <h2 className="cp-h2 cp-h2--c">{t('cp.collaborate.heading')}</h2>
+              {t('cp.collaborate.text') ? <p className="cp-collab__lead">{t('cp.collaborate.text')}</p> : null}
             </div>
-            <CinemaParsForm
-              labels={{
-                name: t('cp.form.name'),
-                phone: t('cp.form.phone'),
-                email: t('cp.form.email'),
-                emailOptional: t('cp.form.emailOptional'),
-                subject: t('cp.form.subject'),
-                message: t('cp.form.message'),
-                placeholder: t('cp.form.placeholder'),
-                subjects: splitLines(t('cp.form.subjects')),
-                submit: t('cp.form.submit'),
-                sending: t('cp.form.sending'),
-                note: t('cp.form.note'),
-                successTitle: t('cp.form.successTitle'),
-                successText: t('cp.form.successText'),
-                successAgain: t('cp.form.successAgain'),
-              }}
-            />
+
+            <div className="cp-collab__panel">
+              <CinemaParsForm
+                labels={{
+                  name: t('cp.form.name'),
+                  phone: t('cp.form.phone'),
+                  email: t('cp.form.email'),
+                  emailOptional: t('cp.form.emailOptional'),
+                  subject: t('cp.form.subject'),
+                  message: t('cp.form.message'),
+                  placeholder: t('cp.form.placeholder'),
+                  subjects: splitLines(t('cp.form.subjects')),
+                  submit: t('cp.form.submit'),
+                  sending: t('cp.form.sending'),
+                  note: t('cp.form.note'),
+                  successTitle: t('cp.form.successTitle'),
+                  successText: t('cp.form.successText'),
+                  successAgain: t('cp.form.successAgain'),
+                }}
+              />
+            </div>
           </div>
         </section>
 

@@ -59,6 +59,11 @@
   background: var(--cp-gold);
   opacity: 0.6;
 }
+.cp-kicker--c {
+  justify-content: center;
+  display: flex;
+}
+.cp-h2--c { text-align: center; }
 
 .cp-h2 {
   margin: 0 0 22px;
@@ -283,6 +288,74 @@
   grid-template-columns: 1.05fr 0.95fr;
   align-items: center;
   gap: clamp(32px, 6vw, 80px);
+}
+
+/* ---------- درخواست همکاری — بلوک یکپارچه ---------- */
+.cp-collab {
+  display: grid;
+  gap: clamp(26px, 4vw, 44px);
+  max-width: 900px;
+  margin-inline: auto;
+}
+.cp-collab__banner {
+  position: relative;
+  margin: 0;
+  border-radius: 20px;
+  border: 1px solid var(--cp-line);
+  overflow: hidden;
+  background: var(--cp-bg2);
+}
+.cp-collab__banner img {
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+  object-position: center 40%;
+  filter: saturate(0.7) contrast(1.05);
+}
+.cp-collab__banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(21, 19, 21, 0.92) 0%, rgba(21, 19, 21, 0.15) 58%, rgba(21, 19, 21, 0.35) 100%);
+}
+.cp-collab__note {
+  position: absolute;
+  z-index: 2;
+  bottom: 16px;
+  right: 18px;
+  padding: 6px 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--cp-gold);
+  border: 1px solid rgba(199, 162, 125, 0.4);
+  border-radius: 999px;
+  background: rgba(21, 19, 21, 0.6);
+  backdrop-filter: blur(6px);
+}
+.cp-collab__head {
+  text-align: center;
+}
+.cp-collab__head .cp-kicker--c {
+  justify-content: center;
+}
+.cp-collab__head .cp-h2--c {
+  margin-bottom: 16px;
+}
+.cp-collab__lead {
+  max-width: 620px;
+  margin: 0 auto;
+  font-size: clamp(0.95rem, 0.9rem + 0.3vw, 1.08rem);
+  line-height: 2.1;
+  color: var(--cp-muted);
+}
+.cp-collab__panel {
+  position: relative;
+}
+.cp-collab__panel .cp-form {
+  border-radius: 22px;
+  background: rgba(33, 26, 28, 0.9);
+  box-shadow: 0 24px 60px -34px rgba(0, 0, 0, 0.9);
 }
 
 .cp-figure {
@@ -785,6 +858,7 @@ a.cp-contact__item:hover {
     padding-inline-start: 0;
     border-inline-start: none;
   }
+  .cp-collab__banner img { aspect-ratio: 16 / 9; }
 }
 
 @media (max-width: 560px) {
@@ -829,6 +903,8 @@ a.cp-contact__item:hover {
   .cp-hero__actions .cp-btn {
     flex: 1 1 auto;
   }
+  .cp-collab__panel .cp-form { padding: 20px 16px; }
+  .cp-collab__note { bottom: 10px; right: 10px; font-size: 0.66rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
