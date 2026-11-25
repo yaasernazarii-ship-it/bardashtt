@@ -21,6 +21,14 @@ __pycache__/
 # فایل‌هایی که کاربران در زمان اجرا آپلود می‌کنند
 nextjs/uploads/
 nextjs/private_uploads/
+uploads/
+private_uploads/
+
+# خروجی‌ها و آرشیوهای پشتیبان محلی
+outputs/
+/*.tar.gz
+/*.tgz
+/55990608.txt
 
 # IDE
 .idea/
