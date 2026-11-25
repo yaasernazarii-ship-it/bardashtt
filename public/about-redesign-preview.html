@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>پیش‌نمایش طرح جدید «دربارهٔ ما»</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap');
+:root{
+  --bg:#0C0C0B; --panel:#151513; --panel2:#1C1B18; --line:rgba(255,255,255,.09);
+  --gold:#E7BC5B; --gold-2:#F6DDA3; --gold-soft:rgba(231,188,91,.14);
+  --ink:#F4F1EA; --muted:#9A948A;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Vazirmatn,Arial,sans-serif;line-height:1.85;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1200px,calc(100% - 48px));margin:auto}
+.preview-note{font-size:.72rem;text-align:center;background:#1A1915;color:#C9BFA8;padding:9px;border-bottom:1px solid var(--line)}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.35;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+/* ── topbar ── */
+.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);background:rgba(12,12,11,.82);border-bottom:1px solid var(--line)}
+.top .wrap{height:68px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:11px;font-weight:900;font-size:.95rem}
+.brand img{width:34px;height:34px;object-fit:contain;background:#fff;border-radius:9px;padding:4px}
+.nav{display:flex;gap:24px;font-size:.78rem;font-weight:600;color:#C4BDB1}
+.nav a:hover{color:var(--gold)}
+.nav a.on{color:var(--gold);position:relative}
+.nav a.on::after{content:'';position:absolute;right:0;left:0;bottom:-22px;height:2px;background:var(--gold)}
+.cta-mini{border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:7px 16px;font-size:.75rem;font-weight:800}
+
+/* ── hero ── */
+.hero{position:relative;min-height:min(78vh,660px);display:flex;align-items:flex-end;overflow:hidden;padding-bottom:clamp(48px,7vw,92px)}
+.hero-img{position:absolute;inset:0;background:url('https://www.bardashtt.com/about-hero-stage.jpg') center 30%/cover no-repeat;animation:heroIn 1.8s cubic-bezier(.2,.7,.2,1) both}
+@keyframes heroIn{from{transform:scale(1.08);opacity:.4}to{transform:scale(1);opacity:1}}
+.hero::after{content:'';position:absolute;inset:0;background:
+  linear-gradient(90deg,rgba(12,12,11,.96) 0%,rgba(12,12,11,.78) 38%,rgba(12,12,11,.2) 72%,rgba(12,12,11,.45) 100%),
+  linear-gradient(180deg,rgba(12,12,11,.55) 0%,transparent 30%,rgba(12,12,11,.92) 100%)}
+.hero .wrap{position:relative;z-index:3}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;align-items:end;gap:30px}
+.kicker{display:inline-flex;align-items:center;gap:12px;font-size:.72rem;font-weight:800;letter-spacing:.18em;color:var(--gold);text-transform:uppercase}
+.kicker::before{content:'';width:34px;height:1px;background:var(--gold)}
+.hero h1{font-size:clamp(2.4rem,6vw,4.6rem);font-weight:900;line-height:1.12;letter-spacing:-.03em;margin:16px 0 14px}
+.hero h1 span{display:block;color:var(--gold);background:linear-gradient(90deg,var(--gold-2),var(--gold) 60%,#B98C34);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero .sub{font-size:1rem;color:#C9C2B5;max-width:420px;margin:0}
+.hero-figure{position:relative;display:flex;justify-content:flex-end;align-items:flex-end}
+.portrait{position:relative;width:min(360px,100%);aspect-ratio:3/4;border-radius:220px 220px 22px 22px;overflow:hidden;border:1px solid rgba(231,188,91,.5);box-shadow:0 40px 80px -20px rgba(0,0,0,.9)}
+.portrait img{width:100%;height:100%;object-fit:cover;object-position:center 18%;filter:contrast(1.06) saturate(.9)}
+.portrait::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(12,12,11,.85))}
+.portrait figcaption{position:absolute;z-index:2;right:20px;left:20px;bottom:18px;font-size:.8rem;color:#EDE7DA}
+.portrait figcaption b{display:block;font-size:.98rem;color:#fff}
+.portrait figcaption i{font-style:normal;color:var(--gold);font-size:.74rem}
+.scroll-cue{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:4;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:.62rem;letter-spacing:.2em;color:rgba(255,255,255,.45)}
+.scroll-cue span{width:1px;height:34px;background:linear-gradient(180deg,var(--gold),transparent);animation:cue 2s infinite}
+@keyframes cue{0%,100%{opacity:.2}50%{opacity:1}}
+
+/* section primitives */
+.sec{padding:clamp(64px,8vw,112px) 0;position:relative}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:clamp(30px,4vw,52px);flex-wrap:wrap}
+.sec-head h2{font-size:clamp(1.7rem,3.4vw,2.7rem);font-weight:900;letter-spacing:-.03em;line-height:1.35;margin:10px 0 0}
+.sec-head .note{color:var(--muted);font-size:.85rem;max-width:360px}
+.gold-line{width:56px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin-top:14px}
+
+/* bio */
+.founder{display:grid;grid-template-columns:1.35fr .65fr;gap:clamp(28px,5vw,64px);align-items:start}
+.bio-lead{font-size:clamp(1.05rem,1.8vw,1.3rem);font-weight:800;line-height:2;color:#EDE7DA;margin:0 0 18px}
+.bio p{color:#B4ADA1;font-size:.92rem;line-height:2.15;margin:0 0 14px}
+.bio-tags{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 26px}
+.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(231,188,91,.35);background:var(--gold-soft);color:var(--gold-2);border-radius:999px;padding:7px 14px;font-size:.76rem;font-weight:700}
+.chip svg{width:14px;height:14px;stroke:var(--gold)}
+.link-pill{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--gold);color:#111;background:linear-gradient(120deg,var(--gold-2),var(--gold));border-radius:999px;padding:11px 24px;font-size:.82rem;font-weight:900;transition:.25s}
+.link-pill:hover{transform:translateY(-2px);box-shadow:0 14px 30px -10px rgba(231,188,91,.6)}
+.stats{border-top:1px solid var(--line)}
+.stat{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:16px 0;border-bottom:1px solid var(--line)}
+.stat b{font-size:1.5rem;font-weight:900;color:var(--gold);letter-spacing:-.02em}
+.stat span{font-size:.78rem;color:var(--muted)}
+
+/* timeline resume */
+.timeline{position:relative;padding-right:34px}
+.timeline::before{content:'';position:absolute;top:8px;bottom:8px;right:9px;width:1px;background:linear-gradient(180deg,transparent,var(--gold) 12%,rgba(231,188,91,.25) 88%,transparent)}
+.tl-item{position:relative;padding:0 0 30px}
+.tl-item::before{content:'';position:absolute;right:-30px;top:9px;width:10px;height:10px;border-radius:50%;background:var(--bg);border:2px solid var(--gold);box-shadow:0 0 0 4px rgba(231,188,91,.12)}
+.tl-item h4{margin:0 0 8px;font-size:.92rem;color:var(--gold-2);font-weight:800;letter-spacing:.02em}
+.tl-list{margin:0;padding:0;list-style:none;display:grid;gap:7px}
+.tl-list li{font-size:.87rem;color:#B4ADA1;display:flex;gap:9px}
+.tl-list li::before{content:'';width:5px;height:5px;border-radius:50%;background:rgba(231,188,91,.6);margin-top:.75em;flex:0 0 auto}
+.creds-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:clamp(28px,4vw,48px);align-items:start;margin-top:clamp(36px,5vw,60px)}
+.cert-stack{position:relative;aspect-ratio:4/3}
+.cert-stack a{position:absolute;inset:0;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 60px -18px rgba(0,0,0,.9);transition:.4s cubic-bezier(.2,.7,.2,1);background:#222}
+.cert-stack a:nth-child(1){transform:rotate(-4deg) translate(-6%,3%);z-index:1}
+.cert-stack a:nth-child(2){transform:rotate(3deg) translate(6%,-2%);z-index:2}
+.cert-stack a:hover{z-index:5;transform:rotate(0) translate(0,0) scale(1.02)}
+.cert-stack img{width:100%;height:100%;object-fit:cover;object-position:top}
+.cert-stack span{position:absolute;right:0;left:0;bottom:0;padding:9px 12px;font-size:.7rem;font-weight:700;color:#EAE3D6;background:linear-gradient(0deg,rgba(0,0,0,.85),transparent)}
+
+/* skills */
+.skills{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.skill-card{position:relative;background:linear-gradient(160deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:20px;padding:26px 24px;overflow:hidden}
+.skill-card::before{content:'';position:absolute;top:0;right:0;left:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.7}
+.skill-card h4{margin:0 0 18px;font-size:.85rem;font-weight:800;color:var(--gold);display:flex;align-items:center;gap:8px}
+.skill-card h4::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:9px}
+.chips span{border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:10px;padding:8px 14px;font-size:.8rem;font-weight:600;color:#DCD5C8;transition:.2s}
+.chips span:hover{border-color:rgba(231,188,91,.6);color:var(--gold-2)}
+
+/* why band */
+.why{position:relative;overflow:hidden;background:#0A0A09;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.why-img{position:absolute;inset:0;background:url('https://www.bardashtt.com/about-hero-stage.jpg') center 60%/cover no-repeat;opacity:.16;filter:grayscale(.5)}
+.why::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 15%,rgba(231,188,91,.16),transparent 55%),linear-gradient(180deg,#0A0A09 0%,rgba(10,10,9,.75) 45%,#0A0A09 100%)}
+.why .wrap{position:relative;z-index:2}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:8px}
+.why-cell{padding:clamp(30px,4vw,46px) clamp(20px,3vw,34px);border-left:1px solid var(--line);position:relative}
+.why-cell:last-child{border-left:0}
+.why-cell .n{position:absolute;top:14px;left:18px;font-size:2.6rem;font-weight:900;color:rgba(255,255,255,.05);letter-spacing:-.04em}
+.why-cell .ri{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;border:1px solid rgba(231,188,91,.45);background:radial-gradient(circle at 30% 30%,rgba(231,188,91,.25),transparent 70%);color:var(--gold);margin-bottom:18px}
+.why-cell h4{margin:0 0 8px;font-size:1rem;font-weight:800;color:#fff}
+.why-cell p{margin:0;font-size:.83rem;color:#A39C90;line-height:2}
+
+/* values — full-width ticker cards */
+.values{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.val{position:relative;border-radius:18px;padding:28px 24px;background:linear-gradient(170deg,#181713,#101010);border:1px solid var(--line);overflow:hidden;transition:.3s}
+.val:hover{transform:translateY(-4px);border-color:rgba(231,188,91,.4)}
+.val::after{content:'';position:absolute;right:-30px;bottom:-40px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(231,188,91,.14),transparent 70%)}
+.val .nv{font-size:.7rem;font-weight:800;letter-spacing:.2em;color:var(--gold);opacity:.85}
+.val .ri{color:var(--gold);margin:16px 0 12px}
+.val h4{margin:0 0 6px;font-size:1.02rem;font-weight:900}
+.val p{margin:0;font-size:.83rem;color:#A39C90;line-height:2}
+
+/* journey */
+.journey{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;position:relative}
+.journey::before{content:'';position:absolute;top:23px;right:6%;left:6%;height:1px;background:linear-gradient(90deg,transparent,rgba(231,188,91,.45),rgba(231,188,91,.45),transparent)}
+.step{position:relative;text-align:center;padding-top:0}
+.step .dot{width:46px;height:46px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;background:var(--bg);border:1px solid rgba(231,188,91,.45);color:var(--gold);font-weight:900;font-size:.8rem;position:relative;z-index:2}
+.step h5{margin:0 0 4px;font-size:.82rem;font-weight:800}
+.step p{margin:0;font-size:.72rem;color:var(--muted);line-height:1.9}
+
+/* quote */
+.quote{position:relative;border:1px solid var(--line);border-radius:24px;padding:clamp(30px,5vw,54px);background:linear-gradient(135deg,rgba(231,188,91,.12),rgba(231,188,91,.02) 45%,transparent);overflow:hidden}
+.quote::before{content:'”';position:absolute;right:24px;top:-10px;font-family:Georgia,serif;font-size:9rem;color:rgba(231,188,91,.14);line-height:1}
+.quote p{position:relative;margin:0;font-size:clamp(.98rem,1.6vw,1.18rem);font-weight:700;line-height:2.1;color:#EDE7DA;max-width:900px}
+.cards2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.cardx{border:1px solid var(--line);border-radius:18px;padding:26px 24px;background:var(--panel)}
+.cardx .ri{color:var(--gold);margin-bottom:14px}
+.cardx h4{margin:0 0 10px;font-size:1rem;font-weight:900}
+.cardx p{margin:0 0 12px;font-size:.85rem;color:#A39C90;line-height:2.05}
+.cardx ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.cardx li{font-size:.82rem;color:#C4BDB1;display:flex;gap:9px}
+.cardx li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gold);margin-top:.75em;flex:0 0 auto}
+
+/* contact strip */
+.contact{position:relative;padding:clamp(40px,6vw,64px) 0;background:#080807;border-top:1px solid var(--line)}
+.contact-grid{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:30px}
+.addr{display:grid;gap:14px}
+.addr div{display:flex;gap:10px;align-items:flex-start}
+.addr svg{color:var(--gold);flex:0 0 auto;margin-top:3px}
+.addr b{display:block;font-size:.84rem;color:#fff}
+.addr span{font-size:.78rem;color:#8F897F;line-height:1.9}
+.midlogo{display:flex;flex-direction:column;align-items:center;gap:10px}
+.midlogo .box{width:82px;height:82px;border-radius:20px;background:linear-gradient(160deg,#fff,#E8E1D2);display:grid;place-items:center;box-shadow:0 20px 40px -12px rgba(231,188,91,.35)}
+.midlogo .box img{width:58px;height:58px;object-fit:contain}
+.midlogo small{font-size:.7rem;color:var(--muted);letter-spacing:.12em}
+.links{display:flex;flex-direction:column;gap:12px;align-items:flex-end}
+.lnk{display:flex;align-items:center;gap:12px}
+.lnk i{width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.18);display:grid;place-items:center;color:#fff;transition:.25s;font-style:normal}
+.lnk:hover i{border-color:var(--gold);color:var(--gold);background:rgba(231,188,91,.08)}
+.lnk small{display:block;font-size:.65rem;color:#7A746B;font-weight:700}
+.lnk b{font-size:.86rem;font-weight:700;color:#EDE7DA}
+
+/* reference mockup thumbnails */
+.refs{margin-top:clamp(50px,7vw,80px);border-top:1px dashed rgba(255,255,255,.12);padding-top:24px}
+.refs h6{margin:0 0 14px;font-size:.72rem;letter-spacing:.16em;color:var(--muted);font-weight:800}
+.refs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.refs-grid a{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);aspect-ratio:4/3;background:#151513}
+.refs-grid img{width:100%;height:100%;object-fit:cover;object-position:top;opacity:.85}
+.refs-grid em{position:absolute;right:8px;bottom:8px;font-style:normal;font-size:.66rem;background:rgba(0,0,0,.7);padding:3px 8px;border-radius:6px;color:#DCD5C8}
+
+/* reveal animation (CSS only) */
+.sec > .wrap{animation:rise .8s both}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+@media(max-width:1000px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-figure{display:none}
+  .founder,.creds-grid,.cards2{grid-template-columns:1fr}
+  .journey{grid-template-columns:repeat(3,1fr);row-gap:22px}
+  .journey::before{display:none}
+  .why-grid{grid-template-columns:1fr}
+  .why-cell{border-left:0;border-bottom:1px solid var(--line)}
+  .values{grid-template-columns:1fr}
+  .contact-grid{grid-template-columns:1fr;text-align:center}
+  .midlogo{order:-1}
+  .links{align-items:center}
+  .addr div{justify-content:center;text-align:right}
+  .refs-grid{grid-template-columns:repeat(2,1fr)}
+  .nav{display:none}
+}
+@media(max-width:620px){
+  .skills{grid-template-columns:1fr}
+  .journey{grid-template-columns:1fr 1fr}
+  .wrap{width:calc(100% - 32px)}
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="preview-note">پیش‌نمایش مستقل — فقط برای تأیید طراحی؛ هنوز روی سایت زنده اعمال نشده است.</div>
+
+<header class="top"><div class="wrap">
+  <div class="brand"><img src="https://www.bardashtt.com/bardasht-logo.png" alt="">خانواده برداشت</div>
+  <nav class="nav"><a href="#">خانه</a><a href="#">دوره‌های جامع</a><a href="#">بازیگران</a><a href="#">برداشت من</a><a href="#">آثار</a><a href="#">مجله</a><a href="#" class="on">درباره ما</a></nav>
+  <a href="#" class="cta-mini">ورود</a>
+</div></header>
+
+<main>
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-img"></div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="kicker"> Bardasht · درباره ما</span>
+        <h1>جایی که رویا<span>به واقعیت می‌پیوندد</span></h1>
+        <p class="sub">خانواده برداشت · آموزشگاه رایگان بازیگری سینما برای نوجوانان، جوانان و بزرگسالان</p>
+      </div>
+      <figure class="hero-figure">
+        <div class="portrait">
+          <img src="https://www.bardashtt.com/founder-yaser.jpg" alt="یاسر نظری">
+          <figcaption><b>یاسر نظری</b><i>بنیان‌گذار · سینماگر و نویسنده</i></figcaption>
+        </div>
+      </figure>
+    </div>
+  </div>
+  <div class="scroll-cue">SCROLL<span></span></div>
+</section>
+
+<!-- ══ بنیان‌گذار ══ -->
+<section class="sec" id="founder">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="kicker">بنیان‌گذار</span>
+        <h2>یاسر نظری</h2>
+        <div class="gold-line"></div>
+      </div>
+      <p class="note">سینماگر، نویسنده و تحلیلگر رفتار</p>
+    </div>
+    <div class="founder">
+      <div class="bio">
+        <p class="bio-lead">یاسر نظری، کارگردان سینما و نویسنده کتاب «پنج متد طلایی»، فعالیت هنری خود را با رویکردی عمیق، فلسفی و نمادین پیگیری می‌کند. او معتقد است سینما فراتر از یک سرگرمی، ابزاری برای واکاوی پیچیدگی‌های رفتار انسانی است.</p>
+        <p>تخصص و دانش او حاصل سال‌ها تجربه عملی در بیش از ۸۰ پروژه سینمایی، تلویزیونی و تبلیغاتی در مقام کارگردان، تهیه‌کننده و مدیر تولید است. او با تکیه بر تحصیلات آکادمیک خود — شامل مدرک درجه یک هنری (معادل دکتری فیلم‌سازی) از کالج ابن‌سینا گرجستان و کارشناسی ارشد فیلم‌سازی از دانشگاه آکسفورد انگلستان — و همچنین کسب افتخارات بین‌المللی نظیر جایزه بهترین کارگردانی از جشنواره زاگرب کرواسی، نگاهی استاندارد و جهانی به هنر سینما دارد.</p>
+        <p>وی علاوه بر فعالیت‌های هنری، با دریافت مجوزهای رسمی از وزارت فرهنگ و ارشاد اسلامی و سازمان فنی و حرفه‌ای کشور، بنیان‌گذار «آموزشگاه خانواده برداشت» است؛ مجموعه‌ای که امروز با همراهی بیش از ۲۰۰ هزار هنرجو و علاقه‌مند، به یکی از پرمخاطب‌ترین قطب‌های آموزشی بازیگری در کشور تبدیل شده است.</p>
+        <div class="bio-tags">
+          <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="m3 8 9-5 9 5-9 5-9-5Z"/><path d="M7 10v5l5 3 5-3v-5"/></svg>کارگردان سینما</span>
+          <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3"/></svg>تهیه‌کننده</span>
+          <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M22 9 12 4 2 9l10 5 10-5Z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>دکتری فیلم‌سازی</span>
+          <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M4 5h7a3 3 0 0 1 3 3v11a2 2 0 0 0-2-2H4V5Z"/><path d="M20 5h-4a3 3 0 0 0-3 3v11a2 2 0 0 1 2-2h5V5Z"/></svg>ارشد آکسفورد</span>
+          <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>برنده جایزه زاگرب</span>
+        </div>
+        <a href="#" class="link-pill">معرفی و سوابق یاسر نظری <span>←</span></a>
+      </div>
+      <aside class="stats">
+        <div class="stat"><b>＋۸۰</b><span>پروژه سینمایی</span></div>
+        <div class="stat"><b>＋۲۰۰ هزار</b><span>هنرجو و علاقه‌مند</span></div>
+        <div class="stat"><b>۲</b><span>مدرک بین‌المللی</span></div>
+        <div class="stat"><b>زاگرب</b><span>بهترین کارگردانی</span></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ══ سوابق ══ -->
+<section class="sec" id="resume" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="kicker">رزومه حرفه‌ای</span>
+        <h2>سوابق و افتخارات یاسر نظری</h2>
+        <div class="gold-line"></div>
+      </div>
+    </div>
+    <div class="creds-grid">
+      <div class="timeline">
+        <div class="tl-item">
+          <h4>افتخارات</h4>
+          <ul class="tl-list">
+            <li>برنده جایزه بهترین کارگردان — جشنواره زاگرب، کرواسی</li>
+            <li>مؤلف کتاب «پنج متد طلایی»</li>
+            <li>تهیه‌کننده — کارگردان: فیلم کوتاه «تن‌ها»</li>
+            <li>تهیه‌کننده — کارگردان: فیلم کوتاه «قلاده شیطان»</li>
+            <li>تهیه‌کننده — کارگردان — نویسنده: فیلم «دوزخ»</li>
+            <li>تهیه‌کننده — کارگردان — نویسنده: فیلم کوتاه «بقا»</li>
+            <li>نویسنده فیلم سینمایی «خانه خاکی»</li>
+          </ul>
+        </div>
+        <div class="tl-item">
+          <h4>تحصیلات</h4>
+          <ul class="tl-list">
+            <li>مدرک درجه یک هنری (معادل دکتری فیلم‌سازی) — کالج ابن‌سینا، گرجستان</li>
+            <li>کارشناسی ارشد فیلم‌سازی — دانشگاه آکسفورد، انگلستان</li>
+          </ul>
+        </div>
+        <div class="tl-item">
+          <h4>مجوزهای رسمی</h4>
+          <ul class="tl-list">
+            <li>پروانه فعالیت کارگردانی و فیلم‌نامه‌نویسی — وزارت فرهنگ و ارشاد اسلامی</li>
+            <li>پروانه فعالیت مشاوره فرهنگی و هنری کسب‌وکار — وزارت فرهنگ و ارشاد اسلامی</li>
+            <li>پروانه تأسیس آموزشگاه آزاد سینمایی «تک برداشت» — سازمان فنی و حرفه‌ای کشور</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cert-stack">
+        <a href="https://www.bardashtt.com/edu-avicenna.jpg"><img src="https://www.bardashtt.com/edu-avicenna.jpg" alt=""><span>کالج ابن‌سینا · گرجستان</span></a>
+        <a href="https://www.bardashtt.com/edu-oxford.jpg"><img src="https://www.bardashtt.com/edu-oxford.jpg" alt=""><span>آکسفورد · انگلستان</span></a>
+      </div>
+    </div>
+
+    <!-- مهارت‌ها -->
+    <div class="sec-head" style="margin-top:clamp(40px,6vw,72px);margin-bottom:22px">
+      <div><span class="kicker">تخصص</span><h2 style="font-size:clamp(1.35rem,2.4vw,1.9rem)">حوزه تخصصی و مهارت‌ها</h2><div class="gold-line"></div></div>
+    </div>
+    <div class="skills">
+      <div class="skill-card">
+        <h4>هنری</h4>
+        <div class="chips"><span>کارگردانی سینما</span><span>فیلم‌نامه‌نویسی</span><span>مربیگری بازیگری</span></div>
+      </div>
+      <div class="skill-card">
+        <h4>تحلیلی و مدیریتی</h4>
+        <div class="chips"><span>تحلیل رفتار</span><span>فن بیان و سخنوری</span><span>مشاوره کسب‌وکار فرهنگی</span><span>مدیریت تولید و برنامه‌ریزی</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ چرا ما ══ -->
+<section class="why sec">
+  <div class="why-img"></div>
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="kicker">چرا ما؟</span>
+        <h2>دلایل انتخاب خانواده برداشت</h2>
+        <div class="gold-line"></div>
+      </div>
+    </div>
+    <div class="why-grid">
+      <div class="why-cell">
+        <span class="n">۰۱</span>
+        <div class="ri"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></div>
+        <h4>جایزه بین‌المللی زاگرب</h4>
+        <p>برنده جایزه بهترین کارگردانی از جشنواره معتبر بین‌المللی زاگرب کرواسی</p>
+      </div>
+      <div class="why-cell">
+        <span class="n">۰۲</span>
+        <div class="ri"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 9 12 4 2 9l10 5 10-5Z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg></div>
+        <h4>مجوز رسمی آموزشی</h4>
+        <p>دارای مجوز رسمی از ادارات آموزشی ذی‌صلاح — آموزشی معتبر و قانونی</p>
+      </div>
+      <div class="why-cell">
+        <span class="n">۰۳</span>
+        <div class="ri"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3.2"/></svg></div>
+        <h4>۱۰۰٪ رایگان</h4>
+        <p>اولین و تنها آموزشگاه بازیگری کاملاً رایگان در ایران — بدون هیچ هزینه‌ای</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ارزش‌ها ══ -->
+<section class="sec" id="values">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="kicker">ارزش‌های ما</span>
+        <h2>چه چیزی ما را متفاوت می‌کند</h2>
+        <div class="gold-line"></div>
+      </div>
+    </div>
+    <div class="values">
+      <div class="val">
+        <div class="nv">۰۱</div>
+        <div class="ri"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c0-3 2.7-5 6-5s6 2 6 5M15.5 14c2.8.3 4.5 2 4.5 4.5"/></svg></div>
+        <h4>دسترسی آزاد</h4>
+        <p>هنر و آموزش بازیگری برای همه. هیچ مانع مالی در مسیر استعداد وجود ندارد.</p>
+      </div>
+      <div class="val">
+        <div class="nv">۰۲</div>
+        <div class="ri"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/></svg></div>
+        <h4>آموزش حرفه‌ای</h4>
+        <p>تکنیک‌های اثبات‌شده بازیگری با اساتید باتجربه و دانش‌آموخته خارج از کشور.</p>
+      </div>
+      <div class="val">
+        <div class="nv">۰۳</div>
+        <div class="ri"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3"/></svg></div>
+        <h4>تجربه واقعی</h4>
+        <p>اردوها، آفیش‌ها و حضور در پروژه‌های واقعی سینمایی در کنار آموزش نظری.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ مسیر و معرفی ══ -->
+<section class="sec" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><span class="kicker">مسیر رشد هنرجو</span><h2>از علاقه تا تجربهٔ واقعی بازیگری</h2><div class="gold-line"></div></div>
+      <p class="note">آموزش در خانواده برداشت فقط به حضور در کلاس محدود نیست؛ هنرجو مرحله‌به‌مرحله رشد می‌کند.</p>
+    </div>
+    <div class="journey">
+      <div class="step"><div class="dot">۰۱</div><h5>آموزش پایه</h5><p>شناخت بدن، بیان، تمرکز و اصول حضور در صحنه</p></div>
+      <div class="step"><div class="dot">۰۲</div><h5>تمرین و بازخورد</h5><p>تمرین‌های منظم فردی و گروهی برای تبدیل آموخته‌ها به مهارت</p></div>
+      <div class="step"><div class="dot">۰۳</div><h5>تجربهٔ تولید</h5><p>آشنایی با فضای واقعی فیلم‌سازی و همکاری در یک گروه خلاق</p></div>
+      <div class="step"><div class="dot">۰۴</div><h5>مسیر پیشرفت</h5><p>ادامهٔ آموزش از مقدماتی تا پیشرفته بر اساس آمادگی هنرجو</p></div>
+      <div class="step"><div class="dot">۰۵</div><h5>ارزیابی و گواهینامه</h5><p>بررسی شرایط آموزشی و آزمون پایانی مسیر</p></div>
+      <div class="step"><div class="dot">۰۶</div><h5>ساخت رزومه</h5><p>ثبت تجربه‌ها برای ادامهٔ مسیر حرفه‌ای</p></div>
+    </div>
+    <div style="text-align:center;margin-top:38px"><a href="#" class="link-pill">مشاهدهٔ دوره‌ها <span>←</span></a></div>
+
+    <div style="margin-top:clamp(48px,7vw,84px)">
+      <div class="cards2">
+        <div class="cardx">
+          <div class="ri"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8 12 3l9 5-9 5-9-5Z"/><path d="M7 10v5l5 3 5-3v-5"/></svg></div>
+          <h4>چرا خانواده برداشت؟</h4>
+          <p>ما معتقدیم سینما یعنی «زندگی». اینجا آموزش بازیگری و فیلم‌سازی صرفاً محدود به تئوری‌های کتابی نیست؛ بلکه متمرکز بر «متد پنج سؤال طلایی» و انتقال تجربه‌ی عملی است که یاسر نظری در بیش از ۸۰ پروژه‌ی سینمایی کسب کرده است. هدف ما این است که هنرجو در پایان دوره تنها یک بازیگر نباشد، بلکه یک آرتیستِ صاحب‌سبک و تحلیلگر رفتار باشد.</p>
+        </div>
+        <div class="cardx">
+          <div class="ri"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3 4 6v6c0 5 3.4 8.2 8 9 4.6-.8 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <h4>اعتبار و مجوزها</h4>
+          <p>تعهد ما به آموزش اصولی با پشتوانه‌ی قانونیِ کامل همراه است. آموزشگاه ما تحت عنوان «آموزشگاه آزاد سینمایی تک‌برداشت» دارای مجوزهای رسمی زیر است:</p>
+          <ul>
+            <li>پروانه تأسیس آموزشگاه آزاد سینمایی — سازمان آموزش فنی و حرفه‌ای کشور</li>
+            <li>پروانه‌های فعالیت در حوزه‌ی کارگردانی، فیلم‌نامه‌نویسی و مشاوره‌ی کسب‌وکار فرهنگی — وزارت فرهنگ و ارشاد اسلامی</li>
+          </ul>
+        </div>
+      </div>
+      <div class="quote">
+        <p>این مجوزها گواه آن است که شما در فضایی کاملاً استاندارد، قانونی و معتبر آموزش می‌بینید. ما در «خانواده برداشت» پلی هستیم میان استعدادهای نهفته‌ی شما و سینمای حرفه‌ای ایران؛ جایی که قرار است با هم، آینده‌ای روشن برای سینمای این سرزمین بسازیم.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ══ تماس ══ -->
+<section class="contact">
+  <div class="wrap">
+    <div class="contact-grid">
+      <div class="addr">
+        <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg><span><b>شعبهٔ تهران</b>تهران، بلوار فردوس شرق، خیابان سازمان برنامه، پلاک ۲۴</span></div>
+        <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg><span><b>شعبهٔ مازندران</b>مازندران، ساری، خیابان فرهنگ</span></div>
+      </div>
+      <div class="midlogo">
+        <span class="box"><img src="https://www.bardashtt.com/bardasht-logo.png" alt="خانواده برداشت"></span>
+        <small>تماس با ما</small>
+      </div>
+      <div class="links">
+        <a class="lnk" href="#"><i><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1Z"/></svg></i><span><small>تلفن</small><b>۰۲۱-۹۱۰۹۰۹۳۴</b></span></a>
+        <a class="lnk" href="#"><i><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="1"/></svg></i><span><small>اینستاگرام</small><b>@bardashtt</b></span></a>
+        <a class="lnk" href="#"><i><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-5.1A8 8 0 1 1 21 12Z"/></svg></i><span><small>کانال بله</small><b>@bardasht_family</b></span></a>
+      </div>
+    </div>
+
+    <div class="refs">
+      <h6>مقایسه با اسکرین‌شات‌های بررسی‌شده</h6>
+      <div class="refs-grid">
+        <a href="https://www.bardashtt.com/uploads/bardasht-preview/preview.png"><img src="https://www.bardashtt.com/uploads/bardasht-preview/preview.png" alt=""><em>مجوزها + مهارت‌ها (فعلی)</em></a>
+        <a href="https://www.bardashtt.com/uploads/bardasht-preview/Screenshot-2026-10-31-185755.png"><img src="https://www.bardashtt.com/uploads/bardasht-preview/Screenshot-2026-10-31-185755.png" alt=""><em>رزومه + پنل خالی جام</em></a>
+        <a href="https://www.bardashtt.com/uploads/bardasht-preview/Screenshot-2026-10-31-185746.png"><img src="https://www.bardashtt.com/uploads/bardasht-preview/Screenshot-2026-10-31-185746.png" alt=""><em>فاصلهٔ خالی ردیف آیکون‌ها</em></a>
+        <a href="https://www.bardashtt.com/uploads/bardasht-preview/Screenshot-2026-10-31-185718.png"><img src="https://www.bardashtt.com/uploads/bardasht-preview/Screenshot-2026-10-31-185718.png" alt=""><em>قاب عکس هدر</em></a>
+      </div>
+    </div>
+  </div>
+</section>
+</body>
+</html>
