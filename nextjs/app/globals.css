@@ -714,6 +714,48 @@ body.nav-open {
 .mbn-item--accent { color: var(--gold); }
 .mbn-ico { font-size: 1.25rem; line-height: 1; }
 
+/* ── SUPPORT FLOATING BUTTON (جدا از نوار بالا) ── */
+.sup-fab {
+  position: fixed; bottom: 24px; left: 24px; z-index: 470;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+}
+.sup-fab__btn {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 11px 18px; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgba(255,215,0,.35);
+  background: linear-gradient(135deg, #FFE066 0%, var(--gold) 60%, #E8B800 100%);
+  color: var(--dark); font-family: inherit; font-size: .85rem; font-weight: 800;
+  box-shadow: 0 12px 30px rgba(0,0,0,.28), 0 2px 0 rgba(255,255,255,.25) inset;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.sup-fab__btn:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(0,0,0,.32); }
+.sup-fab__btn svg { display: block; }
+.sup-fab__menu {
+  list-style: none; margin: 0; padding: 8px 0; min-width: 258px;
+  background: #1f1f1f; border: 1px solid rgba(255,255,255,.09); border-radius: 16px;
+  box-shadow: 0 20px 48px rgba(0,0,0,.45);
+  opacity: 0; pointer-events: none; transform: translateY(10px);
+  transition: opacity .2s ease, transform .2s ease;
+}
+.sup-fab.open .sup-fab__menu { opacity: 1; pointer-events: all; transform: translateY(0); }
+.sup-fab__menu a,
+.sup-fab__menu button {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 11px 16px; background: none; border: 0; text-align: right;
+  font-family: inherit; font-size: .87rem; color: rgba(255,255,255,.88); cursor: pointer;
+  transition: background .15s ease;
+}
+.sup-fab__menu a:hover,
+.sup-fab__menu button:hover { background: rgba(255,255,255,.06); color: #fff; }
+.sup-fab__menu li + li { border-top: 1px solid rgba(255,255,255,.06); }
+.sup-fab__ico { display: inline-flex; color: var(--gold); flex-shrink: 0; }
+.sup-fab__menu small { display: block; font-size: .70rem; color: rgba(255,255,255,.45); font-weight: 400; margin-top: 2px; }
+.sup-fab__dot { width: 7px; height: 7px; border-radius: 50%; background: #22C55E; margin-inline-start: auto; animation: pulse 2s infinite; }
+@media (max-width: 767px) {
+  .sup-fab { bottom: calc(74px + env(safe-area-inset-bottom)); left: 14px; }
+  .sup-fab__btn { padding: 10px 14px; font-size: .78rem; }
+}
+
 /* ── SUPPORT CHAT ───────────────────────── */
 .support-chat-box {
   position: fixed; bottom: 24px; left: 24px; width: 360px;
@@ -1039,12 +1081,11 @@ a.dash-stat:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(27
 @media(min-width: 768px) and (max-width: 1279px) {
   .nav__inner { height: 64px; gap: 12px; padding: 0 18px; }
   .nav__logo img { height: 30px; }
-  .nav__links { gap: 0; }
+  .nav__links { gap: 0; min-width: 0; }
   .nav__links > li > a,
-  .nav__dropdown-toggle { padding: 8px 7px; font-size: .78rem; }
+  .nav__dropdown-toggle { padding: 8px 6px; font-size: .76rem; }
   .nav__actions { gap: 6px; }
-  .nav__support-btn { padding: 8px 10px; font-size: .76rem; }
-  .nav__actions .btn { padding: 8px 12px; font-size: .76rem; }
+  .nav__actions .btn { padding: 8px 10px; font-size: .74rem; }
   section { padding: 72px 0; }
 }
 

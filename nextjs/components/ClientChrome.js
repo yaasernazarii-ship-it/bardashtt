@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Nav from './Nav';
 import Footer from './Footer';
 import SupportChat from './SupportChat';
+import SupportFab from './SupportFab';
 import MobileBottomNav from './MobileBottomNav';
 
 export default function ClientChrome({ children, logo, nav, footer }) {
@@ -21,6 +22,14 @@ export default function ClientChrome({ children, logo, nav, footer }) {
       <main>{children}</main>
       <Footer content={footer} />
       <MobileBottomNav />
+      <SupportFab onOpenChat={() => setChatOpen(true)} labels={{
+        button: nav.supportButton,
+        faq: nav.supportFaq,
+        chat: nav.supportChat,
+        chatHint: nav.supportChatHint,
+        call: nav.callLabel,
+        phoneText: nav.phoneText,
+      }} />
       <SupportChat isOpen={chatOpen} onClose={() => setChatOpen(false)} />
     </>
   );

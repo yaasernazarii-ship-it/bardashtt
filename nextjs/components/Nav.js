@@ -63,12 +63,10 @@ export default function Nav({ onOpenChat, logo, content }) {
   const c = { ...FALLBACK_TEXT, ...(content || {}) };
   const navLinks = content?.menu?.length ? content.menu : FALLBACK_LINKS;
   const [menuOpen, setMenuOpen] = useState(false);
-  const [supportOpen, setSupportOpen] = useState(false);
   const [openIndex, setOpenIndex] = useState(null);
   const [openSub, setOpenSub] = useState(false);
   const [user, setUser] = useState(null);
   const pathname = usePathname();
-  const supportRef = useRef(null);
   const linksRef = useRef(null);
 
   function closeMobileMenu() {
@@ -77,14 +75,12 @@ export default function Nav({ onOpenChat, logo, content }) {
 
   useEffect(() => {
     closeMobileMenu();
-    setSupportOpen(false);
     setOpenIndex(null);
     setOpenSub(false);
   }, [pathname]);
 
   useEffect(() => {
     function handler(e) {
-      if (supportRef.current && !supportRef.current.contains(e.target)) setSupportOpen(false);
       if (linksRef.current && !linksRef.current.contains(e.target)) { setOpenIndex(null); setOpenSub(false); }
     }
     document.addEventListener('mousedown', handler);
@@ -173,25 +169,6 @@ export default function Nav({ onOpenChat, logo, content }) {
             ))}
           </ul>
           <div className="nav__actions">
-            <div className={`nav__support${supportOpen ? ' open' : ''}`} ref={supportRef}>
-              <button type="button" className="nav__support-btn" onClick={() => setSupportOpen(p => !p)} aria-haspopup="true" aria-expanded={supportOpen}>
-                <span className="nav__support-dot" />{c.supportButton}
-                <span className="nav__caret" aria-hidden="true" />
-              </button>
-              <ul className="hdr-support-drop">
-                <li><Link href="/faq" onClick={() => setSupportOpen(false)}><span className="drop-icon"><Icon name="clipboard" size={18} /></span>{c.supportFaq}</Link></li>
-                <li className="drop-sep" />
-                <li>
-                  <button type="button" onClick={() => { onOpenChat?.(); setSupportOpen(false); }}>
-                    <span className="drop-icon"><Icon name="chat" size={18} /></span>
-                    <span>{c.supportChat}<span className="drop-phone">{c.supportChatHint}</span></span>
-                    <span className="drop-online-dot" />
-                  </button>
-                </li>
-                <li className="drop-sep" />
-                <li><a href={`tel:${String(c.phoneHref || '').replace(/[^0-9+]/g, '')}`}><span className="drop-icon"><Icon name="phone" size={18} /></span><span>{c.callLabel}<span className="drop-phone">{c.phoneText}</span></span></a></li>
-              </ul>
-            </div>
             <Link href="/application" className="btn btn--outline btn--sm">{c.btnApplication}</Link>
             {user ? (
               <>
