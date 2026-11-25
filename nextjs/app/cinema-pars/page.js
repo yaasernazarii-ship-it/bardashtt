@@ -112,7 +112,6 @@ export default async function CinemaParsPage() {
             <nav className="cp-nav" aria-label="بخش‌های صفحه">
               {NAV.map((n) => <a key={n.id} href={`#${n.id}`}>{n.label}</a>)}
             </nav>
-            <a href="#collaborate" className="cp-btn cp-btn--solid cp-bar__cta">{t('cp.hero.ctaSecondary')}</a>
           </div>
         </header>
 
@@ -233,7 +232,6 @@ export default async function CinemaParsPage() {
           <div className="cp-wrap cp-collab">
             <figure className="cp-collab__banner">
               <img src={t('cp.collaborate.image') || '/cinema-pars/cp-workshop.webp'} alt={t('cp.collaborate.imageAlt')} width="1200" height="525" loading="lazy" decoding="async" />
-              <span className="cp-collab__note" aria-hidden="true">درخواست همکاری</span>
             </figure>
 
             <div className="cp-collab__head">

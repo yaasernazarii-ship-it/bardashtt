@@ -63,7 +63,6 @@ export default async function CinemaParsPreview() {
                 </a>
               ))}
             </nav>
-            <a href="#collaborate" className="cpx-btn">{t('cp.hero.ctaSecondary')}</a>
           </div>
         </header>
 
@@ -248,7 +247,6 @@ export default async function CinemaParsPreview() {
           <div className="cpx-wrap cpx-collab">
             <figure className="cpx-collab__banner">
               <img src={collabImage} alt={t('cp.collaborate.imageAlt')} width="1200" height="525" loading="lazy" decoding="async" />
-              <span className="cpx-collab__banner-note" aria-hidden="true">درخواست همکاری</span>
             </figure>
 
             <div className="cpx-collab__head">
