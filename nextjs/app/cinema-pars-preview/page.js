@@ -34,6 +34,8 @@ export default async function CinemaParsPreview() {
   const phone = t('contact.phone');
   const brandName = t('cp.hero.title');
   const logo = t('cp.logo');
+  // بنر سرِ بلوک همکاری؛ اگر مدیر تصویر را خالی بگذارد، عکس واقعی کارگاه نمایش داده می‌شود.
+  const collabImage = t('cp.collaborate.image') || '/cinema-pars/cp-workshop.webp';
 
   const services = SERVICES.map((s) => ({
     ...s,
@@ -241,38 +243,41 @@ export default async function CinemaParsPreview() {
           </div>
         </section>
 
-        {/* همکاری */}
+        {/* درخواست همکاری — یک بلوک کامل و یک‌پارچه */}
         <section id="collaborate" className="cpx-sec cpx-sec--alt">
           <div className="cpx-wrap cpx-collab">
-            <div className="cpx-collab__intro">
+            <figure className="cpx-collab__banner">
+              <img src={collabImage} alt={t('cp.collaborate.imageAlt')} width="1200" height="525" loading="lazy" decoding="async" />
+              <span className="cpx-collab__banner-note" aria-hidden="true">درخواست همکاری</span>
+            </figure>
+
+            <div className="cpx-collab__head">
               <span className="cpx-heada__n" aria-hidden="true">۰۶</span>
-              {t('cp.collaborate.kicker') ? <p className="cpx-kicker">{t('cp.collaborate.kicker')}</p> : null}
-              <h2 className="cpx-h2">{t('cp.collaborate.heading')}</h2>
-              {t('cp.collaborate.text') ? <p className="cpx-lead">{t('cp.collaborate.text')}</p> : null}
-              {t('cp.collaborate.image') ? (
-                <figure className="cpx-fig cpx-fig--tall">
-                  <img src={t('cp.collaborate.image')} alt={t('cp.collaborate.imageAlt')} width="666" height="1000" loading="lazy" decoding="async" />
-                </figure>
-              ) : null}
+              {t('cp.collaborate.kicker') ? <p className="cpx-kicker cpx-kicker--c">{t('cp.collaborate.kicker')}</p> : null}
+              <h2 className="cpx-h2 cpx-h2--c">{t('cp.collaborate.heading')}</h2>
+              {t('cp.collaborate.text') ? <p className="cpx-collab__lead">{t('cp.collaborate.text')}</p> : null}
             </div>
-            <CinemaParsForm
-              labels={{
-                name: t('cp.form.name'),
-                phone: t('cp.form.phone'),
-                email: t('cp.form.email'),
-                emailOptional: t('cp.form.emailOptional'),
-                subject: t('cp.form.subject'),
-                message: t('cp.form.message'),
-                placeholder: t('cp.form.placeholder'),
-                subjects: splitLines(t('cp.form.subjects')),
-                submit: t('cp.form.submit'),
-                sending: t('cp.form.sending'),
-                note: t('cp.form.note'),
-                successTitle: t('cp.form.successTitle'),
-                successText: t('cp.form.successText'),
-                successAgain: t('cp.form.successAgain'),
-              }}
-            />
+
+            <div className="cpx-collab__panel">
+              <CinemaParsForm
+                labels={{
+                  name: t('cp.form.name'),
+                  phone: t('cp.form.phone'),
+                  email: t('cp.form.email'),
+                  emailOptional: t('cp.form.emailOptional'),
+                  subject: t('cp.form.subject'),
+                  message: t('cp.form.message'),
+                  placeholder: t('cp.form.placeholder'),
+                  subjects: splitLines(t('cp.form.subjects')),
+                  submit: t('cp.form.submit'),
+                  sending: t('cp.form.sending'),
+                  note: t('cp.form.note'),
+                  successTitle: t('cp.form.successTitle'),
+                  successText: t('cp.form.successText'),
+                  successAgain: t('cp.form.successAgain'),
+                }}
+              />
+            </div>
           </div>
         </section>
 

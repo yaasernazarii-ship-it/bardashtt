@@ -495,15 +495,89 @@
   font-size: .95rem; font-weight: 600; line-height: 1.85;
 }
 
-/* ── همکاری ── */
+/* ── درخواست همکاری — یک بلوک کامل ── */
 .cpx-collab {
   display: grid;
-  grid-template-columns: .92fr 1.08fr;
-  gap: clamp(30px, 5vw, 72px);
-  align-items: start;
+  gap: clamp(26px, 4vw, 44px);
+  max-width: 900px;
+  margin-inline: auto;
 }
-.cpx-collab__intro .cpx-heada__n { display: inline-block; margin-bottom: 18px; }
-.cpx-collab .cpx-fig { margin-top: 26px; }
+
+/* نوار تصویری سرِ بلوک */
+.cpx-collab__banner {
+  position: relative;
+  margin: 0;
+  border: 1px solid var(--cpx-line);
+  overflow: hidden;
+  background: #0b0a0b;
+}
+.cpx-collab__banner img {
+  width: 100%;
+  aspect-ratio: 16/7;
+  object-fit: cover;
+  object-position: center 40%;
+  filter: saturate(.6) contrast(1.1) brightness(.7);
+}
+.cpx-collab__banner::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(28, 23, 25, .96) 0%, rgba(28, 23, 25, .25) 62%, rgba(28, 23, 25, .45) 100%);
+}
+.cpx-collab__banner-note {
+  position: absolute; z-index: 2;
+  bottom: 16px; right: 18px;
+  padding: 6px 14px;
+  font-size: .7rem; font-weight: 700; letter-spacing: .1em;
+  color: var(--cpx-gold);
+  border: 1px solid rgba(199, 162, 125, .4);
+  background: rgba(11, 10, 11, .55);
+  backdrop-filter: blur(6px);
+}
+
+.cpx-collab__head { text-align: center; }
+.cpx-collab__head .cpx-heada__n {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding-top: 0;
+  border-top: none;
+  letter-spacing: .16em;
+  color: rgba(199, 162, 125, .6);
+}
+.cpx-collab__lead {
+  max-width: 620px;
+  margin: 0 auto;
+  font-size: clamp(.95rem, .9rem + .3vw, 1.08rem);
+  line-height: 2.1;
+  color: var(--cpx-muted);
+}
+
+/* پنل فرم — قاب روشن‌تر روی زمینهٔ تیره */
+.cpx-collab__panel {
+  position: relative;
+  padding: clamp(24px, 3.4vw, 44px);
+  background: linear-gradient(175deg, #211a1d 0%, #171314 100%);
+  border: 1px solid rgba(199, 162, 125, .24);
+  box-shadow: 0 24px 60px -32px rgba(0, 0, 0, .85);
+}
+/* گوشه‌های طلایی، مثل کادر اسلیت */
+.cpx-collab__panel::before,
+.cpx-collab__panel::after {
+  content: '';
+  position: absolute;
+  width: 22px; height: 22px;
+  border-color: var(--cpx-gold);
+  border-style: solid;
+  opacity: .55;
+  pointer-events: none;
+}
+.cpx-collab__panel::before {
+  top: 10px; right: 10px;
+  border-width: 1px 1px 0 0;
+}
+.cpx-collab__panel::after {
+  bottom: 10px; left: 10px;
+  border-width: 0 0 1px 1px;
+}
 
 /* ── تماس ── */
 .cpx-contact {
@@ -681,7 +755,7 @@
   .cpx-dossier__media img { min-height: 240px; height: 300px; }
   .cpx-credits { grid-template-columns: 1fr; }
   .cpx-credits > div + div { border-inline-start: none; }
-  .cpx-collab { grid-template-columns: 1fr; }
+  .cpx-collab__banner img { aspect-ratio: 16/9; }
 }
 
 @media (max-width: 620px) {
@@ -703,6 +777,8 @@
   .cpx-facts > div { grid-template-columns: 1fr; gap: 4px; }
   .cpx .cp-form__row { grid-template-columns: 1fr; }
   .cpx .cp-form__actions .cp-btn { width: 100%; }
+  .cpx-collab__panel { padding: 22px 16px; }
+  .cpx-collab__banner-note { bottom: 10px; right: 10px; font-size: .64rem; }
   .cpx-contact { grid-template-columns: 1fr; }
   .cpx-foot__grid { grid-template-columns: 1fr; gap: 26px; }
   .cpx-foot__copy { flex-direction: column; }
