@@ -1,0 +1,5 @@
+ALTER TABLE "Post" ADD COLUMN "metaTitle" TEXT;
+ALTER TABLE "Post" ADD COLUMN "imageAlt" TEXT;
+ALTER TABLE "Post" ADD COLUMN "sourceName" TEXT;
+ALTER TABLE "Post" ADD COLUMN "sourceReferenceUrl" TEXT;
+ALTER TABLE "Post" ADD COLUMN "faq" JSONB;
